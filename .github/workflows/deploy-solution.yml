@@ -8,15 +8,10 @@ on:
         type: choice
         description: Solution to deploy
         options: 
-        - Power BI Solution
-        - Notebook Solution
-      workspace_name:
-        description: Name for new workspace
-        required: true
-        default: Custom Solution 99
-      repo_name:
-        description: give it a try
-        default: ${{ inputs.deploy_target }} by @${{ github.actor }}
+        - Custom Power BI Solution
+        - Custom Notebook Solution
+        - Custom Shortcut Solution
+        - Custom Data Pipeline Solution
 
 jobs:
   deployment-job:    
@@ -41,5 +36,7 @@ jobs:
           FABRIC_CLIENT_ID: ${{ secrets.FABRIC_CLIENT_ID }}
           FABRIC_CLIENT_SECRET: ${{ secrets.FABRIC_CLIENT_SECRET }}
           FABRIC_TENANT_ID: ${{ secrets.FABRIC_TENANT_ID }}          
+          FABRIC_CAPACITY_ID: ${{ secrets.FABRIC_CAPACITY_ID }}       
+          ADMIN_USER_ID: ${{ secrets.ADMIN_USER_ID }}             
         run: 
           python src/deploy_solution.py

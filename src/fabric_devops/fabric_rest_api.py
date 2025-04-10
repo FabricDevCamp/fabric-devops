@@ -465,7 +465,8 @@ class FabricRestApi:
     @classmethod
     def create_item(cls, workspace_id, create_item_request = None):
         """Create Item using create-item-request"""
-        AppLogger.log_step(f"Creating [{create_item_request['displayName']}.{create_item_request['type']}]")
+        AppLogger.log_step(
+            f"Creating [{create_item_request['displayName']}.{create_item_request['type']}]")
         endpoint = f'workspaces/{workspace_id}/items'
         item = cls._execute_post_request(endpoint, create_item_request)
         AppLogger.log_substep(f"{item['type']} created with od id [{item['id']}]")
@@ -496,7 +497,8 @@ class FabricRestApi:
     def run_notebook(cls, workspace_id, notebook):
         """Run notebook and wait for job completion"""
         AppLogger.log_substep(f"Running notebook [{notebook['displayName']}]...")
-        rest_url = f"workspaces/{workspace_id}/items/{notebook['id']}/jobs/instances?jobType=RunNotebook"
+        rest_url = f"workspaces/{workspace_id}/items/{notebook['id']}" + \
+                    "/jobs/instances?jobType=RunNotebook"
         response = cls._execute_post_request_for_job_scheduler(rest_url)
         AppLogger.log_substep("Notebook run job completed successfully")
         return response
@@ -517,7 +519,8 @@ class FabricRestApi:
     def get_sql_endpoint_for_lakehouse(cls, workspace_id, lakehouse):
         """Get SQL endpoint properties for lakehouse"""
 
-        AppLogger.log_step(f"Getting SQL Endpoint info for lakehouse [{lakehouse['displayName']}]...")
+        AppLogger.log_step(
+            f"Getting SQL Endpoint info for lakehouse [{lakehouse['displayName']}]...")
 
         lakehouse = cls.get_lakehouse(workspace_id, lakehouse['id'])
         while lakehouse['properties']['sqlEndpointProperties']['provisioningStatus'] != 'Success':

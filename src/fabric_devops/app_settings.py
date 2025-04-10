@@ -31,11 +31,6 @@ class AppSettings:
 
         if is_running_in_github:
             AppLogger.log_step('running in GitHub')
-            AppLogger.log_step(f'Admin user id: {cls.ADMIN_USER_ID}')
-            AppLogger.log_step(f'Admin client id: {cls.FABRIC_CLIENT_ID}')
-            AppLogger.log_step(f'client sec: {cls.FABRIC_CLIENT_SECRET}')
-            AppLogger.log_step(f'tenant id: {cls.FABRIC_TENANT_ID}')
-            AppLogger.log_step(f'capacity id: {cls.FABRIC_CAPACITY_ID}')
         else:
             AppLogger.log_step('running locally')
             #cls.FABRIC_CLIENT_ID = '1cc2688d-c6b1-4fe6-9246-d06003a6712f'

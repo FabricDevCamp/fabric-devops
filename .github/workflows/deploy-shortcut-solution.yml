@@ -26,5 +26,7 @@ jobs:
           FABRIC_CLIENT_ID: ${{ secrets.FABRIC_CLIENT_ID }}
           FABRIC_CLIENT_SECRET: ${{ secrets.FABRIC_CLIENT_SECRET }}
           FABRIC_TENANT_ID: ${{ secrets.FABRIC_TENANT_ID }}          
+          FABRIC_CAPACITY_ID: ${{ secrets.FABRIC_CAPACITY_ID }}       
+          ADMIN_USER_ID: ${{ secrets.ADMIN_USER_ID }}            
         run: 
           python src/deploy_shortcut_solution.py
