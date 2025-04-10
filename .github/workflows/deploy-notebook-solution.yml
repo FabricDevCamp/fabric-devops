@@ -1,0 +1,30 @@
+
+name: Deploy Notebook Solution
+
+on: workflow_dispatch
+
+jobs:
+  deployment-job:    
+    name: Deploy Notebook Solution
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.12"
+
+      - name: Install MSAL
+        run: |
+          pip install msal
+
+      - name: Deploy Solution        
+        env:
+          FABRIC_CLIENT_ID: ${{ secrets.FABRIC_CLIENT_ID }}
+          FABRIC_CLIENT_SECRET: ${{ secrets.FABRIC_CLIENT_SECRET }}
+          FABRIC_TENANT_ID: ${{ secrets.FABRIC_TENANT_ID }}          
+        run: 
+          python src/deploy_notebook_solution.py
