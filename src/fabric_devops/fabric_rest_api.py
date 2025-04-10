@@ -621,7 +621,7 @@ class FabricRestApi:
     def create_adls_gen2_shortcut(cls, workspace_id, lakehouse_id, name, path,
                                   location, subpath, connection_id):
         """Create ADLS Gen2 Shortcut"""
-        AppLogger.LogStep('Creating OneLake shortcut using ADLS connection...')
+        AppLogger.log_step('Creating OneLake shortcut using ADLS connection...')
 
         rest_url = f'workspaces/{workspace_id}/items/{lakehouse_id}/shortcuts'
         post_body = {
