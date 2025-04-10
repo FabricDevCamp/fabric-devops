@@ -251,7 +251,7 @@ class FabricRestApi:
             'capacityId': AppSettings.FABRIC_CAPACITY_ID
         }
 
-        AppLogger.log_substep('Calling Create-Workspace API')
+        AppLogger.log_substep('Calling Create-Workspace API...')
         workspace = cls._execute_post_request('workspaces', post_body)
         workspace_id = workspace['id']
         AppLogger.log_substep(f'Workspace created with Id of [{workspace_id}]')
@@ -466,7 +466,7 @@ class FabricRestApi:
     def create_item(cls, workspace_id, create_item_request = None):
         """Create Item using create-item-request"""
         AppLogger.log_step(
-            f"Creating [{create_item_request['displayName']}.{create_item_request['type']}]")
+            f"Creating [{create_item_request['displayName']}.{create_item_request['type']}]...")
         endpoint = f'workspaces/{workspace_id}/items'
         item = cls._execute_post_request(endpoint, create_item_request)
         AppLogger.log_substep(f"{item['type']} created with od id [{item['id']}]")

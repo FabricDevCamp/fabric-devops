@@ -23,7 +23,7 @@ create_notebook_request = \
 notebook = FabricRestApi.create_item(workspace['id'], create_notebook_request)
 FabricRestApi.run_notebook(workspace['id'], notebook)
 
-sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse['id'])
+sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse)
 
 createModelRequest = \
     ItemDefinitionFactory.get_directlake_model_create_request(SEMANTIC_MODEL_NAME,
