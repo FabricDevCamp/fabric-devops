@@ -2,6 +2,7 @@
 
 import time
 import datetime
+import json
 import requests
 import msal
 
@@ -304,7 +305,7 @@ class FabricRestApi:
     @classmethod
     def create_connection(cls, create_connection_request):
         """ Create new connection"""
-        AppLogger.log_step(create_connection_request)
+        AppLogger.log_step( json.dumps(create_connection_request) )
 
         existing_connections = cls.get_connections()
         for connection in existing_connections:
