@@ -29,7 +29,7 @@ class FabricRestApi:
             cls._access_token_expiration = datetime.datetime.now() + \
                                            datetime.timedelta(0,  int(result['expires_in']))
         return cls._access_token
-S
+
     @classmethod
     def _execute_get_request(cls, endpoint):
         """Execute GET Request on Fabric REST API Endpoint"""
