@@ -257,7 +257,7 @@ class FabricRestApi:
         AppLogger.log_substep(f'Workspace created with Id of [{workspace_id}]')
 
         AppLogger.log_substep(
-            f'Adding workspace role of [Admin] for user [{AppSettings.ADMIN_USER_ID}]')        
+            f'Adding workspace role of [Admin] for admin user [{AppSettings.ADMIN_USER_ID}]')        
         cls.add_workspace_user(workspace_id, AppSettings.ADMIN_USER_ID, 'Admin')
 
         return workspace
