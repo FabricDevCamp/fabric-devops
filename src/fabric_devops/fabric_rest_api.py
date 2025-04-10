@@ -450,8 +450,9 @@ class FabricRestApi:
     @classmethod
     def delete_connection(cls, connection_id):
         """Delete connection using connection Id"""
+        rest_url = f"connections/{connection_id}"
         AppLogger.log_substep(f"Delete connection with Id of {connection_id}")
-        return cls._execute_delete_request(connection_id)
+        return cls._execute_delete_request(rest_url)
 
     @classmethod
     def get_workspace_connections(cls, workspace_id):
