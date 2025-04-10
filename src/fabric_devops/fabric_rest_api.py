@@ -304,7 +304,7 @@ class FabricRestApi:
     @classmethod
     def create_connection(cls, create_connection_request):
         """ Create new connection"""
-        AppLogger.log_substep(
+        AppLogger.log_step(
             f"Creating {create_connection_request['connectionDetails']['type']} " + \
             f"connection named{create_connection_request['displayName']}...")
 
