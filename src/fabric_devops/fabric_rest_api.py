@@ -5,8 +5,8 @@ import datetime
 import requests
 import msal
 
-from app_logger import AppLogger
-from app_settings import AppSettings
+from fabric_devops.app_logger import AppLogger
+from fabric_devops.app_settings import AppSettings
 
 class FabricRestApi:
     """Wrapper class for calling Fabric REST APIs"""
