@@ -574,7 +574,7 @@ class FabricRestApi:
     @classmethod
     def refresh_semantic_model(cls, workspace_id, semantic_model_id):
         """Refresh semantic model"""
-        AppLogger.log_substep('Refreshing semantic model')
+        AppLogger.log_substep('Refreshing semantic model...')
         rest_url  = f'groups//{workspace_id}//datasets//{semantic_model_id}//refreshes'
         post_body = { 'notifyOption': 'NoNotification', 'type': 'Automatic' }
         response = cls._execute_post_request_to_powerbi(rest_url, post_body)
@@ -587,7 +587,7 @@ class FabricRestApi:
             time.sleep(6)
             refresh_details = cls._execute_get_request_to_powerbi(rest_url_refresh_details)
 
-        AppLogger.log_substep("Semantic model refresh operation complete")
+        AppLogger.log_substep("Refresh operation complete")
 
     @classmethod
     def create_and_bind_semantic_model_connecton(cls, workspace,
