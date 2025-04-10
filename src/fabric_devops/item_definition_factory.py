@@ -24,7 +24,7 @@ class ItemDefinitionFactory:
         return file_content
 
     @classmethod
-    def get_create_notebook_request(cls, workspace_id, lakehouse, display_name, py_file):
+    def get_notebook_create_request(cls, workspace_id, lakehouse, display_name, py_file):
         """Create Item Definition for a Notebook"""
         py_content = cls.get_template_file(f"Notebooks//{py_file}")
         py_content = py_content.replace('{WORKSPACE_ID}', workspace_id) \
