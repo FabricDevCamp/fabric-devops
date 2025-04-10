@@ -20,9 +20,10 @@ class FabricRestApi:
     def _get_fabric_access_token(cls):
         """Acquire Entra Id Access Token for calling Fabric REST APIs"""
         if (cls._access_token is None) or (datetime.datetime.now() > cls._access_token_expiration):
-            app = msal.ConfidentialClientApplication(AppSettings.FABRIC_CLIENT_ID,
-                                                     authority=AppSettings.AUTHORITY,
-                                                     client_credential=AppSettings.FABRIC_CLIENT_SECRET)
+            app = msal.ConfidentialClientApplication(
+                AppSettings.FABRIC_CLIENT_ID,
+                authority=AppSettings.AUTHORITY,
+                client_credential=AppSettings.FABRIC_CLIENT_SECRET)
 
             result = app.acquire_token_for_client(scopes=AppSettings.FABRIC_PERMISSION_SCOPES)
             cls._access_token = result['access_token']
@@ -247,7 +248,7 @@ class FabricRestApi:
         post_body = {
             'displayName': display_name,
             'description': 'a demo workspace',
-            'capacityId': AppSettings.CAPACITY_ID
+            'capacityId': AppSettings.FABRIC_CAPACITY_ID
         }
 
         AppLogger.log_substep('Calling Create-Workspace API')
