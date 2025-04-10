@@ -20,16 +20,16 @@ class FabricRestApi:
     def _get_fabric_access_token(cls):
         """Acquire Entra Id Access Token for calling Fabric REST APIs"""
         if (cls._access_token is None) or (datetime.datetime.now() > cls._access_token_expiration):
-            app = msal.ConfidentialClientApplication(AppSettings.CLIENT_ID,
+            app = msal.ConfidentialClientApplication(AppSettings.FABRIC_CLIENT_ID,
                                                      authority=AppSettings.AUTHORITY,
-                                                     client_credential=AppSettings.CLIENT_SECRET)
+                                                     client_credential=AppSettings.FABRIC_CLIENT_SECRET)
 
             result = app.acquire_token_for_client(scopes=AppSettings.FABRIC_PERMISSION_SCOPES)
             cls._access_token = result['access_token']
             cls._access_token_expiration = datetime.datetime.now() + \
                                            datetime.timedelta(0,  int(result['expires_in']))
         return cls._access_token
-
+S
     @classmethod
     def _execute_get_request(cls, endpoint):
         """Execute GET Request on Fabric REST API Endpoint"""
