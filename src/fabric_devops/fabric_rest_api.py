@@ -2,7 +2,6 @@
 
 import time
 import datetime
-import json
 import requests
 import msal
 
@@ -306,7 +305,7 @@ class FabricRestApi:
     def create_connection(cls, create_connection_request):
         """ Create new connection"""
         AppLogger.log_substep(
-            f"Creating connection [{create_connection_request['displayName']}]...")
+            f"Creating connection {create_connection_request['displayName']}...")
 
         existing_connections = cls.get_connections()
         for connection in existing_connections:
@@ -316,9 +315,9 @@ class FabricRestApi:
 
         connection = cls._execute_post_request('connections', create_connection_request)
 
-        AppLogger.log_substep(f"{[{connection['connectionDetails']['type']}]} connection created with path [{connection['connectionDetails']['path']}]")
-
-
+        AppLogger.log_substep(
+            f"{connection['connectionDetails']['type']} connection created to " + \
+            f"{connection['connectionDetails']['path']}")
 
         cls.add_connection_role_assignment_for_user(connection['id'],
                                                     AppSettings.ADMIN_USER_ID,
