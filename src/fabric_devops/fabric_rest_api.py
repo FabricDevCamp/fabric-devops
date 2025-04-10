@@ -305,7 +305,8 @@ class FabricRestApi:
     def create_connection(cls, create_connection_request):
         """ Create new connection"""
         AppLogger.log_substep(
-            f"Creating connection {create_connection_request['displayName']}...")
+            f"Creating {create_connection_request['connectionDetails']['type']} " + \
+            f"connection named{create_connection_request['displayName']}...")
 
         existing_connections = cls.get_connections()
         for connection in existing_connections:
@@ -474,7 +475,7 @@ class FabricRestApi:
             f"Creating [{create_item_request['displayName']}.{create_item_request['type']}]...")
         endpoint = f'workspaces/{workspace_id}/items'
         item = cls._execute_post_request(endpoint, create_item_request)
-        AppLogger.log_substep(f"{item['type']} created with od id [{item['id']}]")
+        AppLogger.log_substep(f"{item['type']} created with id [{item['id']}]")
         return item
 
     @classmethod
