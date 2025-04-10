@@ -306,7 +306,7 @@ class FabricRestApi:
         """ Create new connection"""
         AppLogger.log_step(
             f"Creating [{create_connection_request['connectionDetails']['type']}] " + \
-            f"connection named {create_connection_request['displayName']}...")
+            f"connection named {create_connection_request['displayName']} ...")
 
         existing_connections = cls.get_connections()
         for connection in existing_connections:
@@ -317,8 +317,8 @@ class FabricRestApi:
         connection = cls._execute_post_request('connections', create_connection_request)
 
         AppLogger.log_substep(
-            "Connection created with path " + \
-            f"[{connection['connectionDetails']['path']}]S")
+            "Connection created to path " + \
+            f"[{connection['connectionDetails']['path']}]")
 
         cls.add_connection_role_assignment_for_user(connection['id'],
                                                     AppSettings.ADMIN_USER_ID,
