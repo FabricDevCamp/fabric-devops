@@ -49,7 +49,7 @@ for notebook_data in NOTEBOOKS:
                                                       notebook_data['name'], \
                                                       notebook_data['template'])
     notebook = FabricRestApi.create_item(workspace['id'], create_notebook_request)
-    FabricRestApi.run_notebook(workspace['id'], notebook['id'])
+    FabricRestApi.run_notebook(workspace['id'], notebook)
 
 sqlEndpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse)
 
