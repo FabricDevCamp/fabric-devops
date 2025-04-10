@@ -3,10 +3,13 @@
 from fabric_devops.item_definition_factory import ItemDefinitionFactory
 from fabric_devops.fabric_rest_api import FabricRestApi
 from fabric_devops.app_logger import AppLogger
+from fabric_devops.app_settings import AppSettings
 
 WORKSPANR_NAME = "Custom Power BI Solution"
 SEMANTIC_MODEL_NAME = 'Product Sales Imported Model'
 REPORT_NAME = 'Product Sales Summary'
+
+AppSettings.init_app_settings()
 
 AppLogger.log_job("Deploying Power BI Solution")
 
