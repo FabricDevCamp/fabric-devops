@@ -465,8 +465,11 @@ class FabricRestApi:
     @classmethod
     def create_item(cls, workspace_id, create_item_request = None):
         """Create Item using create-item-request"""
+        AppLogger.log_step(f"Creating [{create_item_request['displayName']}.{create_item_request['type']}]")
         endpoint = f'workspaces/{workspace_id}/items'
-        return cls._execute_post_request(endpoint, create_item_request)
+        item = cls._execute_post_request(endpoint, create_item_request)
+        AppLogger.log_substep(f"{item['type']} created with od id [{item['id']}]")
+        return item
 
     @classmethod
     def create_lakehouse(cls, workspace_id, display_name):
@@ -490,10 +493,13 @@ class FabricRestApi:
         return cls._execute_post_request(endpoint)
 
     @classmethod
-    def run_notebook(cls, workspace_id, item_id):
+    def run_notebook(cls, workspace_id, notebook):
         """Run notebook and wait for job completion"""
-        rest_url = f'workspaces/{workspace_id}/items/{item_id}/jobs/instances?jobType=RunNotebook'
-        return cls._execute_post_request_for_job_scheduler(rest_url)
+        AppLogger.log_substep(f"Running notebook [{notebook['displayName']}]...")
+        rest_url = f"workspaces/{workspace_id}/items/{notebook['id']}/jobs/instances?jobType=RunNotebook"
+        response = cls._execute_post_request_for_job_scheduler(rest_url)
+        AppLogger.log_substep("Notebook run job completed successfully")
+        return response
 
     @classmethod
     def run_data_pipeline(cls, workspace_id, item_id):
@@ -508,18 +514,26 @@ class FabricRestApi:
         return cls._execute_get_request(rest_url)
 
     @classmethod
-    def get_sql_endpoint_for_lakehouse(cls, workspace_id, lakehouse_id):
+    def get_sql_endpoint_for_lakehouse(cls, workspace_id, lakehouse):
         """Get SQL endpoint properties for lakehouse"""
 
-        lakehouse = cls.get_lakehouse(workspace_id, lakehouse_id)
+        AppLogger.log_step(f"Getting SQL Endpoint info for lakehouse [{lakehouse['displayName']}]...")
+
+        lakehouse = cls.get_lakehouse(workspace_id, lakehouse['id'])
         while lakehouse['properties']['sqlEndpointProperties']['provisioningStatus'] != 'Success':
             wait_time = 10
             time.sleep(wait_time)
-            lakehouse = cls.get_lakehouse(workspace_id, lakehouse_id)
+            lakehouse = cls.get_lakehouse(workspace_id, lakehouse['id'])
+
+        server = lakehouse['properties']['sqlEndpointProperties']['connectionString']
+        database = lakehouse['properties']['sqlEndpointProperties']['id']
+
+        AppLogger.log_substep(f"server: {server}")
+        AppLogger.log_substep(f"database: {database}")
 
         return {
-            'server': lakehouse['properties']['sqlEndpointProperties']['connectionString'],
-            'database': lakehouse['properties']['sqlEndpointProperties']['id']
+            'server': server,
+            'database': database
         }
 
     @classmethod
@@ -551,6 +565,7 @@ class FabricRestApi:
     @classmethod
     def refresh_semantic_model(cls, workspace_id, semantic_model_id):
         """Refresh semantic model"""
+        AppLogger.log_substep('Refreshing semantic model')
         rest_url  = f'groups//{workspace_id}//datasets//{semantic_model_id}//refreshes'
         post_body = { 'notifyOption': 'NoNotification', 'type': 'Automatic' }
         response = cls._execute_post_request_to_powerbi(rest_url, post_body)
@@ -562,6 +577,8 @@ class FabricRestApi:
         while 'status' not in refresh_details or refresh_details['status'] == 'Unknown':
             time.sleep(6)
             refresh_details = cls._execute_get_request_to_powerbi(rest_url_refresh_details)
+
+        AppLogger.log_substep("Semantic model refresh operation complete")
 
     @classmethod
     def create_and_bind_semantic_model_connecton(cls, workspace,
