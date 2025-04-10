@@ -24,6 +24,7 @@ AppLogger.log_substep("Getting Web Url of Datasource")
 web_url = FabricRestApi.get_web_url_from_semantic_model(workspace['id'], model['id'])
 
 AppLogger.log_substep(f'Creating anonymous Web connection to {web_url} ')
+
 connection = FabricRestApi.create_anonymous_web_connection(web_url, workspace)
 
 AppLogger.log_substep("Binding semantic model to web connection")
