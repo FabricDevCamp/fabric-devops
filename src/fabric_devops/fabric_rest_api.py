@@ -267,7 +267,7 @@ class FabricRestApi:
 
         workspace_connections  = cls.get_workspace_connections(workspace_id)
         for connection in workspace_connections:
-            AppLogger.log_substep(f"Deleting connection {connection['displayName']}")
+            AppLogger.log_substep(f"Deleting connection {connection['displayName']}")            
             cls.delete_connection(connection['id'])
 
         AppLogger.log_substep(f"Deleting workspace [{workspace_id}]")

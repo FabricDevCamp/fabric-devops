@@ -25,7 +25,7 @@ class AppLogger:
     @classmethod
     def log_error(cls, message):
         """log error"""
-        error_message = "ERROR" + message
+        error_message = "ERROR: " + message
         print('-' * len(error_message), flush=True)
         print(error_message, flush=True)
         print('-' * len(error_message), flush=True)
