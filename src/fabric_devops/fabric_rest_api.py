@@ -256,8 +256,7 @@ class FabricRestApi:
         workspace_id = workspace['id']
         AppLogger.log_substep(f'Workspace created with Id of [{workspace_id}]')
 
-        AppLogger.log_substep(
-            f'Adding workspace role of [Admin] for admin user [{AppSettings.ADMIN_USER_ID}]')        
+        AppLogger.log_substep('Adding workspace role of [Admin] for admin user')
         cls.add_workspace_user(workspace_id, AppSettings.ADMIN_USER_ID, 'Admin')
 
         return workspace
@@ -395,9 +394,9 @@ class FabricRestApi:
             },
             'credentialDetails': {
                 'credentials': {
-                    'tenantId': AppSettings.TENANT_ID,
-                    'servicePrincipalClientId': AppSettings.CLIENT_ID,
-                    'servicePrincipalSecret': AppSettings.CLIENT_SECRET,
+                    'tenantId': AppSettings.FABRIC_TENANT_ID,
+                    'servicePrincipalClientId': AppSettings.FABRIC_CLIENT_ID,
+                    'servicePrincipalSecret': AppSettings.FABRIC_CLIENT_SECRET,
                     'credentialType': 'ServicePrincipal'
                 },
                 'singleSignOnType': 'None',
