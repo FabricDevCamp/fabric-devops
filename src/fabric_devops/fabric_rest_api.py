@@ -304,6 +304,7 @@ class FabricRestApi:
     @classmethod
     def create_connection(cls, create_connection_request):
         """ Create new connection"""
+        AppLogger.log_step("Creating connection...")
 
         existing_connections = cls.get_connections()
         for connection in existing_connections:
@@ -312,6 +313,9 @@ class FabricRestApi:
                 return connection
 
         connection = cls._execute_post_request('connections', create_connection_request)
+
+        AppLogger.log_substep(f"Connection created with id [{connection['id']}]")
+
 
         cls.add_connection_role_assignment_for_user(connection['id'],
                                                     AppSettings.ADMIN_USER_ID,
@@ -617,6 +621,8 @@ class FabricRestApi:
     def create_adls_gen2_shortcut(cls, workspace_id, lakehouse_id, name, path,
                                   location, subpath, connection_id):
         """Create ADLS Gen2 Shortcut"""
+        AppLogger.LogStep('Creating OneLake shortcut using ADLS connection...')
+
         rest_url = f'workspaces/{workspace_id}/items/{lakehouse_id}/shortcuts'
         post_body = {
             'name': name,
@@ -630,3 +636,4 @@ class FabricRestApi:
             }
         }
         cls._execute_post_request(rest_url, post_body)
+        AppLogger.log_substep(f'Shortcut [{path}/{name}] successfullly created')
