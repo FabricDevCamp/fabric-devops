@@ -510,10 +510,15 @@ class FabricRestApi:
         return response
 
     @classmethod
-    def run_data_pipeline(cls, workspace_id, item_id):
+    def run_data_pipeline(cls, workspace_id, pipeline):
         """Run notebook and wait for job completion"""
-        endpoint = f'workspaces/{workspace_id}/items/{item_id}/jobs/instances?jobType=Pipeline'
-        return cls._execute_post_request_for_job_scheduler(endpoint)
+        AppLogger.log_substep(f"Running data pipeline [{pipeline['displayName']}]...")
+
+        rest_url = f"workspaces/{workspace_id}/items/{pipeline['id']}" + \
+                    "/jobs/instances?jobType=Pipeline"
+        response = cls._execute_post_request_for_job_scheduler(rest_url)
+        AppLogger.log_substep("Data pipeline run job completed successfully")
+        return response
 
     @classmethod
     def get_lakehouse(cls, workspace_id, lakehouse_id):
