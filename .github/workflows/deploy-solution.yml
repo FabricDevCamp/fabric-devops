@@ -12,7 +12,7 @@ on:
         - Custom Notebook Solution
         - Custom Shortcut Solution
         - Custom Data Pipeline Solution
-        - [Deploy all solutions]
+        - DEPLOY ALL SOLUTION
 
 jobs:
   deployment-job:    
