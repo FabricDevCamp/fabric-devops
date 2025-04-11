@@ -2,8 +2,6 @@
 
 import os
 
-from fabric_devops.app_logger import AppLogger
-
 class AppSettings:
     """App Settings"""
     FABRIC_CLIENT_ID = os.getenv("FABRIC_CLIENT_ID")
@@ -23,8 +21,3 @@ class AppSettings:
     AZURE_STORAGE_CONTAINER_PATH = '/ProductSales/Dev'
     AZURE_STORAGE_SERVER = f'https://{AZURE_STORAGE_ACCOUNT_NAME}.dfs.core.windows.net'
     AZURE_STORAGE_PATH = AZURE_STORAGE_CONTAINER + AZURE_STORAGE_CONTAINER_PATH
-
-    @classmethod
-    def init_app_settings(cls):
-        """Initialize App Settings"""
-        is_running_in_github = os.getenv("GITHUB_ACTIONS") == "true"
