@@ -11,7 +11,7 @@ NOTEBOOKS = [
     { 'name': 'Create 01 Silver Layer', 'template':'BuildSilverLayer.py'},
     { 'name': 'Create 02 Gold Layer', 'template':'BuildGoldLayer.py'},
 ]
-DATA_PIPELINE_NAME = 'Create 01 Silver Layer'
+DATA_PIPELINE_NAME = 'Create Lakehouse Tables'
 SEMANTIC_MODEL_NAME = 'Product Sales DirectLake Model'
 REPORTS = [
     { 'name': 'Product Sales Summary', 'template':'product_sales_summary.json'},
