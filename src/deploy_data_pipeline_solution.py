@@ -49,8 +49,8 @@ pipeline_definition = \
                      .replace('{CONNECTION_ID}', connection['id']) \
                      .replace('{CONTAINER_NAME}', AppSettings.AZURE_STORAGE_CONTAINER) \
                      .replace('{CONTAINER_PATH}', AppSettings.AZURE_STORAGE_CONTAINER_PATH) \
-                     .replace('{NOTEBOOK_ID_BUILD_SILVER}', notebook_ids[0]) \
-                     .replace('{NOTEBOOK_ID_BUILD_GOLD}', notebook_ids[1]) \
+                     .replace('{NOTEBOOK_ID_BUILD_SILVER}', list(notebook_ids.values())[0]) \
+                     .replace('{NOTEBOOK_ID_BUILD_GOLD}', list(notebook_ids.values())[1]) \
 
 create_pipeline_request = \
     ItemDefinitionFactory.get_data_pipeline_create_request(DATA_PIPELINE_NAME, pipeline_definition)
