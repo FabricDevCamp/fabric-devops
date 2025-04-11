@@ -214,7 +214,8 @@ def deploy_data_pipeline_solution():
                         .replace('{NOTEBOOK_ID_BUILD_GOLD}', list(notebook_ids.values())[1])
 
     create_pipeline_request = \
-        ItemDefinitionFactory.get_data_pipeline_create_request(data_pipeline_name, pipeline_definition)
+        ItemDefinitionFactory.get_data_pipeline_create_request(data_pipeline_name,
+                                                               pipeline_definition)
 
     pipeline = FabricRestApi.create_item(workspace['id'], create_pipeline_request)
     FabricRestApi.run_data_pipeline(workspace['id'], pipeline)
@@ -232,9 +233,11 @@ def deploy_data_pipeline_solution():
     FabricRestApi.create_and_bind_semantic_model_connecton(workspace, model['id'], lakehouse)
 
     for report_data in reports:
-        create_report_request = ItemDefinitionFactory.get_report_create_request(model['id'],
-                                                                                report_data['name'],
-                                                                                report_data['template'])
+        create_report_request = ItemDefinitionFactory.get_report_create_request(
+            model['id'],
+            report_data['name'],
+            report_data['template'])
+
         FabricRestApi.create_item(workspace['id'], create_report_request)
 
     AppLogger.log_job_ended("Solution deployment complete")
@@ -254,7 +257,7 @@ match os.getenv("SOLUTION_NAME"):
     case 'Custom Data Pipeline Solution':
         deploy_data_pipeline_solution()
 
-    case 'DEPLOY ALL SOLUTION':
+    case 'DEPLOY-ALL-SOLUTIONS':
         deploy_powerbi_solution()
         deploy_notebook_solution()
         deploy_shortcut_solution()
