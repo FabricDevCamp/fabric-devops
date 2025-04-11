@@ -229,11 +229,23 @@ def deploy_data_pipeline_solution():
 
     AppLogger.log_job_ended("Solution deployment complete")
 
-solution_name = os.getenv("SOLUTION_NAME")
-AppLogger.log_step(f"Solution: {solution_name}")
 
-if False:       
-    deploy_powerbi_solution()
-    deploy_notebook_solution()
-    deploy_shortcut_solution()
-    deploy_data_pipeline_solution()
+match os.getenv("SOLUTION_NAME"):
+
+    case 'Custom Power BI Solution':
+        deploy_powerbi_solution()
+
+    case 'Custom Notebook Solution':
+        deploy_notebook_solution()
+
+    case 'Custom Shortcut Solution':
+        deploy_shortcut_solution()
+
+    case 'Custom Data Pipeline Solution':
+        deploy_data_pipeline_solution()
+
+    case '[Deploy all solutions]':
+        deploy_powerbi_solution()
+        deploy_notebook_solution()
+        deploy_shortcut_solution()
+        deploy_data_pipeline_solution()
