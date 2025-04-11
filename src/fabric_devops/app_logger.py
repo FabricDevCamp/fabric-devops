@@ -36,4 +36,3 @@ class AppLogger:
         print(' ', flush=True)
         print(f'> {message}', flush=True)
         print(' ', flush=True)
-        print(' ', flush=True)

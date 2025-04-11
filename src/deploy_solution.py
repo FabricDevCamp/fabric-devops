@@ -257,7 +257,7 @@ match os.getenv("SOLUTION_NAME"):
     case 'Custom Data Pipeline Solution':
         deploy_data_pipeline_solution()
 
-    case 'DEPLOY-ALL-SOLUTIONS':
+    case 'Deploy All Solutions':
         deploy_powerbi_solution()
         deploy_notebook_solution()
         deploy_shortcut_solution()

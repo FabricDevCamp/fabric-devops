@@ -317,7 +317,10 @@ class FabricRestApi:
         connection = cls._execute_post_request('connections', create_connection_request)
 
         AppLogger.log_substep(
-            "Connection created to path " + \
+            f"Connection created with id [{connection['id']}]")
+
+        AppLogger.log_substep(
+            "Connection path: " + \
             f"[{connection['connectionDetails']['path']}]")
 
         cls.add_connection_role_assignment_for_user(connection['id'],
