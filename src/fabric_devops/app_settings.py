@@ -28,13 +28,3 @@ class AppSettings:
     def init_app_settings(cls):
         """Initialize App Settings"""
         is_running_in_github = os.getenv("GITHUB_ACTIONS") == "true"
-
-        if is_running_in_github:
-            AppLogger.log_step('running in GitHub')
-        else:
-            AppLogger.log_step('running locally')
-            #cls.FABRIC_CLIENT_ID = '1cc2688d-c6b1-4fe6-9246-d06003a6712f'
-            #cls.FABRIC_CLIENT_SECRET = r'iPZ8Q~RarnvynjvxdONDoG0KzKuU5oyPtnK9sbU2'
-            #cls.FABRIC_TENANT_ID = '5b3572e6-a387-436b-bf93-9bd7d3d54acb'
-            #cls.FABRIC_CAPACITY_ID = 'c2b61760-8349-476e-91c7-f8079e65b7e8'
-            #cls.ADMIN_USER_ID = 'e8805a8f-201d-4f06-9e35-0d0b29faebe6'
