@@ -52,13 +52,12 @@ pipeline_definition = \
                      .replace('{NOTEBOOK_ID_BUILD_SILVER}', list(notebook_ids.values())[0]) \
                      .replace('{NOTEBOOK_ID_BUILD_GOLD}', list(notebook_ids.values())[1])
 
-print(pipeline_definition)
-
 create_pipeline_request = \
     ItemDefinitionFactory.get_data_pipeline_create_request(DATA_PIPELINE_NAME, pipeline_definition)
 
-pipeline = FabricRestApi.create_item(workspace['id'], pipeline_definition)
+pipeline = FabricRestApi.create_item(workspace['id'], create_pipeline_request)
 FabricRestApi.run_data_pipeline(workspace['id'], pipeline)
+
 sqlEndpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse)
 
 createModelRequest = \
