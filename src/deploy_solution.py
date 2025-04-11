@@ -1,4 +1,5 @@
 """Deploy Power BI Solution"""
+import os
 
 from fabric_devops.item_definition_factory import ItemDefinitionFactory
 from fabric_devops.fabric_rest_api import FabricRestApi
@@ -228,8 +229,11 @@ def deploy_data_pipeline_solution():
 
     AppLogger.log_job_ended("Solution deployment complete")
 
+solution_name = os.getenv("SOLUTION_NAME")
+AppLogger.log_step(f"Solution: {solution_name}")
 
-deploy_powerbi_solution()
-deploy_notebook_solution()
-deploy_shortcut_solution()
-deploy_data_pipeline_solution()
+if False:       
+    deploy_powerbi_solution()
+    deploy_notebook_solution()
+    deploy_shortcut_solution()
+    deploy_data_pipeline_solution()
