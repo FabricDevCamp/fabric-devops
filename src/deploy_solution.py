@@ -2,7 +2,8 @@
 
 import os
 
-from fabric_devops import FabricRestApi, ItemDefinitionFactory, AppLogger, AppSettings
+from fabric_devops import FabricRestApi, ItemDefinitionFactory, AppLogger, AppSettings, \
+                          VariableLibrary
 
 def deploy_powerbi_solution():
     """Deploy Power BI Solution"""
@@ -239,6 +240,89 @@ def deploy_data_pipeline_solution():
 
     AppLogger.log_job_ended("Solution deployment complete")
 
+def deploy_variable_library_solution():
+
+    WORKSPACE_NAME = "Custom Variable Library Solution"
+    LAKEHOUSE_NAME = "sales"
+    NOTEBOOKS = [
+        { 'name': 'Create 01 Silver Layer', 'template':'BuildSilverLayer.py'},
+        { 'name': 'Create 02 Gold Layer', 'template':'BuildGoldLayer.py'},
+    ]
+    DATA_PIPELINE_NAME = 'Create Lakehouse Tables'
+    SEMANTIC_MODEL_NAME = 'Product Sales DirectLake Model'
+    REPORTS = [
+        { 'name': 'Product Sales Summary', 'template':'product_sales_summary.json'}
+    ]
+
+    AppLogger.log_job("Deploying Custom Variable Library solution")
+
+    workspace = FabricRestApi.create_workspace(WORKSPACE_NAME)
+
+    lakehouse = FabricRestApi.create_lakehouse(workspace['id'], LAKEHOUSE_NAME)
+
+    notebook_ids = []
+    for notebook_data in NOTEBOOKS:
+        create_notebook_request = \
+        ItemDefinitionFactory.get_notebook_create_request(workspace['id'],  \
+                                                        lakehouse,     \
+                                                        notebook_data['name'], \
+                                                        notebook_data['template'])
+        notebook = FabricRestApi.create_item(workspace['id'], create_notebook_request)
+        notebook_ids.append(notebook['id'])
+
+    connection = FabricRestApi.create_azure_storage_connection_with_account_key(
+        AppSettings.AZURE_STORAGE_SERVER,
+        AppSettings.AZURE_STORAGE_PATH,
+        workspace)
+
+    variable_library = VariableLibrary()
+    variable_library.add_variable("webDatasourcePath", AppSettings.WEB_DATASOURCE_ROOT_URL)
+    variable_library.add_variable("adlsServer", AppSettings.AZURE_STORAGE_SERVER)
+    variable_library.add_variable("adlsContainerName",  AppSettings.AZURE_STORAGE_CONTAINER)
+    variable_library.add_variable("adlsContainerPath",  AppSettings.AZURE_STORAGE_CONTAINER_PATH)
+    variable_library.add_variable("adlsConnectionId",  connection['id'])
+    variable_library.add_variable("lakehouseId",  lakehouse['id'])
+    variable_library.add_variable("notebookIdBuildSilver",  notebook_ids[0])
+    variable_library.add_variable("notebookIdBuildGold",  notebook_ids[1])
+
+    create_library_request = \
+        ItemDefinitionFactory.get_variable_library_create_request(
+            "SolutionConfig",
+            variable_library
+    )
+
+    library = FabricRestApi.create_item(workspace['id'], create_library_request)
+
+    pipeline_definition = ItemDefinitionFactory.get_template_file(
+        'DataPipelines//CreateLakehouseTablesWithVarLib.json')
+
+    create_pipeline_request = \
+        ItemDefinitionFactory.get_data_pipeline_create_request(DATA_PIPELINE_NAME,
+                                                            pipeline_definition)
+
+    pipeline = FabricRestApi.create_item(workspace['id'], create_pipeline_request)
+    FabricRestApi.run_data_pipeline(workspace['id'], pipeline)
+
+    sqlEndpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse)
+
+    createModelRequest = \
+        ItemDefinitionFactory.get_directlake_model_create_request(SEMANTIC_MODEL_NAME,
+                                                                'sales_model_DirectLake.bim',
+                                                                sqlEndpoint['server'],
+                                                                sqlEndpoint['database'])
+
+    model = FabricRestApi.create_item(workspace['id'], createModelRequest)
+
+    FabricRestApi.create_and_bind_semantic_model_connecton(workspace, model['id'], lakehouse)
+
+    for report_data in REPORTS:
+        create_report_request = ItemDefinitionFactory.get_report_create_request(model['id'],
+                                                                                report_data['name'],
+                                                                                report_data['template'])
+        report = FabricRestApi.create_item(workspace['id'], create_report_request)
+
+    AppLogger.log_job_ended("Solution deployment complete")
+
 
 match os.getenv("SOLUTION_NAME"):
 
@@ -254,8 +338,13 @@ match os.getenv("SOLUTION_NAME"):
     case 'Custom Data Pipeline Solution':
         deploy_data_pipeline_solution()
 
+    case 'Custom Variable Library Solution':
+        deploy_variable_library_solution()
+
     case 'Deploy All Solutions':
         deploy_powerbi_solution()
         deploy_notebook_solution()
         deploy_shortcut_solution()
         deploy_data_pipeline_solution()
+        deploy_variable_library_solution()
+

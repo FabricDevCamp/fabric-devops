@@ -50,11 +50,37 @@ class FabricRestApi:
         return cls._access_token
 
     @classmethod
+    def _get_fabric_user_access_token_with_device_code(cls):
+        """Acquire Entra Id Access Token for calling Fabric REST APIs"""
+        client_id = "1950a258-227b-4e31-a9cf-717495945fc2"
+        authority = "https://login.microsoftonline.com/organizations"
+
+        if (cls._access_token is None) or (datetime.datetime.now() > cls._access_token_expiration):
+            app = msal.PublicClientApplication(client_id,
+                                               authority=authority,
+                                               client_credential=None)
+            
+            flow = app.initiate_device_flow(scopes=['https://api.fabric.microsoft.com/user_impersonation'])
+
+            user_code = flow['user_code']
+            authentication_url =  flow['verification_uri']
+
+            print(f'Log in at {authentication_url} and enter user-code of {user_code}')
+
+            result = app.acquire_token_by_device_flow(flow)
+
+            cls._access_token = result['access_token']
+            cls._access_token_expiration = datetime.datetime.now() + \
+                                           datetime.timedelta(0,  int(result['expires_in']))
+        return cls._access_token
+
+
+    @classmethod
     def _get_fabric_access_token(cls):
         if AppSettings.RUN_AS_SERVICE_PRINCIPAL:
             return cls._get_fabric_spn_access_token()
         else:
-            return cls._get_fabric_user_access_token()
+            return cls._get_fabric_user_access_token_with_device_code()
 
     @classmethod
     def _execute_get_request(cls, endpoint):
