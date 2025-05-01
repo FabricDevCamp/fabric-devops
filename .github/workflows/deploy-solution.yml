@@ -40,6 +40,7 @@ jobs:
           FABRIC_TENANT_ID: ${{ secrets.FABRIC_TENANT_ID }}          
           FABRIC_CAPACITY_ID: ${{ secrets.FABRIC_CAPACITY_ID }}       
           ADMIN_USER_ID: ${{ secrets.ADMIN_USER_ID }}
+          SERVICE_PRINCIPAL_OBJECT_ID: ${{ secrets.SERVICE_PRINCIPAL_OBJECT_ID }}
           AZURE_STORAGE_ACCOUNT_KEY: ${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }}
           SOLUTION_NAME: ${{inputs.solution_name}}    
         run: 
