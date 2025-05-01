@@ -1,5 +1,11 @@
 """yup"""
 import os
 
-for name, value in os.environ.items():
-    print("{0}: {1}".format(name, value))
+if os.getenv('GITHUB_ACTIONS') is True:
+    print("running in GitHub")
+else:
+    print("Not running in GitHub")
+
+
+    # : true
+# RUNNER_ENVIRONMENT: github-hosted
