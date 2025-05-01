@@ -9,3 +9,4 @@ else:
 
 print(os.getenv('GITHUB_ACTIONS'))
 print(os.getenv('RUNNER_ENVIRONMENT'))
+print(os.getenv('ENV_714'))
