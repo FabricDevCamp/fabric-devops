@@ -1,96 +1,22 @@
 """Module to manage calls to Fabric REST APIs"""
 
 import time
-import datetime
 import requests
-import msal
 
 from .app_logger import AppLogger
 from .app_settings import AppSettings
+from .entra_id_token_manager import EntraIdTokenManager
 
 class FabricRestApi:
     """Wrapper class for calling Fabric REST APIs"""
 
 #region Low-level details about authentication and HTTP requests and responses
 
-    _access_token = None
-    _access_token_expiration = None
-
-    @classmethod
-    def _get_fabric_spn_access_token(cls):
-        """Acquire Entra Id Access Token for calling Fabric REST APIs"""
-        if (cls._access_token is None) or (datetime.datetime.now() > cls._access_token_expiration):
-            app = msal.ConfidentialClientApplication(
-                AppSettings.FABRIC_CLIENT_ID,
-                authority=AppSettings.AUTHORITY,
-                client_credential=AppSettings.FABRIC_CLIENT_SECRET)
-
-            result = app.acquire_token_for_client(scopes=AppSettings.FABRIC_PERMISSION_SCOPES)
-            cls._access_token = result['access_token']
-            cls._access_token_expiration = datetime.datetime.now() + \
-                                           datetime.timedelta(0,  int(result['expires_in']))
-        return cls._access_token
-
-    @classmethod
-    def _get_fabric_user_access_token(cls):
-        """Acquire Entra Id Access Token for calling Fabric REST APIs"""
-        client_id = "1950a258-227b-4e31-a9cf-717495945fc2"
-        authority = "https://login.microsoftonline.com/organizations"
-
-        if (cls._access_token is None) or (datetime.datetime.now() > cls._access_token_expiration):
-            app = msal.PublicClientApplication(client_id,
-                                               authority=authority,
-                                               client_credential=None)
-
-            result = app.acquire_token_interactive(
-                scopes=['https://api.fabric.microsoft.com/user_impersonation'])
-            cls._access_token = result['access_token']
-            cls._access_token_expiration = datetime.datetime.now() + \
-                                           datetime.timedelta(0,  int(result['expires_in']))
-        return cls._access_token
-
-    @classmethod
-    def _get_fabric_user_access_token_with_device_code(cls):
-        """Acquire Entra Id Access Token for calling Fabric REST APIs"""
-        client_id = "1950a258-227b-4e31-a9cf-717495945fc2"
-        authority = "https://login.microsoftonline.com/organizations"
-
-        if (cls._access_token is None) or (datetime.datetime.now() > cls._access_token_expiration):
-            app = msal.PublicClientApplication(client_id,
-                                               authority=authority,
-                                               client_credential=None)
-            AppLogger.log_step("Authenticating user using device flow...")
-
-            flow = app.initiate_device_flow(
-                scopes=['https://api.fabric.microsoft.com/user_impersonation'])
-
-            user_code = flow['user_code']
-            authentication_url =  flow['verification_uri']
-
-            AppLogger.log_substep(
-                f'Log in at {authentication_url} and enter user-code of {user_code}')
-
-            result = app.acquire_token_by_device_flow(flow)
-
-            AppLogger.log_substep('User token has been acquired')
-
-            cls._access_token = result['access_token']
-            cls._access_token_expiration = datetime.datetime.now() + \
-                                           datetime.timedelta(0,  int(result['expires_in']))
-        return cls._access_token
-
-    @classmethod
-    def _get_fabric_access_token(cls):
-        if AppSettings.RUN_AS_SERVICE_PRINCIPAL:
-            return cls._get_fabric_spn_access_token()
-        else:
-            return cls._get_fabric_user_access_token_with_device_code()
-
     @classmethod
     def _execute_get_request(cls, endpoint):
         """Execute GET Request on Fabric REST API Endpoint"""
         rest_url = AppSettings.FABRIC_REST_API_BASE_URL + endpoint
-        access_token = cls._get_fabric_access_token()
+        access_token = EntraIdTokenManager.get_fabric_access_token()
         request_headers = {'Content-Type':'application/json',
                            'Authorization': f'Bearer {access_token}'}
         response = requests.get(url=rest_url, headers=request_headers, timeout=60)
@@ -110,7 +36,7 @@ class FabricRestApi:
     def _execute_post_request(cls, endpoint, post_body=''):
         """Execute POST request with support for Long-running Operations (LRO)"""
         rest_url = AppSettings.FABRIC_REST_API_BASE_URL + endpoint
-        access_token = cls._get_fabric_access_token()
+        access_token = EntraIdTokenManager.get_fabric_access_token()
         request_headers = {'Content-Type':'application/json',
                            'Authorization': f'Bearer {access_token}'}
         response = requests.post(url=rest_url, json=post_body, headers=request_headers, timeout=60)
@@ -160,9 +86,8 @@ class FabricRestApi:
     @classmethod
     def _execute_post_request_for_job_scheduler(cls, endpoint, post_body=''):
         """Execute POST request with support for Om-demand Job with Job Scheduler"""
-
         rest_url = AppSettings.FABRIC_REST_API_BASE_URL + endpoint
-        access_token = cls._get_fabric_access_token()
+        access_token = EntraIdTokenManager.get_fabric_access_token()
         request_headers = {'Content-Type':'application/json',
                            'Authorization': f'Bearer {access_token}'}
         response = requests.post(url=rest_url, headers=request_headers, json=post_body, timeout=60)
@@ -203,9 +128,8 @@ class FabricRestApi:
     @classmethod
     def _execute_patch_request(cls, endpoint, post_body):
         """Execute GET Request on Fabric REST API Endpoint"""
-
         rest_url = AppSettings.FABRIC_REST_API_BASE_URL + endpoint
-        access_token = cls._get_fabric_access_token()
+        access_token = EntraIdTokenManager.get_fabric_access_token()
         request_headers = {'Content-Type':'application/json',
                            'Authorization': f'Bearer {access_token}'}
         response = requests.patch(url=rest_url, json=post_body, headers=request_headers, timeout=60)
@@ -224,9 +148,8 @@ class FabricRestApi:
     @classmethod
     def _execute_delete_request(cls, endpoint):
         """Execute DELETE Request on Fabric REST API Endpoint"""
-
         rest_url = AppSettings.FABRIC_REST_API_BASE_URL + endpoint
-        access_token = cls._get_fabric_access_token()
+        access_token = EntraIdTokenManager.get_fabric_access_token()
         request_headers= {'Content-Type':'application/json',
                           'Authorization': f'Bearer {access_token}'}
         response = requests.delete(url=rest_url, headers=request_headers, timeout=60)
@@ -247,7 +170,7 @@ class FabricRestApi:
         """Execute GET Request on Power BI REST API Endpoint"""
 
         rest_url = AppSettings.POWER_BI_REST_API_BASE_URL + endpoint
-        access_token = cls._get_fabric_access_token()
+        access_token = EntraIdTokenManager.get_fabric_access_token()
         request_headers = {'Content-Type':'application/json',
                            'Authorization': f'Bearer {access_token}'}
         response = requests.get(url=rest_url, headers=request_headers, timeout=60)
@@ -266,7 +189,7 @@ class FabricRestApi:
     @classmethod
     def _execute_post_request_to_powerbi(cls, endpoint, post_body=''):
         rest_url = AppSettings.POWER_BI_REST_API_BASE_URL + endpoint
-        access_token = cls._get_fabric_access_token()
+        access_token = EntraIdTokenManager.get_fabric_access_token()
         request_headers = {'Content-Type':'application/json',
                            'Authorization': f'Bearer {access_token}'}
         return requests.post(url=rest_url, headers=request_headers, json=post_body, timeout=60)
@@ -276,7 +199,7 @@ class FabricRestApi:
     @classmethod
     def authenticate(cls):
         """authenticate"""
-        cls._get_fabric_access_token()
+        EntraIdTokenManager.get_fabric_access_token()
 
     @classmethod
     def get_workspaces(cls):

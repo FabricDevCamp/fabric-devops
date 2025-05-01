@@ -3,6 +3,8 @@
 from fabric_devops import FabricRestApi, ItemDefinitionFactory, AppLogger, \
                           AppSettings, VariableLibrary
 
+AppSettings.RUN_AS_SERVICE_PRINCIPAL = False
+
 WORKSPACE_NAME = "Custom Variable Library Solution"
 LAKEHOUSE_NAME = "sales"
 NOTEBOOKS = [

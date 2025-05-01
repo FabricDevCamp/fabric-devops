@@ -1,7 +1,11 @@
 """Deploy Variable Solution"""
 
+
+
 from fabric_devops import FabricRestApi, ItemDefinitionFactory, AppLogger, \
                           AppSettings, VariableLibrary, SampleCustomerData
+
+AppSettings.RUN_AS_SERVICE_PRINCIPAL = False
 
 deploy_job = SampleCustomerData.get_seamarkfarms()
 
