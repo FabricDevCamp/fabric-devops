@@ -72,6 +72,8 @@ class FabricRestApi:
 
             result = app.acquire_token_by_device_flow(flow)
 
+            AppLogger.log_substep('User token has been acquired')
+
             cls._access_token = result['access_token']
             cls._access_token_expiration = datetime.datetime.now() + \
                                            datetime.timedelta(0,  int(result['expires_in']))
