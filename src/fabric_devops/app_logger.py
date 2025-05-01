@@ -6,7 +6,6 @@ class AppLogger:
     @classmethod
     def log_job(cls, message):
         """start job"""
-        os.system('cls')
         print('', flush=True)
         print('|' + ('-' * (len(message) + 2)) + '|', flush=True)
         print(f'| {message} |', flush=True)

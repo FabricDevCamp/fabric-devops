@@ -28,5 +28,7 @@ jobs:
           FABRIC_TENANT_ID: ${{ secrets.FABRIC_TENANT_ID }}          
           FABRIC_CAPACITY_ID: ${{ secrets.FABRIC_CAPACITY_ID }}       
           ADMIN_USER_ID: ${{ secrets.ADMIN_USER_ID }}       
+          AZURE_STORAGE_ACCOUNT_KEY = ${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }}
+          
         run: 
           python src/deploy_powerbi_solution.py

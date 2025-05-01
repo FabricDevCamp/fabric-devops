@@ -27,6 +27,8 @@ jobs:
           FABRIC_CLIENT_SECRET: ${{ secrets.FABRIC_CLIENT_SECRET }}
           FABRIC_TENANT_ID: ${{ secrets.FABRIC_TENANT_ID }}          
           FABRIC_CAPACITY_ID: ${{ secrets.FABRIC_CAPACITY_ID }}       
-          ADMIN_USER_ID: ${{ secrets.ADMIN_USER_ID }}        
+          ADMIN_USER_ID: ${{ secrets.ADMIN_USER_ID }}
+          AZURE_STORAGE_ACCOUNT_KEY = ${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }}
+
         run: 
           python src/deploy_notebook_solution.py
