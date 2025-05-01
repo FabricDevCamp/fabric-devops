@@ -61,12 +61,14 @@ class FabricRestApi:
                                                client_credential=None)
             AppLogger.log_step("Authenticating user using device flow...")
 
-            flow = app.initiate_device_flow(scopes=['https://api.fabric.microsoft.com/user_impersonation'])
+            flow = app.initiate_device_flow(
+                scopes=['https://api.fabric.microsoft.com/user_impersonation'])
 
             user_code = flow['user_code']
             authentication_url =  flow['verification_uri']
 
-            AppLogger.log_substep(f'Log in at {authentication_url} and enter user-code of {user_code}')
+            AppLogger.log_substep(
+                f'Log in at {authentication_url} and enter user-code of {user_code}')
 
             result = app.acquire_token_by_device_flow(flow)
 
@@ -272,7 +274,7 @@ class FabricRestApi:
     @classmethod
     def authenticate(cls):
         """authenticate"""
-        access_token = cls._get_fabric_access_token()
+        cls._get_fabric_access_token()
 
     @classmethod
     def get_workspaces(cls):

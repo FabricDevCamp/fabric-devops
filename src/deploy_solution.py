@@ -322,9 +322,12 @@ def deploy_variable_library_solution():
     FabricRestApi.create_and_bind_semantic_model_connecton(workspace, model['id'], lakehouse)
 
     for report_data in reports:
-        create_report_request = ItemDefinitionFactory.get_report_create_request(model['id'],
-                                                                                report_data['name'],
-                                                                                report_data['template'])
+        create_report_request = \
+            ItemDefinitionFactory.get_report_create_request(
+                model['id'],
+                report_data['name'],
+                report_data['template'])
+
         FabricRestApi.create_item(workspace['id'], create_report_request)
 
     AppLogger.log_job_ended("Solution deployment complete")
@@ -353,4 +356,3 @@ match os.getenv("SOLUTION_NAME"):
         deploy_shortcut_solution()
         deploy_data_pipeline_solution()
         deploy_variable_library_solution()
-
