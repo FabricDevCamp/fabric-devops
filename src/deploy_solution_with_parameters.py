@@ -404,31 +404,32 @@ def deploy_variable_library_solution(deploy_job):
     AppLogger.log_job_ended("Solution deployment complete")
 
 
-CUSTOMER_JOB = None
+CUSTOMER_JOBS = []
 match os.getenv("CUSTOMER_NAME"):
     case 'Adventure Works':
-        CUSTOMER_JOB = SampleCustomerData.get_adventureworks()
+        CUSTOMER_JOBS = [SampleCustomerData.get_adventureworks()]
     case 'Contoso':
-        CUSTOMER_JOB = SampleCustomerData.get_contoso()
+        CUSTOMER_JOBS = [SampleCustomerData.get_contoso()]
     case 'Fabrikam':
-        CUSTOMER_JOB = SampleCustomerData.get_fabrikam()
+        CUSTOMER_JOBS = [SampleCustomerData.get_fabrikam()]
     case 'Northwind':
-        CUSTOMER_JOB = SampleCustomerData.get_northwind()
+        CUSTOMER_JOBS = [SampleCustomerData.get_northwind()]
     case 'Seamark Farms':
-        CUSTOMER_JOB = SampleCustomerData.get_seamarkfarms()
+        CUSTOMER_JOBS = [SampleCustomerData.get_seamarkfarms()]
     case 'Wingtip Toys':
-        CUSTOMER_JOB = SampleCustomerData.get_wingtip()
+        CUSTOMER_JOBS = [SampleCustomerData.get_wingtip()]
     case 'Deploy To All Customers':
-        pass
+        CUSTOMER_JOBS = SampleCustomerData.get_all_customers()
 
-match os.getenv("SOLUTION_NAME"):
-    case 'Custom Power BI Solution':
-        deploy_powerbi_solution(CUSTOMER_JOB)
-    case 'Custom Notebook Solution':
-        deploy_notebook_solution(CUSTOMER_JOB)
-    case 'Custom Shortcut Solution':
-        deploy_shortcut_solution(CUSTOMER_JOB)
-    case 'Custom Data Pipeline Solution':
-        deploy_data_pipeline_solution(CUSTOMER_JOB)
-    case 'Custom Variable Library Solution':
-        deploy_variable_library_solution(CUSTOMER_JOB)
+for CUSTOMER_JOB in CUSTOMER_JOBS:
+    match os.getenv("SOLUTION_NAME"):
+        case 'Custom Power BI Solution':
+            deploy_powerbi_solution(CUSTOMER_JOB)
+        case 'Custom Notebook Solution':
+            deploy_notebook_solution(CUSTOMER_JOB)
+        case 'Custom Shortcut Solution':
+            deploy_shortcut_solution(CUSTOMER_JOB)
+        case 'Custom Data Pipeline Solution':
+            deploy_data_pipeline_solution(CUSTOMER_JOB)
+        case 'Custom Variable Library Solution':
+            deploy_variable_library_solution(CUSTOMER_JOB)

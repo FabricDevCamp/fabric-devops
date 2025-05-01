@@ -1,5 +1,7 @@
 """sample customer data"""
 
+from typing import List
+
 from .app_settings import AppSettings
 from .deployment_job import DeploymentJob, DeploymentJobType
 
@@ -113,3 +115,15 @@ class SampleCustomerData:
                                             "/ProductSales/Customers/Wingtip/")
 
         return deployment
+
+    @classmethod
+    def get_all_customers(cls) -> List[DeploymentJob]:
+        """Get All Customers"""
+        return [
+            cls.get_adventureworks(),
+            cls.get_contoso(),
+            cls.get_fabrikam(),
+            cls.get_northwind(),
+            cls.get_seamarkfarms(),
+            cls.get_wingtip()
+        ]
