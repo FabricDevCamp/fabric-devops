@@ -1,7 +1,7 @@
 """yup"""
 import os
 
-if os.getenv('GITHUB_ACTIONS') == 'True':
+if os.getenv('GITHUB_ACTIONS') == 'true':
     print("running in GitHub")
 else:
     print("Not running in GitHub")
