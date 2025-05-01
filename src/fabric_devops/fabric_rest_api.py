@@ -5,8 +5,8 @@ import datetime
 import requests
 import msal
 
-from fabric_devops.app_logger import AppLogger
-from fabric_devops.app_settings import AppSettings
+from .app_logger import AppLogger
+from .app_settings import AppSettings
 
 class FabricRestApi:
     """Wrapper class for calling Fabric REST APIs"""
@@ -17,7 +17,7 @@ class FabricRestApi:
     _access_token_expiration = None
 
     @classmethod
-    def _get_fabric_access_token(cls):
+    def _get_fabric_spn_access_token(cls):
         """Acquire Entra Id Access Token for calling Fabric REST APIs"""
         if (cls._access_token is None) or (datetime.datetime.now() > cls._access_token_expiration):
             app = msal.ConfidentialClientApplication(
@@ -30,6 +30,31 @@ class FabricRestApi:
             cls._access_token_expiration = datetime.datetime.now() + \
                                            datetime.timedelta(0,  int(result['expires_in']))
         return cls._access_token
+
+    @classmethod
+    def _get_fabric_user_access_token(cls):
+        """Acquire Entra Id Access Token for calling Fabric REST APIs"""
+        client_id = "1950a258-227b-4e31-a9cf-717495945fc2"
+        authority = "https://login.microsoftonline.com/organizations"
+
+        if (cls._access_token is None) or (datetime.datetime.now() > cls._access_token_expiration):
+            app = msal.PublicClientApplication(client_id,
+                                               authority=authority,
+                                               client_credential=None)
+
+            result = app.acquire_token_interactive(
+                scopes=['https://api.fabric.microsoft.com/user_impersonation'])
+            cls._access_token = result['access_token']
+            cls._access_token_expiration = datetime.datetime.now() + \
+                                           datetime.timedelta(0,  int(result['expires_in']))
+        return cls._access_token
+
+    @classmethod
+    def _get_fabric_access_token(cls):
+        if AppSettings.RUN_AS_SERVICE_PRINCIPAL:
+            return cls._get_fabric_spn_access_token()
+        else:
+            return cls._get_fabric_user_access_token()
 
     @classmethod
     def _execute_get_request(cls, endpoint):
@@ -76,17 +101,22 @@ class FabricRestApi:
                                         headers=request_headers,
                                         timeout=60)
                 operation_state = response.json()
-            if 'Location' in response.headers:
-                operation_result_url = response.headers.get('Location')
-                response = requests.get(url=operation_result_url,
-                                        headers=request_headers,
-                                        timeout=60)
-                if response.status_code == 200:
-                    return response.json()
+
+            if operation_state['status'] == 'Succeeded':
+                if 'Location' in response.headers:
+                    operation_result_url = response.headers.get('Location')
+                    response = requests.get(url=operation_result_url,
+                                            headers=request_headers,
+                                            timeout=60)
+                    if response.status_code == 200:
+                        return response.json()
+                    else:
+                        AppLogger.log_error(f"Error - {response.status_code}")
+                        return None
                 else:
                     return None
             else:
-                return None
+                AppLogger.log_error(f"Error - {operation_state}")
 
         elif response.status_code == 429: # handle TOO MANY REQUESTS error
             wait_time = int(response.headers.get('Retry-After'))
@@ -256,8 +286,12 @@ class FabricRestApi:
         workspace_id = workspace['id']
         AppLogger.log_substep(f'Workspace created with Id of [{workspace_id}]')
 
-        AppLogger.log_substep('Adding workspace role of [Admin] for admin user')
-        cls.add_workspace_user(workspace_id, AppSettings.ADMIN_USER_ID, 'Admin')
+        if AppSettings.RUN_AS_SERVICE_PRINCIPAL:
+            AppLogger.log_substep('Adding workspace role of [Admin] for admin user')
+            cls.add_workspace_user(workspace_id, AppSettings.ADMIN_USER_ID, 'Admin')
+        else:
+            AppLogger.log_substep('Adding workspace role of [Admin] for service principal')
+            cls.add_workspace_spn(workspace_id, AppSettings.SERVICE_PRINCIPAL_OBJECT_ID, 'Admin')
 
         return workspace
 
@@ -274,6 +308,13 @@ class FabricRestApi:
         cls._execute_delete_request(endpoint)
 
     @classmethod
+    def update_workspace_description(cls, workspace_id, description):
+        """Update Workspace Description"""
+        endpoint = f'workspaces/{workspace_id}'
+        body = { 'description': description }
+        cls._execute_patch_request(endpoint, body)
+
+    @classmethod
     def add_workspace_user(cls, workspace_id, user_id, role_assignment):
         """Add workspace role for user"""
         endpoint =  'workspaces/' + workspace_id + '/roleAssignments'
@@ -287,9 +328,31 @@ class FabricRestApi:
         return cls._execute_post_request(endpoint, post_body)
 
     @classmethod
+    def add_workspace_spn(cls, workspace_id, spn_id, role_assignment):
+        """Add workspace role for user"""
+        endpoint =  'workspaces/' + workspace_id + '/roleAssignments'
+        post_body = {
+          'role': role_assignment,
+          'principal': {
+            'id': spn_id,
+            'type': 'ServicePrincipal'
+          }
+        }
+        return cls._execute_post_request(endpoint, post_body)
+
+    @classmethod
     def get_connections(cls):
         """Get all connections accessible to caller"""
         return cls._execute_get_request('connections')['value']
+
+    @classmethod
+    def get_connection_by_name(cls, display_name):
+        """Get Connection By Name"""
+        connections = cls.get_connections()
+        for connection in connections:
+            if connection['displayName'] == display_name:
+                return connection
+        return None
 
     @classmethod
     def display_connections(cls):
@@ -304,8 +367,8 @@ class FabricRestApi:
     @classmethod
     def create_connection(cls, create_connection_request):
         """ Create new connection"""
-        AppLogger.log_step(
-            f"Creating [{create_connection_request['connectionDetails']['type']}] " + \
+        AppLogger.log_substep(
+            f"Creating {create_connection_request['connectionDetails']['type']} " + \
             f"connection named {create_connection_request['displayName']} ...")
 
         existing_connections = cls.get_connections()
@@ -319,13 +382,16 @@ class FabricRestApi:
         AppLogger.log_substep(
             f"Connection created with id [{connection['id']}]")
 
-        AppLogger.log_substep(
-            "Connection path: " + \
-            f"[{connection['connectionDetails']['path']}]")
-
-        cls.add_connection_role_assignment_for_user(connection['id'],
-                                                    AppSettings.ADMIN_USER_ID,
-                                                    'Owner')
+        if AppSettings.RUN_AS_SERVICE_PRINCIPAL:
+            AppLogger.log_substep('Adding connection role of [Owner] for user')
+            cls.add_connection_role_assignment_for_user(connection['id'],
+                                                        AppSettings.ADMIN_USER_ID,
+                                                        'Owner')
+        else:
+            AppLogger.log_substep('Adding connection role of [Owner] for SPN')
+            cls.add_connection_role_assignment_for_spn(connection['id'],
+                                                       AppSettings.SERVICE_PRINCIPAL_OBJECT_ID,
+                                                       'Owner')
 
         return connection
 
@@ -341,6 +407,20 @@ class FabricRestApi:
             'role': connection_role
         }
         return cls._execute_post_request(rest_url, post_body)
+
+    @classmethod
+    def add_connection_role_assignment_for_spn(cls, connection_id, spn_object_id, connection_role):
+        """Add connection role assignment for user"""
+        rest_url = f'connections//{connection_id}//roleAssignments'
+        post_body = {
+            'principal': {
+                'id': spn_object_id,
+                'type': "ServicePrincipal"
+            },
+            'role': connection_role
+        }
+        return cls._execute_post_request(rest_url, post_body)
+
 
     @classmethod
     def create_anonymous_web_connection(cls, web_url, workspace = None):
@@ -472,7 +552,7 @@ class FabricRestApi:
         return workspace_connections
 
     @classmethod
-    def create_item(cls, workspace_id, create_item_request = None):
+    def create_item(cls, workspace_id, create_item_request):
         """Create Item using create-item-request"""
         AppLogger.log_step(
             f"Creating [{create_item_request['displayName']}.{create_item_request['type']}]...")
@@ -491,10 +571,23 @@ class FabricRestApi:
         return cls.create_item(workspace_id, create_item_request)
 
     @classmethod
-    def get_workspace_items(cls, workspace_id):
+    def get_workspace_items(cls, workspace_id, item_type = None):
         """Get items in workspace"""
         endpoint = f'workspaces/{workspace_id}/items'
+
+        if item_type is not None:
+            endpoint = endpoint + f'?type={item_type}'
+
         return cls._execute_get_request(endpoint)['value']
+
+    @classmethod
+    def get_item_by_name(cls, workspace_id, display_name, item_type):
+        """Get Item by Name"""
+        items = cls.get_workspace_items(workspace_id, item_type)
+        for item in items:
+            if item['displayName'] == display_name:
+                return item
+        return None
 
     @classmethod
     def get_item_definition(cls, workspace_id, item_id):

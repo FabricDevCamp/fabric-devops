@@ -2,10 +2,7 @@
 
 import os
 
-from fabric_devops.item_definition_factory import ItemDefinitionFactory
-from fabric_devops.fabric_rest_api import FabricRestApi
-from fabric_devops.app_logger import AppLogger
-from fabric_devops.app_settings import AppSettings
+from fabric_devops import FabricRestApi, ItemDefinitionFactory, AppLogger, AppSettings
 
 def deploy_powerbi_solution():
     """Deploy Power BI Solution"""

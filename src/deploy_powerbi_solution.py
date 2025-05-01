@@ -1,19 +1,14 @@
 """Deploy Power BI Solution"""
 
-from fabric_devops.item_definition_factory import ItemDefinitionFactory
-from fabric_devops.fabric_rest_api import FabricRestApi
-from fabric_devops.app_logger import AppLogger
-from fabric_devops.app_settings import AppSettings
+from fabric_devops import FabricRestApi, ItemDefinitionFactory, AppLogger
 
-WORKSPANR_NAME = "Custom Power BI Solution"
+WORKSPACE_NAME = "Custom Power BI Solution"
 SEMANTIC_MODEL_NAME = 'Product Sales Imported Model'
 REPORT_NAME = 'Product Sales Summary'
 
-AppSettings.init_app_settings()
-
 AppLogger.log_job("Deploying Power BI Solution")
 
-workspace = FabricRestApi.create_workspace(WORKSPANR_NAME)
+workspace = FabricRestApi.create_workspace(WORKSPACE_NAME)
 
 create_model_request = \
     ItemDefinitionFactory.get_semantic_model_create_request(SEMANTIC_MODEL_NAME,
@@ -21,8 +16,6 @@ create_model_request = \
 model = FabricRestApi.create_item(workspace['id'], create_model_request)
 
 web_url = FabricRestApi.get_web_url_from_semantic_model(workspace['id'], model['id'])
-
-AppLogger.log_substep(f'Creating anonymous Web connection to {web_url} ')
 
 connection = FabricRestApi.create_anonymous_web_connection(web_url, workspace)
 

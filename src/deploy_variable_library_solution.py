@@ -1,8 +1,9 @@
-"""Deploy Data Pipeline Solution"""
+"""Deploy Variable Solution"""
 
-from fabric_devops import FabricRestApi, ItemDefinitionFactory, AppLogger, AppSettings
+from fabric_devops import FabricRestApi, ItemDefinitionFactory, AppLogger, \
+                          AppSettings, VariableLibrary
 
-WORKSPACE_NAME = "Custom Data Pipeline Solution"
+WORKSPACE_NAME = "Custom Variable Library Solution"
 LAKEHOUSE_NAME = "sales"
 NOTEBOOKS = [
     { 'name': 'Create 01 Silver Layer', 'template':'BuildSilverLayer.py'},
@@ -11,18 +12,16 @@ NOTEBOOKS = [
 DATA_PIPELINE_NAME = 'Create Lakehouse Tables'
 SEMANTIC_MODEL_NAME = 'Product Sales DirectLake Model'
 REPORTS = [
-    { 'name': 'Product Sales Summary', 'template':'product_sales_summary.json'},
-    { 'name': 'Product Sales Time Intelligence', 'template':'product_sales_time_intelligence.json'},
-    { 'name': 'Product Sales Top 10 Cities', 'template':'product_sales_top_ten_cities_report.json'},
+    { 'name': 'Product Sales Summary', 'template':'product_sales_summary.json'}
 ]
 
-AppLogger.log_job("Deploying Lakehouse solution with Shortcut")
+AppLogger.log_job("Deploying Custom Variable Library solution")
 
 workspace = FabricRestApi.create_workspace(WORKSPACE_NAME)
 
 lakehouse = FabricRestApi.create_lakehouse(workspace['id'], LAKEHOUSE_NAME)
 
-notebook_ids = {}
+notebook_ids = []
 for notebook_data in NOTEBOOKS:
     create_notebook_request = \
     ItemDefinitionFactory.get_notebook_create_request(workspace['id'],  \
@@ -30,27 +29,37 @@ for notebook_data in NOTEBOOKS:
                                                       notebook_data['name'], \
                                                       notebook_data['template'])
     notebook = FabricRestApi.create_item(workspace['id'], create_notebook_request)
-    notebook_ids[notebook['displayName']] = notebook['id']
+    notebook_ids.append(notebook['id'])
 
 connection = FabricRestApi.create_azure_storage_connection_with_account_key(
     AppSettings.AZURE_STORAGE_SERVER,
     AppSettings.AZURE_STORAGE_PATH,
     workspace)
 
-pipeline_template = ItemDefinitionFactory.get_template_file(
-    'DataPipelines//CreateLakehouseTables.json')
+variable_library = VariableLibrary()
+variable_library.add_variable("webDatasourcePath", AppSettings.WEB_DATASOURCE_ROOT_URL)
+variable_library.add_variable("adlsServer", AppSettings.AZURE_STORAGE_SERVER)
+variable_library.add_variable("adlsContainerName",  AppSettings.AZURE_STORAGE_CONTAINER)
+variable_library.add_variable("adlsContainerPath",  AppSettings.AZURE_STORAGE_CONTAINER_PATH)
+variable_library.add_variable("adlsConnectionId",  connection['id'])
+variable_library.add_variable("lakehouseId",  lakehouse['id'])
+variable_library.add_variable("notebookIdBuildSilver",  notebook_ids[0])
+variable_library.add_variable("notebookIdBuildGold",  notebook_ids[1])
 
-pipeline_definition = \
-    pipeline_template.replace('{WORKSPACE_ID}', workspace['id']) \
-                     .replace('{LAKEHOUSE_ID}', lakehouse['id']) \
-                     .replace('{CONNECTION_ID}', connection['id']) \
-                     .replace('{CONTAINER_NAME}', AppSettings.AZURE_STORAGE_CONTAINER) \
-                     .replace('{CONTAINER_PATH}', AppSettings.AZURE_STORAGE_CONTAINER_PATH) \
-                     .replace('{NOTEBOOK_ID_BUILD_SILVER}', list(notebook_ids.values())[0]) \
-                     .replace('{NOTEBOOK_ID_BUILD_GOLD}', list(notebook_ids.values())[1])
+create_library_request = \
+    ItemDefinitionFactory.get_variable_library_create_request(
+        "SolutionConfig",
+        variable_library
+)
+
+library = FabricRestApi.create_item(workspace['id'], create_library_request)
+
+pipeline_definition = ItemDefinitionFactory.get_template_file(
+    'DataPipelines//CreateLakehouseTablesWithVarLib.json')
 
 create_pipeline_request = \
-    ItemDefinitionFactory.get_data_pipeline_create_request(DATA_PIPELINE_NAME, pipeline_definition)
+    ItemDefinitionFactory.get_data_pipeline_create_request(DATA_PIPELINE_NAME,
+                                                           pipeline_definition)
 
 pipeline = FabricRestApi.create_item(workspace['id'], create_pipeline_request)
 FabricRestApi.run_data_pipeline(workspace['id'], pipeline)

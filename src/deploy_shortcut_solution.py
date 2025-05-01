@@ -1,9 +1,8 @@
 """Deploy Shortcut Solution"""
 
-from fabric_devops.item_definition_factory import ItemDefinitionFactory
-from fabric_devops.fabric_rest_api import FabricRestApi
-from fabric_devops.app_logger import AppLogger
-from fabric_devops.app_settings import AppSettings
+from fabric_devops import FabricRestApi, ItemDefinitionFactory, AppLogger, AppSettings, SampleCustomerData
+
+deploy_job = SampleCustomerData.get_seamarkfarms()
 
 WORKSPACE_NAME = "Custom Shortcut Solution"
 LAKEHOUSE_NAME = "sales"
@@ -21,6 +20,8 @@ REPORTS = [
 AppLogger.log_job("Deploying Lakehouse solution with Shortcut")
 
 workspace = FabricRestApi.create_workspace(WORKSPACE_NAME)
+
+FabricRestApi.update_workspace_description(workspace['id'], 'Custom Shortcut Solution')
 
 lakehouse = FabricRestApi.create_lakehouse(workspace['id'], LAKEHOUSE_NAME)
 
