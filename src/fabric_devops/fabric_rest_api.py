@@ -65,7 +65,7 @@ class FabricRestApi:
             user_code = flow['user_code']
             authentication_url =  flow['verification_uri']
 
-            print(f'Log in at {authentication_url} and enter user-code of {user_code}')
+            print(f'Log in at {authentication_url} and enter user-code of {user_code}', flush=True)
 
             result = app.acquire_token_by_device_flow(flow)
 
