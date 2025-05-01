@@ -59,13 +59,14 @@ class FabricRestApi:
             app = msal.PublicClientApplication(client_id,
                                                authority=authority,
                                                client_credential=None)
-            
+            AppLogger.log_step("Authenticating user using device flow...")
+
             flow = app.initiate_device_flow(scopes=['https://api.fabric.microsoft.com/user_impersonation'])
 
             user_code = flow['user_code']
             authentication_url =  flow['verification_uri']
 
-            print(f'Log in at {authentication_url} and enter user-code of {user_code}', flush=True)
+            AppLogger.log_substep(f'Log in at {authentication_url} and enter user-code of {user_code}')
 
             result = app.acquire_token_by_device_flow(flow)
 
@@ -73,7 +74,6 @@ class FabricRestApi:
             cls._access_token_expiration = datetime.datetime.now() + \
                                            datetime.timedelta(0,  int(result['expires_in']))
         return cls._access_token
-
 
     @classmethod
     def _get_fabric_access_token(cls):
@@ -268,6 +268,11 @@ class FabricRestApi:
         return requests.post(url=rest_url, headers=request_headers, json=post_body, timeout=60)
 
 #endregion
+
+    @classmethod
+    def authenticate(cls):
+        """authenticate"""
+        access_token = cls._get_fabric_access_token()
 
     @classmethod
     def get_workspaces(cls):

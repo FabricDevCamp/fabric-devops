@@ -5,7 +5,7 @@
 class AppSettings:
 
     """App Settings"""
-    RUN_AS_SERVICE_PRINCIPAL = False
+    RUN_AS_SERVICE_PRINCIPAL = True
     FABRIC_CLIENT_ID = '1cc2688d-c6b1-4fe6-9246-d06003a6712f'
     FABRIC_CLIENT_SECRET = 'iPZ8Q~RarnvynjvxdONDoG0KzKuU5oyPtnK9sbU2'
     FABRIC_TENANT_ID = '5b3572e6-a387-436b-bf93-9bd7d3d54acb'

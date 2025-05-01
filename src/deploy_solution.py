@@ -241,27 +241,32 @@ def deploy_data_pipeline_solution():
     AppLogger.log_job_ended("Solution deployment complete")
 
 def deploy_variable_library_solution():
+    """Deploy variable library solution"""
 
-    WORKSPACE_NAME = "Custom Variable Library Solution"
-    LAKEHOUSE_NAME = "sales"
-    NOTEBOOKS = [
+    AppSettings.RUN_AS_SERVICE_PRINCIPAL = False
+    FabricRestApi.authenticate()
+
+
+    workspace_name = "Custom Variable Library Solution"
+    lakehouse_name = "sales"
+    notebooks = [
         { 'name': 'Create 01 Silver Layer', 'template':'BuildSilverLayer.py'},
         { 'name': 'Create 02 Gold Layer', 'template':'BuildGoldLayer.py'},
     ]
-    DATA_PIPELINE_NAME = 'Create Lakehouse Tables'
-    SEMANTIC_MODEL_NAME = 'Product Sales DirectLake Model'
-    REPORTS = [
+    data_pipeline_name = 'Create Lakehouse Tables'
+    semantic_model_name = 'Product Sales DirectLake Model'
+    reports = [
         { 'name': 'Product Sales Summary', 'template':'product_sales_summary.json'}
     ]
 
     AppLogger.log_job("Deploying Custom Variable Library solution")
 
-    workspace = FabricRestApi.create_workspace(WORKSPACE_NAME)
+    workspace = FabricRestApi.create_workspace(workspace_name)
 
-    lakehouse = FabricRestApi.create_lakehouse(workspace['id'], LAKEHOUSE_NAME)
+    lakehouse = FabricRestApi.create_lakehouse(workspace['id'], lakehouse_name)
 
     notebook_ids = []
-    for notebook_data in NOTEBOOKS:
+    for notebook_data in notebooks:
         create_notebook_request = \
         ItemDefinitionFactory.get_notebook_create_request(workspace['id'],  \
                                                         lakehouse,     \
@@ -291,35 +296,36 @@ def deploy_variable_library_solution():
             variable_library
     )
 
-    library = FabricRestApi.create_item(workspace['id'], create_library_request)
+    FabricRestApi.create_item(workspace['id'], create_library_request)
 
     pipeline_definition = ItemDefinitionFactory.get_template_file(
         'DataPipelines//CreateLakehouseTablesWithVarLib.json')
 
     create_pipeline_request = \
-        ItemDefinitionFactory.get_data_pipeline_create_request(DATA_PIPELINE_NAME,
-                                                            pipeline_definition)
+        ItemDefinitionFactory.get_data_pipeline_create_request(
+            data_pipeline_name,
+            pipeline_definition)
 
     pipeline = FabricRestApi.create_item(workspace['id'], create_pipeline_request)
     FabricRestApi.run_data_pipeline(workspace['id'], pipeline)
 
-    sqlEndpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse)
+    sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse)
 
-    createModelRequest = \
-        ItemDefinitionFactory.get_directlake_model_create_request(SEMANTIC_MODEL_NAME,
+    create_model_request = \
+        ItemDefinitionFactory.get_directlake_model_create_request(semantic_model_name,
                                                                 'sales_model_DirectLake.bim',
-                                                                sqlEndpoint['server'],
-                                                                sqlEndpoint['database'])
+                                                                sql_endpoint['server'],
+                                                                sql_endpoint['database'])
 
-    model = FabricRestApi.create_item(workspace['id'], createModelRequest)
+    model = FabricRestApi.create_item(workspace['id'], create_model_request)
 
     FabricRestApi.create_and_bind_semantic_model_connecton(workspace, model['id'], lakehouse)
 
-    for report_data in REPORTS:
+    for report_data in reports:
         create_report_request = ItemDefinitionFactory.get_report_create_request(model['id'],
                                                                                 report_data['name'],
                                                                                 report_data['template'])
-        report = FabricRestApi.create_item(workspace['id'], create_report_request)
+        FabricRestApi.create_item(workspace['id'], create_report_request)
 
     AppLogger.log_job_ended("Solution deployment complete")
 
