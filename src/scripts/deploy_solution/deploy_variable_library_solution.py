@@ -39,14 +39,14 @@ connection = FabricRestApi.create_azure_storage_connection_with_account_key(
     workspace)
 
 variable_library = VariableLibrary()
-variable_library.add_variable("webDatasourcePath", AppSettings.WEB_DATASOURCE_ROOT_URL)
-variable_library.add_variable("adlsServer", AppSettings.AZURE_STORAGE_SERVER)
-variable_library.add_variable("adlsContainerName",  AppSettings.AZURE_STORAGE_CONTAINER)
-variable_library.add_variable("adlsContainerPath",  AppSettings.AZURE_STORAGE_CONTAINER_PATH)
-variable_library.add_variable("adlsConnectionId",  connection['id'])
-variable_library.add_variable("lakehouseId",  lakehouse['id'])
-variable_library.add_variable("notebookIdBuildSilver",  notebook_ids[0])
-variable_library.add_variable("notebookIdBuildGold",  notebook_ids[1])
+variable_library.add_variable("web_datasource_path", AppSettings.WEB_DATASOURCE_ROOT_URL)
+variable_library.add_variable("adls_server", AppSettings.AZURE_STORAGE_SERVER)
+variable_library.add_variable("adls_container_name",  AppSettings.AZURE_STORAGE_CONTAINER)
+variable_library.add_variable("adls_container_path",  AppSettings.AZURE_STORAGE_CONTAINER_PATH)
+variable_library.add_variable("adls_connection_id",  connection['id'])
+variable_library.add_variable("lakehouse_id",  lakehouse['id'])
+variable_library.add_variable("notebook_id_build_silver",  notebook_ids[0])
+variable_library.add_variable("notebook_id_build_gold",  notebook_ids[1])
 
 create_library_request = \
     ItemDefinitionFactory.get_variable_library_create_request(

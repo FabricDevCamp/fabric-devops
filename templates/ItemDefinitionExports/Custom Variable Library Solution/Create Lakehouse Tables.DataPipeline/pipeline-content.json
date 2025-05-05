@@ -1,5 +1,4 @@
 {
-  "name": "Create Lakehouse Tables",
   "properties": {
     "activities": [
       {
@@ -163,13 +162,8 @@
         }
       }
     ],
-    "libraryVariables": { 
-      "web_datasource_path": {
-        "type": "String",
-        "variableName": "web_datasource_path",
-        "libraryName": "SolutionConfig"
-      },
-    "adls_server": {
+    "libraryVariables": {
+      "adls_server": {
         "type": "String",
         "variableName": "adls_server",
         "libraryName": "SolutionConfig"
@@ -204,8 +198,6 @@
         "variableName": "notebook_id_build_gold",
         "libraryName": "SolutionConfig"
       }
-    },
-    "lastModifiedByObjectId": "e8805a8f-201d-4f06-9e35-0d0b29faebe6",
-    "lastPublishTime": "2025-04-23T18:52:57Z"
+    }
   }
 }

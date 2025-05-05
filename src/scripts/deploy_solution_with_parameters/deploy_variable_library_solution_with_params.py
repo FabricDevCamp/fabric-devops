@@ -1,7 +1,5 @@
 """Deploy Variable Solution"""
 
-
-
 from fabric_devops import FabricRestApi, ItemDefinitionFactory, AppLogger, \
                           AppSettings, VariableLibrary, SampleCustomerData
 
@@ -12,8 +10,8 @@ deploy_job = SampleCustomerData.get_seamarkfarms()
 WORKSPACE_NAME = deploy_job.target_workspace_name
 LAKEHOUSE_NAME = "sales"
 NOTEBOOKS = [
-    { 'name': 'Create 01 Silver Layer', 'template':'BuildSilverLayer.py'},
-    { 'name': 'Create 02 Gold Layer', 'template':'BuildGoldLayer.py'},
+    { 'name': 'Build 01 Silver Layer', 'template':'BuildSilverLayer.py'},
+    { 'name': 'Build 02 Gold Layer', 'template':'BuildGoldLayer.py'},
 ]
 DATA_PIPELINE_NAME = 'Create Lakehouse Tables'
 SEMANTIC_MODEL_NAME = 'Product Sales DirectLake Model'
@@ -43,14 +41,23 @@ connection = FabricRestApi.create_azure_storage_connection_with_account_key(
     workspace)
 
 variable_library = VariableLibrary()
-variable_library.add_variable("webDatasourcePath", deploy_job.parameters[deploy_job.web_datasource_path_parameter])
-variable_library.add_variable("adlsServer", deploy_job.parameters[deploy_job.adls_server_path_parameter])
-variable_library.add_variable("adlsContainerName",  deploy_job.parameters[deploy_job.adls_container_name_parameter])
-variable_library.add_variable("adlsContainerPath",  deploy_job.parameters[deploy_job.adls_container_path_parameter])
-variable_library.add_variable("adlsConnectionId",  connection['id'])
-variable_library.add_variable("lakehouseId",  lakehouse['id'])
-variable_library.add_variable("notebookIdBuildSilver",  notebook_ids[0])
-variable_library.add_variable("notebookIdBuildGold",  notebook_ids[1])
+
+variable_library.add_variable("web_datasource_path", 
+                              deploy_job.parameters[deploy_job.web_datasource_path_parameter])
+variable_library.add_variable("adls_server", 
+                              deploy_job.parameters[deploy_job.adls_server_parameter])
+variable_library.add_variable("adls_container_name",  
+                              deploy_job.parameters[deploy_job.adls_container_name_parameter])
+variable_library.add_variable("adls_container_path",  
+                              deploy_job.parameters[deploy_job.adls_container_path_parameter])
+
+variable_library.add_variable("adls_connection_id",  connection['id'])
+
+variable_library.add_variable("lakehouse_id",  lakehouse['id'])
+
+variable_library.add_variable("notebook_id_build_silver",  notebook_ids[0])
+
+variable_library.add_variable("notebook_id_build_gold",  notebook_ids[1])
 
 create_library_request = \
     ItemDefinitionFactory.get_variable_library_create_request(

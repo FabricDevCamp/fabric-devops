@@ -4,6 +4,10 @@ import base64
 import json
 import os
 
+from .app_logger import AppLogger
+from .fabric_rest_api import FabricRestApi
+from .variable_library import VariableLibrary
+
 class ItemDefinitionFactory:
     """Logic to to create and update item definitions"""
 
@@ -21,6 +25,14 @@ class ItemDefinitionFactory:
         """get path for item definition part"""
         offset = file_path.find(item_folder_path) + len(item_folder_path) + 1
         return file_path[offset:].replace('\\', '/')
+
+    @classmethod
+    def _search_and_replace_in_payload(cls, payload, search_replace_text):
+        payload_bytes = base64.b64decode(payload)
+        payload_content = payload_bytes.decode('utf-8')
+        for entry in search_replace_text.keys():
+            payload_content = payload_content.replace(entry, search_replace_text[entry])
+        return base64.b64encode(payload_content.encode('utf-8')).decode('utf-8')
 
     @classmethod
     def get_template_file(cls, path):
@@ -60,14 +72,6 @@ class ItemDefinitionFactory:
             }
 
         }
-
-    @classmethod
-    def _search_and_replace_in_payload(cls, payload, search_replace_text):
-        payload_bytes = base64.b64decode(payload)
-        payload_content = payload_bytes.decode('utf-8')
-        for entry in search_replace_text.keys():
-            payload_content = payload_content.replace(entry, search_replace_text[entry])
-        return base64.b64encode(payload_content.encode('utf-8')).decode('utf-8')
 
     @classmethod
     def update_item_definition_part(cls, item_definition, part_path, search_replace_text):
@@ -244,21 +248,100 @@ class ItemDefinitionFactory:
         }
 
     @classmethod
-    def get_variable_library_create_request(cls, display_name, variable_library):
+    def get_variable_library_create_request(cls, display_name, variable_library: VariableLibrary):
         """Get Create Request for Variable Library file"""
 
         variables_json = variable_library.get_variable_json()
 
+        parts = [
+            cls._create_inline_base64_part('variables.json', variables_json)
+        ]
+
+        for valueset in variable_library.valuesets:
+            path = f"valueSets/{valueset.name}.json"
+            content = variable_library.get_valueset_json(valueset.name)
+            parts.append( cls._create_inline_base64_part(path, content ) )
+
+
         settings_json = cls.get_template_file("VariableLibraries//settings.json")
+        parts.append( cls._create_inline_base64_part('settings.json', settings_json ) )
 
         return {
             'displayName': display_name,
             'type': "VariableLibrary",
             'definition': {
-                'parts': [
-                    cls._create_inline_base64_part('variables.json', variables_json),
-                    cls._create_inline_base64_part('settings.json', settings_json)
-                ]
+                'parts': parts
             }
         }
 
+    @classmethod
+    def get_update_variable_library_request(cls, variable_library: VariableLibrary):
+        """Get Create Request for Variable Library file"""
+
+        variables_json = variable_library.get_variable_json()
+
+        parts = [
+            cls._create_inline_base64_part('variables.json', variables_json)
+        ]
+
+        for valueset in variable_library.valuesets:
+            path = f"valueSets/{valueset.name}.json"
+            content = variable_library.get_valueset_json(valueset.name)
+            parts.append( cls._create_inline_base64_part(path, content ) )
+
+
+        settings_json = cls.get_template_file("VariableLibraries//settings.json")
+        parts.append( cls._create_inline_base64_part('settings.json', settings_json ) )
+
+        return {
+            'definition': {
+                'parts': parts
+            }
+        }
+
+
+    @classmethod
+    def export_item_definitions_from_workspace(cls, workspace_name):
+        """Export Item Definiitons from Workspace"""
+
+        workspace = FabricRestApi.get_workspace_by_name(workspace_name)
+
+        items = FabricRestApi.list_workspace_items(workspace['id'])
+
+        AppLogger.log_step(f"Exporting Workspace Item Definitions from {workspace_name}")
+        for item in items:
+            try:
+                AppLogger.log_substep(f"Exporting [{item['displayName']}.{item['type']}]")
+                item_definition = FabricRestApi.get_item_definition(workspace['id'], item)
+                item_folder = f"{item['displayName']}.{item['type']}"
+                for part in item_definition['definition']['parts']:
+                    part_path = part['path']
+                    part_content = part['payload']
+                    cls._write_file_to_exports_folder(workspace_name, item_folder, part_path, part_content)
+            except:
+                AppLogger.log_substep(f"Could not export {item['displayName']}.{item['type']}")
+
+    @classmethod
+    def _delete_exports_folder_contents(cls, workspace_name):
+        """Delete Exports Folder"""
+        folder_path = f".//templates//ItemDefinitionExports//{workspace_name}"
+        os.removedirs(folder_path)
+
+    @classmethod
+    def _write_file_to_exports_folder(cls, workspace_name, item_name, file_path , file_content, convert_from_base64 = True):
+        """Write file to exports folder"""
+        if convert_from_base64:
+            file_content_bytes = base64.b64decode(file_content)
+            file_content = file_content_bytes.decode('utf-8')
+ 
+        #file_path = file_path.replace('/', '\\')
+        folder_path = f".//templates//ItemDefinitionExports//{workspace_name}/{item_name}/"
+        if not os.path.exists(folder_path):
+            os.makedirs(folder_path)
+
+        full_path = folder_path + file_path
+        os.makedirs(os.path.dirname(full_path), exist_ok=True)
+        with open(full_path, 'w', encoding='utf-8') as file:
+            file.write(file_content)
+
+            

@@ -6,8 +6,8 @@ class AppSettings:
 
     """App Settings"""
 
-    RUN_AS_SERVICE_PRINCIPAL = True
-    RUNNING_IN_GITHUB = os.getenv('GITHUB_ACTIONS') == 'true'  
+    RUN_AS_SERVICE_PRINCIPAL = False
+    RUNNING_IN_GITHUB = os.getenv('GITHUB_ACTIONS') == 'true'
     FABRIC_CLIENT_ID = os.getenv("FABRIC_CLIENT_ID")
     FABRIC_CLIENT_SECRET = os.getenv("FABRIC_CLIENT_SECRET")
     FABRIC_TENANT_ID = os.getenv("FABRIC_TENANT_ID")
@@ -16,7 +16,7 @@ class AppSettings:
     ADMIN_USER_ID = os.getenv("ADMIN_USER_ID")
     SERVICE_PRINCIPAL_OBJECT_ID = os.getenv('SERVICE_PRINCIPAL_OBJECT_ID')
 
-    CLASS_ID_POWERSHELL_APP = "1950a258-227b-4e31-a9cf-717495945fc2" 
+    CLASS_ID_POWERSHELL_APP = "1950a258-227b-4e31-a9cf-717495945fc2"
 
     FABRIC_PERMISSION_SCOPES = [ 'https://api.fabric.microsoft.com/.default' ]
     FABRIC_REST_API_BASE_URL = 'https://api.fabric.microsoft.com/v1/'

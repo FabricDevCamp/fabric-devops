@@ -19,7 +19,7 @@
                 "type": "AzureBlobFSReadSettings",
                 "recursive": true,
                 "wildcardFolderPath": {
-                  "value": "@pipeline().libraryVariables.adlsContainerPath",
+                  "value": "@pipeline().libraryVariables.adls_container_path",
                   "type": "Expression"
                 },
                 "wildcardFileName": "*.csv",
@@ -35,7 +35,7 @@
                   "location": {
                     "type": "AzureBlobFSLocation",
                     "fileSystem": {
-                      "value": "@pipeline().libraryVariables.adlsContainerName",
+                      "value": "@pipeline().libraryVariables.adls_container_name",
                       "type": "Expression"
                     }
                   },
@@ -46,7 +46,7 @@
                 },
                 "schema": [],
                 "externalReferences": {
-                  "connection": "@pipeline().libraryVariables.adlsConnectionId"
+                  "connection": "@pipeline().libraryVariables.adls_connection_id"
                 }
               }
             },
@@ -69,7 +69,7 @@
                     "type": "Lakehouse",
                     "typeProperties": {
                       "workspaceId": "@pipeline().DataFactory",
-                      "artifactId": "@pipeline().libraryVariables.lakehouseId",
+                      "artifactId": "@pipeline().libraryVariables.lakehouse_id",
                       "rootFolder": "Files"
                     }
                   }
@@ -123,7 +123,7 @@
           },
           "typeProperties": {
             "notebookId": {
-              "value": "@pipeline().libraryVariables.notebookIdBuildSilver",
+              "value": "@pipeline().libraryVariables.notebook_id_build_silver",
               "type": "Expression"
             },
             "workspaceId": {
@@ -152,7 +152,7 @@
           },
           "typeProperties": {
             "notebookId": {
-              "value": "@pipeline().libraryVariables.notebookIdBuildGold",
+              "value": "@pipeline().libraryVariables.notebook_id_build_gold",
               "type": "Expression"
             },
             "workspaceId": {
@@ -163,44 +163,44 @@
         }
       ],
       "libraryVariables": {
-        "webDatasourcePath": {
+        "web_datasource_path": {
           "type": "String",
-          "variableName": "webDatasourcePath",
+          "variableName": "web_datasource_path",
           "libraryName": "SolutionConfig"
         },
-        "adlsServer": {
+        "adls_server": {
           "type": "String",
-          "variableName": "adlsServer",
+          "variableName": "adls_server",
           "libraryName": "SolutionConfig"
         },
-        "adlsContainerName": {
+        "adls_container_name": {
           "type": "String",
-          "variableName": "adlsContainerName",
+          "variableName": "adls_container_name",
           "libraryName": "SolutionConfig"
         },
-        "adlsContainerPath": {
+        "adls_container_path": {
           "type": "String",
-          "variableName": "adlsContainerPath",
+          "variableName": "adls_container_path",
           "libraryName": "SolutionConfig"
         },
-        "lakehouseId": {
+        "lakehouse_id": {
           "type": "String",
-          "variableName": "lakehouseId",
+          "variableName": "lakehouse_id",
           "libraryName": "SolutionConfig"
         },
-        "adlsConnectionId": {
+        "adls_connection_id": {
           "type": "String",
-          "variableName": "adlsConnectionId",
+          "variableName": "adls_connection_id",
           "libraryName": "SolutionConfig"
         },
-        "notebookIdBuildSilver": {
+        "notebook_id_build_silver": {
           "type": "String",
-          "variableName": "notebookIdBuildSilver",
+          "variableName": "notebook_id_build_silver",
           "libraryName": "SolutionConfig"
         },
-        "notebookIdBuildGold": {
+        "notebook_id_build_gold": {
           "type": "String",
-          "variableName": "notebookIdBuildGold",
+          "variableName": "notebook_id_build_gold",
           "libraryName": "SolutionConfig"
         }
       }

@@ -29,7 +29,7 @@ lakehouse = FabricRestApi.create_lakehouse(workspace['id'], LAKEHOUSE_NAME)
 
 adls_container_name = deploy_job.parameters[DeploymentJob.adls_container_name_parameter]
 adls_container_path = deploy_job.parameters[DeploymentJob.adls_container_path_parameter]
-adls_server = deploy_job.parameters[DeploymentJob.adls_server_path_parameter]
+adls_server = deploy_job.parameters[DeploymentJob.adls_server_parameter]
 ADLS_PATH = f'/{adls_container_name}{adls_container_path}'
 
 connection = FabricRestApi.create_azure_storage_connection_with_account_key(

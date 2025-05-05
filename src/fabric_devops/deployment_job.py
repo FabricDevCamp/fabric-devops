@@ -13,7 +13,7 @@ class DeploymentJob:
     """Deployment Plan Class"""
 
     web_datasource_path_parameter = "web_datasource_path"
-    adls_server_path_parameter = "adls_server_path"
+    adls_server_parameter = "adls_server"
     adls_container_name_parameter = "adls_container_name"
     adls_container_path_parameter = "adls_container_path"
     adls_account_key_parameter = "adls_account_key"
@@ -31,7 +31,7 @@ class DeploymentJob:
                                       AppSettings.WEB_DATASOURCE_ROOT_URL + 'dev/')
 
         # setup ADLS datasource path
-        self.set_deployment_parameter(DeploymentJob.adls_server_path_parameter,
+        self.set_deployment_parameter(DeploymentJob.adls_server_parameter,
                                       AppSettings.AZURE_STORAGE_SERVER)
         self.set_deployment_parameter(DeploymentJob.adls_container_name_parameter,
                                       AppSettings.AZURE_STORAGE_CONTAINER)
@@ -50,7 +50,7 @@ class DeploymentJob:
 
     def set_deployment_parameter(self, parameter_name, deployment_value):
         """add deployment parameter"""
-        self._parameters[parameter_name] = deployment_value
+        self._parameters.update({ parameter_name: deployment_value })
 
     def display_deployment_parameters(self):
         """Display Deployment Parameters"""

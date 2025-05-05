@@ -45,22 +45,17 @@ class EntraIdTokenManager():
 
     @classmethod
     def _get_fabric_authentication_result_for_user_interactive(cls):
-        """Acquire Entra Id Access Token for user interactively"""
+        """Authenticate the user interactively"""
 
         client_id = AppSettings.CLASS_ID_POWERSHELL_APP
         authority = "https://login.microsoftonline.com/organizations"
 
-        if (cls._access_token is None) or (datetime.datetime.now() > cls._access_token_expiration):
-            app = msal.PublicClientApplication(client_id,
-                                               authority=authority,
-                                               client_credential=None)
+        app = msal.PublicClientApplication(client_id,
+                                            authority=authority,
+                                            client_credential=None)
 
-            result = app.acquire_token_interactive(
+        return app.acquire_token_interactive(
                 scopes=['https://api.fabric.microsoft.com/user_impersonation'])
-            cls._access_token = result['access_token']
-            cls._access_token_expiration = datetime.datetime.now() + \
-                                           datetime.timedelta(0,  int(result['expires_in']))
-        return cls._access_token
 
     @classmethod
     def _get_fabric_authentication_result_for_user_with_device_code(cls):

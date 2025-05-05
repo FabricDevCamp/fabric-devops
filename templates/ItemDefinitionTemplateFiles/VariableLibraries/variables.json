@@ -2,52 +2,52 @@
     "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/variableLibrary/definition/variables/1.0.0/schema.json",
     "variables": [
       {
-        "name": "webDatasourcePath",
+        "name": "web_datasource_path",
         "note": "",
         "type": "String",
-        "value": "{webDatasourcePath}"
+        "value": "{web_datasource_path}"
       },
       {
-        "name": "adlsServer",
+        "name": "adls_server",
         "note": "",
         "type": "String",
-        "value": "{adlsServer}"
+        "value": "{adls_server}"
       },
       {
-        "name": "adlsContainerName",
+        "name": "adls_container_name",
         "note": "",
         "type": "String",
-        "value": "{adlsContainerName}"
+        "value": "{adls_container_name}"
       },
       {
-        "name": "adlsContainerPath",
+        "name": "adls_container_path",
         "note": "",
         "type": "String",
-        "value": "{adlsContainerPath}"
+        "value": "{adls_container_path}"
       },
       {
-        "name": "adlsConnectionId",
+        "name": "adls_connection_id",
         "note": "",
         "type": "String",
-        "value": "{adlsConnectionId}"
+        "value": "{adls_connection_id}"
       },
       {
-        "name": "lakehouseId",
+        "name": "lakehouse_id",
         "note": "",
         "type": "String",
-        "value": "{lakehouseId}"
+        "value": "{lakehouse_id}"
       },
       {
-        "name": "notebookIdBuildSilver",
+        "name": "notebook_id_build_silver",
         "note": "",
         "type": "String",
-        "value": "{notebookIdBuildSilver}"
+        "value": "{notebook_id_build_silver}"
       },
       {
-        "name": "notebookIdBuildGold",
+        "name": "notebook_id_build_gold",
         "note": "",
         "type": "String",
-        "value": "{notebookIdBuildGold}"
+        "value": "{notebook_id_build_gold}"
       }
     ]
   }

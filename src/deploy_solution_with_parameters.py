@@ -141,7 +141,7 @@ def deploy_shortcut_solution(deploy_job):
 
     adls_container_name = deploy_job.parameters[DeploymentJob.adls_container_name_parameter]
     adls_container_path = deploy_job.parameters[DeploymentJob.adls_container_path_parameter]
-    adls_server = deploy_job.parameters[DeploymentJob.adls_server_path_parameter]
+    adls_server = deploy_job.parameters[DeploymentJob.adls_server_parameter]
     adls_path = f'/{adls_container_name}{adls_container_path}'
 
     connection = FabricRestApi.create_azure_storage_connection_with_account_key(
@@ -239,7 +239,7 @@ def deploy_data_pipeline_solution(deploy_job):
         notebook = FabricRestApi.create_item(workspace['id'], create_notebook_request)
         notebook_ids.append(notebook['id'])
 
-    adls_server_path = deploy_job.parameters[DeploymentJob.adls_server_path_parameter]
+    adls_server_path = deploy_job.parameters[DeploymentJob.adls_server_parameter]
     adls_container_name = deploy_job.parameters[DeploymentJob.adls_container_name_parameter]
     adls_container_path = deploy_job.parameters[DeploymentJob.adls_container_path_parameter]
     adls_path = adls_container_name + adls_container_path
@@ -343,7 +343,7 @@ def deploy_variable_library_solution(deploy_job):
         notebook_ids.append(notebook['id'])
 
     web_datasource_path = deploy_job.parameters[deploy_job.web_datasource_path_parameter]
-    adls_server = deploy_job.parameters[deploy_job.adls_server_path_parameter]
+    adls_server = deploy_job.parameters[deploy_job.adls_server_parameter]
     adls_container_name = deploy_job.parameters[deploy_job.adls_container_name_parameter]
     adls_container_path = deploy_job.parameters[deploy_job.adls_container_path_parameter]
     adls_path = adls_container_name + adls_container_path
@@ -354,14 +354,14 @@ def deploy_variable_library_solution(deploy_job):
         workspace)
 
     variable_library = VariableLibrary()
-    variable_library.add_variable("webDatasourcePath", web_datasource_path)
-    variable_library.add_variable("adlsServer", adls_server)
-    variable_library.add_variable("adlsContainerName",  adls_container_name)
-    variable_library.add_variable("adlsContainerPath",  adls_container_path)
-    variable_library.add_variable("adlsConnectionId",  connection['id'])
-    variable_library.add_variable("lakehouseId",  lakehouse['id'])
-    variable_library.add_variable("notebookIdBuildSilver",  notebook_ids[0])
-    variable_library.add_variable("notebookIdBuildGold",  notebook_ids[1])
+    variable_library.add_variable("web_datasource_path", web_datasource_path)
+    variable_library.add_variable("adls_server", adls_server)
+    variable_library.add_variable("adls_container_name",  adls_container_name)
+    variable_library.add_variable("adls_container_path",  adls_container_path)
+    variable_library.add_variable("adls_connection_id",  connection['id'])
+    variable_library.add_variable("lakehouse_id",  lakehouse['id'])
+    variable_library.add_variable("notebook_id_build_silver",  notebook_ids[0])
+    variable_library.add_variable("notebook_id_build_gold",  notebook_ids[1])
 
     create_library_request = \
         ItemDefinitionFactory.get_variable_library_create_request(

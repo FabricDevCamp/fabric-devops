@@ -1,6 +1,8 @@
 """Module to manage calls to Fabric REST APIs"""
 
 import time
+from json.decoder import JSONDecodeError
+
 import requests
 
 from .app_logger import AppLogger
@@ -39,10 +41,14 @@ class FabricRestApi:
         access_token = EntraIdTokenManager.get_fabric_access_token()
         request_headers = {'Content-Type':'application/json',
                            'Authorization': f'Bearer {access_token}'}
+         
         response = requests.post(url=rest_url, json=post_body, headers=request_headers, timeout=60)
 
         if response.status_code in { 200, 201 }:
-            return response.json()
+            try:
+                return response.json()
+            except JSONDecodeError:
+                return None
 
         if response.status_code == 202:
             operation_state_url = response.headers.get('Location')
@@ -202,22 +208,145 @@ class FabricRestApi:
         EntraIdTokenManager.get_fabric_access_token()
 
     @classmethod
-    def get_workspaces(cls):
+    def list_capacities(cls):
         """Get all workspaces accessible to caller"""
-        return cls._execute_get_request('workspaces')['value']
+        return cls._execute_get_request('capacities')['value']
+
+    @classmethod
+    def display_capacities(cls):
+        """Display all capacities accessible to caller"""
+        AppLogger.log_step('Capacities:')
+        capacities = cls.list_capacities()
+        for capacity in capacities:
+            AppLogger.log_substep(capacity['displayName'])
+
+    @classmethod
+    def list_deployment_pipelines(cls):
+        """Get all deployment pipelines accessible to caller"""
+        return cls._execute_get_request('deploymentPipelines')['value']
+
+    @classmethod
+    def get_deployment_pipeline_by_name(cls, display_name):
+        """Get Deployment Pipeline item by display name"""
+        pipelines =  cls.list_deployment_pipelines()
+        for pipeline in pipelines:
+            if pipeline['displayName'] == display_name:
+                return pipeline
+        return None
+
+    @classmethod
+    def list_deployment_pipeline_stages(cls, pipeline_id):
+        """List all deployment pipeline stages"""
+        endpoint = f"deploymentPipelines/{pipeline_id}/stages"
+        return cls._execute_get_request(endpoint)['value']
+
+    @classmethod
+    def delete_deployment_pipeline(cls, pipeline_id):
+        """Delete Deployment Pipeline"""
+        endpoint = f"deploymentPipelines/{pipeline_id}"
+        return cls._execute_delete_request(endpoint)
+
+    @classmethod
+    def display_deployment_pipelines(cls):
+        """Display Deployment Pipeline"""
+        AppLogger.log_step('Deployment Pipelines:')
+        pipelines = cls.list_deployment_pipelines()
+        for pipeline in pipelines:
+            AppLogger.log_substep(f"{pipeline['id']} - {pipeline['displayName']}")
+
+    @classmethod
+    def create_deployment_pipeline(cls, display_name, stages):
+        """Create Deployment Pipeline"""
+        AppLogger.log_step(f'Creating Deployment Pipelines [{display_name}]')
+        pipeline_stages = []
+        for stage in stages:
+            pipeline_stages.append({
+                'displayName': stage,
+                'description': 'it works',
+                'isPublic': False
+            })
+        create_request = {
+            'displayName': display_name,
+            'description': 'great example',
+            'stages': pipeline_stages
+        }
+        endpoint = "deploymentPipelines"
+        pipeline = cls._execute_post_request(endpoint, create_request)
+
+        AppLogger.log_substep(f"Pipeline create with id [{pipeline['id']}]")
+
+        if AppSettings.RUN_AS_SERVICE_PRINCIPAL:
+            AppLogger.log_substep('Adding deployment pipeline role of [Admin] for admin user')
+            cls.add_deployment_pipeline_role_assignment(pipeline['id'],
+                                                        AppSettings.ADMIN_USER_ID,
+                                                        'User',
+                                                        'Admin')
+        else:
+            AppLogger.log_substep('Adding deployment pipeline role of [Admin] for service principal')
+            cls.add_deployment_pipeline_role_assignment(pipeline['id'],
+                                                        AppSettings.SERVICE_PRINCIPAL_OBJECT_ID,
+                                                        'ServicePrincipal',
+                                                        'Admin')
+        return pipeline
+
+    @classmethod
+    def add_deployment_pipeline_role_assignment(cls, pipeline_id,
+                                                principal_id, principal_type, role):
+        """Add Deployment Pipeline Role Assignment"""
+        endpoint = f"deploymentPipelines/{pipeline_id}/roleAssignments"
+        add_request = {
+            'principal': {
+                'id': principal_id,
+                'type': principal_type
+            },
+            'role': role
+        }
+        return cls._execute_post_request(endpoint, add_request)
+
+    @classmethod
+    def assign_workpace_to_pipeline_stage(cls, workspace_id, pipeline_id, stage_id):
+        """Assign workspace to pipeline stage """
+        endpoint = f"deploymentPipelines/{pipeline_id}/stages/{stage_id}/assignWorkspace"
+        assign_request = { 'workspaceId': workspace_id }
+        cls._execute_post_request(endpoint, assign_request)
+
+    @classmethod
+    def unassign_workpace_from_pipeline_stage(cls, pipeline_id, stage_id):
+        """Assign workspace to pipeline stage"""
+        endpoint = f"deploymentPipelines/{pipeline_id}/stages/{stage_id}/unassignWorkspace"
+        cls._execute_post_request(endpoint)
+
+
+    @classmethod
+    def deploy_to_pipeline_stage(cls, pipeline_id, source_stage_id, target_stage_id,  note = None):
+        """Deploy to pipeline stage"""
+        endpoint = f'deploymentPipelines/{pipeline_id}/deploy'
+        deploy_request = {
+            'sourceStageId': source_stage_id,
+            'targetStageId': target_stage_id
+        }
+        if note is not None:
+            deploy_request['note'] = note
+        cls._execute_post_request(endpoint, deploy_request)
+
+    @classmethod
+    def list_workspaces(cls):
+        """Get all workspaces accessible to caller"""
+        all_workspaces = cls._execute_get_request('workspaces')['value']
+        return filter(lambda workspace: workspace['type'] == 'Workspace', all_workspaces)
 
     @classmethod
     def display_workspaces(cls):
         """Display all workspaces accessible to caller"""
         AppLogger.log_step('Workspaces:')
-        workspaces = cls.get_workspaces()
-        for workspace in enumerate(workspaces):
-            AppLogger.log_substep(workspace['displayName'])
+        workspaces = cls.list_workspaces()
+        for workspace in workspaces:
+            AppLogger.log_substep(f"{workspace['id']} - {workspace['displayName']}")
 
     @classmethod
     def get_workspace_by_name(cls, display_name):
         """Get Workspace item by display name"""
-        workspaces =  cls.get_workspaces()
+        workspaces =  cls.list_workspaces()
         for workspace in workspaces:
             if workspace['displayName'] == display_name:
                 return workspace
@@ -257,7 +386,7 @@ class FabricRestApi:
     def delete_workspace(cls, workspace_id):
         """Delete Workspace"""
 
-        workspace_connections  = cls.get_workspace_connections(workspace_id)
+        workspace_connections  = cls.list_workspace_connections(workspace_id)
         for connection in workspace_connections:
             AppLogger.log_substep(f"Deleting connection {connection['displayName']}")
             cls.delete_connection(connection['id'])
@@ -299,14 +428,14 @@ class FabricRestApi:
         return cls._execute_post_request(endpoint, post_body)
 
     @classmethod
-    def get_connections(cls):
+    def list_connections(cls):
         """Get all connections accessible to caller"""
         return cls._execute_get_request('connections')['value']
 
     @classmethod
     def get_connection_by_name(cls, display_name):
         """Get Connection By Name"""
-        connections = cls.get_connections()
+        connections = cls.list_connections()
         for connection in connections:
             if connection['displayName'] == display_name:
                 return connection
@@ -315,12 +444,12 @@ class FabricRestApi:
     @classmethod
     def display_connections(cls):
         """Get all connections accessible to caller"""
-        connections = cls.get_connections()
+        connections = cls.list_connections()
         AppLogger.log_step('Connections')
         for connection in connections:
             AppLogger.log_substep(
                 f"{connection['id']} - " + \
-                 "{connection['connectionDetails']['type']} - {connection['displayName']}")            
+                f"{connection['connectionDetails']['type']} - {connection['displayName']}")            
 
     @classmethod
     def create_connection(cls, create_connection_request):
@@ -329,7 +458,7 @@ class FabricRestApi:
             f"Creating {create_connection_request['connectionDetails']['type']} " + \
             f"connection named {create_connection_request['displayName']} ...")
 
-        existing_connections = cls.get_connections()
+        existing_connections = cls.list_connections()
         for connection in existing_connections:
             if 'displayName' in connection and \
                 connection['displayName'] == create_connection_request['displayName']:
@@ -378,7 +507,6 @@ class FabricRestApi:
             'role': connection_role
         }
         return cls._execute_post_request(rest_url, post_body)
-
 
     @classmethod
     def create_anonymous_web_connection(cls, web_url, workspace = None):
@@ -500,10 +628,10 @@ class FabricRestApi:
         return cls._execute_delete_request(rest_url)
 
     @classmethod
-    def get_workspace_connections(cls, workspace_id):
+    def list_workspace_connections(cls, workspace_id):
         """Get connections associated with a specifc workspace"""
         workspace_connections = []
-        connections = cls.get_connections()
+        connections = cls.list_connections()
         for connection in connections:
             if connection['displayName'] is not None and workspace_id in connection['displayName']:
                 workspace_connections.append(connection)
@@ -520,6 +648,36 @@ class FabricRestApi:
         return item
 
     @classmethod
+    def update_item(cls, workspace_id, item, update_item_request):
+        """Update Item Definition using update-item--definition-request"""
+        AppLogger.log_step(f"Updating [{item['displayName']}.{item['type']}]...")
+        
+        print( update_item_request )
+
+        endpoint = f"workspaces/{workspace_id}/items/{item['id']}"
+        item = cls._execute_post_request(endpoint, update_item_request)
+        AppLogger.log_substep(f"{item['type']} updated")
+        return item
+
+    @classmethod
+    def update_item_definition(cls, workspace_id, item, update_item_definition_request):
+        """Update Item Definition using update-item--definition-request"""
+        AppLogger.log_step(
+            f"Updating [{item['displayName']}.{item['type']}]...")
+        endpoint = f"workspaces/{workspace_id}/items/{item['id']}/updateDefinition"
+        item = cls._execute_post_request(endpoint, update_item_definition_request)
+        AppLogger.log_substep("Item updated")
+        return item
+
+    @classmethod
+    def get_item_definition(cls, workspace_id, item, export_format = None):
+        """Get Item Definition"""
+        endpoint = f"workspaces/{workspace_id}/items/{item['id']}/getDefinition"
+        if export_format is not None:
+            endpoint = endpoint + f'?format={export_format}'
+        return cls._execute_post_request(endpoint)
+
+    @classmethod
     def create_lakehouse(cls, workspace_id, display_name):
         """Create Lakehouse"""
         create_item_request = {
@@ -529,7 +687,7 @@ class FabricRestApi:
         return cls.create_item(workspace_id, create_item_request)
 
     @classmethod
-    def get_workspace_items(cls, workspace_id, item_type = None):
+    def list_workspace_items(cls, workspace_id, item_type = None):
         """Get items in workspace"""
         endpoint = f'workspaces/{workspace_id}/items'
 
@@ -541,17 +699,11 @@ class FabricRestApi:
     @classmethod
     def get_item_by_name(cls, workspace_id, display_name, item_type):
         """Get Item by Name"""
-        items = cls.get_workspace_items(workspace_id, item_type)
+        items = cls.list_workspace_items(workspace_id, item_type)
         for item in items:
             if item['displayName'] == display_name:
                 return item
         return None
-
-    @classmethod
-    def get_item_definition(cls, workspace_id, item_id):
-        """Get item definition from workspace item"""
-        endpoint = f'workspaces/{workspace_id}/items/{item_id}/getDefinition'
-        return cls._execute_post_request(endpoint)
 
     @classmethod
     def run_notebook(cls, workspace_id, notebook):
@@ -605,7 +757,7 @@ class FabricRestApi:
         }
 
     @classmethod
-    def get_datasources_for_semantic_model(cls, workspace_id, semantic_model_id):
+    def list_datasources_for_semantic_model(cls, workspace_id, semantic_model_id):
         """Get Datasource for semantic model using Power BI REST API"""
         rest_url  = f'groups//{workspace_id}//datasets//{semantic_model_id}//datasources'
         return cls._execute_get_request_to_powerbi(rest_url)['value']
@@ -613,7 +765,7 @@ class FabricRestApi:
     @classmethod
     def get_web_url_from_semantic_model(cls, workspace_id, semantic_model_id):
         """Get Web datasource URL from semantic model"""
-        data_sources = cls.get_datasources_for_semantic_model(workspace_id, semantic_model_id)
+        data_sources = cls.list_datasources_for_semantic_model(workspace_id, semantic_model_id)
         for data_source in data_sources:
             if data_source['datasourceType'] == 'Web':
                 return data_source['connectionDetails']['url']
@@ -652,7 +804,7 @@ class FabricRestApi:
     def create_and_bind_semantic_model_connecton(cls, workspace,
                                                  semantic_model_id, lakehouse = None):
         """Create connection and bind it to semantic model"""
-        datasources = cls.get_datasources_for_semantic_model(workspace['id'], semantic_model_id)
+        datasources = cls.list_datasources_for_semantic_model(workspace['id'], semantic_model_id)
         for datasource in datasources:
 
             if datasource['datasourceType'].lower() == 'sql':
@@ -671,12 +823,11 @@ class FabricRestApi:
             elif datasource['datasourceType'].lower() == 'web':
                 AppLogger.log_substep('Creating Web connection for semantic model')
                 web_url  = datasource['connectionDetails']['url']
-                connection = cls.create_anonymous_web_connection(web_url)
+                connection = cls.create_anonymous_web_connection(web_url, workspace)
                 AppLogger.log_substep('Binding semantic model to Web connection')
                 cls.bind_semantic_model_to_connection(workspace['id'],
                                                       semantic_model_id,
                                                        connection['id'])
-                AppLogger.log_substep('Refreshing semantic model')
                 cls.refresh_semantic_model(workspace['id'], semantic_model_id)
 
     @classmethod
@@ -699,3 +850,17 @@ class FabricRestApi:
         }
         cls._execute_post_request(rest_url, post_body)
         AppLogger.log_substep(f'Shortcut [{path}/{name}] successfullly created')
+
+    @classmethod
+    def set_active_valueset_for_variable_library(cls, workspace_id, library, valueset):
+        """Set active valueset for variable library"""
+        AppLogger.log_step(f"Setting active valueset for variable library [{library['displayName']}] to [{valueset}]...")
+
+        rest_url = f"workspaces/{workspace_id}/VariableLibraries/{library['id']}"
+        post_body = {
+            'properties': {                
+                'activeValueSetName': valueset
+            }
+        }
+        cls._execute_patch_request(rest_url, post_body)
+        AppLogger.log_substep('Active valueset set successfullly')

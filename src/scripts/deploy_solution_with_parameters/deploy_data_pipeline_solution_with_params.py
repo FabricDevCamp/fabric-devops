@@ -39,7 +39,7 @@ for notebook_folder in NOTEBOOK_FOLDERS:
     notebook = FabricRestApi.create_item(workspace['id'], create_notebook_request)
     notebook_ids.append(notebook['id'])
 
-adls_server_path = deploy_job.parameters[DeploymentJob.adls_server_path_parameter]
+adls_server_path = deploy_job.parameters[DeploymentJob.adls_server_parameter]
 adls_container_name = deploy_job.parameters[DeploymentJob.adls_container_name_parameter]
 adls_container_path = deploy_job.parameters[DeploymentJob.adls_container_path_parameter]
 adls_path = adls_container_name + adls_container_path
