@@ -82,10 +82,7 @@ class VariableLibrary:
         """Get JSON for valueset.json"""
         valueset_list = list(filter(lambda valueset: valueset.name == valueset_name, self.valuesets))
         valueset: Valueset = valueset_list[0]
-        
-        print(type(valueset))
-        print(valueset)
-        
+               
         valueset_export = {
             '$schema': 'https://developer.microsoft.com/json-schemas/fabric/item/variableLibrary/definition/valueSet/1.0.0/schema.json',
             'name': valueset.name,

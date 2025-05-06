@@ -41,7 +41,7 @@ class FabricRestApi:
         access_token = EntraIdTokenManager.get_fabric_access_token()
         request_headers = {'Content-Type':'application/json',
                            'Authorization': f'Bearer {access_token}'}
-         
+
         response = requests.post(url=rest_url, json=post_body, headers=request_headers, timeout=60)
 
         if response.status_code in { 200, 201 }:
@@ -282,7 +282,9 @@ class FabricRestApi:
                                                         'User',
                                                         'Admin')
         else:
-            AppLogger.log_substep('Adding deployment pipeline role of [Admin] for service principal')
+            AppLogger.log_substep(
+                'Adding deployment pipeline role of [Admin] for service principal')
+
             cls.add_deployment_pipeline_role_assignment(pipeline['id'],
                                                         AppSettings.SERVICE_PRINCIPAL_OBJECT_ID,
                                                         'ServicePrincipal',
@@ -315,7 +317,6 @@ class FabricRestApi:
         """Assign workspace to pipeline stage"""
         endpoint = f"deploymentPipelines/{pipeline_id}/stages/{stage_id}/unassignWorkspace"
         cls._execute_post_request(endpoint)
-
 
     @classmethod
     def deploy_to_pipeline_stage(cls, pipeline_id, source_stage_id, target_stage_id,  note = None):
@@ -452,11 +453,15 @@ class FabricRestApi:
                 f"{connection['connectionDetails']['type']} - {connection['displayName']}")            
 
     @classmethod
-    def create_connection(cls, create_connection_request):
+    def create_connection(cls, create_connection_request, top_level_step = False):
         """ Create new connection"""
-        AppLogger.log_substep(
-            f"Creating {create_connection_request['connectionDetails']['type']} " + \
-            f"connection named {create_connection_request['displayName']} ...")
+        log_message = f"Creating {create_connection_request['connectionDetails']['type']} " + \
+                      f"connection named {create_connection_request['displayName']} ..."
+
+        if top_level_step:
+            AppLogger.log_step(log_message)
+        else:
+            AppLogger.log_substep(log_message)
 
         existing_connections = cls.list_connections()
         for connection in existing_connections:
@@ -584,7 +589,9 @@ class FabricRestApi:
         return cls.create_connection(create_connection_request)
 
     @classmethod
-    def create_azure_storage_connection_with_account_key(cls, server, path, workspace = None):
+    def create_azure_storage_connection_with_account_key(cls, server, path,
+                                                         workspace = None,
+                                                         top_level_step = False):
         """Create Azure Storage connections"""
 
         display_name = 'ADLS'
@@ -614,7 +621,7 @@ class FabricRestApi:
             }
         }
 
-        return cls.create_connection(create_connection_request)
+        return cls.create_connection(create_connection_request, top_level_step=top_level_step)
 
     @classmethod
     def get_connection(cls, connection_id):
@@ -651,9 +658,6 @@ class FabricRestApi:
     def update_item(cls, workspace_id, item, update_item_request):
         """Update Item Definition using update-item--definition-request"""
         AppLogger.log_step(f"Updating [{item['displayName']}.{item['type']}]...")
-        
-        print( update_item_request )
-
         endpoint = f"workspaces/{workspace_id}/items/{item['id']}"
         item = cls._execute_post_request(endpoint, update_item_request)
         AppLogger.log_substep(f"{item['type']} updated")
@@ -854,7 +858,9 @@ class FabricRestApi:
     @classmethod
     def set_active_valueset_for_variable_library(cls, workspace_id, library, valueset):
         """Set active valueset for variable library"""
-        AppLogger.log_step(f"Setting active valueset for variable library [{library['displayName']}] to [{valueset}]...")
+        AppLogger.log_step(
+            "Setting active valueset for variable library " + \
+            f"[{library['displayName']}] to [{valueset}]...")
 
         rest_url = f"workspaces/{workspace_id}/VariableLibraries/{library['id']}"
         post_body = {
@@ -864,3 +870,58 @@ class FabricRestApi:
         }
         cls._execute_patch_request(rest_url, post_body)
         AppLogger.log_substep('Active valueset set successfullly')
+
+    @classmethod
+    def connect_workspace_to_git_repository(cls, workspace_id, connect_request):
+        """Connect Workspace to GIT Repository"""
+        endpoint = f"workspaces/{workspace_id}/git/connect"
+        return cls._execute_post_request(endpoint, connect_request)
+
+    @classmethod
+    def initialize_git_connection(cls, workspace_id, initialize_connection_request):
+        """Initialize GIT Connection"""
+        endpoint = f"workspaces/{workspace_id}/git/initializeConnection"
+        return cls._execute_post_request(endpoint, initialize_connection_request)
+
+    @classmethod
+    def get_git_status(cls, workspace_id):
+        """Get GIT Connection Status"""
+        endpoint = f"workspaces/{workspace_id}/git/status"
+        return cls._execute_get_request(endpoint)
+
+    @classmethod
+    def get__git_connection(cls, workspace_id):
+        """Get GIT Connection"""
+        endpoint = f"workspaces/{workspace_id}/git/connection"
+        return cls._execute_get_request(endpoint)
+
+    @classmethod
+    def disconnect_workspace_from_git(cls, workspace_id):
+        """Disconnect Workspace from GIT Repository"""
+        endpoint = f"workspaces/{workspace_id}/git/disconnect"
+        return cls._execute_post_request(endpoint)
+
+    @classmethod
+    def commit_workspace_to_git(cls, workspace_id, commit_to_git_request):
+        """Commit Workspace to GIT Repository"""
+        endpoint = f"workspaces/{workspace_id}/git/commitToGit"
+        return cls._execute_post_request(endpoint, commit_to_git_request)
+
+    @classmethod
+    def update_workspace_from_git(cls, workspace_id, update_from_git_request):
+        """Update Workspace from GIT Repository"""
+        endpoint = f"workspaces/{workspace_id}/git/updateFromGit"
+        return cls._execute_post_request(endpoint, update_from_git_request)
+
+    @classmethod
+    def get_my_git_credentials(cls, workspace_id):
+        """Get My GIT Credential"""
+        endpoint = f"workspaces/{workspace_id}/git/myGitCredentials"
+        return cls._execute_get_request(endpoint)
+
+    @classmethod
+    def update_my_git_credentials(cls, workspace_id, update_git_credentials_request):
+        """Update My GIT Credentials"""
+        endpoint = f"workspaces/{workspace_id}/git/myGitCredentials"
+        return cls._execute_patch_request(endpoint, update_git_credentials_request)
+        
