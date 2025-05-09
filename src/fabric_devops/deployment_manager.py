@@ -61,7 +61,7 @@ class DeploymentManager:
 
         FabricRestApi.create_item(workspace['id'], create_report_request)
 
-        AppLogger.log_job_ended("Solution deployment complete")
+        AppLogger.log_step("Power BI Solution deployment complete")
 
         return workspace
 
@@ -128,7 +128,7 @@ class DeploymentManager:
 
         FabricRestApi.create_item(workspace['id'], create_report_request)
 
-        AppLogger.log_job_ended("Solution deployment complete")
+        AppLogger.log_step("Notebook Solution deployment complete")
 
         return workspace
 
@@ -218,7 +218,7 @@ class DeploymentManager:
 
             FabricRestApi.create_item(workspace['id'], create_report_request)
 
-        AppLogger.log_job_ended("Solution deployment complete")
+        AppLogger.log_step("Shortcut Solution deployment complete")
 
         return workspace
 
@@ -321,9 +321,9 @@ class DeploymentManager:
                     report_folder,
                     model['id'])
 
-            FabricRestApi.create_item(workspace['id'], create_report_request)
-
-        AppLogger.log_job_ended("Solution deployment complete")
+        FabricRestApi.create_item(workspace['id'], create_report_request)
+ 
+        AppLogger.log_step("Data Pipeline Solution deployment complete")
 
         return workspace
 
@@ -458,10 +458,27 @@ class DeploymentManager:
             FabricRestApi.delete_workspace(workspace['id'])
 
     @classmethod
+    def delete_all_connections(cls):
+        """Delete All Connections"""
+        AppLogger.log_step("Deleting connections")
+        for connection in FabricRestApi.list_connections():
+            AppLogger.log_substep(f"Deleting {connection['displayName']}")
+            FabricRestApi.delete_connection(connection['id'])
+
+    @classmethod
+    def delete_all_github_repos(cls):
+        """"Delete All GitHub Repos"""
+        repos = GitHubRestApi.get_github_repositories()
+        for repo in repos:
+            GitHubRestApi.delete_github_repository(repo['name'])
+
+    @classmethod
     def cleanup_dev_environment(cls):
         """Clean Up Dev Environment"""
         cls.delete_all_deployment_pipelines()
         cls.delete_all_workspaces()
+        cls.delete_all_connections()
+        cls.delete_all_github_repos()
 
     @classmethod
     def setup_deployment_pipeline(cls, pipeline_name):
@@ -658,14 +675,10 @@ class DeploymentManager:
                                                    lakehouse_name, 'Lakehouse')
         sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse)
 
-    @classmethod
-    def delete_all_github_repos(cls):
-        repos = GitHubRestApi.get_github_repositories()
-        for repo in repos:
-            GitHubRestApi.delete_github_repository(repo['name'])
-
+  
     @classmethod
     def conn_filter(cls, connection): 
+        """GitHub connection filter"""
         return connection['connectionDetails']['type'] ==  'GitHubSourceControl'
 
     @classmethod

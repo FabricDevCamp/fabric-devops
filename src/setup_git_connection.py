@@ -6,7 +6,7 @@ from fabric_devops import DeploymentManager
 
 os.system('cls')
 
-WORKSPACE_NAME = 'Bianca'
+WORKSPACE_NAME = 'Charo'
 
 DeploymentManager.setup_workspace_with_github_repo(WORKSPACE_NAME)
 

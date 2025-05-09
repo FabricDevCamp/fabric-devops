@@ -253,7 +253,7 @@ class GitHubRestApi:
         }
 
         repo = cls._execute_post_request(endpoint_refs, body)
-        AppLogger.log_substep("Repo created successfully")
+        AppLogger.log_substep("Repo branch created successfully")
         return repo
 
     @classmethod
