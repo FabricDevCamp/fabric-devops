@@ -181,6 +181,14 @@ class GitHubRestApi:
         return cls._execute_get_request(endpoint)
 
     @classmethod
+    def display_github_repos(cls):
+        """Display GitHub Repositories"""
+        AppLogger.log_step('Repos')
+        repos = cls.get_github_repositories()
+        for repo in repos:
+            AppLogger.log_substep(f"{repo['name']} [{repo['id']}]")
+
+    @classmethod
     def get_github_repository_by_name(cls, repo_name):
         """Get GitHub Repository by Name"""
         repos = cls.get_github_repositories()
@@ -227,7 +235,6 @@ class GitHubRestApi:
         endpoint = f"/orgs/{cls.GITHUB_ORGANIZATION}/repos/{repo_name}/branches"
         repos = cls._execute_get_request(endpoint)
         return repos
-
 
     @classmethod
     def create_branch(cls, repo_name, branch_name):

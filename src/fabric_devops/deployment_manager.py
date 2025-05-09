@@ -663,3 +663,33 @@ class DeploymentManager:
         repos = GitHubRestApi.get_github_repositories()
         for repo in repos:
             GitHubRestApi.delete_github_repository(repo['name'])
+
+    @classmethod
+    def conn_filter(cls, connection): 
+        return connection['connectionDetails']['type'] ==  'GitHubSourceControl'
+
+    @classmethod
+    def delete_all_github_connections(cls):
+        """Delete All GitHub connection"""
+        github_connections = list(filter(cls.conn_filter, FabricRestApi.list_connections()))
+        for connection in github_connections:
+            AppLogger.log_step(f"Deleting connection {connection['displayName']}")
+            FabricRestApi.delete_connection(connection['id'])
+
+    @classmethod
+    def setup_workspace_with_github_repo(cls, target_workspace):
+        """Setup Workspace with GIT Connection"""
+
+        workspace = FabricRestApi.get_workspace_by_name(target_workspace)
+
+        if workspace is None:
+            workspace = DeploymentManager.deploy_powerbi_solution(target_workspace)
+        
+        repo_name = target_workspace
+        GitHubRestApi.create_repository(repo_name)
+        GitHubRestApi.copy_files_from_folder_to_repo(repo_name, 'Hello')
+        GitHubRestApi.create_branch(repo_name, 'test')
+        GitHubRestApi.create_branch(repo_name, 'dev')
+        GitHubRestApi.set_default_branch(repo_name, 'dev')
+
+        FabricRestApi.connect_workspace_to_github_repo(workspace, target_workspace, 'dev')

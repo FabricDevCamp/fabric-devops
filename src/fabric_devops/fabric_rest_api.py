@@ -923,11 +923,10 @@ class FabricRestApi:
         return FabricRestApi.create_github_connection(github_repo_url, workspace)
 
     @classmethod
-    def connect_workspace_to_github_repository(cls, workspace, repo_name, branch = 'main'):
+    def connect_workspace_to_github_repo(cls, workspace, repo_name, branch = 'main'):
         """Connect Workspace to GitHub Repository"""
 
         connection_id = cls.get_github_repo_connection(repo_name, workspace)['id']
-
 
         cls.create_github_repository_connection(workspace['id'], repo_name, connection_id, branch)
 
