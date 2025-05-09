@@ -1,0 +1,27 @@
+
+name: Hello World
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deployment-job:    
+    name: Hello World
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.12"
+
+      - name: Install MSAL
+        run: |
+          pip install msal
+
+      - name: Hello World 
+        run: 
+          python src/hello_world.py

@@ -6,7 +6,7 @@ class AppSettings:
 
     """App Settings"""
 
-    RUN_AS_SERVICE_PRINCIPAL = False
+    RUN_AS_SERVICE_PRINCIPAL = True
     RUNNING_IN_GITHUB = os.getenv('GITHUB_ACTIONS') == 'true'
     FABRIC_CLIENT_ID = os.getenv("FABRIC_CLIENT_ID")
     FABRIC_CLIENT_SECRET = os.getenv("FABRIC_CLIENT_SECRET")
@@ -15,6 +15,8 @@ class AppSettings:
     FABRIC_CAPACITY_ID = os.getenv("FABRIC_CAPACITY_ID")
     ADMIN_USER_ID = os.getenv("ADMIN_USER_ID")
     SERVICE_PRINCIPAL_OBJECT_ID = os.getenv('SERVICE_PRINCIPAL_OBJECT_ID')
+
+    GITHUB_ACCESS_TOKEN = os.getenv('GITHUB_ACCESS_TOKEN')
 
     CLASS_ID_POWERSHELL_APP = "1950a258-227b-4e31-a9cf-717495945fc2"
 

@@ -139,7 +139,7 @@ class FabricRestApi:
         request_headers = {'Content-Type':'application/json',
                            'Authorization': f'Bearer {access_token}'}
         response = requests.patch(url=rest_url, json=post_body, headers=request_headers, timeout=60)
-        if response.status_code == 200:
+        if response.status_code in {200, 204}:
             return response.json()
 
         if response.status_code == 429: # handle TOO MANY REQUESTS error
@@ -623,6 +623,41 @@ class FabricRestApi:
 
         return cls.create_connection(create_connection_request, top_level_step=top_level_step)
 
+
+    @classmethod
+    def create_github_connection(cls, url, workspace = None, top_level_step = False):
+        """Create GitHub connections with Personal Access Token"""
+
+        display_name = 'GitHub'
+        if workspace is not None:
+            display_name = f"Workspace[{workspace['id']}]-" + display_name
+        else:
+            display_name = display_name + " - " + url
+
+        create_connection_request = {
+            'displayName': display_name,
+            'connectivityType': 'ShareableCloud',
+            'privacyLevel': 'Organizational',
+            'connectionDetails': {
+                'type': 'GitHubSourceControl',
+                'creationMethod': 'GitHubSourceControl.Contents',
+                'parameters': [ 
+                    { 'name': 'url', 'dataType': 'Text', 'value': url }
+                ]
+            },
+            'credentialDetails': {
+                'credentials': {
+                    'key': AppSettings.GITHUB_ACCESS_TOKEN,
+                    'credentialType': 'Key'
+                },
+                'singleSignOnType': 'None',
+                'connectionEncryption': 'NotEncrypted',
+                'skipTestConnection': 'false'
+            }
+        }
+
+        return cls.create_connection(create_connection_request, top_level_step=top_level_step)
+
     @classmethod
     def get_connection(cls, connection_id):
         """ Get connection using connection Id"""
@@ -871,10 +906,81 @@ class FabricRestApi:
         cls._execute_patch_request(rest_url, post_body)
         AppLogger.log_substep('Active valueset set successfullly')
 
+    
     @classmethod
-    def connect_workspace_to_git_repository(cls, workspace_id, connect_request):
+    def get_github_repo_connection(cls, repo_name, workspace = None):
+        """Get GitHub Repo Connection"""
+
+        github_repo_url = f'https://github.com/fabricdevcampdemos/{repo_name}'
+
+        connections = FabricRestApi.list_connections()
+
+        for connection in connections:
+            if connection['connectionDetails']['type'] == 'GitHubSourceControl' and \
+               connection['connectionDetails']['path'] == github_repo_url:
+                return connection
+
+        return FabricRestApi.create_github_connection(github_repo_url, workspace)
+
+    @classmethod
+    def connect_workspace_to_github_repository(cls, workspace, repo_name, branch = 'main'):
+        """Connect Workspace to GitHub Repository"""
+
+        connection_id = cls.get_github_repo_connection(repo_name, workspace)['id']
+
+
+        cls.create_github_repository_connection(workspace['id'], repo_name, connection_id, branch)
+
+        init_request = {
+            'initializationStrategy': 'PreferWorkspace'
+        }
+
+        init_response = cls.initialize_git_connection(workspace['id'], init_request)
+
+        required_action = init_response['requiredAction']
+
+        if required_action == 'CommitToGit':
+            commit_to_git_request = {
+                'mode': 'All',
+                'workspaceHead': init_response['workspaceHead'],
+                'comment': 'Saul Goodman'
+            }
+            cls.commit_workspace_to_git(workspace['id'], commit_to_git_request)
+
+        if required_action == 'UpdateFromGit':
+            update_from_git_request = {
+                "workspaceHead": init_response['workspaceHead'],
+                "remoteCommitHash": init_response['remoteCommitHash'],
+                "conflictResolution": {
+                    "conflictResolutionType": "Workspace",
+                    "conflictResolutionPolicy": "PreferWorkspace"
+                },
+                "options": {
+                    "allowOverrideItems": True
+                }
+                            
+            }
+            cls.update_workspace_from_git(workspace['id'], update_from_git_request)
+
+    @classmethod
+    def create_github_repository_connection(cls, workspace_id, repo_name, connection_id, branch = 'main'):
         """Connect Workspace to GIT Repository"""
         endpoint = f"workspaces/{workspace_id}/git/connect"
+
+        connect_request = {
+            "gitProviderDetails": {
+                "ownerName": "fabricdevcampdemos",
+                "gitProviderType": "GitHub",
+                "repositoryName": repo_name,
+                "branchName": branch,
+                "directoryName": "/workspace"
+            },
+            "myGitCredentials": {
+                "source": "ConfiguredConnection",
+                "connectionId": connection_id            
+            }
+        }
+
         return cls._execute_post_request(endpoint, connect_request)
 
     @classmethod

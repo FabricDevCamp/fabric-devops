@@ -10,12 +10,15 @@ from .fabric_rest_api import FabricRestApi
 from .item_definition_factory import ItemDefinitionFactory
 from .variable_library import VariableLibrary, Valueset
 from .staging_environments import StagingEnvironments
+from .github_rest_api import GitHubRestApi
 
 class DeploymentManager:
     """Deployment Manager"""
 
     @classmethod
-    def deploy_powerbi_solution(cls, target_workspace, deploy_job):
+    def deploy_powerbi_solution(cls, 
+                                target_workspace, 
+                                deploy_job = StagingEnvironments.get_dev_environment()):
         """Deploy Power BI Solution with Parameters"""
 
         AppLogger.log_job(f"Deploying Customer Power BI Solution to [{target_workspace}]")
@@ -654,4 +657,9 @@ class DeploymentManager:
         lakehouse = FabricRestApi.get_item_by_name(workspace['id'], 
                                                    lakehouse_name, 'Lakehouse')
         sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse)
-        
+
+    @classmethod
+    def delete_all_github_repos(cls):
+        repos = GitHubRestApi.get_github_repositories()
+        for repo in repos:
+            GitHubRestApi.delete_github_repository(repo['name'])
