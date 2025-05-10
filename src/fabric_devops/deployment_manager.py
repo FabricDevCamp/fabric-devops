@@ -66,7 +66,9 @@ class DeploymentManager:
         return workspace
 
     @classmethod
-    def deploy_notebook_solution(cls, target_workspace, deploy_job):
+    def deploy_notebook_solution(cls,
+                                 target_workspace,
+                                 deploy_job = StagingEnvironments.get_dev_environment()):
         """Deploy Notebook Solution"""
 
         lakehouse_name = "sales"
@@ -133,7 +135,9 @@ class DeploymentManager:
         return workspace
 
     @classmethod
-    def deploy_shortcut_solution(cls, target_workspace, deploy_job):
+    def deploy_shortcut_solution(cls,
+                                 target_workspace,
+                                 deploy_job = StagingEnvironments.get_dev_environment()):
         """Deploy Shortcut Solution"""
 
         lakehouse_name = "sales"
@@ -223,7 +227,9 @@ class DeploymentManager:
         return workspace
 
     @classmethod
-    def deploy_data_pipeline_solution(cls, target_workspace, deploy_job):
+    def deploy_data_pipeline_solution(cls,
+                                      target_workspace,
+                                      deploy_job = StagingEnvironments.get_dev_environment()):
         """Deploy Data Pipeline Solution"""
 
         lakehouse_name = "sales"
@@ -328,7 +334,9 @@ class DeploymentManager:
         return workspace
 
     @classmethod
-    def deploy_variable_library_solution(cls, target_workspace, deploy_job):
+    def deploy_variable_library_solution(cls, 
+                                         target_workspace, 
+                                         deploy_job = StagingEnvironments.get_dev_environment()):
         """Deploy Variable Library Solution"""
 
         # currently, this cannot run as SPN, it only works when running as user
@@ -696,19 +704,14 @@ class DeploymentManager:
             FabricRestApi.delete_connection(connection['id'])
 
     @classmethod
-    def setup_workspace_with_github_repo(cls, target_workspace):
+    def connect_workspace_to_github_repo(cls, workspace):
         """Setup Workspace with GIT Connection"""
-
-        workspace = FabricRestApi.get_workspace_by_name(target_workspace)
-
-        if workspace is None:
-            workspace = DeploymentManager.deploy_powerbi_solution(target_workspace)
         
-        repo_name = target_workspace
+        repo_name = workspace['displayName']
         GitHubRestApi.create_repository(repo_name)
         GitHubRestApi.copy_files_from_folder_to_repo(repo_name, 'Hello')
         GitHubRestApi.create_branch(repo_name, 'test')
         GitHubRestApi.create_branch(repo_name, 'dev')
         GitHubRestApi.set_default_branch(repo_name, 'dev')
 
-        FabricRestApi.connect_workspace_to_github_repo(workspace, target_workspace, 'dev')
+        FabricRestApi.connect_workspace_to_github_repo(workspace, 'dev')
