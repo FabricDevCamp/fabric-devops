@@ -469,17 +469,22 @@ class DeploymentManager:
     @classmethod
     def delete_all_github_repos(cls):
         """"Delete All GitHub Repos"""
+        AppLogger.log_step("Deleting Demo GitHub Repos")
+ 
         repos = GitHubRestApi.get_github_repositories()
         for repo in repos:
+            AppLogger.log_substep(f"Deleting {repo['name']}")
             GitHubRestApi.delete_github_repository(repo['name'])
 
     @classmethod
     def cleanup_dev_environment(cls):
         """Clean Up Dev Environment"""
+        AppLogger.log_job("Cleanup dev environment")
         cls.delete_all_deployment_pipelines()
         cls.delete_all_workspaces()
         cls.delete_all_connections()
         cls.delete_all_github_repos()
+        AppLogger.log_job_ended("Cleanup of dev environment complete")
 
     @classmethod
     def setup_deployment_pipeline(cls, pipeline_name):
