@@ -707,7 +707,7 @@ class DeploymentManager:
     def connect_workspace_to_github_repo(cls, workspace):
         """Setup Workspace with GIT Connection"""
         
-        repo_name = workspace['displayName']
+        repo_name = workspace['displayName'].replace(" ", "-")
         GitHubRestApi.create_repository(repo_name)
         GitHubRestApi.copy_files_from_folder_to_repo(repo_name, 'Hello')
         GitHubRestApi.create_branch(repo_name, 'test')
