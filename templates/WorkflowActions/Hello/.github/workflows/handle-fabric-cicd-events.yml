@@ -1,13 +1,13 @@
 
 name: Event Test
 
-run-name: Event Test ${{ github.event_name }} - ${{ github.ref }}
+run-name: Fabric CICD Event - ${{ github.event_name }} - ${{ github.ref }}
 
 on:
-  workflow_dispatch:
-  create:
-  push: 
-  pull_request: 
+  push:
+    branches: [ $default-branch ]
+  pull_request:
+    branches: [ $default-branch ]
 
 
 jobs:
@@ -31,4 +31,4 @@ jobs:
 
       - name: Event Test
         run: 
-          python src/event_test.py
+          python src/handle_fabric_cicd_events.py

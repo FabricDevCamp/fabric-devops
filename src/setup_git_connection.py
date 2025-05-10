@@ -6,8 +6,8 @@ from fabric_devops import DeploymentManager
 
 os.system('cls')
 
-WORKSPACE_NAME = 'Charo'
+WORKSPACE_NAME = 'Crimea'
 
 DeploymentManager.setup_workspace_with_github_repo(WORKSPACE_NAME)
 
-# AppLogger.log_job_ended()
+print('')

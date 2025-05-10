@@ -647,7 +647,7 @@ class FabricRestApi:
             },
             'credentialDetails': {
                 'credentials': {
-                    'key': AppSettings.GITHUB_ACCESS_TOKEN,
+                    'key': AppSettings.PERSONAL_ACCESS_TOKEN_GITHUB,
                     'credentialType': 'Key'
                 },
                 'singleSignOnType': 'None',

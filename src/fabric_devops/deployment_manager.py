@@ -452,9 +452,9 @@ class DeploymentManager:
     @classmethod
     def delete_all_workspaces(cls):
         """Delete All Workspaces"""
-        AppLogger.log_step("Deleting Workspaces")
+        AppLogger.log_step("Deleting workspaces and their associated connections")
         for workspace in FabricRestApi.list_workspaces():
-            AppLogger.log_substep(f"Deleting {workspace['displayName']}")
+            AppLogger.log_substep(f"Deleting workspace {workspace['displayName']} [{workspace['id']}]")
             FabricRestApi.delete_workspace(workspace['id'])
 
     @classmethod
@@ -462,7 +462,8 @@ class DeploymentManager:
         """Delete All Connections"""
         AppLogger.log_step("Deleting connections")
         for connection in FabricRestApi.list_connections():
-            AppLogger.log_substep(f"Deleting {connection['displayName']}")
+            display_name = connection['displayName'] if connection['displayName'] else connection['id']
+            AppLogger.log_substep(f"Deleting {display_name}")
             FabricRestApi.delete_connection(connection['id'])
 
     @classmethod

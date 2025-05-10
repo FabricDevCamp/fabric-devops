@@ -13,7 +13,7 @@ from .app_settings import AppSettings
 class GitHubRestApi:
     """Wrapper class for calling GitHub REST APIs"""
 
-    ACCESS_TOKEN = AppSettings.GITHUB_ACCESS_TOKEN
+    ACCESS_TOKEN = AppSettings.PERSONAL_ACCESS_TOKEN_GITHUB
 
     GITHUB_ORGANIZATION = 'fabricdevcampdemos'
     GITHUB_OWNER = 'TedAtDevCamp'

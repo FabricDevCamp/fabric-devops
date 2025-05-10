@@ -1,8 +1,8 @@
-"""Event Test"""
+"""Handle Fabric CICD Events"""
 
 import os
 import json
-MESSAGE = 'Hello World fom the Dev Camp Event Test'
+MESSAGE = 'Hello World fom the Fabric CICD Evet Handler'
 
 print(MESSAGE)
 
@@ -26,3 +26,4 @@ if 'event' in context and 'master_branch' in context['event']:
 
 
 print( json.dumps(context, indent=4 ) )
+
