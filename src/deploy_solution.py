@@ -334,7 +334,7 @@ def deploy_variable_library_solution():
 
 def deploy_warehouse_solution():
     """Deploy Warehouse Solution"""
-    
+
     WORKSPACE_NAME = "Custom Warehouse Solution"
     LAKEHOUSE_NAME = "staging"
     WAREHOUSE_NAME = "sales"
@@ -380,8 +380,8 @@ def deploy_warehouse_solution():
         workspace)
 
     for data_pipeline in DATA_PIPELINES:
-        TEMPLATE_FILE = f"DataPipelines\\{data_pipeline['template']}"
-        template_content = ItemDefinitionFactory.get_template_file(TEMPLATE_FILE)
+        template_file = f"DataPipelines//{data_pipeline['template']}"
+        template_content = ItemDefinitionFactory.get_template_file(template_file)
         template_content = template_content.replace('{WORKSPACE_ID}', workspace['id']) \
                                         .replace('{LAKEHOUSE_ID}', lakehouse['id']) \
                                         .replace('{WAREHOUSE_ID}', warehouse['id']) \
