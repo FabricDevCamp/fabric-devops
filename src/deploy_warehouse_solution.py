@@ -47,7 +47,7 @@ connection = FabricRestApi.create_azure_storage_connection_with_account_key(
     workspace)
 
 for data_pipeline in DATA_PIPELINES:
-    TEMPLATE_FILE = f"DataPipelines\\{data_pipeline['template']}"
+    TEMPLATE_FILE = f"DataPipelines//{data_pipeline['template']}"
     template_content = ItemDefinitionFactory.get_template_file(TEMPLATE_FILE)
     template_content = template_content.replace('{WORKSPACE_ID}', workspace['id']) \
                                        .replace('{LAKEHOUSE_ID}', lakehouse['id']) \
