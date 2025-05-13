@@ -509,7 +509,7 @@ class DeploymentManager:
                                                .replace('{WAREHOUSE_CONNECT_STRING}', warehouse_connect_string) \
                                                .replace('{CONNECTION_ID}', connection['id']) \
                                                .replace('{CONTAINER_NAME}', adls_container_name) \
-                                               .replace('{CONTAINER_PATH}', adls_container_path) \                                                           
+                                               .replace('{CONTAINER_PATH}', adls_container_path)                                                       
 
             pipeline_create_request = ItemDefinitionFactory.get_data_pipeline_create_request(
                 data_pipeline['name'],
