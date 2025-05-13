@@ -403,7 +403,6 @@ def deploy_variable_library_solution(deploy_job):
 
     AppLogger.log_job_ended("Solution deployment complete")
 
-
 CUSTOMER_JOBS = []
 match os.getenv("CUSTOMER_NAME"):
     case 'Adventure Works':

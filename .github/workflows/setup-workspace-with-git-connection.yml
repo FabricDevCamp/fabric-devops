@@ -1,5 +1,6 @@
 
-name: Setup Workspace with GIT Connection
+name: Setup Solution with GIT Connection
+run-name: Setup ${{inputs.solution_name}} with GIT Connection
 
 on:
   workflow_dispatch:
@@ -13,11 +14,12 @@ on:
         - Custom Shortcut Solution
         - Custom Data Pipeline Solution
         - Custom Variable Library Solution
+        - Custom Warehouse Solution
         - Deploy All Solutions
 
 jobs:
   deployment-job:    
-    name: Setup Workspace with GitHub Connection
+    name: Deploy Workspace with GitHub Connection
     runs-on: ubuntu-latest
 
     steps:
@@ -43,6 +45,6 @@ jobs:
           SERVICE_PRINCIPAL_OBJECT_ID: ${{ secrets.SERVICE_PRINCIPAL_OBJECT_ID }}
           AZURE_STORAGE_ACCOUNT_KEY: ${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }}
           PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
-          SOLUTION_NAME: ${{inputs.solution_name}}    
+          SOLUTION_NAME: ${{inputs.solution_name}}
         run: 
           python src/setup_workspace_with_git_connection.py

@@ -24,6 +24,10 @@ match os.getenv("SOLUTION_NAME"):
         WORKSPACE = DeploymentManager.deploy_data_pipeline_solution(
             'Custom Data Pipeline Solution')
 
+    case 'Custom Warehouse Solution':
+        WORKSPACE = DeploymentManager.deploy_warehouse_solution(
+            'Custom Warehouse Solution')
+
     case 'Custom Variable Library Solution':
         # SPN bug with var lib requires user auth
         AppSettings.RUN_AS_SERVICE_PRINCIPAL = False
