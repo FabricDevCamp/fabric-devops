@@ -13,6 +13,7 @@ on:
         - Custom Shortcut Solution
         - Custom Data Pipeline Solution
         - Custom Variable Library Solution
+        - Custom Warehouse Solution
 
       customer_name:
         type: choice

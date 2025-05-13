@@ -403,6 +403,101 @@ def deploy_variable_library_solution(deploy_job):
 
     AppLogger.log_job_ended("Solution deployment complete")
 
+def deploy_warehouse_solution(deploy_job):
+    """Deploy Warehouse Solution"""
+
+    workspace_name = deploy_job.target_workspace_name
+    
+    lakehouse_name = "staging"
+    warehouse_name = "sales"
+
+    data_pipelines = [
+        { 'name': 'Load Tables in Staging Lakehouse', 'template':'LoadTablesInStagingLakehouseWithParams.json'},
+        { 'name': 'Create Warehouse Tables', 'template':'CreateWarehouseTables.json'},
+        { 'name': 'Create Warehouse Stored Procedures', 'template':'CreateWarehouseStoredProcedures.json'},
+        { 'name': 'Refresh Warehouse Tables', 'template':'RefreshWarehouseTables.json'}
+    ]
+
+    semantic_model_name = 'Product Sales DirectLake Model'
+    reports = [
+        { 'name': 'Product Sales Summary', 'template':'product_sales_summary.json'},
+        { 'name': 'Product Sales Time Intelligence', 'template':'product_sales_time_intelligence.json'},
+        { 'name': 'Product Sales Top 10 Cities', 'template':'product_sales_top_ten_cities_report.json'},
+    ]
+
+    AppLogger.log_job("Deploying Warehouse solution")
+
+    workspace = FabricRestApi.create_workspace(workspace_name)
+
+    data_prep_folder = FabricRestApi.create_folder(workspace['id'], 'data_prep')
+    data_prep_folder_id = data_prep_folder['id']
+
+    lakehouse = FabricRestApi.create_lakehouse(
+        workspace['id'],
+        lakehouse_name,
+        data_prep_folder_id)
+
+    warehouse = FabricRestApi.create_warehouse(
+        workspace['id'],
+        warehouse_name
+    )
+
+    warehouse_connect_string = FabricRestApi.get_warehouse_connection_string(
+            workspace['id'],
+            warehouse['id'])
+    
+    adls_server_path = deploy_job.parameters[DeploymentJob.adls_server_parameter]
+    adls_container_name = deploy_job.parameters[DeploymentJob.adls_container_name_parameter]
+    adls_container_path = deploy_job.parameters[DeploymentJob.adls_container_path_parameter]
+    adls_path = adls_container_name + adls_container_path
+
+    connection = FabricRestApi.create_azure_storage_connection_with_account_key(
+        adls_server_path,
+        adls_path,
+        workspace)
+
+    for data_pipeline in data_pipelines:
+        template_file = f"DataPipelines//{data_pipeline['template']}"
+        template_content = ItemDefinitionFactory.get_template_file(template_file)
+        template_content = template_content.replace('{WORKSPACE_ID}', workspace['id']) \
+                                            .replace('{LAKEHOUSE_ID}', lakehouse['id']) \
+                                            .replace('{WAREHOUSE_ID}', warehouse['id']) \
+                                            .replace('{WAREHOUSE_CONNECT_STRING}', warehouse_connect_string) \
+                                            .replace('{CONNECTION_ID}', connection['id']) \
+                                            .replace('{CONTAINER_NAME}', adls_container_name) \
+                                            .replace('{CONTAINER_PATH}', adls_container_path)                                                       
+
+        pipeline_create_request = ItemDefinitionFactory.get_data_pipeline_create_request(
+            data_pipeline['name'],
+            template_content)
+        
+        pipeline = FabricRestApi.create_item(
+            workspace['id'], 
+            pipeline_create_request,
+            data_prep_folder_id)
+
+        FabricRestApi.run_data_pipeline(workspace['id'], pipeline)
+
+    createModelRequest = \
+        ItemDefinitionFactory.get_directlake_model_create_request(semantic_model_name,
+                                                                  'sales_model_DirectLake.bim',
+                                                                  warehouse_connect_string,
+                                                                  warehouse['id'])
+
+    model = FabricRestApi.create_item(workspace['id'], createModelRequest)
+
+    FabricRestApi.create_and_bind_semantic_model_connecton(workspace, model['id'], lakehouse)
+
+    for report_data in reports:
+        create_report_request = ItemDefinitionFactory.get_report_create_request(model['id'],
+                                                                                report_data['name'],
+                                                                                report_data['template'])
+        report = FabricRestApi.create_item(workspace['id'], create_report_request)
+
+    AppLogger.log_job_ended("Solution deployment complete")
+
+    return workspace
+
 CUSTOMER_JOBS = []
 match os.getenv("CUSTOMER_NAME"):
     case 'Adventure Works':
@@ -432,3 +527,6 @@ for CUSTOMER_JOB in CUSTOMER_JOBS:
             deploy_data_pipeline_solution(CUSTOMER_JOB)
         case 'Custom Variable Library Solution':
             deploy_variable_library_solution(CUSTOMER_JOB)
+        case 'Custom Warehouse Solution':
+            deploy_warehouse_solution(CUSTOMER_JOB)
+
