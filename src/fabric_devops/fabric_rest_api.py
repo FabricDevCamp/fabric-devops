@@ -680,8 +680,32 @@ class FabricRestApi:
         return workspace_connections
 
     @classmethod
-    def create_item(cls, workspace_id, create_item_request):
+    def list_folders(cls, workspace_id):
+        """List Folder"""
+        endpoint = f'workspaces/{workspace_id}/folders'
+        return cls._execute_get_request(endpoint)['value']
+
+    @classmethod
+    def create_folder(cls, workspace_id, folder_name, parent_folder_id = None):
+        endpoint = f'workspaces/{workspace_id}/folders'
+        body = { 'displayName': folder_name }
+
+        if parent_folder_id is not None:
+            body['parentFolderId'] = parent_folder_id
+
+        AppLogger.log_step(f'Creating folder {folder_name}')
+
+        folder = cls._execute_post_request(endpoint, body)
+        AppLogger.log_substep(f"folder creatrd with Id [{folder['id']}]")
+        
+        return folder
+
+    @classmethod
+    def create_item(cls, workspace_id, create_item_request, folder_id = None):
         """Create Item using create-item-request"""
+        if folder_id is not None:
+            create_item_request['folderId'] = folder_id
+
         AppLogger.log_step(
             f"Creating [{create_item_request['displayName']}.{create_item_request['type']}]...")
         endpoint = f'workspaces/{workspace_id}/items'
@@ -717,13 +741,23 @@ class FabricRestApi:
         return cls._execute_post_request(endpoint)
 
     @classmethod
-    def create_lakehouse(cls, workspace_id, display_name):
+    def create_lakehouse(cls, workspace_id, display_name, folder_id = None):
         """Create Lakehouse"""
         create_item_request = {
             'displayName': display_name, 
             'type': 'Lakehouse' 
         }
-        return cls.create_item(workspace_id, create_item_request)
+        return cls.create_item(workspace_id, create_item_request, folder_id)
+
+    @classmethod
+    def create_warehouse(cls, workspace_id, display_name, folder_id = None):
+        """Create Warehouse"""
+        create_item_request = {
+            'displayName': display_name, 
+            'type': 'Warehouse' 
+        }
+        return cls.create_item(workspace_id, create_item_request, folder_id)
+
 
     @classmethod
     def list_workspace_items(cls, workspace_id, item_type = None):
@@ -794,6 +828,19 @@ class FabricRestApi:
             'server': server,
             'database': database
         }
+
+    @classmethod
+    def get_warehouse(cls, workspace_id, warehouse_id):
+        """Get warehouse properties"""
+        rest_url = f'workspaces/{workspace_id}/warehouses/{warehouse_id}'
+        return cls._execute_get_request(rest_url)
+
+    @classmethod
+    def get_warehouse_connection_string(cls, workspace_id, warehouse_id):
+        """Get warehouse properties"""
+        rest_url = f'workspaces/{workspace_id}/warehouses/{warehouse_id}'
+        warehouse = cls._execute_get_request(rest_url)
+        return warehouse['properties']['connectionString']
 
     @classmethod
     def list_datasources_for_semantic_model(cls, workspace_id, semantic_model_id):

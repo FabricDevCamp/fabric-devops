@@ -16,7 +16,7 @@ __all__ = [
     "DeploymentManager",
     "StagingEnvironments",
     "SampleCustomerData",
-    "AdoProjectManager"
+    "AdoProjectManager",
     "GitHubRestApi"
 ]
 
