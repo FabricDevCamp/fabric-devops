@@ -1,5 +1,6 @@
 
 name: Deploy Solution
+run-name: Deploy ${{inputs.solution_name}}
 
 on:
   workflow_dispatch:
