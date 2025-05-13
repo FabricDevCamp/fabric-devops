@@ -1,5 +1,6 @@
 
 name: Deploy Solution with Parameters
+run-name: Deploy ${{inputs.solution_name}} to ${{ inputs.customer_name }}
 
 on:
   workflow_dispatch:
