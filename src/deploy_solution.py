@@ -109,7 +109,7 @@ def deploy_shortcut_solution():
 
     lakehouse = FabricRestApi.create_lakehouse(workspace['id'], lakehouse_name)
 
-    connection = FabricRestApi.create_azure_storage_connection_with_account_key(
+    connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
         AppSettings.AZURE_STORAGE_SERVER,
         AppSettings.AZURE_STORAGE_PATH,
         workspace)
@@ -194,7 +194,7 @@ def deploy_data_pipeline_solution():
         notebook = FabricRestApi.create_item(workspace['id'], create_notebook_request)
         notebook_ids[notebook['displayName']] = notebook['id']
 
-    connection = FabricRestApi.create_azure_storage_connection_with_account_key(
+    connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
         AppSettings.AZURE_STORAGE_SERVER,
         AppSettings.AZURE_STORAGE_PATH,
         workspace)
@@ -275,7 +275,7 @@ def deploy_variable_library_solution():
         notebook = FabricRestApi.create_item(workspace['id'], create_notebook_request)
         notebook_ids.append(notebook['id'])
 
-    connection = FabricRestApi.create_azure_storage_connection_with_account_key(
+    connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
         AppSettings.AZURE_STORAGE_SERVER,
         AppSettings.AZURE_STORAGE_PATH,
         workspace)
@@ -374,7 +374,7 @@ def deploy_warehouse_solution():
             workspace['id'],
             warehouse['id'])
 
-    connection = FabricRestApi.create_azure_storage_connection_with_account_key(
+    connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
         AppSettings.AZURE_STORAGE_SERVER,
         AppSettings.AZURE_STORAGE_PATH,
         workspace)

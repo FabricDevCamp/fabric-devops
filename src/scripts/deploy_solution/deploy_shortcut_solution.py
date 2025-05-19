@@ -25,7 +25,7 @@ FabricRestApi.update_workspace_description(workspace['id'], 'Custom Shortcut Sol
 
 lakehouse = FabricRestApi.create_lakehouse(workspace['id'], LAKEHOUSE_NAME)
 
-connection = FabricRestApi.create_azure_storage_connection_with_account_key(
+connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
     AppSettings.AZURE_STORAGE_SERVER,
     AppSettings.AZURE_STORAGE_PATH,
     workspace)

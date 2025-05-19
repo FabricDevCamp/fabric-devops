@@ -248,6 +248,113 @@ class ItemDefinitionFactory:
         }
 
     @classmethod
+    def get_eventhouse_create_request(cls, display_name, eventhouse_properties = None):                
+        """Get Eventstream Create Request"""
+        if eventhouse_properties is None:
+            eventhouse_properties = cls.get_template_file(
+                "Eventhouses//EventhouseProperties.json")
+        return {
+            'displayName': display_name,
+            'type': "Eventhouse",
+            'definition': {
+                'parts': [
+                    cls._create_inline_base64_part('EventhouseProperties.json', 
+                                                   eventhouse_properties),
+                ]
+            }
+        }
+
+    @classmethod
+    def get_kql_database_create_request(cls, display_name, eventhouse):
+        """Get KQL Database Create Request"""
+
+        database_schema = cls.get_template_file(
+                "KqlDatabases//DatabaseSchema.kql")
+        database_template = cls.get_template_file(
+                "KqlDatabases//DatabaseProperties.json")
+        database_properties = database_template.replace('{EVENTHOUSE_ID}', eventhouse['id'])
+        
+        return {
+            'displayName': display_name,
+            'type': "KQLDatabase",
+            'definition': {
+                'parts': [
+                    cls._create_inline_base64_part('DatabaseProperties.json', database_properties),
+                    cls._create_inline_base64_part('DatabaseSchema.kql', database_schema),
+                ]
+            }
+        }
+
+
+
+    @classmethod
+    def get_eventstream_create_request(cls, display_name, workspace_id, eventhouse_id, kql_database):
+        """Get Eventstream Create Request"""
+        eventstream_properties = cls.get_template_file(
+                "Eventstreams//eventstreamProperties.json")
+
+        eventstream_template = cls.get_template_file(
+                "Eventstreams//eventstream.json")
+        
+        eventstream_json = eventstream_template.replace('{WORKSPACE_ID}', workspace_id)\
+                                               .replace('{KQL_DATABASE_ID}', kql_database['id'])\
+                                               .replace('{KQL_DATABASE_NAME}', kql_database['displayName'])\
+                                               .replace('{EVENTHOUSE_ID}', eventhouse_id)                             
+        return {
+            'displayName': display_name,
+            'type': "Eventstream",
+            'definition': {
+                'parts': [
+                    cls._create_inline_base64_part('eventstreamProperties.json', eventstream_properties),
+                    cls._create_inline_base64_part('eventstream.json', eventstream_json),
+                ]
+            }
+        }
+
+    @classmethod
+    def get_kql_dashboard_create_request(cls, display_name, workspace_id, kql_database, query_service_uri):
+        """Get KQL Dashboard Create Request"""
+        realtime_dashboard_template = cls.get_template_file("KqlDashboards//RealTimeDashboard.json")
+
+        realtime_dashboard_json = realtime_dashboard_template.replace('{WORKSPACE_ID}', workspace_id)\
+                                                             .replace('{KQL_DATABASE_ID}', kql_database['id'])\
+                                                             .replace('{KQL_DATABASE_NAME}', kql_database['displayName'])\
+                                                             .replace('{QUERY_SERVICE_URI}', query_service_uri)
+        
+        return {
+            'displayName': display_name,
+            'type': "KQLDashboard",
+            'definition': {
+                'parts': [
+                    cls._create_inline_base64_part('RealTimeDashboard.json', realtime_dashboard_json),
+                ]
+            }
+        }
+
+
+    @classmethod
+    def get_kql_queryset_create_request(cls, display_name, kql_database, query_service_uri, queryset_template):
+        """Get KQL Queryset Create Request"""
+        queryset_template = cls.get_template_file(f"KqlQuerysets//{queryset_template}")
+
+        queryset_json = queryset_template.replace('{KQL_DATABASE_ID}', kql_database['id'])\
+                                         .replace('{KQL_DATABASE_NAME}', kql_database['displayName'])\
+                                         .replace('{QUERY_SERVICE_URI}', query_service_uri)
+        
+        return {
+            'displayName': display_name,
+            'type': "KQLQueryset",
+            'definition': {
+                'parts': [
+                    cls._create_inline_base64_part('RealTimeQueryset.json', queryset_json),
+                ]
+            }
+        }
+
+
+
+
+    @classmethod
     def get_variable_library_create_request(cls, display_name, variable_library: VariableLibrary):
         """Get Create Request for Variable Library file"""
 
@@ -299,7 +406,6 @@ class ItemDefinitionFactory:
             }
         }
 
-
     @classmethod
     def export_item_definitions_from_workspace(cls, workspace_name):
         """Export Item Definiitons from Workspace"""
@@ -344,4 +450,4 @@ class ItemDefinitionFactory:
         with open(full_path, 'w', encoding='utf-8') as file:
             file.write(file_content)
 
-            
+  

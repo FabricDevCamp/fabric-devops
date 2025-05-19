@@ -32,7 +32,7 @@ for notebook_data in NOTEBOOKS:
     notebook = FabricRestApi.create_item(workspace['id'], create_notebook_request)
     notebook_ids[notebook['displayName']] = notebook['id']
 
-connection = FabricRestApi.create_azure_storage_connection_with_account_key(
+connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
     AppSettings.AZURE_STORAGE_SERVER,
     AppSettings.AZURE_STORAGE_PATH,
     workspace)

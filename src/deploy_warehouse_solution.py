@@ -41,7 +41,7 @@ warehouse_connect_string = FabricRestApi.get_warehouse_connection_string(
         workspace['id'],
         warehouse['id'])
 
-connection = FabricRestApi.create_azure_storage_connection_with_account_key(
+connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
     AppSettings.AZURE_STORAGE_SERVER,
     AppSettings.AZURE_STORAGE_PATH,
     workspace)

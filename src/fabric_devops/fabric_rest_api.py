@@ -453,7 +453,7 @@ class FabricRestApi:
                 f"{connection['connectionDetails']['type']} - {connection['displayName']}")            
 
     @classmethod
-    def create_connection(cls, create_connection_request, top_level_step = False):
+    def create_connection(cls, create_connection_request, top_level_step = True):
         """ Create new connection"""
         log_message = f"Creating {create_connection_request['connectionDetails']['type']} " + \
                       f"connection named {create_connection_request['displayName']} ..."
@@ -589,7 +589,7 @@ class FabricRestApi:
         return cls.create_connection(create_connection_request)
 
     @classmethod
-    def create_azure_storage_connection_with_account_key(cls, server, path,
+    def create_azure_storage_connection_with_account_kex(cls, server, path,
                                                          workspace = None,
                                                          top_level_step = False):
         """Create Azure Storage connections"""
@@ -622,6 +622,43 @@ class FabricRestApi:
         }
 
         return cls.create_connection(create_connection_request, top_level_step=top_level_step)
+
+
+    @classmethod
+    def create_azure_storage_connection_with_sas_token(cls, server, path,
+                                                       workspace = None,
+                                                       top_level_step = True):
+        """Create Azure Storage connections"""
+
+        display_name = 'ADLS'
+        if workspace is not None:
+            display_name = f"Workspace[{workspace['id']}]-" + display_name
+
+        create_connection_request = {
+            'displayName': display_name,
+            'connectivityType': 'ShareableCloud',
+            'privacyLevel': 'Organizational',
+            'connectionDetails': {
+                'type': 'AzureDataLakeStorage',
+                'creationMethod': 'AzureDataLakeStorage',
+                'parameters': [ 
+                    { 'value': server, 'dataType': 'Text', 'name': 'server' },
+                    { 'value': path, 'dataType': 'Text', 'name': 'path' }
+                ]
+            },
+            'credentialDetails': {
+                'credentials': {
+                    'key': AppSettings.AZURE_STORAGE_SAS_TOKEN,
+                    'credentialType': 'SharedAccessSignature'
+                },
+                'singleSignOnType': 'None',
+                'connectionEncryption': 'NotEncrypted',
+                'skipTestConnection': 'false'
+            }
+        }
+
+        return cls.create_connection(create_connection_request, top_level_step=top_level_step)
+
 
 
     @classmethod
@@ -687,6 +724,7 @@ class FabricRestApi:
 
     @classmethod
     def create_folder(cls, workspace_id, folder_name, parent_folder_id = None):
+        """Create Folder"""
         endpoint = f'workspaces/{workspace_id}/folders'
         body = { 'displayName': folder_name }
 
@@ -841,6 +879,13 @@ class FabricRestApi:
         rest_url = f'workspaces/{workspace_id}/warehouses/{warehouse_id}'
         warehouse = cls._execute_get_request(rest_url)
         return warehouse['properties']['connectionString']
+
+    @classmethod
+    def get_eventhouse(cls, workspace_id, eventhouse_id):
+        """Get warehouse properties"""
+        rest_url = f'workspaces/{workspace_id}/eventhouses/{eventhouse_id}'
+        return cls._execute_get_request(rest_url)
+
 
     @classmethod
     def list_datasources_for_semantic_model(cls, workspace_id, semantic_model_id):

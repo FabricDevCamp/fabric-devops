@@ -32,7 +32,7 @@ adls_container_path = deploy_job.parameters[DeploymentJob.adls_container_path_pa
 adls_server = deploy_job.parameters[DeploymentJob.adls_server_parameter]
 ADLS_PATH = f'/{adls_container_name}{adls_container_path}'
 
-connection = FabricRestApi.create_azure_storage_connection_with_account_key(
+connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
     adls_server,
     ADLS_PATH,
     workspace)

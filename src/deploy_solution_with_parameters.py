@@ -144,7 +144,7 @@ def deploy_shortcut_solution(deploy_job):
     adls_server = deploy_job.parameters[DeploymentJob.adls_server_parameter]
     adls_path = f'/{adls_container_name}{adls_container_path}'
 
-    connection = FabricRestApi.create_azure_storage_connection_with_account_key(
+    connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
         adls_server,
         adls_path,
         workspace)
@@ -245,7 +245,7 @@ def deploy_data_pipeline_solution(deploy_job):
     adls_path = adls_container_name + adls_container_path
 
 
-    connection = FabricRestApi.create_azure_storage_connection_with_account_key(
+    connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
         adls_server_path,
         adls_path,
         workspace)
@@ -348,7 +348,7 @@ def deploy_variable_library_solution(deploy_job):
     adls_container_path = deploy_job.parameters[deploy_job.adls_container_path_parameter]
     adls_path = adls_container_name + adls_container_path
 
-    connection = FabricRestApi.create_azure_storage_connection_with_account_key(
+    connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
         adls_server,
         adls_path,
         workspace)
@@ -451,7 +451,7 @@ def deploy_warehouse_solution(deploy_job):
     adls_container_path = deploy_job.parameters[DeploymentJob.adls_container_path_parameter]
     adls_path = adls_container_name + adls_container_path
 
-    connection = FabricRestApi.create_azure_storage_connection_with_account_key(
+    connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
         adls_server_path,
         adls_path,
         workspace)
