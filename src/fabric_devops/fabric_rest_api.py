@@ -648,7 +648,7 @@ class FabricRestApi:
             },
             'credentialDetails': {
                 'credentials': {
-                    'key': AppSettings.AZURE_STORAGE_SAS_TOKEN,
+                    'token': AppSettings.AZURE_STORAGE_SAS_TOKEN,
                     'credentialType': 'SharedAccessSignature'
                 },
                 'singleSignOnType': 'None',
