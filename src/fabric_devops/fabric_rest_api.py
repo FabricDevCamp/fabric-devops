@@ -657,8 +657,6 @@ class FabricRestApi:
             }
         }
 
-        print(create_connection_request)
-
         return cls.create_connection(create_connection_request, top_level_step=top_level_step)
 
 
