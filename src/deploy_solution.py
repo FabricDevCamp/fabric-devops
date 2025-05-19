@@ -476,25 +476,33 @@ def deploy_realtime_solution():
         kql_database,
         query_service_uri)
     
-    realtime_dashboard = FabricRestApi.create_item(workspace['id'], realtime_dashboard_create_request)
+    FabricRestApi.create_item(workspace['id'], realtime_dashboard_create_request)
 
     create_queryset1_create_request = ItemDefinitionFactory.get_kql_queryset_create_request(
         'Queryset1', kql_database, query_service_uri, 'RealTimeQueryset1.json'
     )
 
-    queryset1 = FabricRestApi.create_item(workspace['id'], create_queryset1_create_request)
+    FabricRestApi.create_item(workspace['id'], create_queryset1_create_request)
 
     create_queryset2_create_request = ItemDefinitionFactory.get_kql_queryset_create_request(
         'Queryset2', kql_database, query_service_uri, 'RealTimeQueryset2.json'
     )
 
-    queryset2 = FabricRestApi.create_item(workspace['id'], create_queryset2_create_request)
+    FabricRestApi.create_item(workspace['id'], create_queryset2_create_request)
+
+    bim_model_template = ItemDefinitionFactory.get_template_file('SemanticModels//bikes_rti_model.bim')
+
+    bim_model = bim_model_template.replace('QUERY_SERVICE_URI', query_service_uri)\
+                                  .replace('KQL_DATABASE_ID', kql_database['id'])
 
 
+    model_create_request = ItemDefinitionFactory.get_semantic_model_create_request(
+        semantic_model_name,
+        bim_model)
+
+    model = FabricRestApi.create_item(workspace['id'], model_create_request)
 
     # web_url = FabricRestApi.get_web_url_from_semantic_model(workspace['id'], model['id'])
-
-    # AppLogger.log_substep(f'Creating anonymous Web connection to {web_url} ')
 
     # connection = FabricRestApi.create_anonymous_web_connection(web_url, workspace)
 
@@ -502,12 +510,12 @@ def deploy_realtime_solution():
 
     # FabricRestApi.refresh_semantic_model(workspace['id'], model['id'])
 
-    # create_report_request = \
-    #     ItemDefinitionFactory.get_report_create_request(model['id'],
-    #                                                     report_name,
-    #                                                     'product_sales_summary.json')
+    create_report_request = \
+        ItemDefinitionFactory.get_report_create_request(model['id'],
+                                                        report_name,
+                                                        'product_sales_summary.json')
 
-    # FabricRestApi.create_item(workspace['id'], create_report_request)
+    FabricRestApi.create_item(workspace['id'], create_report_request)
 
     AppLogger.log_job_ended("Solution deployment complete")
 
