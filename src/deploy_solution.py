@@ -447,4 +447,4 @@ match os.getenv("SOLUTION_NAME"):
         deploy_shortcut_solution()
         deploy_data_pipeline_solution()
         deploy_warehouse_solution()
-        deploy_variable_library_solution()
+        #deploy_variable_library_solution()
