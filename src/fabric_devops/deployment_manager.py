@@ -334,7 +334,7 @@ class DeploymentManager:
         return workspace
 
     @classmethod
-    def deploy_variable_library_solution(cls, 
+    def deploy_variable_library_solution(cls,
                                          target_workspace, 
                                          deploy_job = StagingEnvironments.get_dev_environment()):
         """Deploy Variable Library Solution"""
@@ -541,7 +541,94 @@ class DeploymentManager:
         AppLogger.log_job_ended("Solution deployment complete")
 
         return workspace
-            
+
+    @classmethod
+    def deploy_realtime_solution(cls,
+                                 target_workspace, 
+                                 deploy_job = StagingEnvironments.get_dev_environment()):
+        """Deploy Real Time Solution"""
+        
+        workspace_name = target_workspace
+
+        AppLogger.log_job(f'Deploying {workspace_name}')
+
+        eventhouse_name = "Rental Bikes"
+        kql_database_name = "Rental Bike Events"
+        kql_queryset_name = "Rental Bike Queries"
+        eventstream_name = "rental_bike_event_data"
+        realtime_dashboard_name = "Rental Bike Dashboard"
+        semantic_model_name = 'Rental Bike Event Model'
+        report_name = 'Rental Bike Locations Report'
+
+        workspace = FabricRestApi.create_workspace(workspace_name)
+
+        create_eventhouse_request = \
+            ItemDefinitionFactory.get_eventhouse_create_request(eventhouse_name)
+        
+        eventhouse_item = FabricRestApi.create_item(workspace['id'], create_eventhouse_request)
+
+        eventhouse = FabricRestApi.get_eventhouse(workspace['id'], eventhouse_item['id'])
+
+        query_service_uri = eventhouse['properties']['queryServiceUri']
+
+        create_kql_database_request = \
+            ItemDefinitionFactory.get_kql_database_create_request(kql_database_name, 
+                                                                eventhouse)
+        
+        kql_database = FabricRestApi.create_item(workspace['id'], create_kql_database_request)
+
+        create_eventstream_request = \
+            ItemDefinitionFactory.get_eventstream_create_request(eventstream_name,
+                                                                workspace['id'],
+                                                                eventhouse['id'],
+                                                                kql_database)
+        
+        FabricRestApi.create_item(workspace['id'], create_eventstream_request)
+
+        realtime_dashboard_create_request = ItemDefinitionFactory.get_kql_dashboard_create_request(
+            realtime_dashboard_name,
+            workspace['id'],
+            kql_database,
+            query_service_uri)
+        
+        FabricRestApi.create_item(workspace['id'], realtime_dashboard_create_request)
+
+        create_queryset_create_request = ItemDefinitionFactory.get_kql_queryset_create_request(
+            kql_queryset_name, 
+            kql_database, 
+            query_service_uri, 
+            'RealTimeQueryset.json'
+        )
+
+        FabricRestApi.create_item(workspace['id'], create_queryset_create_request)
+
+        template_file_path = 'SemanticModels//bikes_rti_model.bim'
+        bim_model_template = ItemDefinitionFactory.get_template_file(template_file_path)
+
+        bim_model = bim_model_template.replace('{QUERY_SERVICE_URI}', query_service_uri)\
+                                    .replace('{KQL_DATABASE_ID}', kql_database['id'])
+        
+        model_create_request = \
+            ItemDefinitionFactory.get_semantic_model_create_request_from_definition(
+                semantic_model_name,
+                bim_model)
+
+        model = FabricRestApi.create_item(workspace['id'], model_create_request)
+
+        FabricRestApi.patch_oauth_connection_to_kqldb(workspace, model, query_service_uri)
+
+        create_report_request = \
+            ItemDefinitionFactory.get_report_create_request(model['id'],
+                                                            report_name,
+                                                            'rental_bike_sales.json')
+
+        FabricRestApi.create_item(workspace['id'], create_report_request)
+
+        AppLogger.log_job_ended("Solution deployment complete")
+
+        return workspace
+
+
     @classmethod
     def delete_all_deployment_pipelines(cls):
         """Delete All Deployment Pipelines"""

@@ -27,6 +27,10 @@ match os.getenv("SOLUTION_NAME"):
     case 'Custom Warehouse Solution':
         WORKSPACE = DeploymentManager.deploy_warehouse_solution(
             'Custom Warehouse Solution')
+        
+    case 'Custom Realtime Solution':
+        WORKSPACE = DeploymentManager.deploy_realtime_solution(
+            'Custom Realtime Solution')
 
     case 'Custom Variable Library Solution':
         # SPN bug with var lib requires user auth
