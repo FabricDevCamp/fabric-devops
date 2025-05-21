@@ -15,11 +15,11 @@ on:
         - Custom Data Pipeline Solution
         - Custom Variable Library Solution
         - Custom Warehouse Solution
-        - Custom Realtime Intelligence Solution
+        - Custom Realtime Solution
         - Deploy All Solutions
 
 jobs:
-  deployment-job:    
+  deployment-job:
     name: Deploy ${{inputs.solution_name}}
     runs-on: ubuntu-latest
 

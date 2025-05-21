@@ -433,15 +433,15 @@ def deploy_warehouse_solution():
 def deploy_realtime_solution():
     """Deploy Real Time Solution"""
      
-    workspace_name = 'Custom Realtime Intelligence Solution'
+    workspace_name = 'Custom Realtime Solution'
 
     AppLogger.log_job(f'Deploying {workspace_name}')
 
-    eventhouse_name = "DemoEventhouse"
-    kql_database_name = "KqlDb01"
-    eventstream_name = "Eventstream01"
-    realtime_dashboard_name = "RealtimeDashboard01"
-    semantic_model_name = 'Semantic Model on KQL Database'
+    eventhouse_name = "Rental Bikes"
+    kql_database_name = "Rental Bike Events"
+    eventstream_name = "Renatal Bike Event Data Stream"
+    realtime_dashboard_name = "Bike Realtime Dashboard"
+    semantic_model_name = 'Rental Bikes Event Model'
     report_name = 'Bike Rentals'
 
     workspace = FabricRestApi.create_workspace(workspace_name)
@@ -533,7 +533,7 @@ match os.getenv("SOLUTION_NAME"):
     case 'Custom Warehouse Solution':
         deploy_warehouse_solution()
 
-    case 'Custom Realtime Intelligence Solution':
+    case 'Custom Realtime Solution':
         deploy_realtime_solution()
 
     case 'Deploy All Solutions':
@@ -544,6 +544,3 @@ match os.getenv("SOLUTION_NAME"):
         deploy_warehouse_solution()
         deploy_realtime_solution()
         #deploy_variable_library_solution()
-
-
-deploy_realtime_solution()
