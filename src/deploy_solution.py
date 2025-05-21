@@ -440,9 +440,9 @@ def deploy_realtime_solution():
     eventhouse_name = "Rental Bikes"
     kql_database_name = "Rental Bike Events"
     eventstream_name = "rental_bike_event_data"
-    realtime_dashboard_name = "Bike Realtime Dashboard"
-    semantic_model_name = 'Rental Bikes Event Model'
-    report_name = 'Rental Bikes Summary'
+    realtime_dashboard_name = "Rental Bike Dashboard"
+    semantic_model_name = 'Rental Bike Event Model'
+    report_name = 'Rental Bike Locations Report'
 
     workspace = FabricRestApi.create_workspace(workspace_name)
 
