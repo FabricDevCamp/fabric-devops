@@ -7,7 +7,7 @@
         "clusterUri": "{QUERY_SERVICE_URI}",
         "type": "Fabric",
         "databaseItemId": "{KQL_DATABASE_ID}",
-        "databaseItemName": "{KQL_DATABSE_NAME}"
+        "databaseItemName": "{KQL_DATABASE_NAME}"
       }
     ],
     "tabs": [

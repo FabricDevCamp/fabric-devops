@@ -594,9 +594,9 @@ class DeploymentManager:
         FabricRestApi.create_item(workspace['id'], realtime_dashboard_create_request)
 
         create_queryset_create_request = ItemDefinitionFactory.get_kql_queryset_create_request(
-            kql_queryset_name, 
-            kql_database, 
-            query_service_uri, 
+            kql_queryset_name,
+            kql_database,
+            query_service_uri,
             'RealTimeQueryset.json'
         )
 
