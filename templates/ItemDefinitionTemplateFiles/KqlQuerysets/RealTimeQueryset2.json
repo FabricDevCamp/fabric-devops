@@ -13,7 +13,7 @@
     "tabs": [
       {
         "id": "ccd7b90c-51fe-429f-a853-385b02bd74c9",
-        "content": "RawData\n| take 10\n\nTransformedData\n| take \n\nTransformedData\n| where BikepointID > 100 and Neighbourhood == \"Chelsea\"\n| project Timestamp, No_Bikes\n| render \n\n// Create a materialized view\n.create-or-alter materialized-view with (folder=\"Gold\") AggregatedData on table TransformedData\n{\n   TransformedData\n   | summarize arg_max(Timestamp,No_Bikes) by BikepointID\n}\n\nAggregatedData\n| sort by BikepointID\n| render columnchart with (ycolumns=No_Bikes,xcolumn=BikepointID)\n\n",
+        "content": "RawData\n| summarize arg_max(Timestamp, No_Bikes,  No_Empty_Docks, Neighbourhood, Lat=todouble(Latitude), Lon=todouble(Longitude)) by BikepointID",
         "title": "Tabular Tab",
         "dataSourceId": "c2434bf8-25bb-4aa0-8746-db470533adaf"
       }

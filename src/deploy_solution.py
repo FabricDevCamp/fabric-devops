@@ -439,6 +439,7 @@ def deploy_realtime_solution():
 
     eventhouse_name = "Rental Bikes"
     kql_database_name = "Rental Bike Events"
+    kql_queryset_name = "Rental Bike Queries"
     eventstream_name = "rental_bike_event_data"
     realtime_dashboard_name = "Rental Bike Dashboard"
     semantic_model_name = 'Rental Bike Event Model'
@@ -477,17 +478,14 @@ def deploy_realtime_solution():
     
     FabricRestApi.create_item(workspace['id'], realtime_dashboard_create_request)
 
-    create_queryset1_create_request = ItemDefinitionFactory.get_kql_queryset_create_request(
-        'Queryset1', kql_database, query_service_uri, 'RealTimeQueryset1.json'
+    create_queryset_create_request = ItemDefinitionFactory.get_kql_queryset_create_request(
+        kql_queryset_name, 
+        kql_database, 
+        query_service_uri, 
+        'RealTimeQueryset.json'
     )
 
-    FabricRestApi.create_item(workspace['id'], create_queryset1_create_request)
-
-    create_queryset2_create_request = ItemDefinitionFactory.get_kql_queryset_create_request(
-        'Queryset2', kql_database, query_service_uri, 'RealTimeQueryset2.json'
-    )
-
-    FabricRestApi.create_item(workspace['id'], create_queryset2_create_request)
+    FabricRestApi.create_item(workspace['id'], create_queryset_create_request)
 
     template_file_path = 'SemanticModels//bikes_rti_model.bim'
     bim_model_template = ItemDefinitionFactory.get_template_file(template_file_path)

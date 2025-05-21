@@ -12,7 +12,7 @@
   "destinations": [
     {
       "id": "{EVENTHOUSE_ID}",
-      "name": "TutorialDestination",
+      "name": "RentalBikes",
       "type": "Eventhouse",
       "properties": {
         "dataIngestionMode": "ProcessedIngestion",
