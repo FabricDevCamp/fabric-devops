@@ -442,7 +442,7 @@ def deploy_realtime_solution():
     eventstream_name = "rental_bike_event_data"
     realtime_dashboard_name = "Bike Realtime Dashboard"
     semantic_model_name = 'Rental Bikes Event Model'
-    report_name = 'Bike Rentals'
+    report_name = 'Rental Bikes Summary'
 
     workspace = FabricRestApi.create_workspace(workspace_name)
 
