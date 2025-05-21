@@ -18,7 +18,7 @@ class AppSettings:
 
     PERSONAL_ACCESS_TOKEN_GITHUB = os.getenv('PERSONAL_ACCESS_TOKEN_GITHUB')
 
-    CLASS_ID_POWERSHELL_APP = "1950a258-227b-4e31-a9cf-717495945fc2"
+    CLIENT_ID_AZURE_POWERSHELL_APP = "1950a258-227b-4e31-a9cf-717495945fc2"
 
     FABRIC_PERMISSION_SCOPES = [ 'https://api.fabric.microsoft.com/.default' ]
     FABRIC_REST_API_BASE_URL = 'https://api.fabric.microsoft.com/v1/'

@@ -15,7 +15,7 @@ on:
         - Custom Data Pipeline Solution
         - Custom Variable Library Solution
         - Custom Warehouse Solution
-        - Custom Realtime Inteligence Solution
+        - Custom Realtime Intelligence Solution
         - Deploy All Solutions
 
 jobs:

@@ -200,6 +200,30 @@ class FabricRestApi:
                            'Authorization': f'Bearer {access_token}'}
         return requests.post(url=rest_url, headers=request_headers, json=post_body, timeout=60)
 
+    @classmethod
+    def _execute_patch_request_to_powerbi(cls, endpoint, post_body):
+        """Execute GET Request on Fabric REST API Endpoint"""
+        rest_url = AppSettings.POWER_BI_REST_API_BASE_URL + endpoint
+        access_token = EntraIdTokenManager.get_fabric_access_token()
+        request_headers = {'Content-Type':'application/json',
+                           'Authorization': f'Bearer {access_token}'}
+        response = requests.patch(url=rest_url, json=post_body, headers=request_headers, timeout=60)
+        if response.status_code in {200, 204}:
+            try:
+                return response.json()
+            except JSONDecodeError:
+                return None
+
+        if response.status_code == 429: # handle TOO MANY REQUESTS error
+            wait_time = int(response.headers.get('Retry-After'))
+            time.sleep(wait_time)
+            return cls._execute_patch_request_to_powerbi(endpoint, post_body)
+        else:
+            AppLogger.log_error(
+                f'Error executing PATCH request: {response.status_code} - {response.text}')
+            return None
+
+
 #endregion
 
     @classmethod
@@ -623,7 +647,6 @@ class FabricRestApi:
 
         return cls.create_connection(create_connection_request, top_level_step=top_level_step)
 
-
     @classmethod
     def create_azure_storage_connection_with_sas_token(cls, server, path,
                                                        workspace = None,
@@ -659,7 +682,42 @@ class FabricRestApi:
 
         return cls.create_connection(create_connection_request, top_level_step=top_level_step)
 
+    @classmethod
+    def patch_oauth_connection_to_kqldb(cls, workspace, semantic_model, query_service_uri):
+        """Patch AzureDataExplorer connections using OAuth credentials"""
 
+        datasources = FabricRestApi.list_datasources_for_semantic_model(workspace['id'], semantic_model['id'])
+
+        for datasource in datasources:
+            if datasource['datasourceType'] == 'Extension' and \
+               datasource['connectionDetails']['kind'] == 'AzureDataExplorer':
+
+                datasource_id = datasource['datasourceId']
+                gateway_id = datasource['gatewayId']                
+                rest_url = f'gateways/{gateway_id}/datasources/{datasource_id}'
+                
+                AppLogger.log_step(f'Patching credentials for {query_service_uri}')
+
+                access_token = EntraIdTokenManager.get_kqldb_access_token(query_service_uri)
+
+                part1 = r'{"credentialData":[{"name":"accessToken","value":"'
+                part2 = r'"}]}'
+
+                stringified_credentials = part1 + access_token + part2
+
+                update_datasource_request = {
+                    'credentialDetails': {
+                        'credentialType': 'OAuth2',
+                        'credentials': stringified_credentials,
+                        'encryptedConnection': 'NotEncrypted',
+                        'encryptionAlgorithm': 'None',
+                        'privacyLevel': 'None',
+                        'useCallerAADIdentity': 'False'
+                    }
+                }
+       
+                cls._execute_patch_request_to_powerbi(rest_url, update_datasource_request)
+                AppLogger.log_substep("OAuth creds successfully patched")
 
     @classmethod
     def create_github_connection(cls, url, workspace = None, top_level_step = False):

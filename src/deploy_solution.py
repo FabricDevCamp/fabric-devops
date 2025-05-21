@@ -432,16 +432,17 @@ def deploy_warehouse_solution():
 
 def deploy_realtime_solution():
     """Deploy Real Time Solution"""
+     
+    workspace_name = 'Custom Realtime Intelligence Solution'
 
-    AppLogger.log_job("Deploying Real Time Solution")
+    AppLogger.log_job(f'Deploying {workspace_name}')
 
-    workspace_name = "Custom Realtime Solution"
-    eventhouse_name = "Eventhouse01"
+    eventhouse_name = "DemoEventhouse"
     kql_database_name = "KqlDb01"
     eventstream_name = "Eventstream01"
     realtime_dashboard_name = "RealtimeDashboard01"
-    semantic_model_name = 'Product Sales Imported Model'
-    report_name = 'Product Sales Summary'
+    semantic_model_name = 'Semantic Model on KQL Database'
+    report_name = 'Bike Rentals'
 
     workspace = FabricRestApi.create_workspace(workspace_name)
 
@@ -453,8 +454,6 @@ def deploy_realtime_solution():
     eventhouse = FabricRestApi.get_eventhouse(workspace['id'], eventhouse_item['id'])
 
     query_service_uri = eventhouse['properties']['queryServiceUri']
-    ingestion_service_uri  = eventhouse['properties']['ingestionServiceUri']
-
 
     create_kql_database_request = \
         ItemDefinitionFactory.get_kql_database_create_request(kql_database_name, 
@@ -468,7 +467,7 @@ def deploy_realtime_solution():
                                                              eventhouse['id'],
                                                              kql_database)
     
-    eventstream = FabricRestApi.create_item(workspace['id'], create_eventstream_request)
+    FabricRestApi.create_item(workspace['id'], create_eventstream_request)
 
     realtime_dashboard_create_request = ItemDefinitionFactory.get_kql_dashboard_create_request(
         realtime_dashboard_name,
@@ -490,25 +489,20 @@ def deploy_realtime_solution():
 
     FabricRestApi.create_item(workspace['id'], create_queryset2_create_request)
 
-    bim_model_template = ItemDefinitionFactory.get_template_file('SemanticModels//bikes_rti_model.bim')
+    template_file_path = 'SemanticModels//bikes_rti_model.bim'
+    bim_model_template = ItemDefinitionFactory.get_template_file(template_file_path)
 
-    bim_model = bim_model_template.replace('QUERY_SERVICE_URI', query_service_uri)\
-                                  .replace('KQL_DATABASE_ID', kql_database['id'])
-
-
-    model_create_request = ItemDefinitionFactory.get_semantic_model_create_request(
-        semantic_model_name,
-        bim_model)
+    bim_model = bim_model_template.replace('{QUERY_SERVICE_URI}', query_service_uri)\
+                                  .replace('{KQL_DATABASE_ID}', kql_database['id'])
+    
+    model_create_request = \
+        ItemDefinitionFactory.get_semantic_model_create_request_from_definition(
+            semantic_model_name,
+            bim_model)
 
     model = FabricRestApi.create_item(workspace['id'], model_create_request)
 
-    # web_url = FabricRestApi.get_web_url_from_semantic_model(workspace['id'], model['id'])
-
-    # connection = FabricRestApi.create_anonymous_web_connection(web_url, workspace)
-
-    # FabricRestApi.bind_semantic_model_to_connection(workspace['id'], model['id'], connection['id'])
-
-    # FabricRestApi.refresh_semantic_model(workspace['id'], model['id'])
+    FabricRestApi.patch_oauth_connection_to_kqldb(workspace, model, query_service_uri)
 
     create_report_request = \
         ItemDefinitionFactory.get_report_create_request(model['id'],
@@ -518,7 +512,6 @@ def deploy_realtime_solution():
     FabricRestApi.create_item(workspace['id'], create_report_request)
 
     AppLogger.log_job_ended("Solution deployment complete")
-
 
 match os.getenv("SOLUTION_NAME"):
 
@@ -540,7 +533,7 @@ match os.getenv("SOLUTION_NAME"):
     case 'Custom Warehouse Solution':
         deploy_warehouse_solution()
 
-    case 'Custom Realtime Inteligence Solution':
+    case 'Custom Realtime Intelligence Solution':
         deploy_realtime_solution()
 
     case 'Deploy All Solutions':
@@ -549,4 +542,8 @@ match os.getenv("SOLUTION_NAME"):
         deploy_shortcut_solution()
         deploy_data_pipeline_solution()
         deploy_warehouse_solution()
+        deploy_realtime_solution()
         #deploy_variable_library_solution()
+
+
+deploy_realtime_solution()

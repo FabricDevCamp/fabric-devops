@@ -157,6 +157,25 @@ class ItemDefinitionFactory:
         }
 
     @classmethod
+    def get_semantic_model_create_request_from_definition(cls, display_name, bim_definition):
+        """Create semantic model create request from BIM file"""
+        pbism_content = cls.get_template_file("SemanticModels//definition.pbism")
+
+        return {
+            'displayName': display_name,
+            'type': "SemanticModel",
+            'definition': {
+                'parts': [
+                    cls._create_inline_base64_part('definition.pbism', pbism_content),
+                    cls._create_inline_base64_part('model.bim', bim_definition)
+                ]
+            }
+        }
+
+
+
+
+    @classmethod
     def get_directlake_model_create_request(cls, display_name, bim_file, server, database):
         """Get Create Request for DirectLake Semantic Model"""
 

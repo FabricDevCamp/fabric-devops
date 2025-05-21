@@ -50,7 +50,7 @@ class EntraIdTokenManager():
     def _get_fabric_authentication_result_for_user_interactive(cls):
         """Authenticate the user interactively"""
 
-        client_id = AppSettings.CLASS_ID_POWERSHELL_APP
+        client_id = AppSettings.CLIENT_ID_AZURE_POWERSHELL_APP
         authority = "https://login.microsoftonline.com/organizations"
 
         app = msal.PublicClientApplication(client_id,
@@ -63,7 +63,7 @@ class EntraIdTokenManager():
     @classmethod
     def _get_fabric_authentication_result_for_user_with_device_code(cls):
         """Acquire Entra Id Access Token for calling Fabric REST APIs"""
-        client_id = AppSettings.CLASS_ID_POWERSHELL_APP
+        client_id = AppSettings.CLIENT_ID_AZURE_POWERSHELL_APP
         authority = "https://login.microsoftonline.com/organizations"
         
         app = msal.PublicClientApplication(client_id,
@@ -77,9 +77,10 @@ class EntraIdTokenManager():
 
         user_code = flow['user_code']
         authentication_url =  flow['verification_uri']
+        console_link = f"\x1b]8;;{authentication_url}\a{authentication_url}\x1b]8;;\a"
 
         AppLogger.log_substep(
-            f'Log in at {authentication_url} and enter user-code of {user_code}')
+            f'Log in at {console_link} and enter user-code of {user_code}')
 
         authentication_result = app.acquire_token_by_device_flow(flow)
 
@@ -122,7 +123,7 @@ class EntraIdTokenManager():
     @classmethod
     def _get_ado_authentication_result_for_user_interactive(cls):
         """Authenticate the user interactively"""
-        client_id = AppSettings.CLASS_ID_POWERSHELL_APP
+        client_id = AppSettings.CLIENT_ID_AZURE_POWERSHELL_APP
         authority = "https://login.microsoftonline.com/organizations"
 
         app = msal.PublicClientApplication(client_id,
@@ -135,7 +136,7 @@ class EntraIdTokenManager():
     @classmethod
     def _get_ado_authentication_result_for_user_with_device_code(cls):
         """Acquire Entra Id Access Token for calling Fabric REST APIs"""
-        client_id = AppSettings.CLASS_ID_POWERSHELL_APP
+        client_id = AppSettings.CLIENT_ID_AZURE_POWERSHELL_APP
         authority = "https://login.microsoftonline.com/organizations"
         
         app = msal.PublicClientApplication(client_id,
@@ -149,12 +150,93 @@ class EntraIdTokenManager():
 
         user_code = flow['user_code']
         authentication_url =  flow['verification_uri']
+        console_link = f"\x1b]8;;{authentication_url}\a{authentication_url}\x1b]8;;\a"
 
         AppLogger.log_substep(
-            f'Log in at {authentication_url} and enter user-code of {user_code}')
+            f'Log in at {console_link} and enter user-code of {user_code}')
 
         authentication_result = app.acquire_token_by_device_flow(flow)
 
         AppLogger.log_substep('User token has been acquired')
+
+        return authentication_result
+
+    @classmethod
+    def get_kqldb_access_token(cls, query_service_url):
+        """"Get Access Token for KQL DB"""
+
+        authentication_result = None
+        if AppSettings.RUN_AS_SERVICE_PRINCIPAL:
+            authentication_result = \
+                cls._get_kqldb_authentication_result_for_service_principal(query_service_url)
+        else:
+            if AppSettings.RUNNING_IN_GITHUB:
+                authentication_result = \
+                    cls._get_kqldb_authentication_result_for_user_with_device_code(query_service_url)
+            else:
+                authentication_result = \
+                    cls._get_kqldb_authentication_result_for_user_interactive(query_service_url)
+
+        return authentication_result['access_token']
+    
+    @classmethod
+    def _get_kqldb_authentication_result_for_service_principal(cls, query_service_url):
+        """Acquire Entra Id Access Token for calling Fabric REST APIs"""
+
+        app = msal.ConfidentialClientApplication(
+            AppSettings.FABRIC_CLIENT_ID,
+            authority=AppSettings.AUTHORITY,
+            client_credential=AppSettings.FABRIC_CLIENT_SECRET)
+        
+        scope = f'{query_service_url}/.default'
+
+        AppLogger.log_substep(f'Aquiring SPN token with scope {scope}')
+
+        return app.acquire_token_for_client([scope])
+
+    @classmethod
+    def _get_kqldb_authentication_result_for_user_interactive(cls, query_service_url):
+        """Authenticate the user interactively"""
+        client_id = AppSettings.CLIENT_ID_AZURE_POWERSHELL_APP
+        authority = "https://login.microsoftonline.com/organizations"
+
+        app = msal.PublicClientApplication(client_id,
+                                            authority=authority,
+                                            client_credential=None)
+                        
+        scope = f'{query_service_url}/user_impersonation'
+        
+        AppLogger.log_substep(f'Aquiring user token with scope {scope}')
+
+        return app.acquire_token_interactive([scope])
+
+    @classmethod
+    def _get_kqldb_authentication_result_for_user_with_device_code(cls, query_service_uri):
+        """Acquire Entra Id Access Token for calling Fabric REST APIs"""
+        client_id = AppSettings.CLIENT_ID_AZURE_POWERSHELL_APP
+        authority = "https://login.microsoftonline.com/organizations"
+        
+        app = msal.PublicClientApplication(client_id,
+                                           authority=authority,
+                                           client_credential=None)
+            
+        AppLogger.log_step("Authenticating user using device flow...")
+
+        scope = f'{query_service_uri}/user_impersonation'
+        
+        AppLogger.log_substep(f'Aquiring user token with scope {scope}')
+
+        flow = app.initiate_device_flow(scopes=[scope])
+
+        user_code = flow['user_code']
+        authentication_url =  flow['verification_uri']
+        console_link = f"\x1b]8;;{authentication_url}\a{authentication_url}\x1b]8;;\a"
+
+        AppLogger.log_substep(
+            f'Log in at {console_link} and enter user-code of {user_code}')
+
+        authentication_result = app.acquire_token_by_device_flow(flow)
+
+        AppLogger.log_substep('User token has been acquired using device code')
 
         return authentication_result
