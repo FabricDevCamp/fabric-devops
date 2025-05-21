@@ -507,7 +507,7 @@ def deploy_realtime_solution():
     create_report_request = \
         ItemDefinitionFactory.get_report_create_request(model['id'],
                                                         report_name,
-                                                        'product_sales_summary.json')
+                                                        'rental_bike_sales.json')
 
     FabricRestApi.create_item(workspace['id'], create_report_request)
 
