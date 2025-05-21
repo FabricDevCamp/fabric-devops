@@ -2,7 +2,7 @@
   "sources": [
     {
       "id": "e5e55d44-f75b-40b7-bb38-369b62eb99f9",
-      "name": "TutorialSource",
+      "name": "RentalBikesDatasource",
       "type": "SampleData",
       "properties": {
         "type": "Bicycles"
