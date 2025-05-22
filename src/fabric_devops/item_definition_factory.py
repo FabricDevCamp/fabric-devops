@@ -172,9 +172,6 @@ class ItemDefinitionFactory:
             }
         }
 
-
-
-
     @classmethod
     def get_directlake_model_create_request(cls, display_name, bim_file, server, database):
         """Get Create Request for DirectLake Semantic Model"""
@@ -304,8 +301,6 @@ class ItemDefinitionFactory:
             }
         }
 
-
-
     @classmethod
     def get_eventstream_create_request(cls, display_name, workspace_id, eventhouse_id, kql_database):
         """Get Eventstream Create Request"""
@@ -350,7 +345,6 @@ class ItemDefinitionFactory:
             }
         }
 
-
     @classmethod
     def get_kql_queryset_create_request(cls, display_name, kql_database, query_service_uri, queryset_template):
         """Get KQL Queryset Create Request"""
@@ -369,9 +363,6 @@ class ItemDefinitionFactory:
                 ]
             }
         }
-
-
-
 
     @classmethod
     def get_variable_library_create_request(cls, display_name, variable_library: VariableLibrary):
@@ -468,5 +459,3 @@ class ItemDefinitionFactory:
         os.makedirs(os.path.dirname(full_path), exist_ok=True)
         with open(full_path, 'w', encoding='utf-8') as file:
             file.write(file_content)
-
-  

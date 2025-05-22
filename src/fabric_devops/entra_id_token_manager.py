@@ -12,27 +12,35 @@ class EntraIdTokenManager():
 
     #region Low-level details about authentication and token acquisition
 
+    _token_cache_folder = './/HeyHey//'
+    _token_cache_file = 'token-cache.bin'
     _token_cache = None
 
     @classmethod
     def _persist_token_cache(cls):
-        cache_folder = ".//.cache//"
-        if not os.path.exists(cache_folder):
-            os.makedirs(cache_folder)
 
-        cache_file_name = "token-cache.bin"
-        cache_file_path = os.path.join(cache_folder, cache_file_name)
+
+        if not os.path.exists(cls._token_cache):
+            os.makedirs(cls._token_cache_folder)
+
+        cache_file_path = os.path.join(
+            cls._token_cache_folder, 
+            cls._token_cache_file)
+
         cache_file = open(cache_file_path, 'w', encoding='utf-8')
         cache_file.write(cls._token_cache.serialize())
 
     @classmethod
     def _get_token_cache(cls):
+
         cls._token_cache = msal.SerializableTokenCache()
-        cache_folder = ".//.cache//"
-        if not os.path.exists(cache_folder):
-            os.makedirs(cache_folder)
-        cache_file_name = "token-cache.bin"
-        cache_file_path = os.path.join(cache_folder, cache_file_name)
+        
+        if not os.path.exists(cls._token_cache):
+            os.makedirs(cls._token_cache_folder)
+
+        cache_file_path = os.path.join(
+            cls._token_cache_folder, 
+            cls._token_cache_file)
 
         if os.path.exists(cache_file_path):
             cls._token_cache.deserialize(open(cache_file_path, "r", encoding="utf-8").read())
@@ -86,10 +94,12 @@ class EntraIdTokenManager():
         client_id = AppSettings.CLIENT_ID_AZURE_POWERSHELL_APP
         authority = "https://login.microsoftonline.com/organizations"
 
+        token_cache = cls._get_token_cache()
+
         app = msal.PublicClientApplication(client_id,
                                            authority=authority,
                                            client_credential=None,
-                                           token_cache=cls._get_token_cache())
+                                           token_cache=token_cache)
 
         AppLogger.log_step("Authenticating user using device flow...")
 
@@ -99,10 +109,9 @@ class EntraIdTokenManager():
 
         user_code = flow['user_code']
         authentication_url =  flow['verification_uri']
-        console_link = f"\x1b]8;;{authentication_url}\a{authentication_url}\x1b]8;;\a"
 
         AppLogger.log_substep(
-            f'Log in at {console_link} and enter user-code of {user_code}')
+            f'Log in at {authentication_url} and enter user-code of {user_code}')
 
         authentication_result = app.acquire_token_by_device_flow(flow)
 
