@@ -108,6 +108,8 @@ class EntraIdTokenManager():
 
         AppLogger.log_substep('User token has been acquired using device code')
 
+        cls._persist_token_cache()
+
         return authentication_result
 
     #endregion
