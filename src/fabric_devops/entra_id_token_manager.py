@@ -69,6 +69,7 @@ class EntraIdTokenManager():
     @classmethod
     def _get_authentication_result_for_user_interactive(cls, scopes):
         """Authenticate the user interactively"""
+        
         client_id = AppSettings.CLIENT_ID_AZURE_POWERSHELL_APP
         authority = "https://login.microsoftonline.com/organizations"
 
@@ -92,6 +93,7 @@ class EntraIdTokenManager():
     @classmethod
     def _get_authentication_result_for_user_with_device_code(cls, scopes):
         """Acquire Entra Id Access Token for calling Fabric REST APIs"""
+
         client_id = AppSettings.CLIENT_ID_AZURE_POWERSHELL_APP
         authority = "https://login.microsoftonline.com/organizations"
 
@@ -100,23 +102,21 @@ class EntraIdTokenManager():
         app = msal.PublicClientApplication(client_id,
                                            authority=authority,
                                            client_credential=None,
-                                           token_cache=token_cache)
-
-        AppLogger.log_step("Authenticating user using device flow...")
-
-        AppLogger.log_substep(f'Aquiring user token with scopes {scopes}')
-
-        flow = app.initiate_device_flow(scopes=scopes)
-
-        user_code = flow['user_code']
-        authentication_url =  flow['verification_uri']
-
-        AppLogger.log_substep(
-            f'Log in at {authentication_url} and enter user-code of {user_code}')
-
-        authentication_result = app.acquire_token_by_device_flow(flow)
-
-        AppLogger.log_substep('User token has been acquired using device code')
+                                           token_cache=token_cache)    
+        authentication_result = None
+        try:
+            accounts = app.get_accounts()
+            authentication_result = \
+                app.acquire_token_silent(scopes, account=accounts[0])
+        except IndexError:                
+            AppLogger.log_step("Authenticating user using device flow...")
+            flow = app.initiate_device_flow(scopes=scopes)
+            user_code = flow['user_code']
+            authentication_url =  flow['verification_uri']
+            AppLogger.log_substep(
+                f'Log in at {authentication_url} and enter user-code of {user_code}')
+            authentication_result = app.acquire_token_by_device_flow(flow)
+            AppLogger.log_substep('User token has been acquired using device code')
 
         cls._persist_token_cache()
 
