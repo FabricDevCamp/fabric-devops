@@ -12,7 +12,7 @@ class EntraIdTokenManager():
 
     #region Low-level details about authentication and token acquisition
 
-    _token_cache_folder = './/cache//'
+    _token_cache_folder = './/.token_cache//'
     _token_cache_file = 'token-cache.bin'
     _token_cache = None
 
@@ -69,7 +69,7 @@ class EntraIdTokenManager():
     @classmethod
     def _get_authentication_result_for_user_interactive(cls, scopes):
         """Authenticate the user interactively"""
-        
+
         client_id = AppSettings.CLIENT_ID_AZURE_POWERSHELL_APP
         authority = "https://login.microsoftonline.com/organizations"
 
