@@ -27,7 +27,9 @@ class EntraIdTokenManager():
             cls._token_cache_file)
 
         cache_file = open(cache_file_path, 'w', encoding='utf-8')
-        cache_file.write(cls._token_cache.serialize())
+        print(f'Writing to {cache_file_path}')
+        token_cache_content = cls._token_cache.serialize() 
+        cache_file.write(token_cache_content)
 
     @classmethod
     def _get_token_cache(cls):
@@ -38,7 +40,7 @@ class EntraIdTokenManager():
             os.makedirs(cls._token_cache_folder)
 
         cache_file_path = os.path.join(
-            cls._token_cache_folder, 
+            cls._token_cache_folder,
             cls._token_cache_file)
 
         if os.path.exists(cache_file_path):
