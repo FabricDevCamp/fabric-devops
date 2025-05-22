@@ -1,232 +1,101 @@
+"""Entra Id Token Manager"""
 
-import datetime
+import os
 import msal
 
 from .app_logger import AppLogger
 from .app_settings import AppSettings
 
+
 class EntraIdTokenManager():
     """EntraIdTokenManager"""
 
-    _access_token = None
-    _access_token_expiration = None
+    #region Low-level details about authentication and token acquisition
 
-    _ado_access_token = None
-    _ado_access_token_expiration = None
+    _token_cache = None
 
     @classmethod
-    def get_fabric_access_token(cls):
-        """"Get Fabric Access Token"""
+    def _persist_token_cache(cls):
+        cache_folder = ".//.cache//"
+        if not os.path.exists(cache_folder):
+            os.makedirs(cache_folder)
 
-        if (cls._access_token is None) or (datetime.datetime.now() > cls._access_token_expiration):
-
-            authentication_reult = None
-            if AppSettings.RUN_AS_SERVICE_PRINCIPAL:
-                authentication_reult = cls._get_fabric_authentication_result_for_service_principal()
-            else:
-                if AppSettings.RUNNING_IN_GITHUB:
-                    authentication_reult = cls._get_fabric_authentication_result_for_user_with_device_code()
-                else:
-                    authentication_reult = cls._get_fabric_authentication_result_for_user_interactive()
-
-            cls._access_token = authentication_reult['access_token']
-            cls._access_token_expiration = datetime.datetime.now() + \
-                                        datetime.timedelta(0,  int(authentication_reult['expires_in']))
-            
-        return cls._access_token
+        cache_file_name = "token-cache.bin"
+        cache_file_path = os.path.join(cache_folder, cache_file_name)
+        cache_file = open(cache_file_path, 'w', encoding='utf-8')
+        cache_file.write(cls._token_cache.serialize())
 
     @classmethod
-    def _get_fabric_authentication_result_for_service_principal(cls):
+    def _get_token_cache(cls):
+        cls._token_cache = msal.SerializableTokenCache()
+        cache_folder = ".//.cache//"
+        if not os.path.exists(cache_folder):
+            os.makedirs(cache_folder)
+        cache_file_name = "token-cache.bin"
+        cache_file_path = os.path.join(cache_folder, cache_file_name)
+
+        if os.path.exists(cache_file_path):
+            cls._token_cache.deserialize(open(cache_file_path, "r", encoding="utf-8").read())
+
+        return cls._token_cache
+
+    @classmethod
+    def _get__authentication_result_for_service_principal(cls, scopes):
         """Acquire Entra Id Access Token for calling Fabric REST APIs"""
 
         app = msal.ConfidentialClientApplication(
             AppSettings.FABRIC_CLIENT_ID,
             authority=AppSettings.AUTHORITY,
-            client_credential=AppSettings.FABRIC_CLIENT_SECRET)
+            client_credential=AppSettings.FABRIC_CLIENT_SECRET,
+            token_cache=cls._get_token_cache())
 
-        return app.acquire_token_for_client(scopes=AppSettings.FABRIC_PERMISSION_SCOPES)
+        AppLogger.log_substep(f'Aquiring SPN token with scopes {scopes}')
 
-    @classmethod
-    def _get_fabric_authentication_result_for_user_interactive(cls):
-        """Authenticate the user interactively"""
+        authentication_result = app.acquire_token_for_client(scopes)
 
-        client_id = AppSettings.CLIENT_ID_AZURE_POWERSHELL_APP
-        authority = "https://login.microsoftonline.com/organizations"
-
-        app = msal.PublicClientApplication(client_id,
-                                            authority=authority,
-                                            client_credential=None)
-
-        return app.acquire_token_interactive(
-                scopes=['https://api.fabric.microsoft.com/user_impersonation'])
-
-    @classmethod
-    def _get_fabric_authentication_result_for_user_with_device_code(cls):
-        """Acquire Entra Id Access Token for calling Fabric REST APIs"""
-        client_id = AppSettings.CLIENT_ID_AZURE_POWERSHELL_APP
-        authority = "https://login.microsoftonline.com/organizations"
-        
-        app = msal.PublicClientApplication(client_id,
-                                           authority=authority,
-                                           client_credential=None)
-            
-        AppLogger.log_step("Authenticating user using device flow...")
-
-        flow = app.initiate_device_flow(
-            scopes=['https://api.fabric.microsoft.com/user_impersonation'])
-
-        user_code = flow['user_code']
-        authentication_url =  flow['verification_uri']
-        console_link = f"\x1b]8;;{authentication_url}\a{authentication_url}\x1b]8;;\a"
-
-        AppLogger.log_substep(
-            f'Log in at {console_link} and enter user-code of {user_code}')
-
-        authentication_result = app.acquire_token_by_device_flow(flow)
-
-        AppLogger.log_substep('User token has been acquired')
+        cls._persist_token_cache()
 
         return authentication_result
 
     @classmethod
-    def get_ado_access_token(cls):
-        """"Get Access Token for Azure Dev """
-
-        if (cls._ado_access_token is None) or (datetime.datetime.now() > cls._ado_access_token_expiration):
-
-            authentication_reult = None
-            if AppSettings.RUN_AS_SERVICE_PRINCIPAL:
-                authentication_reult = cls._get_ado_authentication_result_for_service_principal()
-            else:
-                if AppSettings.RUNNING_IN_GITHUB:
-                    authentication_reult = cls._get_ado_authentication_result_for_user_with_device_code()
-                else:
-                    authentication_reult = cls._get_ado_authentication_result_for_user_interactive()
-
-            cls._ado_access_token = authentication_reult['access_token']
-            cls._ado_access_token_expiration = datetime.datetime.now() + \
-                                               datetime.timedelta(0,  int(authentication_reult['expires_in']))
-            
-        return cls._ado_access_token
-
-    @classmethod
-    def _get_ado_authentication_result_for_service_principal(cls):
-        """Acquire Entra Id Access Token for calling Fabric REST APIs"""
-
-        app = msal.ConfidentialClientApplication(
-            AppSettings.FABRIC_CLIENT_ID,
-            authority=AppSettings.AUTHORITY,
-            client_credential=AppSettings.FABRIC_CLIENT_SECRET)
-
-        return app.acquire_token_for_client(['499b84ac-1321-427f-aa17-267ca6975798/.default'])
-
-    @classmethod
-    def _get_ado_authentication_result_for_user_interactive(cls):
+    def _get_authentication_result_for_user_interactive(cls, scopes):
         """Authenticate the user interactively"""
         client_id = AppSettings.CLIENT_ID_AZURE_POWERSHELL_APP
         authority = "https://login.microsoftonline.com/organizations"
 
         app = msal.PublicClientApplication(client_id,
                                             authority=authority,
-                                            client_credential=None)
-
-        return app.acquire_token_interactive(
-                scopes=['499b84ac-1321-427f-aa17-267ca6975798/user_impersonation'])
-
-    @classmethod
-    def _get_ado_authentication_result_for_user_with_device_code(cls):
-        """Acquire Entra Id Access Token for calling Fabric REST APIs"""
-        client_id = AppSettings.CLIENT_ID_AZURE_POWERSHELL_APP
-        authority = "https://login.microsoftonline.com/organizations"
-        
-        app = msal.PublicClientApplication(client_id,
-                                           authority=authority,
-                                           client_credential=None)
-            
-        AppLogger.log_step("Authenticating user using device flow...")
-
-        flow = app.initiate_device_flow(
-            scopes=['499b84ac-1321-427f-aa17-267ca6975798/user_impersonation'])
-
-        user_code = flow['user_code']
-        authentication_url =  flow['verification_uri']
-        console_link = f"\x1b]8;;{authentication_url}\a{authentication_url}\x1b]8;;\a"
-
-        AppLogger.log_substep(
-            f'Log in at {console_link} and enter user-code of {user_code}')
-
-        authentication_result = app.acquire_token_by_device_flow(flow)
-
-        AppLogger.log_substep('User token has been acquired')
-
-        return authentication_result
-
-    @classmethod
-    def get_kqldb_access_token(cls, query_service_url):
-        """"Get Access Token for KQL DB"""
+                                            client_credential=None,
+                                            token_cache=cls._get_token_cache())
 
         authentication_result = None
-        if AppSettings.RUN_AS_SERVICE_PRINCIPAL:
+        try:
+            accounts = app.get_accounts()
             authentication_result = \
-                cls._get_kqldb_authentication_result_for_service_principal(query_service_url)
-        else:
-            if AppSettings.RUNNING_IN_GITHUB:
-                authentication_result = \
-                    cls._get_kqldb_authentication_result_for_user_with_device_code(query_service_url)
-            else:
-                authentication_result = \
-                    cls._get_kqldb_authentication_result_for_user_interactive(query_service_url)
+                app.acquire_token_silent(scopes, account=accounts[0])
+        except IndexError:
+            authentication_result = app.acquire_token_interactive(scopes)
+            
+        cls._persist_token_cache()
 
-        return authentication_result['access_token']
-    
-    @classmethod
-    def _get_kqldb_authentication_result_for_service_principal(cls, query_service_url):
-        """Acquire Entra Id Access Token for calling Fabric REST APIs"""
-
-        app = msal.ConfidentialClientApplication(
-            AppSettings.FABRIC_CLIENT_ID,
-            authority=AppSettings.AUTHORITY,
-            client_credential=AppSettings.FABRIC_CLIENT_SECRET)
-        
-        scope = f'{query_service_url}/.default'
-
-        AppLogger.log_substep(f'Aquiring SPN token with scope {scope}')
-
-        return app.acquire_token_for_client([scope])
+        return authentication_result
 
     @classmethod
-    def _get_kqldb_authentication_result_for_user_interactive(cls, query_service_url):
-        """Authenticate the user interactively"""
-        client_id = AppSettings.CLIENT_ID_AZURE_POWERSHELL_APP
-        authority = "https://login.microsoftonline.com/organizations"
-
-        app = msal.PublicClientApplication(client_id,
-                                            authority=authority,
-                                            client_credential=None)
-                        
-        scope = f'{query_service_url}/user_impersonation'
-        
-        AppLogger.log_substep(f'Aquiring user token with scope {scope}')
-
-        return app.acquire_token_interactive([scope])
-
-    @classmethod
-    def _get_kqldb_authentication_result_for_user_with_device_code(cls, query_service_uri):
+    def _get_authentication_result_for_user_with_device_code(cls, scopes):
         """Acquire Entra Id Access Token for calling Fabric REST APIs"""
         client_id = AppSettings.CLIENT_ID_AZURE_POWERSHELL_APP
         authority = "https://login.microsoftonline.com/organizations"
-        
+
         app = msal.PublicClientApplication(client_id,
                                            authority=authority,
-                                           client_credential=None)
-            
+                                           client_credential=None,
+                                           token_cache=cls._get_token_cache())
+
         AppLogger.log_step("Authenticating user using device flow...")
 
-        scope = f'{query_service_uri}/user_impersonation'
-        
-        AppLogger.log_substep(f'Aquiring user token with scope {scope}')
+        AppLogger.log_substep(f'Aquiring user token with scopes {scopes}')
 
-        flow = app.initiate_device_flow(scopes=[scope])
+        flow = app.initiate_device_flow(scopes=scopes)
 
         user_code = flow['user_code']
         authentication_url =  flow['verification_uri']
@@ -240,3 +109,60 @@ class EntraIdTokenManager():
         AppLogger.log_substep('User token has been acquired using device code')
 
         return authentication_result
+
+    #endregion
+
+    @classmethod
+    def get_fabric_access_token(cls):
+        """"Get Fabric Access Token"""
+        if AppSettings.RUN_AS_SERVICE_PRINCIPAL:
+            scopes = [ AppSettings.FABRIC_REST_API_RESOURCE_ID + "//.default" ]
+            authentication_reult = \
+                cls._get_authentication_result_for_service_principal(scopes)
+        else:
+            scopes = [ AppSettings.FABRIC_REST_API_RESOURCE_ID + "//user_impersonation" ]
+            if AppSettings.RUNNING_IN_GITHUB:
+                authentication_reult = \
+                    cls._get_authentication_result_for_user_with_device_code(scopes)
+            else:
+                authentication_reult = \
+                    cls._get_authentication_result_for_user_interactive(scopes)
+
+        return authentication_reult['access_token']
+
+    @classmethod
+    def get_ado_access_token(cls):
+        """"Get Access Token for Azure Dev """
+        ado_resource_id = '499b84ac-1321-427f-aa17-267ca6975798'
+        if AppSettings.RUN_AS_SERVICE_PRINCIPAL:
+            scopes = [ ado_resource_id + "//.default" ]
+            authentication_reult = \
+                cls._get_authentication_result_for_service_principal(scopes)
+        else:
+            scopes = [ ado_resource_id + "//user_impersonation" ]
+            if AppSettings.RUNNING_IN_GITHUB:
+                authentication_reult = \
+                    cls._get_authentication_result_for_user_with_device_code(scopes)
+            else:
+                authentication_reult = \
+                    cls._get_authentication_result_for_user_interactive(scopes)
+
+        return authentication_reult['access_token']
+
+    @classmethod
+    def get_kqldb_access_token(cls, query_service_url):
+        """"Get Access Token for KQL DB"""
+        if AppSettings.RUN_AS_SERVICE_PRINCIPAL:
+            scopes = [ query_service_url + "//.default" ]
+            authentication_reult = \
+                cls._get_authentication_result_for_service_principal(scopes)
+        else:
+            scopes = [ query_service_url + "//user_impersonation" ]
+            if AppSettings.RUNNING_IN_GITHUB:
+                authentication_reult = \
+                    cls._get_authentication_result_for_user_with_device_code(scopes)
+            else:
+                authentication_reult = \
+                    cls._get_authentication_result_for_user_interactive(scopes)
+
+        return authentication_reult['access_token']
