@@ -1,4 +1,5 @@
 
+.token_cache
 .token_cache/
 
 # Byte-compiled / optimized / DLL files
