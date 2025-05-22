@@ -12,7 +12,7 @@ class EntraIdTokenManager():
 
     #region Low-level details about authentication and token acquisition
 
-    _token_cache_folder = './/HeyHey//'
+    _token_cache_folder = './/cache//'
     _token_cache_file = 'token-cache.bin'
     _token_cache = None
 
