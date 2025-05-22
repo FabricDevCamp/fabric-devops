@@ -27,8 +27,7 @@ class EntraIdTokenManager():
             cls._token_cache_file)
 
         cache_file = open(cache_file_path, 'w', encoding='utf-8')
-        print(f'Writing to {cache_file_path}')
-        token_cache_content = cls._token_cache.serialize() 
+        token_cache_content = cls._token_cache.serialize()
         cache_file.write(token_cache_content)
 
     @classmethod
