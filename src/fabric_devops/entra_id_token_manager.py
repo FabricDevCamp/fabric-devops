@@ -19,12 +19,11 @@ class EntraIdTokenManager():
     @classmethod
     def _persist_token_cache(cls):
 
-
         if not os.path.exists(cls._token_cache_folder):
             os.makedirs(cls._token_cache_folder)
 
         cache_file_path = os.path.join(
-            cls._token_cache_folder, 
+            cls._token_cache_folder,
             cls._token_cache_file)
 
         cache_file = open(cache_file_path, 'w', encoding='utf-8')

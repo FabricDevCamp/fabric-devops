@@ -2,8 +2,19 @@
 
 import os
 
-vars = os.environ.items()
+_token_cache_folder = './/Cash//'
+_token_cache_file = 'token-cache.bin'
+_token_cache = None
 
-print("Environmental Variables")
-for key, value in vars:
-    print(f' - {key}: {value}')
+
+if not os.path.exists(_token_cache_folder):
+        os.makedirs(_token_cache_folder)
+
+cache_file_path = os.path.join(
+    _token_cache_folder,
+    _token_cache_file)
+
+cache_file = open(cache_file_path, 'w', encoding='utf-8')
+cache_file.write('hey baby')
+
+# cls._token_cache.serialize()
