@@ -48,7 +48,7 @@ class EntraIdTokenManager():
         return cls._token_cache
 
     @classmethod
-    def _get__authentication_result_for_service_principal(cls, scopes):
+    def _get_authentication_result_for_service_principal(cls, scopes):
         """Acquire Entra Id Access Token for calling Fabric REST APIs"""
 
         app = msal.ConfidentialClientApplication(
