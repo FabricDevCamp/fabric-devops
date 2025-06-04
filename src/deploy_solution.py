@@ -243,10 +243,6 @@ def deploy_data_pipeline_solution():
 def deploy_variable_library_solution():
     """Deploy variable library solution"""
 
-    AppSettings.RUN_AS_SERVICE_PRINCIPAL = False
-    FabricRestApi.authenticate()
-
-
     workspace_name = "Custom Variable Library Solution"
     lakehouse_name = "sales"
     notebooks = [

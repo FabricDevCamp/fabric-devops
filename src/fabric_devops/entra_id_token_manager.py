@@ -5,8 +5,6 @@ import msal
 
 from .app_logger import AppLogger
 from .app_settings import AppSettings
-
-
 class EntraIdTokenManager():
     """EntraIdTokenManager"""
 
