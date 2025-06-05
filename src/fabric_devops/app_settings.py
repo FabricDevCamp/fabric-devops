@@ -6,7 +6,7 @@ class AppSettings:
 
     """App Settings"""
 
-    RUN_AS_SERVICE_PRINCIPAL = False
+    RUN_AS_SERVICE_PRINCIPAL = True
     RUNNING_IN_GITHUB = os.getenv('GITHUB_ACTIONS') == 'true'
     RUNNING_LOCALLY = (RUNNING_IN_GITHUB is False)
     FABRIC_CLIENT_ID = os.getenv("FABRIC_CLIENT_ID")
@@ -27,7 +27,6 @@ class AppSettings:
 
     WEB_DATASOURCE_ROOT_URL = 'https://fabricdevcamp.blob.core.windows.net/sampledata/ProductSales/'
     AZURE_STORAGE_ACCOUNT_NAME = 'fabricdevcamp'
-    AZURE_STORAGE_ACCOUNT_KEY = os.getenv('AZURE_STORAGE_ACCOUNT_KEY')
     AZURE_STORAGE_CONTAINER = 'sampledata'
     AZURE_STORAGE_CONTAINER_PATH = '/ProductSales/Dev'
     AZURE_STORAGE_SERVER = f'https://{AZURE_STORAGE_ACCOUNT_NAME}.dfs.core.windows.net/'
