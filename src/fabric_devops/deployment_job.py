@@ -1,7 +1,7 @@
 """deployment plan with parameters"""
 
 from enum import Enum
-from .app_settings import AppSettings
+from .environment_settings import EnvironmentSettings
 from .app_logger import AppLogger
 
 class DeploymentJobType(Enum):
@@ -28,15 +28,15 @@ class DeploymentJob:
 
         # setup Web datasource path
         self.set_deployment_parameter(DeploymentJob.web_datasource_path_parameter,
-                                      AppSettings.WEB_DATASOURCE_ROOT_URL + 'dev/')
+                                      EnvironmentSettings.WEB_DATASOURCE_ROOT_URL + 'dev/')
 
         # setup ADLS datasource path
         self.set_deployment_parameter(DeploymentJob.adls_server_parameter,
-                                      AppSettings.AZURE_STORAGE_SERVER)
+                                      EnvironmentSettings.AZURE_STORAGE_SERVER)
         self.set_deployment_parameter(DeploymentJob.adls_container_name_parameter,
-                                      AppSettings.AZURE_STORAGE_CONTAINER)
+                                      EnvironmentSettings.AZURE_STORAGE_CONTAINER)
         self.set_deployment_parameter(DeploymentJob.adls_container_path_parameter,
-                                      AppSettings.AZURE_STORAGE_CONTAINER)
+                                      EnvironmentSettings.AZURE_STORAGE_CONTAINER)
 
     @property
     def target_workspace_name(self):

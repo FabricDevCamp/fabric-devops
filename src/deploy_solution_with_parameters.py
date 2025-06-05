@@ -2,7 +2,7 @@
 
 import os
 
-from fabric_devops import FabricRestApi, ItemDefinitionFactory, AppLogger, AppSettings, \
+from fabric_devops import FabricRestApi, ItemDefinitionFactory, AppLogger, EnvironmentSettings, \
                           SampleCustomerData, DeploymentJob, VariableLibrary
 
 def deploy_powerbi_solution(deploy_job):
@@ -309,7 +309,7 @@ def deploy_variable_library_solution(deploy_job):
     """Deploy Variable Library Solution"""
 
     # currently, this cannot run as SPN, it only works when running as user
-    AppSettings.RUN_AS_SERVICE_PRINCIPAL = False
+    EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL = False
 
     workspace_name = deploy_job.target_workspace_name
     lakehouse_name = "sales"

@@ -1,9 +1,9 @@
 """Deploy Variable Solution"""
 
 from fabric_devops import FabricRestApi, ItemDefinitionFactory, AppLogger, \
-                          AppSettings, VariableLibrary, SampleCustomerData
+                          EnvironmentSettings, VariableLibrary, SampleCustomerData
 
-AppSettings.RUN_AS_SERVICE_PRINCIPAL = False
+EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL = False
 
 deploy_job = SampleCustomerData.get_seamarkfarms()
 
@@ -36,8 +36,8 @@ for notebook_data in NOTEBOOKS:
     notebook_ids.append(notebook['id'])
 
 connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
-    AppSettings.AZURE_STORAGE_SERVER,
-    AppSettings.AZURE_STORAGE_PATH,
+    EnvironmentSettings.AZURE_STORAGE_SERVER,
+    EnvironmentSettings.AZURE_STORAGE_PATH,
     workspace)
 
 variable_library = VariableLibrary()

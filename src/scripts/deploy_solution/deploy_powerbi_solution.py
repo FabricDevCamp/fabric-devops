@@ -1,6 +1,6 @@
 """Deploy Power BI Solution"""
 
-from fabric_devops import ItemDefinitionFactory, AppLogger, AppSettings, FabricRestApi
+from fabric_devops import ItemDefinitionFactory, AppLogger, EnvironmentSettings, FabricRestApi
 
 WORKSPACE_NAME = "Custom Power BI Solution"
 SEMANTIC_MODEL_NAME = 'Product Sales Imported Model'

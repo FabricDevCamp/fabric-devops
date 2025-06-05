@@ -6,7 +6,7 @@ from json.decoder import JSONDecodeError
 import requests
 
 from .app_logger import AppLogger
-from .app_settings import AppSettings
+from .environment_settings import EnvironmentSettings
 from .entra_id_token_manager import EntraIdTokenManager
 
 class FabricRestApi:
@@ -17,7 +17,7 @@ class FabricRestApi:
     @classmethod
     def _execute_get_request(cls, endpoint):
         """Execute GET Request on Fabric REST API Endpoint"""
-        rest_url = AppSettings.FABRIC_REST_API_BASE_URL + endpoint
+        rest_url = EnvironmentSettings.FABRIC_REST_API_BASE_URL + endpoint
         access_token = EntraIdTokenManager.get_fabric_access_token()
         request_headers = {'Content-Type':'application/json',
                            'Authorization': f'Bearer {access_token}'}
@@ -37,7 +37,7 @@ class FabricRestApi:
     @classmethod
     def _execute_post_request(cls, endpoint, post_body=''):
         """Execute POST request with support for Long-running Operations (LRO)"""
-        rest_url = AppSettings.FABRIC_REST_API_BASE_URL + endpoint
+        rest_url = EnvironmentSettings.FABRIC_REST_API_BASE_URL + endpoint
         access_token = EntraIdTokenManager.get_fabric_access_token()
         request_headers = {'Content-Type':'application/json',
                            'Authorization': f'Bearer {access_token}'}
@@ -92,7 +92,7 @@ class FabricRestApi:
     @classmethod
     def _execute_post_request_for_job_scheduler(cls, endpoint, post_body=''):
         """Execute POST request with support for Om-demand Job with Job Scheduler"""
-        rest_url = AppSettings.FABRIC_REST_API_BASE_URL + endpoint
+        rest_url = EnvironmentSettings.FABRIC_REST_API_BASE_URL + endpoint
         access_token = EntraIdTokenManager.get_fabric_access_token()
         request_headers = {'Content-Type':'application/json',
                            'Authorization': f'Bearer {access_token}'}
@@ -134,7 +134,7 @@ class FabricRestApi:
     @classmethod
     def _execute_patch_request(cls, endpoint, post_body):
         """Execute GET Request on Fabric REST API Endpoint"""
-        rest_url = AppSettings.FABRIC_REST_API_BASE_URL + endpoint
+        rest_url = EnvironmentSettings.FABRIC_REST_API_BASE_URL + endpoint
         access_token = EntraIdTokenManager.get_fabric_access_token()
         request_headers = {'Content-Type':'application/json',
                            'Authorization': f'Bearer {access_token}'}
@@ -154,7 +154,7 @@ class FabricRestApi:
     @classmethod
     def _execute_delete_request(cls, endpoint):
         """Execute DELETE Request on Fabric REST API Endpoint"""
-        rest_url = AppSettings.FABRIC_REST_API_BASE_URL + endpoint
+        rest_url = EnvironmentSettings.FABRIC_REST_API_BASE_URL + endpoint
         access_token = EntraIdTokenManager.get_fabric_access_token()
         request_headers= {'Content-Type':'application/json',
                           'Authorization': f'Bearer {access_token}'}
@@ -175,7 +175,7 @@ class FabricRestApi:
     def _execute_get_request_to_powerbi(cls, endpoint):
         """Execute GET Request on Power BI REST API Endpoint"""
 
-        rest_url = AppSettings.POWER_BI_REST_API_BASE_URL + endpoint
+        rest_url = EnvironmentSettings.POWER_BI_REST_API_BASE_URL + endpoint
         access_token = EntraIdTokenManager.get_fabric_access_token()
         request_headers = {'Content-Type':'application/json',
                            'Authorization': f'Bearer {access_token}'}
@@ -194,7 +194,7 @@ class FabricRestApi:
 
     @classmethod
     def _execute_post_request_to_powerbi(cls, endpoint, post_body=''):
-        rest_url = AppSettings.POWER_BI_REST_API_BASE_URL + endpoint
+        rest_url = EnvironmentSettings.POWER_BI_REST_API_BASE_URL + endpoint
         access_token = EntraIdTokenManager.get_fabric_access_token()
         request_headers = {'Content-Type':'application/json',
                            'Authorization': f'Bearer {access_token}'}
@@ -203,7 +203,7 @@ class FabricRestApi:
     @classmethod
     def _execute_patch_request_to_powerbi(cls, endpoint, post_body):
         """Execute GET Request on Fabric REST API Endpoint"""
-        rest_url = AppSettings.POWER_BI_REST_API_BASE_URL + endpoint
+        rest_url = EnvironmentSettings.POWER_BI_REST_API_BASE_URL + endpoint
         access_token = EntraIdTokenManager.get_fabric_access_token()
         request_headers = {'Content-Type':'application/json',
                            'Authorization': f'Bearer {access_token}'}
@@ -299,10 +299,10 @@ class FabricRestApi:
 
         AppLogger.log_substep(f"Pipeline create with id [{pipeline['id']}]")
 
-        if AppSettings.RUN_AS_SERVICE_PRINCIPAL:
+        if EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL:
             AppLogger.log_substep('Adding deployment pipeline role of [Admin] for admin user')
             cls.add_deployment_pipeline_role_assignment(pipeline['id'],
-                                                        AppSettings.ADMIN_USER_ID,
+                                                        EnvironmentSettings.ADMIN_USER_ID,
                                                         'User',
                                                         'Admin')
         else:
@@ -310,7 +310,7 @@ class FabricRestApi:
                 'Adding deployment pipeline role of [Admin] for service principal')
 
             cls.add_deployment_pipeline_role_assignment(pipeline['id'],
-                                                        AppSettings.SERVICE_PRINCIPAL_OBJECT_ID,
+                                                        EnvironmentSettings.SERVICE_PRINCIPAL_OBJECT_ID,
                                                         'ServicePrincipal',
                                                         'Admin')
         return pipeline
@@ -390,7 +390,7 @@ class FabricRestApi:
         post_body = {
             'displayName': display_name,
             'description': 'a demo workspace',
-            'capacityId': AppSettings.FABRIC_CAPACITY_ID
+            'capacityId': EnvironmentSettings.FABRIC_CAPACITY_ID
         }
 
         AppLogger.log_substep('Calling Create-Workspace API...')
@@ -398,12 +398,12 @@ class FabricRestApi:
         workspace_id = workspace['id']
         AppLogger.log_substep(f'Workspace created with Id of [{workspace_id}]')
 
-        if AppSettings.RUN_AS_SERVICE_PRINCIPAL:
+        if EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL:
             AppLogger.log_substep('Adding workspace role of [Admin] for admin user')
-            cls.add_workspace_user(workspace_id, AppSettings.ADMIN_USER_ID, 'Admin')
+            cls.add_workspace_user(workspace_id, EnvironmentSettings.ADMIN_USER_ID, 'Admin')
         else:
             AppLogger.log_substep('Adding workspace role of [Admin] for service principal')
-            cls.add_workspace_spn(workspace_id, AppSettings.SERVICE_PRINCIPAL_OBJECT_ID, 'Admin')
+            cls.add_workspace_spn(workspace_id, EnvironmentSettings.SERVICE_PRINCIPAL_OBJECT_ID, 'Admin')
 
         return workspace
 
@@ -498,15 +498,15 @@ class FabricRestApi:
         AppLogger.log_substep(
             f"Connection created with id [{connection['id']}]")
 
-        if AppSettings.RUN_AS_SERVICE_PRINCIPAL:
+        if EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL:
             AppLogger.log_substep('Adding connection role of [Owner] for user')
             cls.add_connection_role_assignment_for_user(connection['id'],
-                                                        AppSettings.ADMIN_USER_ID,
+                                                        EnvironmentSettings.ADMIN_USER_ID,
                                                         'Owner')
         else:
             AppLogger.log_substep('Adding connection role of [Owner] for SPN')
             cls.add_connection_role_assignment_for_spn(connection['id'],
-                                                       AppSettings.SERVICE_PRINCIPAL_OBJECT_ID,
+                                                       EnvironmentSettings.SERVICE_PRINCIPAL_OBJECT_ID,
                                                        'Owner')
 
         return connection
@@ -599,9 +599,9 @@ class FabricRestApi:
             },
             'credentialDetails': {
                 'credentials': {
-                    'tenantId': AppSettings.FABRIC_TENANT_ID,
-                    'servicePrincipalClientId': AppSettings.FABRIC_CLIENT_ID,
-                    'servicePrincipalSecret': AppSettings.FABRIC_CLIENT_SECRET,
+                    'tenantId': EnvironmentSettings.FABRIC_TENANT_ID,
+                    'servicePrincipalClientId': EnvironmentSettings.FABRIC_CLIENT_ID,
+                    'servicePrincipalSecret': EnvironmentSettings.FABRIC_CLIENT_SECRET,
                     'credentialType': 'ServicePrincipal'
                 },
                 'singleSignOnType': 'None',
@@ -636,7 +636,7 @@ class FabricRestApi:
             },
             'credentialDetails': {
                 'credentials': {
-                    'key': AppSettings.AZURE_STORAGE_ACCOUNT_KEY,
+                    'key': EnvironmentSettings.AZURE_STORAGE_ACCOUNT_KEY,
                     'credentialType': 'Key'
                 },
                 'singleSignOnType': 'None',
@@ -671,7 +671,7 @@ class FabricRestApi:
             },
             'credentialDetails': {
                 'credentials': {
-                    'token': AppSettings.AZURE_STORAGE_SAS_TOKEN,
+                    'token': EnvironmentSettings.AZURE_STORAGE_SAS_TOKEN,
                     'credentialType': 'SharedAccessSignature'
                 },
                 'singleSignOnType': 'None',
@@ -742,7 +742,7 @@ class FabricRestApi:
             },
             'credentialDetails': {
                 'credentials': {
-                    'key': AppSettings.PERSONAL_ACCESS_TOKEN_GITHUB,
+                    'key': EnvironmentSettings.PERSONAL_ACCESS_TOKEN_GITHUB,
                     'credentialType': 'Key'
                 },
                 'singleSignOnType': 'None',

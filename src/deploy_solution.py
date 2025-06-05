@@ -2,7 +2,7 @@
 
 import os
 
-from fabric_devops import FabricRestApi, ItemDefinitionFactory, AppLogger, AppSettings, \
+from fabric_devops import FabricRestApi, ItemDefinitionFactory, AppLogger, EnvironmentSettings, \
                           VariableLibrary
 
 def deploy_powerbi_solution():
@@ -110,14 +110,14 @@ def deploy_shortcut_solution():
     lakehouse = FabricRestApi.create_lakehouse(workspace['id'], lakehouse_name)
 
     connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
-        AppSettings.AZURE_STORAGE_SERVER,
-        AppSettings.AZURE_STORAGE_PATH,
+        EnvironmentSettings.AZURE_STORAGE_SERVER,
+        EnvironmentSettings.AZURE_STORAGE_PATH,
         workspace)
 
     shortcut_name = "sales-data"
     shortcut_path = "Files"
-    shortcut_location = AppSettings.AZURE_STORAGE_SERVER
-    shortcut_subpath = AppSettings.AZURE_STORAGE_PATH
+    shortcut_location = EnvironmentSettings.AZURE_STORAGE_SERVER
+    shortcut_subpath = EnvironmentSettings.AZURE_STORAGE_PATH
 
     FabricRestApi.create_adls_gen2_shortcut(workspace['id'],
                                                     lakehouse['id'],
@@ -195,8 +195,8 @@ def deploy_data_pipeline_solution():
         notebook_ids[notebook['displayName']] = notebook['id']
 
     connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
-        AppSettings.AZURE_STORAGE_SERVER,
-        AppSettings.AZURE_STORAGE_PATH,
+        EnvironmentSettings.AZURE_STORAGE_SERVER,
+        EnvironmentSettings.AZURE_STORAGE_PATH,
         workspace)
 
     pipeline_template = ItemDefinitionFactory.get_template_file(
@@ -206,8 +206,8 @@ def deploy_data_pipeline_solution():
         pipeline_template.replace('{WORKSPACE_ID}', workspace['id']) \
                         .replace('{LAKEHOUSE_ID}', lakehouse['id']) \
                         .replace('{CONNECTION_ID}', connection['id']) \
-                        .replace('{CONTAINER_NAME}', AppSettings.AZURE_STORAGE_CONTAINER) \
-                        .replace('{CONTAINER_PATH}', AppSettings.AZURE_STORAGE_CONTAINER_PATH) \
+                        .replace('{CONTAINER_NAME}', EnvironmentSettings.AZURE_STORAGE_CONTAINER) \
+                        .replace('{CONTAINER_PATH}', EnvironmentSettings.AZURE_STORAGE_CONTAINER_PATH) \
                         .replace('{NOTEBOOK_ID_BUILD_SILVER}', list(notebook_ids.values())[0]) \
                         .replace('{NOTEBOOK_ID_BUILD_GOLD}', list(notebook_ids.values())[1])
 
@@ -272,15 +272,15 @@ def deploy_variable_library_solution():
         notebook_ids.append(notebook['id'])
 
     connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
-        AppSettings.AZURE_STORAGE_SERVER,
-        AppSettings.AZURE_STORAGE_PATH,
+        EnvironmentSettings.AZURE_STORAGE_SERVER,
+        EnvironmentSettings.AZURE_STORAGE_PATH,
         workspace)
 
     variable_library = VariableLibrary()
-    variable_library.add_variable("web_datasource_path", AppSettings.WEB_DATASOURCE_ROOT_URL)
-    variable_library.add_variable("adls_server", AppSettings.AZURE_STORAGE_SERVER)
-    variable_library.add_variable("adls_container_name",  AppSettings.AZURE_STORAGE_CONTAINER)
-    variable_library.add_variable("adls_container_path",  AppSettings.AZURE_STORAGE_CONTAINER_PATH)
+    variable_library.add_variable("web_datasource_path", EnvironmentSettings.WEB_DATASOURCE_ROOT_URL)
+    variable_library.add_variable("adls_server", EnvironmentSettings.AZURE_STORAGE_SERVER)
+    variable_library.add_variable("adls_container_name",  EnvironmentSettings.AZURE_STORAGE_CONTAINER)
+    variable_library.add_variable("adls_container_path",  EnvironmentSettings.AZURE_STORAGE_CONTAINER_PATH)
     variable_library.add_variable("adls_connection_id",  connection['id'])
     variable_library.add_variable("lakehouse_id",  lakehouse['id'])
     variable_library.add_variable("notebook_id_build_silver",  notebook_ids[0])
@@ -378,8 +378,8 @@ def deploy_warehouse_solution():
             warehouse['id'])
 
     connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
-        AppSettings.AZURE_STORAGE_SERVER,
-        AppSettings.AZURE_STORAGE_PATH,
+        EnvironmentSettings.AZURE_STORAGE_SERVER,
+        EnvironmentSettings.AZURE_STORAGE_PATH,
         workspace)
 
     for data_pipeline in data_pipelines:

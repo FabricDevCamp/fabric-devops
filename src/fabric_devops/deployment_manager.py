@@ -4,7 +4,7 @@ import base64
 import json
 
 from .app_logger import AppLogger
-#from .app_settings import AppSettings
+#from .app_settings import EnvironmentSettings
 from .deployment_job import DeploymentJob
 from .fabric_rest_api import FabricRestApi
 from .item_definition_factory import ItemDefinitionFactory
@@ -340,7 +340,7 @@ class DeploymentManager:
         """Deploy Variable Library Solution"""
 
         # currently, this cannot run as SPN, it only works when running as user
-        #AppSettings.RUN_AS_SERVICE_PRINCIPAL = False
+        #EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL = False
 
         lakehouse_name = "sales"
         notebook_folders = [

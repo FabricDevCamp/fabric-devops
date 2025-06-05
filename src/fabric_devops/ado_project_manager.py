@@ -6,7 +6,7 @@ from json.decoder import JSONDecodeError
 import requests
 
 from .app_logger import AppLogger
-from .app_settings import AppSettings
+from .environment_settings import EnvironmentSettings
 from .entra_id_token_manager import EntraIdTokenManager
 
 class AdoProjectManager:
@@ -90,7 +90,7 @@ class AdoProjectManager:
     @classmethod
     def _execute_patch_request(cls, endpoint, post_body):
         """Execute GET Request on Fabric REST API Endpoint"""
-        rest_url = AppSettings.FABRIC_REST_API_BASE_URL + endpoint
+        rest_url = EnvironmentSettings.FABRIC_REST_API_BASE_URL + endpoint
         access_token = EntraIdTokenManager.get_fabric_access_token()
         request_headers = {'Content-Type':'application/json',
                            'Authorization': f'Bearer {access_token}'}

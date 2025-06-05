@@ -1,6 +1,6 @@
 """Deploy Warehouse Solution"""
 
-from fabric_devops import FabricRestApi, ItemDefinitionFactory, AppLogger, AppSettings
+from fabric_devops import FabricRestApi, ItemDefinitionFactory, AppLogger, EnvironmentSettings
 
 WORKSPACE_NAME = "Custom Warehouse Solution"
 LAKEHOUSE_NAME = "staging"
@@ -42,8 +42,8 @@ warehouse_connect_string = FabricRestApi.get_warehouse_connection_string(
         warehouse['id'])
 
 connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
-    AppSettings.AZURE_STORAGE_SERVER,
-    AppSettings.AZURE_STORAGE_PATH,
+    EnvironmentSettings.AZURE_STORAGE_SERVER,
+    EnvironmentSettings.AZURE_STORAGE_PATH,
     workspace)
 
 for data_pipeline in DATA_PIPELINES:

@@ -1,9 +1,9 @@
 """Deploy Variable Solution"""
 
 from fabric_devops import FabricRestApi, ItemDefinitionFactory, AppLogger, \
-                          AppSettings, VariableLibrary
+                          EnvironmentSettings, VariableLibrary
 
-AppSettings.RUN_AS_SERVICE_PRINCIPAL = False
+EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL = False
 
 WORKSPACE_NAME = "Custom Variable Library Solution"
 LAKEHOUSE_NAME = "sales"
@@ -34,15 +34,15 @@ for notebook_data in NOTEBOOKS:
     notebook_ids.append(notebook['id'])
 
 connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
-    AppSettings.AZURE_STORAGE_SERVER,
-    AppSettings.AZURE_STORAGE_PATH,
+    EnvironmentSettings.AZURE_STORAGE_SERVER,
+    EnvironmentSettings.AZURE_STORAGE_PATH,
     workspace)
 
 variable_library = VariableLibrary()
-variable_library.add_variable("web_datasource_path", AppSettings.WEB_DATASOURCE_ROOT_URL)
-variable_library.add_variable("adls_server", AppSettings.AZURE_STORAGE_SERVER)
-variable_library.add_variable("adls_container_name",  AppSettings.AZURE_STORAGE_CONTAINER)
-variable_library.add_variable("adls_container_path",  AppSettings.AZURE_STORAGE_CONTAINER_PATH)
+variable_library.add_variable("web_datasource_path", EnvironmentSettings.WEB_DATASOURCE_ROOT_URL)
+variable_library.add_variable("adls_server", EnvironmentSettings.AZURE_STORAGE_SERVER)
+variable_library.add_variable("adls_container_name",  EnvironmentSettings.AZURE_STORAGE_CONTAINER)
+variable_library.add_variable("adls_container_path",  EnvironmentSettings.AZURE_STORAGE_CONTAINER_PATH)
 variable_library.add_variable("adls_connection_id",  connection['id'])
 variable_library.add_variable("lakehouse_id",  lakehouse['id'])
 variable_library.add_variable("notebook_id_build_silver",  notebook_ids[0])

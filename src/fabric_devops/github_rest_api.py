@@ -8,12 +8,12 @@ from json.decoder import JSONDecodeError
 import requests
 
 from .app_logger import AppLogger
-from .app_settings import AppSettings
+from .environment_settings import EnvironmentSettings
 
 class GitHubRestApi:
     """Wrapper class for calling GitHub REST APIs"""
 
-    ACCESS_TOKEN = AppSettings.PERSONAL_ACCESS_TOKEN_GITHUB
+    ACCESS_TOKEN = EnvironmentSettings.PERSONAL_ACCESS_TOKEN_GITHUB
 
     GITHUB_ORGANIZATION = 'fabricdevcampdemos'
     GITHUB_OWNER = 'TedAtDevCamp'

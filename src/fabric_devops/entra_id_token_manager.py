@@ -5,7 +5,7 @@ import os
 import msal
 
 from .app_logger import AppLogger
-from .app_settings import AppSettings
+from .environment_settings import EnvironmentSettings
 
 class EntraIdTokenManager():
     """EntraIdTokenManager"""
@@ -62,9 +62,9 @@ class EntraIdTokenManager():
             return cls._token_cache[scope]['access_token']
                 
         app = msal.ConfidentialClientApplication(
-            AppSettings.FABRIC_CLIENT_ID,
-            authority=AppSettings.AUTHORITY,
-            client_credential=AppSettings.FABRIC_CLIENT_SECRET)
+            EnvironmentSettings.FABRIC_CLIENT_ID,
+            authority=EnvironmentSettings.AUTHORITY,
+            client_credential=EnvironmentSettings.FABRIC_CLIENT_SECRET)
 
         AppLogger.log_substep(f'Aquiring access token for service principal with scope [{scope}]')
 
@@ -82,7 +82,7 @@ class EntraIdTokenManager():
     def _get_access_token_for_user(cls, scope):
         """Authenticate the user interactively"""
 
-        client_id = AppSettings.CLIENT_ID_AZURE_POWERSHELL_APP
+        client_id = EnvironmentSettings.CLIENT_ID_AZURE_POWERSHELL_APP
         authority = "https://login.microsoftonline.com/organizations"
 
         app = msal.PublicClientApplication(client_id,
@@ -110,7 +110,7 @@ class EntraIdTokenManager():
            (datetime.datetime.now() < cls._token_cache[scope]['access_token_expiration']):
             return cls._token_cache[scope]['access_token']
 
-        client_id = AppSettings.CLIENT_ID_AZURE_POWERSHELL_APP
+        client_id = EnvironmentSettings.CLIENT_ID_AZURE_POWERSHELL_APP
         authority = "https://login.microsoftonline.com/organizations"
 
         app = msal.PublicClientApplication(client_id,
@@ -140,29 +140,29 @@ class EntraIdTokenManager():
     def get_fabric_access_token(cls):
         """"Get Fabric Access Token"""
 
-        if AppSettings.RUN_AS_SERVICE_PRINCIPAL:
-            scope_for_service_principal = AppSettings.FABRIC_REST_API_RESOURCE_ID + "//.default"
+        if EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL:
+            scope_for_service_principal = EnvironmentSettings.FABRIC_REST_API_RESOURCE_ID + "//.default"
             return cls._get_access_token_for_service_principal(scope_for_service_principal)
         
-        scope_for_user = AppSettings.FABRIC_REST_API_RESOURCE_ID + "//user_impersonation"
+        scope_for_user = EnvironmentSettings.FABRIC_REST_API_RESOURCE_ID + "//user_impersonation"
 
-        if AppSettings.RUNNING_LOCALLY:
+        if EnvironmentSettings.RUNNING_LOCALLY:
             return cls._get_access_token_for_user(scope_for_user)
 
-        if AppSettings.RUNNING_IN_GITHUB:
+        if EnvironmentSettings.RUNNING_IN_GITHUB:
             return cls._get_access_token_for_user_with_device_code(scope_for_user)
 
     @classmethod
     def get_ado_access_token(cls):
         """"Get Access Token for Azure Dev """
         ado_resource_id = '499b84ac-1321-427f-aa17-267ca6975798'
-        if AppSettings.RUN_AS_SERVICE_PRINCIPAL:
+        if EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL:
             scopes = [ ado_resource_id + "//.default" ]
             authentication_reult = \
                 cls._get_authentication_result_for_service_principal(scopes)
         else:
             scopes = [ ado_resource_id + "//user_impersonation" ]
-            if AppSettings.RUNNING_IN_GITHUB:
+            if EnvironmentSettings.RUNNING_IN_GITHUB:
                 authentication_reult = \
                     cls._get_authentication_result_for_user_with_device_code(scopes)
             else:
@@ -174,13 +174,13 @@ class EntraIdTokenManager():
     @classmethod
     def get_kqldb_access_token(cls, query_service_url):
         """"Get Access Token for KQL DB"""
-        if AppSettings.RUN_AS_SERVICE_PRINCIPAL:
+        if EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL:
             scopes = [ query_service_url + "//.default" ]
             authentication_reult = \
                 cls._get_authentication_result_for_service_principal(scopes)
         else:
             scopes = [ query_service_url + "//user_impersonation" ]
-            if AppSettings.RUNNING_IN_GITHUB:
+            if EnvironmentSettings.RUNNING_IN_GITHUB:
                 authentication_reult = \
                     cls._get_authentication_result_for_user_with_device_code(scopes)
             else:

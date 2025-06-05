@@ -2,7 +2,7 @@
 
 import os
 
-from fabric_devops import DeploymentManager, AppSettings, FabricRestApi
+from fabric_devops import DeploymentManager, EnvironmentSettings, FabricRestApi
 
 WORKSPACE = None
 
@@ -34,7 +34,7 @@ match os.getenv("SOLUTION_NAME"):
 
     case 'Custom Variable Library Solution':
         # SPN bug with var lib requires user auth
-        AppSettings.RUN_AS_SERVICE_PRINCIPAL = False
+        EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL = False
         FabricRestApi.authenticate()
         WORKSPACE = DeploymentManager.deploy_variable_library_solution(
             'Custom Variable Library Solution')

@@ -2,7 +2,7 @@
 
 # Define the __all__ variable
 __all__ = [
-    "AppSettings", 
+    "EnvironmentSettings", 
     "AppLogger",
     "EntraIdTokenManager",
     "FabricRestApi",
@@ -21,7 +21,7 @@ __all__ = [
 ]
 
 # Import the submodules
-from .app_settings import AppSettings
+from .environment_settings import EnvironmentSettings
 from .app_logger import AppLogger
 from .entra_id_token_manager import EntraIdTokenManager
 from .fabric_rest_api import FabricRestApi

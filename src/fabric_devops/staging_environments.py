@@ -1,6 +1,6 @@
 """sample staging environments"""
 
-from .app_settings import AppSettings
+from .environment_settings import EnvironmentSettings
 from .deployment_job import DeploymentJob, DeploymentJobType
 
 class StagingEnvironments:
@@ -15,7 +15,7 @@ class StagingEnvironments:
 
         # setup Web datasource path
         deployment.set_deployment_parameter(DeploymentJob.web_datasource_path_parameter,
-                                            AppSettings.WEB_DATASOURCE_ROOT_URL +
+                                            EnvironmentSettings.WEB_DATASOURCE_ROOT_URL +
                                             'Dev/')
 
         # setup ADLS datasource path
@@ -33,7 +33,7 @@ class StagingEnvironments:
 
         # setup Web datasource path
         deployment.set_deployment_parameter(DeploymentJob.web_datasource_path_parameter,
-                                            AppSettings.WEB_DATASOURCE_ROOT_URL +
+                                            EnvironmentSettings.WEB_DATASOURCE_ROOT_URL +
                                             'Test/')
 
         # setup ADLS datasource path
@@ -51,7 +51,7 @@ class StagingEnvironments:
 
         # setup Web datasource path
         deployment.set_deployment_parameter(DeploymentJob.web_datasource_path_parameter,
-                                            AppSettings.WEB_DATASOURCE_ROOT_URL +
+                                            EnvironmentSettings.WEB_DATASOURCE_ROOT_URL +
                                             'Prod/')
 
         # setup ADLS datasource path

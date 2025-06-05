@@ -2,7 +2,7 @@
 
 from typing import List
 
-from .app_settings import AppSettings
+from .environment_settings import EnvironmentSettings
 from .deployment_job import DeploymentJob, DeploymentJobType
 
 class SampleCustomerData:
@@ -17,7 +17,7 @@ class SampleCustomerData:
 
         # setup Web datasource path
         deployment.set_deployment_parameter(DeploymentJob.web_datasource_path_parameter,
-                                            AppSettings.WEB_DATASOURCE_ROOT_URL +
+                                            EnvironmentSettings.WEB_DATASOURCE_ROOT_URL +
                                             'Customers/AdventureWorks/')
 
         # setup ADLS datasource path
@@ -35,7 +35,7 @@ class SampleCustomerData:
 
         # setup Web datasource path
         deployment.set_deployment_parameter(DeploymentJob.web_datasource_path_parameter,
-                                            AppSettings.WEB_DATASOURCE_ROOT_URL +
+                                            EnvironmentSettings.WEB_DATASOURCE_ROOT_URL +
                                             'Customers/Contoso/')
 
         # setup ADLS datasource path
@@ -53,7 +53,7 @@ class SampleCustomerData:
 
         # setup Web datasource path
         deployment.set_deployment_parameter(DeploymentJob.web_datasource_path_parameter,
-                                            AppSettings.WEB_DATASOURCE_ROOT_URL +
+                                            EnvironmentSettings.WEB_DATASOURCE_ROOT_URL +
                                             'Customers/Fabrikam/')
 
         # setup ADLS datasource path
@@ -71,7 +71,7 @@ class SampleCustomerData:
 
         # setup Web datasource path
         deployment.set_deployment_parameter(DeploymentJob.web_datasource_path_parameter,
-                                            AppSettings.WEB_DATASOURCE_ROOT_URL +
+                                            EnvironmentSettings.WEB_DATASOURCE_ROOT_URL +
                                             'Customers/Northwind/')
 
         # setup ADLS datasource path
@@ -89,7 +89,7 @@ class SampleCustomerData:
 
         # setup Web datasource path
         deployment.set_deployment_parameter(DeploymentJob.web_datasource_path_parameter,
-                                            AppSettings.WEB_DATASOURCE_ROOT_URL +
+                                            EnvironmentSettings.WEB_DATASOURCE_ROOT_URL +
                                             'Customers/SeamarkFarms/')
 
         # setup ADLS datasource path
@@ -107,7 +107,7 @@ class SampleCustomerData:
 
         # setup Web datasource path
         deployment.set_deployment_parameter(DeploymentJob.web_datasource_path_parameter,
-                                            AppSettings.WEB_DATASOURCE_ROOT_URL +
+                                            EnvironmentSettings.WEB_DATASOURCE_ROOT_URL +
                                             'Customers/Wingtip/')
 
         # setup ADLS datasource path

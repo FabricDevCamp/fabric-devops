@@ -1,6 +1,6 @@
 """Deploy Data Pipeline Solution"""
 
-from fabric_devops import FabricRestApi, ItemDefinitionFactory, AppLogger, AppSettings
+from fabric_devops import FabricRestApi, ItemDefinitionFactory, AppLogger, EnvironmentSettings
 
 WORKSPACE_NAME = "Custom Data Pipeline Solution"
 LAKEHOUSE_NAME = "sales"
@@ -33,8 +33,8 @@ for notebook_data in NOTEBOOKS:
     notebook_ids[notebook['displayName']] = notebook['id']
 
 connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
-    AppSettings.AZURE_STORAGE_SERVER,
-    AppSettings.AZURE_STORAGE_PATH,
+    EnvironmentSettings.AZURE_STORAGE_SERVER,
+    EnvironmentSettings.AZURE_STORAGE_PATH,
     workspace)
 
 pipeline_template = ItemDefinitionFactory.get_template_file(
@@ -44,8 +44,8 @@ pipeline_definition = \
     pipeline_template.replace('{WORKSPACE_ID}', workspace['id']) \
                      .replace('{LAKEHOUSE_ID}', lakehouse['id']) \
                      .replace('{CONNECTION_ID}', connection['id']) \
-                     .replace('{CONTAINER_NAME}', AppSettings.AZURE_STORAGE_CONTAINER) \
-                     .replace('{CONTAINER_PATH}', AppSettings.AZURE_STORAGE_CONTAINER_PATH) \
+                     .replace('{CONTAINER_NAME}', EnvironmentSettings.AZURE_STORAGE_CONTAINER) \
+                     .replace('{CONTAINER_PATH}', EnvironmentSettings.AZURE_STORAGE_CONTAINER_PATH) \
                      .replace('{NOTEBOOK_ID_BUILD_SILVER}', list(notebook_ids.values())[0]) \
                      .replace('{NOTEBOOK_ID_BUILD_GOLD}', list(notebook_ids.values())[1])
 

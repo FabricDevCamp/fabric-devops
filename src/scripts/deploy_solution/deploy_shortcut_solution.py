@@ -1,6 +1,6 @@
 """Deploy Shortcut Solution"""
 
-from fabric_devops import FabricRestApi, ItemDefinitionFactory, AppLogger, AppSettings, SampleCustomerData
+from fabric_devops import FabricRestApi, ItemDefinitionFactory, AppLogger, EnvironmentSettings, SampleCustomerData
 
 deploy_job = SampleCustomerData.get_seamarkfarms()
 
@@ -26,14 +26,14 @@ FabricRestApi.update_workspace_description(workspace['id'], 'Custom Shortcut Sol
 lakehouse = FabricRestApi.create_lakehouse(workspace['id'], LAKEHOUSE_NAME)
 
 connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
-    AppSettings.AZURE_STORAGE_SERVER,
-    AppSettings.AZURE_STORAGE_PATH,
+    EnvironmentSettings.AZURE_STORAGE_SERVER,
+    EnvironmentSettings.AZURE_STORAGE_PATH,
     workspace)
 
 SHORTCUT_NAME = "sales-data"
 SHORTCUT_PATH = "Files"
-SHORTCUT_LOCATION = AppSettings.AZURE_STORAGE_SERVER
-SHORTCUT_SUBPATH = AppSettings.AZURE_STORAGE_PATH
+SHORTCUT_LOCATION = EnvironmentSettings.AZURE_STORAGE_SERVER
+SHORTCUT_SUBPATH = EnvironmentSettings.AZURE_STORAGE_PATH
 
 SHORTCUT = FabricRestApi.create_adls_gen2_shortcut(workspace['id'],
                                                    lakehouse['id'],
