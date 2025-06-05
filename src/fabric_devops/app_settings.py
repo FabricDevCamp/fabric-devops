@@ -6,8 +6,9 @@ class AppSettings:
 
     """App Settings"""
 
-    RUN_AS_SERVICE_PRINCIPAL = True
+    RUN_AS_SERVICE_PRINCIPAL = False
     RUNNING_IN_GITHUB = os.getenv('GITHUB_ACTIONS') == 'true'
+    RUNNING_LOCALLY = (RUNNING_IN_GITHUB is False)
     FABRIC_CLIENT_ID = os.getenv("FABRIC_CLIENT_ID")
     FABRIC_CLIENT_SECRET = os.getenv("FABRIC_CLIENT_SECRET")
     FABRIC_TENANT_ID = os.getenv("FABRIC_TENANT_ID")
