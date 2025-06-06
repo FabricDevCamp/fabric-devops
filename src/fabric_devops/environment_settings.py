@@ -3,7 +3,6 @@
 import os
 
 class EnvironmentSettings:
-
     """Environment Settings"""
 
     RUN_AS_SERVICE_PRINCIPAL = True

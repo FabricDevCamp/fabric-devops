@@ -239,10 +239,13 @@ class FabricRestApi:
     @classmethod
     def display_capacities(cls):
         """Display all capacities accessible to caller"""
-        AppLogger.log_step('Capacities:')
         capacities = cls.list_capacities()
+        AppLogger.log_step('Capacities:')
         for capacity in capacities:
-            AppLogger.log_substep(capacity['displayName'])
+            capacity_item = \
+                f"[ id={capacity['id']}, sku={capacity['sku']}, displayName={capacity['displayName']} ] "
+            AppLogger.log_substep(capacity_item)
+        AppLogger.log_step_complete()
 
     @classmethod
     def list_deployment_pipelines(cls):
@@ -366,7 +369,9 @@ class FabricRestApi:
         AppLogger.log_step('Workspaces:')
         workspaces = cls.list_workspaces()
         for workspace in workspaces:
-            AppLogger.log_substep(f"{workspace['id']} - {workspace['displayName']}")
+            workspace_item = f"[ id={workspace['id']}, displayName={workspace['displayName']} ]"
+            AppLogger.log_substep(workspace_item)
+        AppLogger.log_step_complete()
 
     @classmethod
     def get_workspace_by_name(cls, display_name):

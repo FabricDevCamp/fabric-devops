@@ -1,7 +1,14 @@
 """AppLogger Module"""
+
 import os
+
 class AppLogger:
     """Logic to write log output to console and/or logs"""
+
+    @classmethod
+    def clear_console(cls):
+        """Clear Console Windows"""
+        os.system('cls' if os.name == 'nt' else 'clear')
 
     @classmethod
     def log_job(cls, message):
@@ -29,6 +36,11 @@ class AppLogger:
         """log a sub step"""    
         print('  - ' + message, flush=True)
 
+    @classmethod
+    def log_step_complete(cls):
+        """add linebreak to log"""
+        print(' ', flush=True)
+
     TABLE_WIDTH = 120
 
     @classmethod
@@ -51,6 +63,11 @@ class AppLogger:
         print(row, flush=True)
         print('  ' + ('-' * (cls.TABLE_WIDTH)), flush=True)
 
+    @classmethod
+    def log_raw_text(cls, text):
+        """log raw text"""
+        print(text, flush=True)
+        print('', flush=True)
 
     @classmethod
     def log_error(cls, message):
