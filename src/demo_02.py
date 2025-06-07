@@ -19,3 +19,4 @@ authentication_result = app.acquire_token_interactive([PERMISSION_SCOPE])
 access_token = authentication_result['access_token']
 
 AppLogger.log_raw_text(access_token)
+

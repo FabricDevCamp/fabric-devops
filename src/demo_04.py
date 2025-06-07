@@ -34,6 +34,8 @@ def execute_fabric_get_request(endpoint):
     else:
         AppLogger.log_error(f"Error executing get with status code of {response.status_code}")
 
+# run demo
+AppLogger.clear_console()
 workspaces_response = execute_fabric_get_request('workspaces')
 workspaces = workspaces_response['value']
 

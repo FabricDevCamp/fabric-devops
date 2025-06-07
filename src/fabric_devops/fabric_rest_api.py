@@ -1,10 +1,8 @@
 """Module to manage calls to Fabric REST APIs"""
 
 import time
-from json.decoder import JSONDecodeError
-
 import requests
-
+from json.decoder import JSONDecodeError
 from .app_logger import AppLogger
 from .environment_settings import EnvironmentSettings
 from .entra_id_token_manager import EntraIdTokenManager
@@ -12,7 +10,7 @@ from .entra_id_token_manager import EntraIdTokenManager
 class FabricRestApi:
     """Wrapper class for calling Fabric REST APIs"""
 
-#region Low-level details about authentication and HTTP requests and responses
+    #region 'Low-level details about authentication and HTTP requests and responses'
 
     @classmethod
     def _execute_get_request(cls, endpoint):
@@ -223,8 +221,7 @@ class FabricRestApi:
                 f'Error executing PATCH request: {response.status_code} - {response.text}')
             return None
 
-
-#endregion
+    #endregion
 
     @classmethod
     def authenticate(cls):
@@ -246,116 +243,6 @@ class FabricRestApi:
                 f"[ id={capacity['id']}, sku={capacity['sku']}, displayName={capacity['displayName']} ] "
             AppLogger.log_substep(capacity_item)
         AppLogger.log_step_complete()
-
-    @classmethod
-    def list_deployment_pipelines(cls):
-        """Get all deployment pipelines accessible to caller"""
-        return cls._execute_get_request('deploymentPipelines')['value']
-
-    @classmethod
-    def get_deployment_pipeline_by_name(cls, display_name):
-        """Get Deployment Pipeline item by display name"""
-        pipelines =  cls.list_deployment_pipelines()
-        for pipeline in pipelines:
-            if pipeline['displayName'] == display_name:
-                return pipeline
-        return None
-
-    @classmethod
-    def list_deployment_pipeline_stages(cls, pipeline_id):
-        """List all deployment pipeline stages"""
-        endpoint = f"deploymentPipelines/{pipeline_id}/stages"
-        return cls._execute_get_request(endpoint)['value']
-
-    @classmethod
-    def delete_deployment_pipeline(cls, pipeline_id):
-        """Delete Deployment Pipeline"""
-        endpoint = f"deploymentPipelines/{pipeline_id}"
-        return cls._execute_delete_request(endpoint)
-
-    @classmethod
-    def display_deployment_pipelines(cls):
-        """Display Deployment Pipeline"""
-        AppLogger.log_step('Deployment Pipelines:')
-        pipelines = cls.list_deployment_pipelines()
-        for pipeline in pipelines:
-            AppLogger.log_substep(f"{pipeline['id']} - {pipeline['displayName']}")
-
-    @classmethod
-    def create_deployment_pipeline(cls, display_name, stages):
-        """Create Deployment Pipeline"""
-        AppLogger.log_step(f'Creating Deployment Pipelines [{display_name}]')
-        pipeline_stages = []
-        for stage in stages:
-            pipeline_stages.append({
-                'displayName': stage,
-                'description': 'it works',
-                'isPublic': False
-            })
-        create_request = {
-            'displayName': display_name,
-            'description': 'great example',
-            'stages': pipeline_stages
-        }
-        endpoint = "deploymentPipelines"
-        pipeline = cls._execute_post_request(endpoint, create_request)
-
-        AppLogger.log_substep(f"Pipeline create with id [{pipeline['id']}]")
-
-        if EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL:
-            AppLogger.log_substep('Adding deployment pipeline role of [Admin] for admin user')
-            cls.add_deployment_pipeline_role_assignment(pipeline['id'],
-                                                        EnvironmentSettings.ADMIN_USER_ID,
-                                                        'User',
-                                                        'Admin')
-        else:
-            AppLogger.log_substep(
-                'Adding deployment pipeline role of [Admin] for service principal')
-
-            cls.add_deployment_pipeline_role_assignment(pipeline['id'],
-                                                        EnvironmentSettings.SERVICE_PRINCIPAL_OBJECT_ID,
-                                                        'ServicePrincipal',
-                                                        'Admin')
-        return pipeline
-
-    @classmethod
-    def add_deployment_pipeline_role_assignment(cls, pipeline_id,
-                                                principal_id, principal_type, role):
-        """Add Deployment Pipeline Role Assignment"""
-        endpoint = f"deploymentPipelines/{pipeline_id}/roleAssignments"
-        add_request = {
-            'principal': {
-                'id': principal_id,
-                'type': principal_type
-            },
-            'role': role
-        }
-        return cls._execute_post_request(endpoint, add_request)
-
-    @classmethod
-    def assign_workpace_to_pipeline_stage(cls, workspace_id, pipeline_id, stage_id):
-        """Assign workspace to pipeline stage """
-        endpoint = f"deploymentPipelines/{pipeline_id}/stages/{stage_id}/assignWorkspace"
-        assign_request = { 'workspaceId': workspace_id }
-        cls._execute_post_request(endpoint, assign_request)
-
-    @classmethod
-    def unassign_workpace_from_pipeline_stage(cls, pipeline_id, stage_id):
-        """Assign workspace to pipeline stage"""
-        endpoint = f"deploymentPipelines/{pipeline_id}/stages/{stage_id}/unassignWorkspace"
-        cls._execute_post_request(endpoint)
-
-    @classmethod
-    def deploy_to_pipeline_stage(cls, pipeline_id, source_stage_id, target_stage_id,  note = None):
-        """Deploy to pipeline stage"""
-        endpoint = f'deploymentPipelines/{pipeline_id}/deploy'
-        deploy_request = {
-            'sourceStageId': source_stage_id,
-            'targetStageId': target_stage_id
-        }
-        if note is not None:
-            deploy_request['note'] = note
-        cls._execute_post_request(endpoint, deploy_request)
 
     @classmethod
     def list_workspaces(cls):
@@ -1190,3 +1077,112 @@ class FabricRestApi:
         endpoint = f"workspaces/{workspace_id}/git/myGitCredentials"
         return cls._execute_patch_request(endpoint, update_git_credentials_request)
         
+    @classmethod
+    def list_deployment_pipelines(cls):
+        """Get all deployment pipelines accessible to caller"""
+        return cls._execute_get_request('deploymentPipelines')['value']
+
+    @classmethod
+    def get_deployment_pipeline_by_name(cls, display_name):
+        """Get Deployment Pipeline item by display name"""
+        pipelines =  cls.list_deployment_pipelines()
+        for pipeline in pipelines:
+            if pipeline['displayName'] == display_name:
+                return pipeline
+        return None
+
+    @classmethod
+    def list_deployment_pipeline_stages(cls, pipeline_id):
+        """List all deployment pipeline stages"""
+        endpoint = f"deploymentPipelines/{pipeline_id}/stages"
+        return cls._execute_get_request(endpoint)['value']
+
+    @classmethod
+    def delete_deployment_pipeline(cls, pipeline_id):
+        """Delete Deployment Pipeline"""
+        endpoint = f"deploymentPipelines/{pipeline_id}"
+        return cls._execute_delete_request(endpoint)
+
+    @classmethod
+    def display_deployment_pipelines(cls):
+        """Display Deployment Pipeline"""
+        AppLogger.log_step('Deployment Pipelines:')
+        pipelines = cls.list_deployment_pipelines()
+        for pipeline in pipelines:
+            AppLogger.log_substep(f"{pipeline['id']} - {pipeline['displayName']}")
+
+    @classmethod
+    def create_deployment_pipeline(cls, display_name, stages):
+        """Create Deployment Pipeline"""
+        AppLogger.log_step(f'Creating Deployment Pipelines [{display_name}]')
+        pipeline_stages = []
+        for stage in stages:
+            pipeline_stages.append({
+                'displayName': stage,
+                'description': 'it works',
+                'isPublic': False
+            })
+        create_request = {
+            'displayName': display_name,
+            'description': 'great example',
+            'stages': pipeline_stages
+        }
+        endpoint = "deploymentPipelines"
+        pipeline = cls._execute_post_request(endpoint, create_request)
+
+        AppLogger.log_substep(f"Pipeline create with id [{pipeline['id']}]")
+
+        if EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL:
+            AppLogger.log_substep('Adding deployment pipeline role of [Admin] for admin user')
+            cls.add_deployment_pipeline_role_assignment(pipeline['id'],
+                                                        EnvironmentSettings.ADMIN_USER_ID,
+                                                        'User',
+                                                        'Admin')
+        else:
+            AppLogger.log_substep(
+                'Adding deployment pipeline role of [Admin] for service principal')
+
+            cls.add_deployment_pipeline_role_assignment(pipeline['id'],
+                                                        EnvironmentSettings.SERVICE_PRINCIPAL_OBJECT_ID,
+                                                        'ServicePrincipal',
+                                                        'Admin')
+        return pipeline
+
+    @classmethod
+    def add_deployment_pipeline_role_assignment(cls, pipeline_id,
+                                                principal_id, principal_type, role):
+        """Add Deployment Pipeline Role Assignment"""
+        endpoint = f"deploymentPipelines/{pipeline_id}/roleAssignments"
+        add_request = {
+            'principal': {
+                'id': principal_id,
+                'type': principal_type
+            },
+            'role': role
+        }
+        return cls._execute_post_request(endpoint, add_request)
+
+    @classmethod
+    def assign_workpace_to_pipeline_stage(cls, workspace_id, pipeline_id, stage_id):
+        """Assign workspace to pipeline stage """
+        endpoint = f"deploymentPipelines/{pipeline_id}/stages/{stage_id}/assignWorkspace"
+        assign_request = { 'workspaceId': workspace_id }
+        cls._execute_post_request(endpoint, assign_request)
+
+    @classmethod
+    def unassign_workpace_from_pipeline_stage(cls, pipeline_id, stage_id):
+        """Assign workspace to pipeline stage"""
+        endpoint = f"deploymentPipelines/{pipeline_id}/stages/{stage_id}/unassignWorkspace"
+        cls._execute_post_request(endpoint)
+
+    @classmethod
+    def deploy_to_pipeline_stage(cls, pipeline_id, source_stage_id, target_stage_id,  note = None):
+        """Deploy to pipeline stage"""
+        endpoint = f'deploymentPipelines/{pipeline_id}/deploy'
+        deploy_request = {
+            'sourceStageId': source_stage_id,
+            'targetStageId': target_stage_id
+        }
+        if note is not None:
+            deploy_request['note'] = note
+        cls._execute_post_request(endpoint, deploy_request)

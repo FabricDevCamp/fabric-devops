@@ -35,11 +35,13 @@ def execute_fabric_get_request(endpoint):
     AppLogger.log_error(f"Error executing get with status code of {response.status_code}")
     return None
 
+# run demo
+AppLogger.clear_console()
 capacities_response = execute_fabric_get_request('capacities')
 capacities = capacities_response['value']
 
 AppLogger.log_step("Capacities List")
 for capacity in capacities:
-    AppLogger.log_substep(f"{capacity['displayName']} ({capacity['id']}) sku={capacity['sku']}")
+    AppLogger.log_substep(f"{capacity['id']}: [sku={capacity['sku']}] {capacity['displayName']}")
 
 AppLogger.log_step_complete()

@@ -10,7 +10,7 @@ app = msal.ConfidentialClientApplication(
         authority=EnvironmentSettings.AUTHORITY,
         client_credential=EnvironmentSettings.FABRIC_CLIENT_SECRET)
 
-# define Fabric REST API permission scope for service principal
+# define Fabric REST API permission scope for service princip
 PERMISSION_SCOPE = EnvironmentSettings.FABRIC_REST_API_RESOURCE_ID + "//.default"
 
 AppLogger.log_substep(

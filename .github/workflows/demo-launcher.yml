@@ -1,12 +1,26 @@
 
-name: Task - Cleanup Environment
+name: Demo Launcher
+run-name: Running Demo ${{inputs.demo_name}}
 
 on:
   workflow_dispatch:
+    inputs:
+      demo_name:
+        type: choice
+        description: Demo to run
+        options: 
+        - demo_01
+        - demo_02
+        - demo_03
+        - demo_04
+        - demo_05
+        - demo_06
+        - demo_07
+        - demo_08
 
 jobs:
-  deployment-job:    
-    name: Cleanup Environment
+  deployment-job:
+    name: Run Demo - ${{inputs.demo_name}}
     runs-on: ubuntu-latest
 
     steps:
@@ -22,7 +36,7 @@ jobs:
         run: |
           pip install msal
 
-      - name: Cleanup Environment        
+      - name: Run Demo
         env:
           FABRIC_CLIENT_ID: ${{ secrets.FABRIC_CLIENT_ID }}
           FABRIC_CLIENT_SECRET: ${{ secrets.FABRIC_CLIENT_SECRET }}
@@ -32,5 +46,6 @@ jobs:
           SERVICE_PRINCIPAL_OBJECT_ID: ${{ secrets.SERVICE_PRINCIPAL_OBJECT_ID }}
           AZURE_STORAGE_ACCOUNT_KEY: ${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }}
           PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
+          SOLUTION_NAME: ${{inputs.solution_name}}    
         run: 
-          python src/task_cleanup_environment.py
+          python src/${{inputs.demo_name}}.py
