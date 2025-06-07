@@ -45,4 +45,4 @@ jobs:
           SERVICE_PRINCIPAL_OBJECT_ID: ${{ secrets.SERVICE_PRINCIPAL_OBJECT_ID }}
           PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
         run: 
-          python src/${{ inputs.demo_name }}.py
+          python 'src/${{ inputs.demo_name }}.py'
