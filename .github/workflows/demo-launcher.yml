@@ -9,14 +9,13 @@ on:
         type: choice
         description: Demo to run
         options: 
-        - demo_01
-        - demo_02
-        - demo_03
-        - demo_04
-        - demo_05
-        - demo_06
-        - demo_07
-        - demo_08
+        - demo_01 - Get Access Token for Service Principal
+        - demo_03 - Get Access Token for User using Device Code
+        - demo_04 - Execute Fabric REST API Call to List Workspaces
+        - demo_05 - Execute Fabric REST API Call to List Capacities
+        - demo_06 - Execute Fabric REST API to Create Workspace
+        - demo_07 - Create Workspace using FabricRestApi Class
+        - demo_08 - Deploy Complete Fabric Solution
 
 jobs:
   deployment-job:
@@ -44,8 +43,6 @@ jobs:
           FABRIC_CAPACITY_ID: ${{ secrets.FABRIC_CAPACITY_ID }}       
           ADMIN_USER_ID: ${{ secrets.ADMIN_USER_ID }}
           SERVICE_PRINCIPAL_OBJECT_ID: ${{ secrets.SERVICE_PRINCIPAL_OBJECT_ID }}
-          AZURE_STORAGE_ACCOUNT_KEY: ${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }}
           PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
-          SOLUTION_NAME: ${{inputs.solution_name}}    
         run: 
-          python src/${{inputs.demo_name}}.py
+          python src/${{ inputs.demo_name }}.py
