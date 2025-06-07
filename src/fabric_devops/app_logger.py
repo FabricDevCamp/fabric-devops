@@ -7,8 +7,9 @@ class AppLogger:
 
     @classmethod
     def clear_console(cls):
-        """Clear Console Windows"""
-        os.system('cls' if os.name == 'nt' else 'clear')
+        """Clear Console Window when running locally"""
+        if os.name == 'nt':
+            os.system('cls')
 
     @classmethod
     def log_job(cls, message):
