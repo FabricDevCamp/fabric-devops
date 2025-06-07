@@ -1,6 +1,6 @@
 
 name: Demo Launcher
-run-name: Running Demo ${{inputs.demo_name}}
+run-name: Running ${{inputs.demo_name}}
 
 on:
   workflow_dispatch:
