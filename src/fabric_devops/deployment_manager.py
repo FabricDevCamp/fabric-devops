@@ -105,6 +105,9 @@ class DeploymentManager:
 
         sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse)
 
+        sql_endpoint_id = sql_endpoint['database']
+        FabricRestApi.refresh_sql_endpoint_metadata(workspace['id'], sql_endpoint_id)
+
         create_model_request = \
             ItemDefinitionFactory.get_create_item_request_from_folder(
                 'Product Sales DirectLake Model.SemanticModel')

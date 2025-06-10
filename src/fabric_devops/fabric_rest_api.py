@@ -818,6 +818,12 @@ class FabricRestApi:
         }
 
     @classmethod
+    def refresh_sql_endpoint_metadata(cls, workspace_id, sql_endpoint_id):
+        AppLogger.log_substep("Updating SQL Endpoint Metadata")
+        endpoint = f"workspaces/{workspace_id}/sqlEndpoints/{sql_endpoint_id}/refreshMetadata?preview=True"
+        cls._execute_post_request(endpoint)
+
+    @classmethod
     def get_warehouse(cls, workspace_id, warehouse_id):
         """Get warehouse properties"""
         rest_url = f'workspaces/{workspace_id}/warehouses/{warehouse_id}'
