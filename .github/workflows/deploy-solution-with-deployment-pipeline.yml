@@ -1,6 +1,6 @@
 
-name: Deploy Solution with GIT Connection
-run-name: Deploy ${{inputs.solution_name}} with GIT Connection
+name: Deploy Solution with Deployment Pipeline
+run-name: Deploy ${{inputs.solution_name}} with Deployment Pipeline
 
 on:
   workflow_dispatch:
@@ -13,14 +13,12 @@ on:
         - Custom Notebook Solution
         - Custom Shortcut Solution
         - Custom Data Pipeline Solution
-        - Custom Warehouse Solution
-        - Custom Realtime Solution
         - Custom Variable Library Solution
-        - Deploy All Solutions
+        - Custom Warehouse Solution
 
 jobs:
   deployment-job:    
-    name: Deploy ${{inputs.solution_name}} with GIT Connection
+    name: Deploy ${{inputs.solution_name}} with Deployment Pipeline
     runs-on: ubuntu-latest
 
     steps:
@@ -36,7 +34,7 @@ jobs:
         run: |
           pip install msal
 
-      - name: Deploy Solution        
+      - name: Deploy Solution with Parameters
         env:
           FABRIC_CLIENT_ID: ${{ secrets.FABRIC_CLIENT_ID }}
           FABRIC_CLIENT_SECRET: ${{ secrets.FABRIC_CLIENT_SECRET }}
@@ -46,6 +44,7 @@ jobs:
           SERVICE_PRINCIPAL_OBJECT_ID: ${{ secrets.SERVICE_PRINCIPAL_OBJECT_ID }}
           AZURE_STORAGE_ACCOUNT_KEY: ${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }}
           PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
-          SOLUTION_NAME: ${{inputs.solution_name}}
+          SOLUTION_NAME: ${{ inputs.solution_name }}
+
         run:
-          python src/deploy_solution_with_git_connection.py
+          python src/deploy_solution_with_deployment_pipeline.py

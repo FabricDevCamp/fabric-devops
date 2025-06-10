@@ -31,7 +31,7 @@ on:
 
 jobs:
   deployment-job:    
-    name: Deploy Fabric Solution
+    name: Deploy ${{inputs.solution_name}} to ${{ inputs.customer_name }}
     runs-on: ubuntu-latest
 
     steps:
