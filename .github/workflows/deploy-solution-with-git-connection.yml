@@ -1,5 +1,5 @@
 
-name: Deploy Solution with Synchronized GIT Connection
+name: Deploy Solution with GIT Connection
 run-name: Deploy Solution ${{inputs.solution_name}} Synchronized with GIT Connection
 
 on:
