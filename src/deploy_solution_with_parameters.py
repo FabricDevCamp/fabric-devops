@@ -308,9 +308,6 @@ def deploy_data_pipeline_solution(deploy_job):
 def deploy_variable_library_solution(deploy_job):
     """Deploy Variable Library Solution"""
 
-    # currently, this cannot run as SPN, it only works when running as user
-    EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL = False
-
     workspace_name = deploy_job.target_workspace_name
     lakehouse_name = "sales"
     notebook_folders = [

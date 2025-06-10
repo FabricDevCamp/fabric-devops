@@ -1,8 +1,11 @@
 
-name: Hello World
+name: My Sample Workflow
 
 on:
   workflow_dispatch:
+  create:
+  push: 
+  pull_request: 
 
 jobs:
   deployment-job:    
@@ -25,3 +28,4 @@ jobs:
       - name: Hello World 
         run: 
           python src/hello_world.py
+
