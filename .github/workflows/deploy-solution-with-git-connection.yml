@@ -1,6 +1,6 @@
 
-name: Setup Solution with GIT Connection
-run-name: Setup ${{inputs.solution_name}} with GIT Connection
+name: Deploy Solution with Synchronized GIT Connection
+run-name: Deploy Solution ${{inputs.solution_name}} Synchronized with GIT Connection
 
 on:
   workflow_dispatch:
@@ -20,7 +20,7 @@ on:
 
 jobs:
   deployment-job:    
-    name: Deploy Workspace with GitHub Connection
+    name: Deploy ${{inputs.solution_name}} with GIT Connection
     runs-on: ubuntu-latest
 
     steps:
@@ -47,5 +47,5 @@ jobs:
           AZURE_STORAGE_ACCOUNT_KEY: ${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }}
           PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
           SOLUTION_NAME: ${{inputs.solution_name}}
-        run: 
-          python src/setup_workspace_with_git_connection.py
+        run:
+          python src/deploy_solution_with_git_connection.py
