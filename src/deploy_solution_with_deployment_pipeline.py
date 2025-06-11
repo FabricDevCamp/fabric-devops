@@ -2,7 +2,7 @@
 
 import os
 
-from fabric_devops import DeploymentManager, StagingEnvironments
+from fabric_devops import DeploymentManager # , StagingEnvironments
 
 PROJECT_NAME = os.getenv("PROJECT_NAME")
 SOLUTION_NAME = os.getenv("SOLUTION_NAME")
@@ -11,8 +11,9 @@ DeploymentManager.delete_deployment_pipeline_by_name(PROJECT_NAME)
 
 DeploymentManager.setup_deployment_pipeline(PROJECT_NAME, SOLUTION_NAME)
 
-# DeploymentManager.deploy_from_dev_to_test(PROJECT_NAME)
+DeploymentManager.deploy_from_dev_to_test(PROJECT_NAME)
 
+DeploymentManager.deploy_from_test_to_prod(PROJECT_NAME)
 
 # def complete_step1():
 #     """Complete Step 1"""
