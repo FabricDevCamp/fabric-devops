@@ -27,7 +27,7 @@ class AppLogger:
         print(' ', flush=True)
 
     @classmethod
-    def log_job_complete(cls, workspace_id is None):
+    def log_job_complete(cls, workspace_id = None):
         """log that job has ended"""
         cls.log_step("Deployment job completed")
         if workspace_id is not None:
