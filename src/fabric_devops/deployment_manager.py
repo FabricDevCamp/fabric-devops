@@ -16,7 +16,7 @@ class DeploymentManager:
     """Deployment Manager"""
 
     @classmethod
-    def deploy_powerbi_solution(cls, 
+    def deploy_powerbi_solution(cls,
                                 target_workspace, 
                                 deploy_job = StagingEnvironments.get_dev_environment()):
         """Deploy Power BI Solution with Parameters"""
@@ -636,6 +636,53 @@ class DeploymentManager:
         return workspace
 
     @classmethod
+    def deploy_solution_by_name(cls, solution_name, target_workspace):
+        """Deploy Solution by Name"""
+        workspace = None
+
+        match solution_name:
+            case 'Custom Power BI Solution':
+                workspace = cls.deploy_powerbi_solution(target_workspace)
+            case 'Custom Notebook Solution':
+                workspace = cls.deploy_notebook_solution(target_workspace)
+            case 'Custom Shortcut Solution':
+                workspace = cls.deploy_shortcut_solution(target_workspace)
+            case 'Custom Data Pipeline Solution':
+                workspace = cls.deploy_data_pipeline_solution(target_workspace)
+            case 'Custom Variable Library Solution':
+                workspace = cls.deploy_variable_library_solution(target_workspace)
+            case 'Custom Warehouse Solution':
+                workspace = cls.deploy_warehouse_solution(target_workspace)
+            case 'Custom Realtime Solution':
+                workspace = cls.deploy_realtime_solution(target_workspace)
+        
+        if workspace is None:
+            raise Exception(f'Unknown solution name [{solution_name}]')
+
+        return workspace
+
+    @classmethod
+    def get_deployment_pipeline_by_name(cls, display_name):
+        """Get Deployment Pipeline by Name"""
+        for pipeline in FabricRestApi.list_deployment_pipelines():
+            if pipeline['displayName'] == display_name:
+                return pipeline
+    
+        return None
+
+    @classmethod
+    def delete_deployment_pipeline_by_name(cls, display_name):
+        """Delete Deployment Pipeline by Name"""
+        pipeline = FabricRestApi.get_deployment_pipeline_by_name(display_name)
+        if pipeline is not None:
+            AppLogger.log_substep(f"Deleting {pipeline['displayName']}")
+            stages = FabricRestApi.list_deployment_pipeline_stages(pipeline['id'])
+            for stage in stages:
+                FabricRestApi.unassign_workpace_from_pipeline_stage(pipeline['id'], stage['id'])
+
+            FabricRestApi.delete_deployment_pipeline(pipeline['id'])
+
+    @classmethod
     def delete_all_deployment_pipelines(cls):
         """Delete All Deployment Pipelines"""
         AppLogger.log_step("Deleting Pipelines")
@@ -646,6 +693,7 @@ class DeploymentManager:
                 FabricRestApi.unassign_workpace_from_pipeline_stage(pipeline['id'], stage['id'])
 
             FabricRestApi.delete_deployment_pipeline(pipeline['id'])
+
 
     @classmethod
     def delete_all_workspaces(cls):
@@ -685,22 +733,22 @@ class DeploymentManager:
         AppLogger.log_job_ended("Cleanup of dev environment complete")
 
     @classmethod
-    def setup_deployment_pipeline(cls, pipeline_name):
+    def setup_deployment_pipeline(cls, project_name, solution_name):
         """Setup Deployment Pipeline"""
 
-        dev_workspace_name = f'{pipeline_name}-dev'
-        test_workspace_name = f'{pipeline_name}-test'
-        prod_workspace_name = pipeline_name
+        pipeline_name = project_name
+        dev_workspace_name = f'{project_name}-dev'
+        test_workspace_name = f'{project_name}-test'
+        prod_workspace_name = project_name
 
         pipeline_stages = [ 'dev', 'test', 'prod' ]
 
         dev_workspace = FabricRestApi.get_workspace_by_name(dev_workspace_name)
 
         if dev_workspace is None:
-            dev_env = StagingEnvironments.get_dev_environment()
-            dev_workspace = DeploymentManager.deploy_variable_library_solution(
+            dev_workspace = DeploymentManager.deploy_solution_by_name(
                 dev_workspace_name,
-                dev_env)
+                solution_name)
 
         pipeline = FabricRestApi.create_deployment_pipeline(pipeline_name, pipeline_stages)
 
@@ -878,7 +926,6 @@ class DeploymentManager:
         lakehouse = FabricRestApi.get_item_by_name(workspace['id'], 
                                                    lakehouse_name, 'Lakehouse')
         sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse)
-
   
     @classmethod
     def conn_filter(cls, connection): 

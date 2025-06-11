@@ -5,6 +5,10 @@ run-name: Deploy ${{inputs.solution_name}} with Deployment Pipeline
 on:
   workflow_dispatch:
     inputs:
+      project_name:
+        description: "Name of Deployment Pipeline and Prod Workspace"
+        required: true
+        default: "Apollo"
       solution_name:
         type: choice
         description: Solution to deploy
@@ -42,8 +46,8 @@ jobs:
           FABRIC_CAPACITY_ID: ${{ secrets.FABRIC_CAPACITY_ID }}       
           ADMIN_USER_ID: ${{ secrets.ADMIN_USER_ID }}
           SERVICE_PRINCIPAL_OBJECT_ID: ${{ secrets.SERVICE_PRINCIPAL_OBJECT_ID }}
-          AZURE_STORAGE_ACCOUNT_KEY: ${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }}
           PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
+          PROJECT_NAME: ${{ inputs.project_name }}
           SOLUTION_NAME: ${{ inputs.solution_name }}
 
         run:

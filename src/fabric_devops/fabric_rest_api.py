@@ -1194,4 +1194,8 @@ class FabricRestApi:
         }
         if note is not None:
             deploy_request['note'] = note
+        else:
+            deploy_request['note'] = 'A bunch of saves'
+
+
         cls._execute_post_request(endpoint, deploy_request)
