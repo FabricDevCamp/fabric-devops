@@ -636,7 +636,7 @@ class DeploymentManager:
         return workspace
 
     @classmethod
-    def deploy_solution_by_name(cls, solution_name, target_workspace):
+    def deploy_solution_by_name(cls, target_workspace, solution_name):
         """Deploy Solution by Name"""
         workspace = None
 
