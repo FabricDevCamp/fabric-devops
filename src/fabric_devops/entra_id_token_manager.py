@@ -66,8 +66,6 @@ class EntraIdTokenManager():
             authority=EnvironmentSettings.AUTHORITY,
             client_credential=EnvironmentSettings.FABRIC_CLIENT_SECRET)
 
-        AppLogger.log_substep(f'Aquiring access token for service principal with scope [{scope}]')
-
         authentication_result = app.acquire_token_for_client([scope])
 
         cls._token_cache[scope] = {
