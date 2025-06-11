@@ -6,12 +6,12 @@ on:
   workflow_dispatch:
     inputs:
       project_name:
-        description: "Name of Deployment Pipeline and Prod Workspace"
+        description: Project Name
         required: true
         default: "Apollo"
       solution_name:
         type: choice
-        description: Solution to deploy
+        description: Solution Name
         options: 
         - Custom Power BI Solution
         - Custom Notebook Solution
