@@ -675,12 +675,13 @@ class DeploymentManager:
         """Delete Deployment Pipeline by Name"""
         pipeline = FabricRestApi.get_deployment_pipeline_by_name(display_name)
         if pipeline is not None:
-            AppLogger.log_substep(f"Deleting {pipeline['displayName']}")
+            AppLogger.log_step(f"Deleting existing deployment pipeline [{pipeline['displayName']}]")
             stages = FabricRestApi.list_deployment_pipeline_stages(pipeline['id'])
             for stage in stages:
                 FabricRestApi.unassign_workpace_from_pipeline_stage(pipeline['id'], stage['id'])
 
             FabricRestApi.delete_deployment_pipeline(pipeline['id'])
+            AppLogger.log_substep('Deployment pipeline deleted')
 
     @classmethod
     def delete_all_deployment_pipelines(cls):
@@ -743,10 +744,7 @@ class DeploymentManager:
 
         pipeline_stages = [ 'dev', 'test', 'prod' ]
 
-        dev_workspace = FabricRestApi.get_workspace_by_name(dev_workspace_name)
-
-        if dev_workspace is None:
-            dev_workspace = DeploymentManager.deploy_solution_by_name(
+        dev_workspace = DeploymentManager.deploy_solution_by_name(
                 dev_workspace_name,
                 solution_name)
 

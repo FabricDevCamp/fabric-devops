@@ -1123,12 +1123,12 @@ class FabricRestApi:
     @classmethod
     def create_deployment_pipeline(cls, display_name, stages):
         """Create Deployment Pipeline"""
-        AppLogger.log_step(f'Creating Deployment Pipelines [{display_name}]')
+        AppLogger.log_step(f'Creating Deployment Pipeline [{display_name}]')
         pipeline_stages = []
         for stage in stages:
             pipeline_stages.append({
                 'displayName': stage,
-                'description': 'it works',
+                'description': f'stage for {stage}',
                 'isPublic': False
             })
         create_request = {

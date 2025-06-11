@@ -11,7 +11,7 @@ DeploymentManager.delete_deployment_pipeline_by_name(PROJECT_NAME)
 
 DeploymentManager.setup_deployment_pipeline(PROJECT_NAME, SOLUTION_NAME)
 
-DeploymentManager.deploy_from_dev_to_test(PROJECT_NAME)
+# DeploymentManager.deploy_from_dev_to_test(PROJECT_NAME)
 
 
 # def complete_step1():
