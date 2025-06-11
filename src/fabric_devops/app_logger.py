@@ -27,6 +27,15 @@ class AppLogger:
         print(' ', flush=True)
 
     @classmethod
+    def log_job_complete(cls, workspace_id is None):
+        """log that job has ended"""
+        cls.log_step("Deployment job completed")
+        if workspace_id is not None:
+             workspace_laucnh_url = f'https://app.powerbi.com/groups/{workspace_id}/list?experience=fabric-developer'
+             cls.log_substep(f'Workspace launch URL: {workspace_laucnh_url}')
+        print(' ', flush=True)
+
+    @classmethod
     def log_step(cls, message):
         """log a step"""
         print(' ', flush=True)
