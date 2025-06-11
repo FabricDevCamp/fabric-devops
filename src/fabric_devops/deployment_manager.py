@@ -105,8 +105,7 @@ class DeploymentManager:
 
         sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse)
 
-        sql_endpoint_id = sql_endpoint['database']
-        FabricRestApi.refresh_sql_endpoint_metadata(workspace['id'], sql_endpoint_id)
+        FabricRestApi.refresh_sql_endpoint_metadata(workspace['id'], sql_endpoint['database'])
 
         create_model_request = \
             ItemDefinitionFactory.get_create_item_request_from_folder(
@@ -198,6 +197,8 @@ class DeploymentManager:
             FabricRestApi.run_notebook(workspace['id'], notebook)
 
         sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse)
+
+        FabricRestApi.refresh_sql_endpoint_metadata(workspace['id'], sql_endpoint['database'])
 
         create_model_request = \
             ItemDefinitionFactory.get_create_item_request_from_folder(
@@ -304,6 +305,8 @@ class DeploymentManager:
         FabricRestApi.run_data_pipeline(workspace['id'], pipeline)
 
         sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse)
+
+        FabricRestApi.refresh_sql_endpoint_metadata(workspace['id'], sql_endpoint['database'])
 
         create_model_request = \
             ItemDefinitionFactory.get_create_item_request_from_folder(
@@ -417,6 +420,8 @@ class DeploymentManager:
 
         sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse)
 
+        FabricRestApi.refresh_sql_endpoint_metadata(workspace['id'], sql_endpoint['database'])
+
         create_model_request = \
             ItemDefinitionFactory.get_create_item_request_from_folder(
                 semantic_model_folder)
@@ -525,13 +530,14 @@ class DeploymentManager:
 
             FabricRestApi.run_data_pipeline(workspace['id'], pipeline)
 
-        createModelRequest = \
-            ItemDefinitionFactory.get_directlake_model_create_request(SEMANTIC_MODEL_NAME,
-                                                                    'sales_model_DirectLake.bim',
-                                                                    warehouse_connect_string,
-                                                                    warehouse['id'])
+        create_model_request = \
+            ItemDefinitionFactory.get_directlake_model_create_request(
+                SEMANTIC_MODEL_NAME,
+                'sales_model_DirectLake.bim',
+                warehouse_connect_string,
+                warehouse['id'])
 
-        model = FabricRestApi.create_item(workspace['id'], createModelRequest)
+        model = FabricRestApi.create_item(workspace['id'], create_model_request)
 
         FabricRestApi.create_and_bind_semantic_model_connecton(workspace, model['id'], lakehouse)
 
@@ -539,16 +545,14 @@ class DeploymentManager:
             create_report_request = ItemDefinitionFactory.get_report_create_request(model['id'],
                                                                                     report_data['name'],
                                                                                     report_data['template'])
-            report = FabricRestApi.create_item(workspace['id'], create_report_request)
+            FabricRestApi.create_item(workspace['id'], create_report_request)
 
         AppLogger.log_job_ended("Solution deployment complete")
 
         return workspace
 
     @classmethod
-    def deploy_realtime_solution(cls,
-                                 target_workspace, 
-                                 deploy_job = StagingEnvironments.get_dev_environment()):
+    def deploy_realtime_solution(cls, target_workspace):
         """Deploy Real Time Solution"""
         
         workspace_name = target_workspace
@@ -630,7 +634,6 @@ class DeploymentManager:
         AppLogger.log_job_ended("Solution deployment complete")
 
         return workspace
-
 
     @classmethod
     def delete_all_deployment_pipelines(cls):
@@ -869,7 +872,7 @@ class DeploymentManager:
         FabricRestApi.run_data_pipeline(workspace['id'], data_pipeline)
 
     @classmethod
-    def get_sql_endpoint_info(cls, workspace_name, lakehouse_name):
+    def get_sql_endpoint_info_by_name(cls, workspace_name, lakehouse_name):
         """Get SQL Endpoint"""
         workspace = FabricRestApi.get_workspace_by_name(workspace_name)
         lakehouse = FabricRestApi.get_item_by_name(workspace['id'], 

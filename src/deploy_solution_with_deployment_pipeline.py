@@ -22,7 +22,7 @@ def complete_step1():
 
     DeploymentManager.run_data_pipeline(TEST_WORKSPACE_NAME, DATA_PIPELINE_NAME)
 
-    DeploymentManager.get_sql_endpoint_info(TEST_WORKSPACE_NAME, LAKEHOUSE_NAME)
+    DeploymentManager.get_sql_endpoint_info_by_name(TEST_WORKSPACE_NAME, LAKEHOUSE_NAME)
 
 def complete_step2():
     """Complete Step 2"""
@@ -41,7 +41,7 @@ def complete_step2():
         PROD_WORKSPACE_NAME,
         DATA_PIPELINE_NAME)
     
-    DeploymentManager.get_sql_endpoint_info(PROD_WORKSPACE_NAME, LAKEHOUSE_NAME)
+    DeploymentManager.get_sql_endpoint_info_by_name(PROD_WORKSPACE_NAME, LAKEHOUSE_NAME)
 
 def complete_step3():
     """Complete Step 3"""

@@ -2,7 +2,7 @@
 
 import os
 
-from fabric_devops import FabricRestApi, ItemDefinitionFactory, AppLogger, EnvironmentSettings, \
+from fabric_devops import FabricRestApi, ItemDefinitionFactory, AppLogger, \
                           SampleCustomerData, DeploymentJob, VariableLibrary
 
 def deploy_powerbi_solution(deploy_job):
@@ -86,6 +86,8 @@ def deploy_notebook_solution(deploy_job):
     FabricRestApi.run_notebook(workspace['id'], notebook)
 
     sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse)
+
+    FabricRestApi.refresh_sql_endpoint_metadata(workspace['id'], sql_endpoint['database'])
 
     create_model_request = \
         ItemDefinitionFactory.get_create_item_request_from_folder(
@@ -173,6 +175,8 @@ def deploy_shortcut_solution(deploy_job):
         FabricRestApi.run_notebook(workspace['id'], notebook)
 
     sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse)
+
+    FabricRestApi.refresh_sql_endpoint_metadata(workspace['id'], sql_endpoint['database'])
 
     create_model_request = \
         ItemDefinitionFactory.get_create_item_request_from_folder(
@@ -275,6 +279,8 @@ def deploy_data_pipeline_solution(deploy_job):
     FabricRestApi.run_data_pipeline(workspace['id'], pipeline)
 
     sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse)
+
+    FabricRestApi.refresh_sql_endpoint_metadata(workspace['id'], sql_endpoint['database'])
 
     create_model_request = \
         ItemDefinitionFactory.get_create_item_request_from_folder(
@@ -379,6 +385,8 @@ def deploy_variable_library_solution(deploy_job):
     FabricRestApi.run_data_pipeline(workspace['id'], pipeline)
 
     sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse)
+
+    FabricRestApi.refresh_sql_endpoint_metadata(workspace['id'], sql_endpoint['database'])
 
     create_model_request = \
         ItemDefinitionFactory.get_directlake_model_create_request(semantic_model_folder,
