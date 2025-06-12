@@ -2,7 +2,7 @@
 
 import os
 
-from fabric_devops import DeploymentManager, FabricRestApi, StagingEnvironments
+from fabric_devops import DeploymentManager, FabricRestApi, StagingEnvironments, AppLogger
 
 PROJECT_NAME = os.getenv("PROJECT_NAME")
 SOLUTION_NAME = os.getenv("SOLUTION_NAME")
@@ -18,6 +18,7 @@ DeploymentManager.setup_deployment_pipeline(PROJECT_NAME, SOLUTION_NAME)
 
 DeploymentManager.deploy_from_dev_to_test(PROJECT_NAME)
 # apply post deploy fixes to test
+AppLogger.log_step("Got here")
 TEST_WORKSPACE = FabricRestApi.get_workspace_by_name(TEST_WORKSPACE_NAME)
 SEMANTIC_MODEL_NAME = 'Product Sales Imported Model'
 TEST_SEMANTIC_MODEL = FabricRestApi.get_item_by_name(
@@ -37,6 +38,7 @@ FabricRestApi.create_and_bind_semantic_model_connecton(TEST_WORKSPACE, TEST_SEMA
 DeploymentManager.deploy_from_test_to_prod(PROJECT_NAME)
 
 # apply post deploy fixes to prod
+AppLogger.log_step("Got here as well")
 PROD_WORKSPACE = FabricRestApi.get_workspace_by_name(PROD_WORKSPACE_NAME)
 SEMANTIC_MODEL_NAME = 'Product Sales Imported Model'
 PROD_SEMANTIC_MODEL = FabricRestApi.get_item_by_name(
