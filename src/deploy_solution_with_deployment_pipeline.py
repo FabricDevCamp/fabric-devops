@@ -49,11 +49,13 @@ DEPOYMENT_JOB = StagingEnvironments.get_prod_environment()
 PROD_DATASOURCE_PATH = DEPOYMENT_JOB.parameters[DEPOYMENT_JOB.web_datasource_path_parameter]
 
 DeploymentManager.update_imported_semantic_model_source(
-    DEV_WORKSPACE_NAME, 
+    PROD_WORKSPACE_NAME,
     SEMANTIC_MODEL_NAME,
     PROD_DATASOURCE_PATH)
 
-FabricRestApi.create_and_bind_semantic_model_connecton(PROD_WORKSPACE, PROD_SEMANTIC_MODEL['id'])
+FabricRestApi.create_and_bind_semantic_model_connecton(
+    PROD_WORKSPACE, 
+    PROD_SEMANTIC_MODEL['id'])
 
 
 
