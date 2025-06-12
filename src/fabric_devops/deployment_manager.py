@@ -826,7 +826,7 @@ class DeploymentManager:
                     workspace_item['displayName'],
                     datasource_path)
 
-                FabricRestApi.create_and_bind_semantic_model_connecton(workspace_name, 
+                FabricRestApi.create_and_bind_semantic_model_connecton(workspace, 
                                                                        workspace_item['id'])
 
 
