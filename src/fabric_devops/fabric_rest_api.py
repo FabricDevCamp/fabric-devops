@@ -863,6 +863,16 @@ class FabricRestApi:
         return None
 
     @classmethod
+    def get_sql_endpoint_from_semantic_model(cls, workspace_id, semantic_model_id):
+        """Get Web datasource URL from semantic model"""
+        data_sources = cls.list_datasources_for_semantic_model(workspace_id, semantic_model_id)
+        for data_source in data_sources:
+            if data_source['datasourceType'] == 'Sql':
+                return data_source['connectionDetails']
+        return None
+
+
+    @classmethod
     def bind_semantic_model_to_connection(cls, workspace_id, semantic_model_id, connection_id):
         """Bind semantic model to connection"""
         rest_url  = f'groups//{workspace_id}//datasets//{semantic_model_id}//Default.BindToGateway'

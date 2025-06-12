@@ -805,6 +805,33 @@ class DeploymentManager:
 
         FabricRestApi.update_item_definition(workspace['id'], model, model_definition)
 
+
+    @classmethod
+    def update_directlake_semantic_model_source(cls, workspace_name, 
+                                                     semantic_model_name, 
+                                                     web_datasource_path):
+        """Update Imported Sementic Model Source"""
+        workspace = FabricRestApi.get_workspace_by_name(workspace_name)
+        model = FabricRestApi.get_item_by_name(workspace['id'], semantic_model_name, 'SemanticModel')
+        old_web_datasource_path = FabricRestApi.get_web_url_from_semantic_model(workspace['id'], model['id'])
+
+        old_model_definition = FabricRestApi.get_item_definition(workspace['id'], model)
+
+        search_replace_terms = {
+            old_web_datasource_path: web_datasource_path
+        }
+
+        model_definition = {
+            'definition': ItemDefinitionFactory.update_item_definition_part(
+                old_model_definition['definition'],
+                'definition/expressions.tmdl',
+                search_replace_terms)
+        }
+
+        FabricRestApi.update_item_definition(workspace['id'], model, model_definition)
+
+
+
     @classmethod
     def apply_post_deploy_fixes(cls,
                                 workspace_name,
@@ -816,6 +843,8 @@ class DeploymentManager:
         workspace_items = FabricRestApi.list_workspace_items(workspace['id'])
 
         for workspace_item in workspace_items:
+
+            # Apply fixes for [Product Sales Imported Model.SemanticModel]
             if workspace_item['type'] == 'SemanticModel' and \
                workspace_item['displayName'] ==  'Product Sales Imported Model':
                 # fix connection to imported models
@@ -828,6 +857,26 @@ class DeploymentManager:
 
                 FabricRestApi.create_and_bind_semantic_model_connecton(workspace, 
                                                                        workspace_item['id'])
+
+          # Apply fixes for [Product Sales DirectLake Model.SemanticModel]
+            if workspace_item['type'] == 'SemanticModel' and \
+               workspace_item['displayName'] ==  'Product Sales DirectLake Model':
+                # fix connection to lakehouse SQL endpoint
+                sql_endpoint =  FabricRestApi.get_sql_endpoint_from_semantic_model(
+                    workspace['id'],
+                    workspace_item['id']
+                )
+
+                print(sql_endpoint)
+                
+                
+                # DeploymentManager.update_imported_semantic_model_source(
+                #     target_workspace_name, 
+                #     workspace_item['displayName'],
+                #     datasource_path)
+
+                # FabricRestApi.create_and_bind_semantic_model_connecton(workspace, 
+                #                                                        workspace_item['id'])
 
 
     @classmethod

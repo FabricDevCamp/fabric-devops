@@ -1,38 +1,22 @@
-"""Demo 08 - Deploy Complete Fabric Solution"""
+"Test"""
 
-from fabric_devops import FabricRestApi, ItemDefinitionFactory, AppLogger
+import os
 
-AppLogger.clear_console()
+from fabric_devops import DeploymentManager, StagingEnvironments, AppLogger
 
-AppLogger.log_job("Deploying Power BI Solution")
+PROJECT_NAME = "Adonis"
 
-WORKSPACE_NAME = "Contoso"
-SEMANTIC_MODEL_NAME = 'Product Sales Imported Model'
-REPORT_NAME = 'Product Sales Summary'
+DEPLOYMENT_PIPELINE_NAME = PROJECT_NAME
+DEV_WORKSPACE_NAME = f"{PROJECT_NAME}-dev"
+TEST_WORKSPACE_NAME = f"{PROJECT_NAME}-test"
+PROD_WORKSPACE_NAME = f"{PROJECT_NAME}"
 
-workspace = FabricRestApi.create_workspace(WORKSPACE_NAME)
+DeploymentManager.apply_post_deploy_fixes(
+    TEST_WORKSPACE_NAME,
+    StagingEnvironments.get_test_environment())
 
-create_model_request = \
-    ItemDefinitionFactory.get_semantic_model_create_request(SEMANTIC_MODEL_NAME,
-                                                            'sales_model_import.bim')
-model = FabricRestApi.create_item(workspace['id'], create_model_request)
+# DeploymentManager.deploy_from_test_to_prod(PROJECT_NAME)
 
-web_url = FabricRestApi.get_web_url_from_semantic_model(workspace['id'], model['id'])
-
-AppLogger.log_substep(f'Creating anonymous Web connection to {web_url} ')
-
-connection = FabricRestApi.create_anonymous_web_connection(web_url, workspace)
-
-FabricRestApi.bind_semantic_model_to_connection(workspace['id'], model['id'], connection['id'])
-
-FabricRestApi.refresh_semantic_model(workspace['id'], model['id'])
-
-for report_number in range(1, 100):
-    create_report_request = \
-        ItemDefinitionFactory.get_report_create_request(model['id'],
-                                                        (REPORT_NAME + str(report_number)),
-                                                        'product_sales_summary.json')
-
-    FabricRestApi.create_item(workspace['id'], create_report_request)
-
-AppLogger.log_job_complete(workspace['id'])
+# DeploymentManager.apply_post_deploy_fixes(
+#     PROD_WORKSPACE_NAME,
+#     StagingEnvironments.get_prod_environment())
