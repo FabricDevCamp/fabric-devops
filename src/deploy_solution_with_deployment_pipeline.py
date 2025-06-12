@@ -22,10 +22,12 @@ DeploymentManager.deploy_from_dev_to_test(PROJECT_NAME)
 
 DeploymentManager.apply_post_deploy_fixes(
     TEST_WORKSPACE_NAME,
-    StagingEnvironments.get_test_environment())
+    StagingEnvironments.get_test_environment(), 
+    run_etl_jobs=True)
 
 DeploymentManager.deploy_from_test_to_prod(PROJECT_NAME)
 
 DeploymentManager.apply_post_deploy_fixes(
     PROD_WORKSPACE_NAME,
-    StagingEnvironments.get_prod_environment())
+    StagingEnvironments.get_prod_environment(),
+    run_etl_jobs=True)
