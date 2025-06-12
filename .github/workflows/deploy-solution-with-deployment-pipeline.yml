@@ -38,7 +38,7 @@ jobs:
         run: |
           pip install msal
 
-      - name: Deploy Solution with Parameters
+      - name: Deploy Solution with Deployment Pipeline
         env:
           FABRIC_CLIENT_ID: ${{ secrets.FABRIC_CLIENT_ID }}
           FABRIC_CLIENT_SECRET: ${{ secrets.FABRIC_CLIENT_SECRET }}

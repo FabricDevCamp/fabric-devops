@@ -17,7 +17,7 @@ DEPOYMENT_JOB = StagingEnvironments.get_test_environment()
 WEB_DATASOURCE_PATH = DEPOYMENT_JOB.parameters[DEPOYMENT_JOB.web_datasource_path_parameter]
 
 DeploymentManager.update_imported_semantic_model_source(
-    WORKSPACE_NAME, 
+    WORKSPACE,
     SEMANTIC_MODEL_NAME,
     WEB_DATASOURCE_PATH)
 
