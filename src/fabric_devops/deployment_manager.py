@@ -860,9 +860,9 @@ class DeploymentManager:
                workspace_item['type'] == 'Notebook' and \
                workspace_item['displayName'] ==  'Create Lakehouse Tables':
                 notebook = FabricRestApi.get_item_by_name(
-                    workspace['id'], 
+                    workspace['id'],
                     'Create Lakehouse Tables', 
-                    notebook)
+                    'notebook')
                 
                 FabricRestApi.run_notebook(workspace['id'], notebook)
 
