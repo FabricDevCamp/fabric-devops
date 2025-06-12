@@ -782,6 +782,31 @@ class DeploymentManager:
         AppLogger.log_substep("Deploy operation complete")
 
     @classmethod
+    def update_imported_semantic_model_source(cls, workspace_name, 
+                                              semantic_model_name, 
+                                              web_datasource_path):
+        """Update Imported Sementic Model Source"""
+        workspace = FabricRestApi.get_workspace_by_name(workspace_name)
+        model = FabricRestApi.get_item_by_name(workspace['id'], semantic_model_name, 'SemanticModel')
+        old_web_datasource_path = FabricRestApi.get_web_url_from_semantic_model(workspace['id'], model['id'])
+
+        old_model_definition = FabricRestApi.get_item_definition(workspace['id'], model)
+
+        search_replace_terms = {
+            old_web_datasource_path: web_datasource_path
+        }
+
+        model_definition = {
+            'definition': ItemDefinitionFactory.update_item_definition_part(
+                old_model_definition['definition'],
+                'definition/expressions.tmdl',
+                search_replace_terms)
+        }
+
+        FabricRestApi.update_item_definition(workspace['id'], model, model_definition)
+
+
+    @classmethod
     def create_and_bind_model_connection(cls, workspace_name):
         """Create and Bind Model Connections"""
         workspace = FabricRestApi.get_workspace_by_name(workspace_name)
