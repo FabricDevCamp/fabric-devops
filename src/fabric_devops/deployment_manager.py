@@ -876,7 +876,7 @@ class DeploymentManager:
                                 deployment_job,
                                 run_etl_jobs = False):
         
-        """Deploy Stage from Dev to Test"""                  
+        """Apply Post Deploy Fixes"""                  
         AppLogger.log_step(f"Applying post deploy fixes to [{workspace_name}]")
         workspace = FabricRestApi.get_workspace_by_name(workspace_name)
         workspace_items = FabricRestApi.list_workspace_items(workspace['id'])
