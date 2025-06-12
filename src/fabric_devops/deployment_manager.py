@@ -805,20 +805,30 @@ class DeploymentManager:
 
         FabricRestApi.update_item_definition(workspace['id'], model, model_definition)
 
-
     @classmethod
-    def update_directlake_semantic_model_source(cls, workspace_name, 
-                                                     semantic_model_name, 
-                                                     web_datasource_path):
-        """Update Imported Sementic Model Source"""
+    def update_directlake_semantic_model_source(cls,
+                                                workspace_name,
+                                                semantic_model_name,
+                                                lakehouse_name):
+        """Update DirectLake Sementic Model Source"""
         workspace = FabricRestApi.get_workspace_by_name(workspace_name)
+        lakehouse = FabricRestApi.get_item_by_name(workspace['id'], lakehouse_name, 'Lakehouse')
         model = FabricRestApi.get_item_by_name(workspace['id'], semantic_model_name, 'SemanticModel')
-        old_web_datasource_path = FabricRestApi.get_web_url_from_semantic_model(workspace['id'], model['id'])
+        
+        old_sql_endpoint =  FabricRestApi.get_sql_endpoint_from_semantic_model(
+            workspace['id'],
+            model['id']
+        )
+
+        new_sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(
+            workspace['id'],
+            lakehouse)
 
         old_model_definition = FabricRestApi.get_item_definition(workspace['id'], model)
 
         search_replace_terms = {
-            old_web_datasource_path: web_datasource_path
+            old_sql_endpoint['server']: new_sql_endpoint['server'],
+            old_sql_endpoint['database']: new_sql_endpoint['database']
         }
 
         model_definition = {
@@ -835,7 +845,8 @@ class DeploymentManager:
     @classmethod
     def apply_post_deploy_fixes(cls,
                                 workspace_name,
-                                deployment_job):
+                                deployment_job,
+                                run_etl_jobs = False):
         
         """Deploy Stage from Dev to Test"""                  
         AppLogger.log_step(f"Applying post deploy fixes to [{workspace_name}]")
@@ -843,6 +854,17 @@ class DeploymentManager:
         workspace_items = FabricRestApi.list_workspace_items(workspace['id'])
 
         for workspace_item in workspace_items:
+
+            # Apply fixes for [Create Lakehouse Tables.Notebook]
+            if run_etl_jobs and \
+               workspace_item['type'] == 'Notebook' and \
+               workspace_item['displayName'] ==  'Create Lakehouse Tables':
+                notebook = FabricRestApi.get_item_by_name(
+                    workspace['id'], 
+                    'Create Lakehouse Tables', 
+                    notebook)
+                
+                FabricRestApi.run_notebook(workspace['id'], notebook)
 
             # Apply fixes for [Product Sales Imported Model.SemanticModel]
             if workspace_item['type'] == 'SemanticModel' and \
@@ -858,25 +880,20 @@ class DeploymentManager:
                 FabricRestApi.create_and_bind_semantic_model_connecton(workspace, 
                                                                        workspace_item['id'])
 
-          # Apply fixes for [Product Sales DirectLake Model.SemanticModel]
+            # Apply fixes for [Product Sales DirectLake Model.SemanticModel]
             if workspace_item['type'] == 'SemanticModel' and \
                workspace_item['displayName'] ==  'Product Sales DirectLake Model':
                 # fix connection to lakehouse SQL endpoint
-                sql_endpoint =  FabricRestApi.get_sql_endpoint_from_semantic_model(
-                    workspace['id'],
-                    workspace_item['id']
-                )
+                target_lakehouse_name = 'sales'
+                DeploymentManager.update_directlake_semantic_model_source(
+                    workspace_name, 
+                    workspace_item['displayName'],
+                    target_lakehouse_name)
 
-                print(sql_endpoint)
-                
-                
-                # DeploymentManager.update_imported_semantic_model_source(
-                #     target_workspace_name, 
-                #     workspace_item['displayName'],
-                #     datasource_path)
-
-                # FabricRestApi.create_and_bind_semantic_model_connecton(workspace, 
-                #                                                        workspace_item['id'])
+                FabricRestApi.create_and_bind_semantic_model_connecton(
+                    workspace,
+                    workspace_item['id'])
+              
 
 
     @classmethod

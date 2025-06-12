@@ -1,8 +1,7 @@
 "Test"""
 
-import os
 
-from fabric_devops import DeploymentManager, StagingEnvironments, AppLogger
+from fabric_devops import DeploymentManager, StagingEnvironments
 
 PROJECT_NAME = "Adonis"
 
