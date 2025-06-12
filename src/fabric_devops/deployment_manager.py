@@ -840,7 +840,36 @@ class DeploymentManager:
 
         FabricRestApi.update_item_definition(workspace['id'], model, model_definition)
 
+    @classmethod
+    def update_datasource_path_in_notebook(cls,
+                workspace_name,
+                notebook_name,
+                deployment_job):
+        """Update datasource path in notebook"""
+        workspace = FabricRestApi.get_workspace_by_name(workspace_name)
+        notebook = FabricRestApi.get_item_by_name(workspace['id'], notebook_name, 'Notebook')
+        datasource_path = deployment_job.parameters[DeploymentJob.web_datasource_path_parameter]
 
+        path1 = StagingEnvironments.get_dev_environment().parameters[DeploymentJob.web_datasource_path_parameter]
+        path2 = StagingEnvironments.get_test_environment().parameters[DeploymentJob.web_datasource_path_parameter]
+        path3 = StagingEnvironments.get_prod_environment().parameters[DeploymentJob.web_datasource_path_parameter]
+
+        search_replace_terms = {
+            path1: datasource_path,
+            path2: datasource_path,
+            path3: datasource_path,
+        }
+        
+        old_notebook_definition = FabricRestApi.get_item_definition(workspace['id'], notebook)
+
+        notebook_definition = {
+            'definition': ItemDefinitionFactory.update_item_definition_part(
+                old_notebook_definition['definition'],
+                'definition/expressions.tmdl',
+                search_replace_terms)
+        }
+
+        FabricRestApi.update_item_definition(workspace['id'], notebook, notebook_definition)        
 
     @classmethod
     def apply_post_deploy_fixes(cls,
@@ -856,15 +885,20 @@ class DeploymentManager:
         for workspace_item in workspace_items:
 
             # Apply fixes for [Create Lakehouse Tables.Notebook]
-            if run_etl_jobs and \
-               workspace_item['type'] == 'Notebook' and \
+            if workspace_item['type'] == 'Notebook' and \
                workspace_item['displayName'] ==  'Create Lakehouse Tables':
-                notebook = FabricRestApi.get_item_by_name(
-                    workspace['id'],
-                    'Create Lakehouse Tables', 
-                    'notebook')
+                cls.update_datasource_path_in_notebook(
+                    workspace_name, 
+                    workspace_item['displayName'],
+                    deployment_job)
                 
-                FabricRestApi.run_notebook(workspace['id'], notebook)
+                if run_etl_jobs:
+                    notebook = FabricRestApi.get_item_by_name(
+                        workspace['id'],
+                        'Create Lakehouse Tables', 
+                        'notebook')
+                    
+                    FabricRestApi.run_notebook(workspace['id'], notebook)
 
             # Apply fixes for [Product Sales Imported Model.SemanticModel]
             if workspace_item['type'] == 'SemanticModel' and \
