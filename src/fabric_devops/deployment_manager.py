@@ -865,7 +865,7 @@ class DeploymentManager:
         notebook_definition = {
             'definition': ItemDefinitionFactory.update_item_definition_part(
                 old_notebook_definition['definition'],
-                'definition/expressions.tmdl',
+                'notebook-content.py',
                 search_replace_terms)
         }
 
