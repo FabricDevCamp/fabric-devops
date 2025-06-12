@@ -805,6 +805,30 @@ class DeploymentManager:
 
         FabricRestApi.update_item_definition(workspace['id'], model, model_definition)
 
+    @classmethod
+    def apply_post_deploy_fixes(cls,
+                                workspace_name,
+                                deployment_job):
+        
+        """Deploy Stage from Dev to Test"""                  
+        AppLogger.log_step(f"Applying post deploy fixes to [{workspace_name}]")
+        workspace = FabricRestApi.get_workspace_by_name(workspace_name)
+        workspace_items = FabricRestApi.list_workspace_items(workspace['id'])
+
+        for workspace_item in workspace_items:
+            if workspace_item['type'] == 'SemanticModel' and \
+               workspace_item['displayName'] ==  'Product Sales Imported Model':
+                # fix connection to imported models
+                datasource_path =  deployment_job.parameters[deployment_job.web_datasource_path_parameter]
+
+                DeploymentManager.update_imported_semantic_model_source(
+                    workspace_name, 
+                    workspace_item['displayName'],
+                    datasource_path)
+
+                FabricRestApi.create_and_bind_semantic_model_connecton(workspace_name, 
+                                                                       workspace_item['id'])
+
 
     @classmethod
     def create_and_bind_model_connection(cls, workspace_name):
