@@ -897,6 +897,19 @@ class DeploymentManager:
                         'notebook')
                     
                     FabricRestApi.run_notebook(workspace['id'], notebook)
+                    sales_lakehouse = FabricRestApi.get_item_by_name(
+                        workspace['id'],
+                        "sales",
+                        'Lakehouse'
+                    )
+
+                    sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(
+                        workspace['id'], 
+                        sales_lakehouse)
+
+                    FabricRestApi.refresh_sql_endpoint_metadata(
+                        workspace['id'], 
+                        sql_endpoint['database'])
 
         models = list(filter(lambda item: item['type']=='SemanticModel', workspace_items))
         for model in models:
