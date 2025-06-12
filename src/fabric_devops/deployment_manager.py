@@ -898,7 +898,7 @@ class DeploymentManager:
                     
                     FabricRestApi.run_notebook(workspace['id'], notebook)
 
-        models = list(filter(lambda item: item['type']=='SemanticModels', workspace_items))
+        models = list(filter(lambda item: item['type']=='SemanticModel', workspace_items))
         for model in models:
 
             # Apply fixes for [Product Sales Imported Model.SemanticModel]
