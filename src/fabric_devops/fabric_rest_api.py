@@ -952,6 +952,34 @@ class FabricRestApi:
         AppLogger.log_substep(f'Shortcut [{path}/{name}] successfullly created')
 
     @classmethod
+    def create_onelake_shortcut(cls, 
+                                workspace_id, 
+                                target_lakehouse_id,
+                                source_lakehouse_id,
+                                name, 
+                                path,
+                                ):
+        """Create ADLS Gen2 Shortcut"""
+        AppLogger.log_step('Creating OneLake shortcut using ADLS connection...')
+
+        rest_url = f'workspaces/{workspace_id}/items/{target_lakehouse_id}/shortcuts'
+        post_body = {
+            'name': name,
+            'path': f'/{path}',
+            'target': {
+                'onelake': {
+                    'itemId': source_lakehouse_id,
+                    'path': f'{path}/{name}',
+                    'workspaceId': workspace_id
+                }
+            }
+        }
+        cls._execute_post_request(rest_url, post_body)
+        AppLogger.log_substep(f'Shortcut [{path}/{name}] successfullly created')
+
+
+
+    @classmethod
     def set_active_valueset_for_variable_library(cls, workspace_id, library, valueset):
         """Set active valueset for variable library"""
         AppLogger.log_step(

@@ -1,4 +1,4 @@
-"Test"""
+"Deploy FabCon Wolution"""
 
 from fabric_devops import StagingEnvironments, FabricRestApi, \
                           AppLogger, DeploymentJob, ItemDefinitionFactory
