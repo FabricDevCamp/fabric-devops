@@ -545,6 +545,8 @@ def deploy_fabcon_solution():
         data_prep_folder_id)
 
     adls_server = EnvironmentSettings.AZURE_STORAGE_SERVER
+    adls_container_name  = EnvironmentSettings.AZURE_STORAGE_CONTAINER
+    adls_container_path = EnvironmentSettings.AZURE_STORAGE_CONTAINER_PATH
     adls_path = EnvironmentSettings.AZURE_STORAGE_PATH
 
     connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
