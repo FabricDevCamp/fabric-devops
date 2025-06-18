@@ -16,6 +16,7 @@ on:
         - Custom Variable Library Solution
         - Custom Warehouse Solution
         - Custom Realtime Solution
+        - Custom FabCon Solution
         - Deploy All Solutions
 
 jobs:

@@ -952,6 +952,42 @@ class FabricRestApi:
         AppLogger.log_substep(f'Shortcut [{path}/{name}] successfullly created')
 
     @classmethod
+    def create_adls_gen2_shortcut_with_variables(cls, workspace_id, lakehouse_id, name, path,
+                                  location, subpath, connection_id):
+        """Create ADLS Gen2 Shortcut"""
+        AppLogger.log_step('Creating OneLake shortcut using ADLS connection...')
+
+        rest_url = f'workspaces/{workspace_id}/items/{lakehouse_id}/shortcuts'
+        post_body = {
+            'name': name,
+            'path': path,
+            'target': {
+                'adlsGen2': {
+                    'location': location,
+                    'subpath': subpath,
+                    'connectionId': connection_id,
+                    'propertiesConfiguredByVariables': [
+                        {
+                             'property': 'target.adlsGen2.connectionId',
+                             'variable': '$(/**/SolutionConfig/target_connection_id)'
+                        },
+                        {
+                            'property': 'target.adlsGen2.location',
+                            'variable': '$(/**/SolutionConfig/target_location)'
+                        },
+                        {
+                            'property': 'target.adlsGen2.subpath',
+                            'variable': '$(/**/SolutionConfig/target_subpath)'
+                        }
+                    ]
+                }
+            }
+        }
+        cls._execute_post_request(rest_url, post_body)
+        AppLogger.log_substep(f'Shortcut [{path}/{name}] successfullly created')
+
+
+    @classmethod
     def create_onelake_shortcut(cls, 
                                 workspace_id, 
                                 target_lakehouse_id,
