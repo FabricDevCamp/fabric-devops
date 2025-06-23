@@ -260,7 +260,7 @@ Python SDK for Fabric REST API adds valuable productivity boost
 - Provides automatic support for dealing with **continuation tokens**
   and merging **paginated results**
 
-\xxx\xxx\xxx python
+\`\`\` python
 
 def deploy_fabcon_solution(
 
@@ -276,11 +276,7 @@ def deploy_fabcon_solution(
 
     gold_warehouse_name = "bales"
 
-\xxx\xxx\xxx
-
-
-
-
+\`\`\`
 
 
 
