@@ -1,11 +1,16 @@
 # Getting Started with fabric_devops
 
-This article walks you through getting the fabric_devops project up and
-running so you can write and test Python code which performs CI/CD tasks
-using the Fabric REST APIs.
+This guide walks you through the basic stapes of getting up and running
+with **fabric_devops** project. This will allow you to write, test and
+debug Python code which automates CI/CD tasks with Fabric-based
+solutions using the Fabric REST APIs. You will begin by configuring your
+developer environment to write and test Python code running locally on
+your computer in the Visual Studio Code debugger. After that, you will
+move through the steps to configure the project so the same Python code
+can run in the cloud in a GitHub workflow.
 
-Begin by forking the fabric_devops repository at
-https://github.com/FabricDevCamp/fabric-devops.
+Begin by forking the **fabric_devops** repository at
+<https://github.com/FabricDevCamp/fabric-devops>.
 
 Select **Create a new fork command**.
 
