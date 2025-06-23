@@ -1,6 +1,8 @@
 # Getting Started with fabric_devops
 
-This is a test
+This article walks you through getting the fabric_devops project up and
+running so you can write and test Python code which performs CI/CD tasks
+using the Fabric REST APIs.
 
 Begin by forking the fabric_devops repository at
 https://github.com/FabricDevCamp/fabric-devops.
@@ -8,7 +10,7 @@ https://github.com/FabricDevCamp/fabric-devops.
 Select **Create a new fork command**.
 
 <img src="./images/GettingStarted/media/image1.png"
-style="width:10.56397in;height:4.16725in"
+style="width:7.95888in;height:3.1396in"
 alt="A screenshot of a computer AI-generated content may be incorrect." />
 
 Next, select the **Create fork** command.
@@ -19,8 +21,6 @@ alt="A screenshot of a computer AI-generated content may be incorrect." />
 
 This forked repository is your starting point. This is the repository in
 which you will test and experiment with Python code
-
-X
 
 The next step is to clone this repository to a local folder for testing
 in Visual Studio Code
@@ -188,8 +188,7 @@ alt="A screenshot of a computer program AI-generated content may be incorrect." 
 Xxxx
 
 <img src="./images/GettingStarted/media/image16.png"
-style="width:8.13211in;height:2.98611in"
-alt="A screenshot of a computer program AI-generated content may be incorrect." />
+style="width:10.41667in;height:3.825in" />
 
 Ssss
 
@@ -260,7 +259,7 @@ Python SDK for Fabric REST API adds valuable productivity boost
 - Provides automatic support for dealing with **continuation tokens**
   and merging **paginated results**
 
-\xxx\xxx\xxx python
+``` python
 
 def deploy_fabcon_solution(
 
@@ -270,17 +269,11 @@ def deploy_fabcon_solution(
 
     """Deploy FabCon Solution"""
 
-    bronze_lakehouse_name = "bales_bronze"
+    bronze_lakehouse_name = "sales_bronze"
 
-    silver_lakehouse_name = "bales_silver"
+    silver_lakehouse_name = "sales_silver"
 
-    gold_warehouse_name = "bales"
+    gold_warehouse_name = "sales"
 
-\xxx\xxx\xxx
-
-
-
-
-
-
+```
 
