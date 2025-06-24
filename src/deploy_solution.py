@@ -667,7 +667,6 @@ def deploy_fabcon_solution():
 
     return workspace
 
-
 match os.getenv("SOLUTION_NAME"):
 
     case 'Custom Power BI Solution':
@@ -702,3 +701,5 @@ match os.getenv("SOLUTION_NAME"):
         deploy_warehouse_solution()
         deploy_realtime_solution()
         #deploy_variable_library_solution()
+
+deploy_realtime_solution()

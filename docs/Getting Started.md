@@ -9,6 +9,38 @@ Visual Studio Code debugger. After that, you will move through the
 configuration steps to enable the same Python code to run in the cloud
 within the context of a GitHub workflow.
 
+This guide will lead you through the following steps to get you started
+with local development on your developer workstation.
+
+1.  Fork the **fabric_devops** repository into your own repository
+
+2.  Clone the forked repository to a local **fabric_devops** folder on
+    your developer workstation
+
+3.  Open the local copy of the **fabric_devops** folder in Visual Studio
+    Code
+
+4.  Update configuration data in the **.env** file for local development
+    and debugging
+
+5.  Run a set of demo Python scripts to experiment with sample Python
+    code in the **fabric_devops** project
+
+After you are able to run and test the sample code in the
+**fabric_devops** project locally, this guide will lead you through the
+following steps so you can run and test the code within the context of
+GitHub workflow actions.
+
+1.  Enable workflows in your forked copy of the **fabric_devops**
+    repository
+
+2.  Update configuration data by adding GitHub action secrets
+
+3.  Experiment by running the sample GitHub actions that are part of the
+    **fabric_devops** project
+
+## Fork the fabric_devops repository
+
 Begin by forking the **fabric_devops** repository.
 
 1.  Navigate to the repository in the browser at
@@ -19,10 +51,10 @@ Begin by forking the **fabric_devops** repository.
 3.  Select the **Create a new fork** command.
 
 <img src="./images/GettingStarted/media/image1.png"
-style="width:7.95888in;height:3.1396in"
+style="width:7.94in;height:3.13in"
 alt="A screenshot of a computer AI-generated content may be incorrect." />
 
-Next, select the **Create fork** command.
+4.  Next, select the **Create fork** command.
 
 <img src="./images/GettingStarted/media/image2.png"
 style="width:5.28659in;height:3.83505in"

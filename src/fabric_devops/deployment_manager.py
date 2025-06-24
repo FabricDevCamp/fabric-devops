@@ -792,7 +792,6 @@ class DeploymentManager:
 
         return workspace
 
-
     @classmethod
     def deploy_solution_by_name(cls, target_workspace, solution_name):
         """Deploy Solution by Name"""
@@ -852,7 +851,6 @@ class DeploymentManager:
                 FabricRestApi.unassign_workpace_from_pipeline_stage(pipeline['id'], stage['id'])
 
             FabricRestApi.delete_deployment_pipeline(pipeline['id'])
-
 
     @classmethod
     def delete_all_workspaces(cls):
@@ -1099,7 +1097,6 @@ class DeploymentManager:
                 FabricRestApi.create_and_bind_semantic_model_connecton(
                     workspace,
                     model['id'])
-
 
     @classmethod
     def create_and_bind_model_connection(cls, workspace_name):
