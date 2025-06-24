@@ -80,8 +80,7 @@ alt="A screenshot of a computer AI-generated content may be incorrect." />
 Open the project in Visual Studio Code.
 
 <img src="./images/GettingStarted/media/image5.png"
-style="width:3.61189in;height:2.88229in"
-alt="A screenshot of a computer AI-generated content may be incorrect." />
+style="width:4.45139in;height:3.5in" />
 
 ## Updating Configuration in the Local .env File
 
@@ -92,8 +91,7 @@ Rename the sample.env file to .env
 Update environmental variables in the .env file
 
 <img src="./images/GettingStarted/media/image6.png"
-style="width:7.77083in;height:2.43995in"
-alt="A screenshot of a computer AI-generated content may be incorrect." />
+style="width:9.11806in;height:3.0261in" />
 
 Here is what you need to edit.
 
@@ -160,8 +158,7 @@ When running locally in GitHub workflows, environmental variables loaded
 action secrets
 
 <img src="./images/GettingStarted/media/image11.png"
-style="width:4.1125in;height:2.60543in"
-alt="A screenshot of a computer screen AI-generated content may be incorrect." />
+style="width:6.92361in;height:4.71528in" />
 
 ## Authenticating with MSAL
 
