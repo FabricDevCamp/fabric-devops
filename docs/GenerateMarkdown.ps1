@@ -10,7 +10,7 @@ $replace = "``````"
 
 $updatedContent = $content -replace $find, $replace
 
-$find = 'callout '
+$find = 'callout: '
 $replace = '>'
 
 $updatedContent = $updatedContent -replace $find, $replace

@@ -9,8 +9,8 @@ Visual Studio Code debugger. After that, you will move through the
 configuration steps to enable the same Python code to run in the cloud
 within the context of a GitHub workflow.
 
-This guide will lead you through the following steps to get you started
-with local development on your developer workstation.
+>This guide will lead you through the following steps to get you
+started with local development on your developer workstation.
 
 1.  Fork the **fabric_devops** repository into your own repository
 
@@ -26,10 +26,10 @@ with local development on your developer workstation.
 5.  Run a set of demo Python scripts to experiment with sample Python
     code in the **fabric_devops** project
 
-After you are able to run and test the sample code in the
-**fabric_devops** project locally, this guide will lead you through the
-following steps so you can run and test the code within the context of
-GitHub workflow actions.
+>After you move through the steps which enable you to run and
+test the sample code locally, this guide will then lead you through the
+following steps to enable running and testing the same code within the
+context of GitHub workflow actions.
 
 1.  Enable workflows in your forked copy of the **fabric_devops**
     repository
