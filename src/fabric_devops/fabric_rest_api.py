@@ -114,6 +114,11 @@ class FabricRestApi:
 
             if operation_state['status'] == 'Failed':
                 AppLogger.log_error('On-demand job Failed')
+                print('----------------------------')
+                print(operation_state)
+                print('----------------------------')
+                print(response)
+                print('----------------------------')
 
             if operation_state['status'] == 'Cancelled':
                 AppLogger.log_error('On-demand job was cancelled')
