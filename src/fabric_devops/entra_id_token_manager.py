@@ -155,34 +155,24 @@ class EntraIdTokenManager():
         """"Get Access Token for Azure Dev """
         ado_resource_id = '499b84ac-1321-427f-aa17-267ca6975798'
         if EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL:
-            scopes = [ ado_resource_id + "//.default" ]
-            authentication_reult = \
-                cls._get_authentication_result_for_service_principal(scopes)
+            scope_for_service_principal = ado_resource_id + "//.default" 
+            return cls._get_access_token_for_service_principal(scope_for_service_principal)
         else:
-            scopes = [ ado_resource_id + "//user_impersonation" ]
+            scope_for_user = ado_resource_id + "//user_impersonation"
             if EnvironmentSettings.RUNNING_IN_GITHUB:
-                authentication_reult = \
-                    cls._get_authentication_result_for_user_with_device_code(scopes)
+                return cls._get_access_token_for_user(scope_for_user)
             else:
-                authentication_reult = \
-                    cls._get_authentication_result_for_user_interactive(scopes)
-
-        return authentication_reult['access_token']
+                return cls._get_access_token_for_user_with_device_code(scope_for_user)
 
     @classmethod
     def get_kqldb_access_token(cls, query_service_url):
         """"Get Access Token for KQL DB"""
         if EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL:
-            scopes = [ query_service_url + "//.default" ]
-            authentication_reult = \
-                cls._get_authentication_result_for_service_principal(scopes)
+            scope_for_service_principal = query_service_url + "//.default"
+            return cls._get_access_token_for_service_principal(scope_for_service_principal)
         else:
-            scopes = [ query_service_url + "//user_impersonation" ]
+            scope_for_user = query_service_url + "//user_impersonation"
             if EnvironmentSettings.RUNNING_IN_GITHUB:
-                authentication_reult = \
-                    cls._get_authentication_result_for_user_with_device_code(scopes)
+                return cls._get_access_token_for_user_with_device_code(scope_for_user)
             else:
-                authentication_reult = \
-                    cls._get_authentication_result_for_user_interactive(scopes)
-
-        return authentication_reult['access_token']
+                return cls._get_access_token_for_user(scope_for_user)
