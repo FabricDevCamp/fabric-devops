@@ -1,5 +1,5 @@
 
-name: Deploy Solution with GIT Connection
+name: Deploy with GIT Integration
 run-name: Deploy ${{inputs.solution_name}} with GIT Connection
 
 on:
@@ -44,8 +44,7 @@ jobs:
           FABRIC_CAPACITY_ID: ${{ secrets.FABRIC_CAPACITY_ID }}       
           ADMIN_USER_ID: ${{ secrets.ADMIN_USER_ID }}
           SERVICE_PRINCIPAL_OBJECT_ID: ${{ secrets.SERVICE_PRINCIPAL_OBJECT_ID }}
-          AZURE_STORAGE_ACCOUNT_KEY: ${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }}
           PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
           SOLUTION_NAME: ${{inputs.solution_name}}
         run:
-          python src/deploy_solution_with_git_connection.py
+          python src/deploy-solution-with-git-integration.py

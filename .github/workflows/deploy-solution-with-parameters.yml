@@ -1,5 +1,5 @@
 
-name: Deploy Solution with Custom Parameters
+name: Deploy with Custom Parameters
 run-name: Deploy ${{inputs.solution_name}} to ${{ inputs.customer_name }}
 
 on:

@@ -1,4 +1,4 @@
-"""Setup GIT Connection"""
+"""Deploy solution with GIT Integration"""
 
 import os
 
