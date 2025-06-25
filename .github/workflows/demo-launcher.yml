@@ -1,5 +1,5 @@
 
-name: Demo Launcher
+name: Demo Script Launcher
 run-name: Running ${{inputs.demo_name}}
 
 on:
