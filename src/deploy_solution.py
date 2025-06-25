@@ -38,7 +38,7 @@ def deploy_powerbi_solution():
 
     FabricRestApi.create_item(workspace['id'], create_report_request)
 
-    AppLogger.log_job_ended("Solution deployment complete")
+    AppLogger.log_job_complete(workspace['id'])
 
 def deploy_notebook_solution():
     """Deploy Notebook Solution"""
@@ -83,7 +83,7 @@ def deploy_notebook_solution():
 
     FabricRestApi.create_item(workspace['id'], create_report_request)
 
-    AppLogger.log_job_ended("Solution deployment complete")
+    AppLogger.log_job_complete(workspace['id'])
 
 def deploy_shortcut_solution():
     """Deploy Shortcut Solution"""
@@ -160,7 +160,7 @@ def deploy_shortcut_solution():
 
         FabricRestApi.create_item(workspace['id'], create_report_request)
 
-    AppLogger.log_job_ended("Solution deployment complete")
+    AppLogger.log_job_complete(workspace['id'])
 
 def deploy_data_pipeline_solution():
     """Deploy Data Pipeline Solution"""
@@ -244,7 +244,7 @@ def deploy_data_pipeline_solution():
 
         FabricRestApi.create_item(workspace['id'], create_report_request)
 
-    AppLogger.log_job_ended("Solution deployment complete")
+    AppLogger.log_job_complete(workspace['id'])
 
 def deploy_variable_library_solution():
     """Deploy variable library solution"""
@@ -334,7 +334,7 @@ def deploy_variable_library_solution():
 
         FabricRestApi.create_item(workspace['id'], create_report_request)
 
-    AppLogger.log_job_ended("Solution deployment complete")
+    AppLogger.log_job_complete(workspace['id'])
 
 def deploy_warehouse_solution():
     """Deploy Warehouse Solution"""
@@ -431,7 +431,7 @@ def deploy_warehouse_solution():
 
         FabricRestApi.create_item(workspace['id'], create_report_request)
 
-    AppLogger.log_job_ended("Solution deployment complete")
+    AppLogger.log_job_complete(workspace['id'])
 
 def deploy_realtime_solution():
     """Deploy Real Time Solution"""
@@ -512,7 +512,7 @@ def deploy_realtime_solution():
 
     FabricRestApi.create_item(workspace['id'], create_report_request)
 
-    AppLogger.log_job_ended("Solution deployment complete")
+    AppLogger.log_job_complete(workspace['id'])
 
 def deploy_fabcon_solution():
     """Deploy FabCon Solution"""
@@ -664,8 +664,6 @@ def deploy_fabcon_solution():
         FabricRestApi.create_item(workspace['id'], create_report_request)
 
     AppLogger.log_job_complete(workspace['id'])
-
-    return workspace
 
 match os.getenv("SOLUTION_NAME"):
 
