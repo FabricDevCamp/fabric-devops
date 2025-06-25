@@ -47,7 +47,7 @@ def deploy_powerbi_solution(deploy_job):
 
     FabricRestApi.create_item(workspace['id'], create_report_request)
 
-    AppLogger.log_job_ended("Solution deployment complete")
+    AppLogger.log_job_complete(workspace['id'])
 
 def deploy_notebook_solution(deploy_job):
     """Deploy Notebook Solution"""
@@ -114,7 +114,7 @@ def deploy_notebook_solution(deploy_job):
 
     FabricRestApi.create_item(workspace['id'], create_report_request)
 
-    AppLogger.log_job_ended("Solution deployment complete")
+    AppLogger.log_job_complete(workspace['id'])
 
 def deploy_shortcut_solution(deploy_job):
     """Deploy Shortcut Solution"""
@@ -204,7 +204,7 @@ def deploy_shortcut_solution(deploy_job):
 
         FabricRestApi.create_item(workspace['id'], create_report_request)
 
-    AppLogger.log_job_ended("Solution deployment complete")
+    AppLogger.log_job_complete(workspace['id'])
 
 def deploy_data_pipeline_solution(deploy_job):
     """Deploy Data Pipeline Solution"""
@@ -247,7 +247,6 @@ def deploy_data_pipeline_solution(deploy_job):
     adls_container_name = deploy_job.parameters[DeploymentJob.adls_container_name_parameter]
     adls_container_path = deploy_job.parameters[DeploymentJob.adls_container_path_parameter]
     adls_path = adls_container_name + adls_container_path
-
 
     connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
         adls_server_path,
@@ -309,7 +308,7 @@ def deploy_data_pipeline_solution(deploy_job):
 
         FabricRestApi.create_item(workspace['id'], create_report_request)
 
-    AppLogger.log_job_ended("Solution deployment complete")
+    AppLogger.log_job_complete(workspace['id'])
 
 def deploy_variable_library_solution(deploy_job):
     """Deploy Variable Library Solution"""
@@ -406,7 +405,7 @@ def deploy_variable_library_solution(deploy_job):
 
         FabricRestApi.create_item(workspace['id'], create_report_request)
 
-    AppLogger.log_job_ended("Solution deployment complete")
+    AppLogger.log_job_complete(workspace['id'])
 
 def deploy_warehouse_solution(deploy_job):
     """Deploy Warehouse Solution"""
@@ -483,13 +482,13 @@ def deploy_warehouse_solution(deploy_job):
 
         FabricRestApi.run_data_pipeline(workspace['id'], pipeline)
 
-    createModelRequest = \
+    create_model_request = \
         ItemDefinitionFactory.get_directlake_model_create_request(semantic_model_name,
                                                                   'sales_model_DirectLake.bim',
                                                                   warehouse_connect_string,
                                                                   warehouse['id'])
 
-    model = FabricRestApi.create_item(workspace['id'], createModelRequest)
+    model = FabricRestApi.create_item(workspace['id'], create_model_request)
 
     FabricRestApi.create_and_bind_semantic_model_connecton(workspace, model['id'], lakehouse)
 
@@ -499,9 +498,7 @@ def deploy_warehouse_solution(deploy_job):
                                                                                 report_data['template'])
         report = FabricRestApi.create_item(workspace['id'], create_report_request)
 
-    AppLogger.log_job_ended("Solution deployment complete")
-
-    return workspace
+    AppLogger.log_job_complete(workspace['id'])
 
 CUSTOMER_JOBS = []
 match os.getenv("CUSTOMER_NAME"):
@@ -534,4 +531,3 @@ for CUSTOMER_JOB in CUSTOMER_JOBS:
             deploy_variable_library_solution(CUSTOMER_JOB)
         case 'Custom Warehouse Solution':
             deploy_warehouse_solution(CUSTOMER_JOB)
-
