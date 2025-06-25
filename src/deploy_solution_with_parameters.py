@@ -329,6 +329,8 @@ def deploy_variable_library_solution(deploy_job):
 
     AppLogger.log_job(f"Deploying Custom Variable Library Solution to [{workspace_name}]")
 
+    deploy_job.display_deployment_parameters()
+
     workspace = FabricRestApi.create_workspace(workspace_name)
 
     lakehouse = FabricRestApi.create_lakehouse(workspace['id'], lakehouse_name)

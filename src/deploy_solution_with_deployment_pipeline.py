@@ -7,8 +7,6 @@ from fabric_devops import DeploymentManager, StagingEnvironments, AppLogger
 PROJECT_NAME = os.getenv("PROJECT_NAME")
 SOLUTION_NAME = os.getenv("SOLUTION_NAME")
 
-AppLogger.log_job(f"Setup deployment pipeline [{PROJECT_NAME}] based on [{SOLUTION_NAME}]")
-
 DEPLOYMENT_PIPELINE_NAME = PROJECT_NAME
 DEV_WORKSPACE_NAME = f"{PROJECT_NAME}-dev"
 TEST_WORKSPACE_NAME = f"{PROJECT_NAME}-test"

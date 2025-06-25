@@ -1,8 +1,7 @@
 """Demo 01 - Get Access Token for Service Principal"""
-
 import msal
 
-from fabric_devops import EnvironmentSettings, AppLogger
+from ..fabric_devops import EnvironmentSettings, AppLogger
 
 # create MSAL application for service principal authentication
 app = msal.ConfidentialClientApplication(

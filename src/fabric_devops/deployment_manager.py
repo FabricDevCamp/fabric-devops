@@ -61,7 +61,7 @@ class DeploymentManager:
 
         FabricRestApi.create_item(workspace['id'], create_report_request)
 
-        AppLogger.log_step("Power BI Solution deployment complete")
+        AppLogger.log_job_complete(workspace['id'])
 
         return workspace
 
@@ -132,7 +132,7 @@ class DeploymentManager:
 
         FabricRestApi.create_item(workspace['id'], create_report_request)
 
-        AppLogger.log_step("Notebook Solution deployment complete")
+        AppLogger.log_job_complete(workspace['id'])
 
         return workspace
 
@@ -226,7 +226,7 @@ class DeploymentManager:
 
             FabricRestApi.create_item(workspace['id'], create_report_request)
 
-        AppLogger.log_step("Shortcut Solution deployment complete")
+        AppLogger.log_job_complete(workspace['id'])
 
         return workspace
 
@@ -335,7 +335,7 @@ class DeploymentManager:
 
         FabricRestApi.create_item(workspace['id'], create_report_request)
  
-        AppLogger.log_step("Data Pipeline Solution deployment complete")
+        AppLogger.log_job_complete(workspace['id'])
 
         return workspace
 
@@ -449,7 +449,7 @@ class DeploymentManager:
 
             FabricRestApi.create_item(workspace['id'], create_report_request)
 
-        AppLogger.log_job_ended("Solution deployment complete")
+        AppLogger.log_job_complete(workspace['id'])
 
         return workspace
 
@@ -547,7 +547,7 @@ class DeploymentManager:
                                                                                     report_data['template'])
             FabricRestApi.create_item(workspace['id'], create_report_request)
 
-        AppLogger.log_job_ended("Solution deployment complete")
+        AppLogger.log_job_complete(workspace['id'])
 
         return workspace
 
@@ -631,7 +631,7 @@ class DeploymentManager:
 
         FabricRestApi.create_item(workspace['id'], create_report_request)
 
-        AppLogger.log_job_ended("Solution deployment complete")
+        AppLogger.log_job_complete(workspace['id'])
 
         return workspace
 
@@ -903,6 +903,8 @@ class DeploymentManager:
         dev_workspace = DeploymentManager.deploy_solution_by_name(
                 dev_workspace_name,
                 solution_name)
+        
+        AppLogger.log_job(f"Setup deployment pipeline [{project_name}] based on [{solution_name}]")
 
         pipeline = FabricRestApi.create_deployment_pipeline(pipeline_name, pipeline_stages)
 
