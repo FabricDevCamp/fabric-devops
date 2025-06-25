@@ -411,6 +411,10 @@ def deploy_warehouse_solution():
 
         FabricRestApi.run_data_pipeline(workspace['id'], pipeline)
 
+        if data_pipeline['name'] == 'Load Tables in Staging Lakehouse':
+            sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse)
+            FabricRestApi.refresh_sql_endpoint_metadata(workspace['id'], sql_endpoint['database'])             
+
     create_model_request = \
         ItemDefinitionFactory.get_directlake_model_create_request(
             semantic_model_name,
