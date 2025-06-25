@@ -1,8 +1,8 @@
 """Module to manage calls to Fabric REST APIs"""
 
 import time
-import requests
 from json.decoder import JSONDecodeError
+import requests
 from .app_logger import AppLogger
 from .environment_settings import EnvironmentSettings
 from .entra_id_token_manager import EntraIdTokenManager
@@ -102,7 +102,9 @@ class FabricRestApi:
             response = requests.get(url=operation_state_url, headers=request_headers, timeout=60)
             operation_state = response.json()
             while operation_state['status'] == 'NotStarted' or \
-                  operation_state['status'] == 'InProgress':
+                  operation_state['status'] == 'InProgress' or \
+                  (operation_state['status'] == 'Failed' and \
+                   operation_state['errorCode'] == 'RequestExecutionFailed'  ):
                 time.sleep(wait_time)
                 response = requests.get(url=operation_state_url,
                                         headers=request_headers,
@@ -750,7 +752,6 @@ class FabricRestApi:
             'type': 'Warehouse' 
         }
         return cls.create_item(workspace_id, create_item_request, folder_id)
-
 
     @classmethod
     def list_workspace_items(cls, workspace_id, item_type = None):
