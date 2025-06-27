@@ -390,6 +390,7 @@ class FabricRestApi:
         for connection in existing_connections:
             if 'displayName' in connection and \
                 connection['displayName'] == create_connection_request['displayName']:
+                AppLogger.log_substep("Reusing exisitng connection with matching display name")
                 return connection
 
         connection = cls._execute_post_request('connections', create_connection_request)
@@ -942,7 +943,7 @@ class FabricRestApi:
         """Create ADLS Gen2 Shortcut"""
         AppLogger.log_step('Creating OneLake shortcut using ADLS connection...')
 
-        rest_url = f'workspaces/{workspace_id}/items/{lakehouse_id}/shortcuts'
+        rest_url = f'workspaces/{workspace_id}/items/{lakehouse_id}/shortcuts?shortcutConflictPolicy=CreateOrOverwrite'
         post_body = {
             'name': name,
             'path': path,
@@ -992,7 +993,6 @@ class FabricRestApi:
         cls._execute_post_request(rest_url, post_body)
         AppLogger.log_substep(f'Shortcut [{path}/{name}] successfullly created')
 
-
     @classmethod
     def create_onelake_shortcut(cls, 
                                 workspace_id, 
@@ -1019,7 +1019,11 @@ class FabricRestApi:
         cls._execute_post_request(rest_url, post_body)
         AppLogger.log_substep(f'Shortcut [{path}/{name}] successfullly created')
 
-
+    @classmethod
+    def list_shortcuts(cls, workspace_id, lakehouse_id):
+        """List Shortcuts"""
+        rest_url = f'workspaces/{workspace_id}/items/{lakehouse_id}/shortcuts'
+        return cls._execute_get_request(rest_url)['value']
 
     @classmethod
     def set_active_valueset_for_variable_library(cls, workspace_id, library, valueset):
