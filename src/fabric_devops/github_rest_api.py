@@ -239,7 +239,7 @@ class GitHubRestApi:
     @classmethod
     def create_branch(cls, repo_name, branch_name):
         """Create GitHub Repository Branch"""
-        AppLogger.log_step(f"Creating branch [{branch_name}] in GitHub repo [{repo_name}]")
+        AppLogger.log_substep(f"Creating branch [{branch_name}] in GitHub repo [{repo_name}]")
 
         endpoint_branchces = f"repos/{cls.GITHUB_ORGANIZATION}/{repo_name}/git/refs/heads"
         branches = cls._execute_get_request(endpoint_branchces)
@@ -287,13 +287,12 @@ class GitHubRestApi:
     @classmethod
     def set_default_branch(cls, repo_name, default_branch_name):
         """Create GitHub Repository Branch"""
+        AppLogger.log_substep(f"Setting [{repo_name}] branch as default branch")
         endpoint = f"repos/{cls.GITHUB_ORGANIZATION}/{repo_name}"
-
         body = {
             'name': repo_name,
             'default_branch': default_branch_name
         }
-
         cls._execute_patch_request(endpoint, body)
 
     @classmethod

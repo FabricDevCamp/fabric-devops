@@ -1280,24 +1280,11 @@ class DeploymentManager:
 
         AppLogger.log_job(f"Setup workspace [{workspace['displayName']} with GIT integration]")
 
-        AppLogger.log_step(f"Creating GitHub repository [{repo_name}]")
-        GitHubRestApi.create_repository(repo_name)
-        AppLogger.log_substep(f"GitHub repository [{repo_name}]")
-
-        AppLogger.log_substep("Copy workflow template files to GitHub repository")
-        GitHubRestApi.copy_files_from_folder_to_repo(repo_name, 'Hello')
-        
-        AppLogger.log_substep("Creating branch [test]")        
+        GitHubRestApi.create_repository(repo_name)  
+        GitHubRestApi.copy_files_from_folder_to_repo(repo_name, 'Hello')        
         GitHubRestApi.create_branch(repo_name, 'test')
-
-        AppLogger.log_substep("Creating branch [dev]")        
         GitHubRestApi.create_branch(repo_name, 'dev')
-
-        AppLogger.log_substep("Setting [dev] branch as default branch")        
         GitHubRestApi.set_default_branch(repo_name, 'dev')
-
-        AppLogger.log_substep("Creating connection between GitHub repostory and workspace")        
         FabricRestApi.connect_workspace_to_github_repo(workspace, 'dev')
-        AppLogger.log_substep("Workspace connection to  GitHub repostory created and synced")
 
         AppLogger.log_job_complete(workspace['id'])

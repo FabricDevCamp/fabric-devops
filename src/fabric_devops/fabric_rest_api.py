@@ -292,7 +292,7 @@ class FabricRestApi:
             'capacityId': EnvironmentSettings.FABRIC_CAPACITY_ID
         }
 
-        AppLogger.log_substep('Calling Create-Workspace API...')
+        AppLogger.log_substep('Calling [Create Workspace] API...')
         workspace = cls._execute_post_request('workspaces', post_body)
         workspace_id = workspace['id']
         AppLogger.log_substep(f'Workspace created with Id of [{workspace_id}]')
@@ -1070,6 +1070,9 @@ class FabricRestApi:
 
         cls.create_github_repository_connection(workspace['id'], repo_name, connection_id, branch)
 
+        AppLogger.log_step(f"Workspace connection created successfully")
+
+
         init_request = {
             'initializationStrategy': 'PreferWorkspace'
         }
@@ -1149,12 +1152,14 @@ class FabricRestApi:
     @classmethod
     def commit_workspace_to_git(cls, workspace_id, commit_to_git_request):
         """Commit Workspace to GIT Repository"""
+        AppLogger.log_step(f"Committing Workspace content to GIT repository")
         endpoint = f"workspaces/{workspace_id}/git/commitToGit"
         return cls._execute_post_request(endpoint, commit_to_git_request)
 
     @classmethod
     def update_workspace_from_git(cls, workspace_id, update_from_git_request):
         """Update Workspace from GIT Repository"""
+        AppLogger.log_step(f"Committing GitHub repsitory content to workspace items")
         endpoint = f"workspaces/{workspace_id}/git/updateFromGit"
         return cls._execute_post_request(endpoint, update_from_git_request)
 
