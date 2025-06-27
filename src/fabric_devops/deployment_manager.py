@@ -1296,8 +1296,8 @@ class DeploymentManager:
         AppLogger.log_substep("Setting [dev] branch as default branch")        
         GitHubRestApi.set_default_branch(repo_name, 'dev')
 
-        AppLogger.log_substep(f"Creating connection between GitHub repostory and workspace")        
+        AppLogger.log_substep("Creating connection between GitHub repostory and workspace")        
         FabricRestApi.connect_workspace_to_github_repo(workspace, 'dev')
-        AppLogger.log_substep(f"Workspace connection to  GitHub repostory created and synced")
+        AppLogger.log_substep("Workspace connection to  GitHub repostory created and synced")
 
-        AppLogger.log_job_complete(workspace['id'])        
+        AppLogger.log_job_complete(workspace['id'])
