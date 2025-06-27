@@ -47,4 +47,4 @@ jobs:
           PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
           SOLUTION_NAME: ${{inputs.solution_name}}
         run:
-          python src/deploy-solution-with-git-integration.py
+          python src/deploy_solution_with_git_integration.py
