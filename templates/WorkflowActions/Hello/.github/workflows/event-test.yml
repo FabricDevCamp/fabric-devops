@@ -1,14 +1,12 @@
 
 name: Event Test
 
-run-name: Event Test ${{ github.event_name }} - ${{ github.ref }}
+run-name: Friday Event Test ${{ github.event_name }} - ${{ github.ref }}
 
 on:
-  workflow_dispatch:
   create:
-  push: 
-  pull_request: 
-
+  push:
+    branches: [ $default-branch ]
 
 jobs:
   deployment-job:    

@@ -1,14 +1,14 @@
 
-name: Event Test
+name: Fabric Event Test
 
 run-name: Fabric CICD Event - ${{ github.event_name }} - ${{ github.ref }}
 
 on:
+  create:
   push:
     branches: [ $default-branch ]
   pull_request:
     branches: [ $default-branch ]
-
 
 jobs:
   deployment-job:    
