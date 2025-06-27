@@ -56,7 +56,7 @@ class AppLogger:
     @classmethod
     def log_table_header(cls, table_title):
         """Log Table Header"""
-        print('', flush=True)
+        print(' ', flush=True)
         print(f'> {table_title}', flush=True)
         print('  ' + ('-' * (cls.TABLE_WIDTH)), flush=True)
 
