@@ -239,7 +239,7 @@ class GitHubRestApi:
     @classmethod
     def create_branch(cls, repo_name, branch_name):
         """Create GitHub Repository Branch"""
-        AppLogger.log_substep(f"Creating branch [{branch_name}] in GitHub repo [{repo_name}]")
+        AppLogger.log_substep(f"Creating branch [{branch_name}]")
 
         endpoint_branchces = f"repos/{cls.GITHUB_ORGANIZATION}/{repo_name}/git/refs/heads"
         branches = cls._execute_get_request(endpoint_branchces)
@@ -252,9 +252,7 @@ class GitHubRestApi:
             "sha": sha
         }
 
-        repo = cls._execute_post_request(endpoint_refs, body)
-        AppLogger.log_substep("Repo branch created successfully")
-        return repo
+        return cls._execute_post_request(endpoint_refs, body)
 
     @classmethod
     def create_workspace_readme(cls, repo_name):
