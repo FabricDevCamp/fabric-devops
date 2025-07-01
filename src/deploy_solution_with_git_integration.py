@@ -2,41 +2,39 @@
 
 import os
 
-from fabric_devops import DeploymentManager, EnvironmentSettings, FabricRestApi
+from fabric_devops import DeploymentManager
+
+PROJECT_NAME = os.getenv("PROJECT_NAME")
+SOLUTION_NAME = os.getenv("SOLUTION_NAME")
+
+DEPLOYMENT_PIPELINE_NAME = PROJECT_NAME
+DEV_WORKSPACE_NAME = f"{PROJECT_NAME}-dev"
+TEST_WORKSPACE_NAME = f"{PROJECT_NAME}-test"
+PROD_WORKSPACE_NAME = f"{PROJECT_NAME}"
 
 WORKSPACE = None
 
 match os.getenv("SOLUTION_NAME"):
 
     case 'Custom Power BI Solution':
-        WORKSPACE = DeploymentManager.deploy_powerbi_solution(
-            'Custom Power BI Solution')
+        WORKSPACE = DeploymentManager.deploy_powerbi_solution(DEV_WORKSPACE_NAME)
 
     case 'Custom Notebook Solution':
-        WORKSPACE = DeploymentManager.deploy_notebook_solution(
-            'Custom Notebook Solution')
+        WORKSPACE = DeploymentManager.deploy_notebook_solution(DEV_WORKSPACE_NAME)
 
     case 'Custom Shortcut Solution':
-        WORKSPACE = DeploymentManager.deploy_shortcut_solution(
-            'Custom Shortcut Solution')
+        WORKSPACE = DeploymentManager.deploy_shortcut_solution(DEV_WORKSPACE_NAME)
 
     case 'Custom Data Pipeline Solution':
-        WORKSPACE = DeploymentManager.deploy_data_pipeline_solution(
-            'Custom Data Pipeline Solution')
+        WORKSPACE = DeploymentManager.deploy_data_pipeline_solution(DEV_WORKSPACE_NAME)
 
     case 'Custom Warehouse Solution':
-        WORKSPACE = DeploymentManager.deploy_warehouse_solution(
-            'Custom Warehouse Solution')
+        WORKSPACE = DeploymentManager.deploy_warehouse_solution(DEV_WORKSPACE_NAME)
         
     case 'Custom Realtime Solution':
-        WORKSPACE = DeploymentManager.deploy_realtime_solution(
-            'Custom Realtime Solution')
+        WORKSPACE = DeploymentManager.deploy_realtime_solution(DEV_WORKSPACE_NAME)
 
     case 'Custom Variable Library Solution':
-        # SPN bug with var lib requires user auth
-        EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL = False
-        FabricRestApi.authenticate()
-        WORKSPACE = DeploymentManager.deploy_variable_library_solution(
-            'Custom Variable Library Solution')
+        WORKSPACE = DeploymentManager.deploy_variable_library_solution(DEV_WORKSPACE_NAME)
 
 DeploymentManager.connect_workspace_to_github_repo(WORKSPACE)

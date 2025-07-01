@@ -1063,14 +1063,14 @@ class FabricRestApi:
 
         repo_name = workspace['displayName'].replace(" ", "-")
 
-        AppLogger.log_step(f"Connecting workspace [{workspace['displayName']}] " + \
+        AppLogger.log_substep(f"Connecting workspace [{workspace['displayName']}] " + \
                            f"to GitHub repo [{repo_name}]")
 
         connection_id = cls.get_github_repo_connection(repo_name, workspace)['id']
 
         cls.create_github_repository_connection(workspace['id'], repo_name, connection_id, branch)
 
-        AppLogger.log_step(f"Workspace connection created successfully")
+        AppLogger.log_substep("Workspace connection created successfully")
 
 
         init_request = {
@@ -1103,6 +1103,8 @@ class FabricRestApi:
                             
             }
             cls.update_workspace_from_git(workspace['id'], update_from_git_request)
+
+        AppLogger.log_substep("Workspace connection successfully created and synchronized")
 
     @classmethod
     def create_github_repository_connection(cls, workspace_id, repo_name, connection_id, branch = 'main'):
@@ -1152,14 +1154,14 @@ class FabricRestApi:
     @classmethod
     def commit_workspace_to_git(cls, workspace_id, commit_to_git_request):
         """Commit Workspace to GIT Repository"""
-        AppLogger.log_step(f"Committing Workspace content to GIT repository")
+        AppLogger.log_substep("Committing Workspace content to GIT repository")
         endpoint = f"workspaces/{workspace_id}/git/commitToGit"
         return cls._execute_post_request(endpoint, commit_to_git_request)
 
     @classmethod
     def update_workspace_from_git(cls, workspace_id, update_from_git_request):
         """Update Workspace from GIT Repository"""
-        AppLogger.log_step(f"Committing GitHub repsitory content to workspace items")
+        AppLogger.log_substep("Committing GitHub repsitory content to workspace items")
         endpoint = f"workspaces/{workspace_id}/git/updateFromGit"
         return cls._execute_post_request(endpoint, update_from_git_request)
 

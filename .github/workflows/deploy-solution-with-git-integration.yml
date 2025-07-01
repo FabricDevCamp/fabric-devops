@@ -5,6 +5,10 @@ run-name: Deploy ${{inputs.solution_name}} with GIT Connection
 on:
   workflow_dispatch:
     inputs:
+      project_name:
+        description: Project Name
+        required: true
+        default: "Apollo"
       solution_name:
         type: choice
         description: Solution to deploy
@@ -45,6 +49,7 @@ jobs:
           ADMIN_USER_ID: ${{ secrets.ADMIN_USER_ID }}
           SERVICE_PRINCIPAL_OBJECT_ID: ${{ secrets.SERVICE_PRINCIPAL_OBJECT_ID }}
           PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
+          PROJECT_NAME: ${{ inputs.project_name }}
           SOLUTION_NAME: ${{inputs.solution_name}}
         run:
           python src/deploy_solution_with_git_integration.py

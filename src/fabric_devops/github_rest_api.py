@@ -281,11 +281,10 @@ class GitHubRestApi:
         
         cls._execute_put_request_with_file(endpoint, body)
 
-
     @classmethod
     def set_default_branch(cls, repo_name, default_branch_name):
         """Create GitHub Repository Branch"""
-        AppLogger.log_substep(f"Setting [{repo_name}] branch as default branch")
+        AppLogger.log_substep(f"Setting [{default_branch_name}] branch as default branch")
         endpoint = f"repos/{cls.GITHUB_ORGANIZATION}/{repo_name}"
         body = {
             'name': repo_name,
