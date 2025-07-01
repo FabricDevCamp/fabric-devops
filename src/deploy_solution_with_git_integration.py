@@ -37,4 +37,4 @@ match os.getenv("SOLUTION_NAME"):
     case 'Custom Variable Library Solution':
         WORKSPACE = DeploymentManager.deploy_variable_library_solution(DEV_WORKSPACE_NAME)
 
-DeploymentManager.connect_workspace_to_github_repo(WORKSPACE)
+DeploymentManager.connect_workspace_to_github_repo(WORKSPACE, PROJECT_NAME)

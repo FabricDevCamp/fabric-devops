@@ -1273,10 +1273,11 @@ class DeploymentManager:
             FabricRestApi.delete_connection(connection['id'])
 
     @classmethod
-    def connect_workspace_to_github_repo(cls, workspace):
+    def connect_workspace_to_github_repo(cls, workspace, repo_name = None):
         """Setup Workspace with GIT Connection"""
         
-        repo_name = workspace['displayName'].replace(" ", "-")
+        if repo_name is None:
+            repo_name = workspace['displayName'].replace(" ", "-")
 
         AppLogger.log_job(f"Setup workspace [{workspace['displayName']} with GIT integration]")
 
