@@ -273,8 +273,6 @@ class GitHubRestApi:
             'base': target_branch_name
         }
 
-        print(body)
-
         return cls._execute_post_request(
             endpoint_pull_requests,
             body,
@@ -295,9 +293,6 @@ class GitHubRestApi:
             'commit_message': commit_comment,
         }
 
-        print(endpoint_pull_request_merge)
-        print(body)
-
         return cls._execute_put_request(
             endpoint_pull_request_merge,
             body,
@@ -305,10 +300,10 @@ class GitHubRestApi:
 
     @classmethod
     def create_and_merge_pull_request(
-        cls, 
-        repo_name, 
-        source_branch_name, 
-        target_branch_name, 
+        cls,
+        repo_name,
+        source_branch_name,
+        target_branch_name,
         commit_title,
         commit_comment):
         """Create and Merge Pull Request"""

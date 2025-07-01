@@ -2,7 +2,7 @@
 
 import os
 
-from fabric_devops import DeploymentManager, GitHubRestApi
+from fabric_devops import DeploymentManager, GitHubRestApi, FabricRestApi
 
 PROJECT_NAME = os.getenv("PROJECT_NAME")
 SOLUTION_NAME = os.getenv("SOLUTION_NAME")
@@ -12,32 +12,10 @@ DEV_WORKSPACE_NAME = f"{PROJECT_NAME}-dev"
 TEST_WORKSPACE_NAME = f"{PROJECT_NAME}-test"
 PROD_WORKSPACE_NAME = f"{PROJECT_NAME}"
 
-WORKSPACE = None
 
-match os.getenv("SOLUTION_NAME"):
+DEV_WORKSPACE = DeploymentManager.deploy_solution_by_name(DEV_WORKSPACE_NAME, SOLUTION_NAME)
 
-    case 'Custom Power BI Solution':
-        WORKSPACE = DeploymentManager.deploy_powerbi_solution(DEV_WORKSPACE_NAME)
-
-    case 'Custom Notebook Solution':
-        WORKSPACE = DeploymentManager.deploy_notebook_solution(DEV_WORKSPACE_NAME)
-
-    case 'Custom Shortcut Solution':
-        WORKSPACE = DeploymentManager.deploy_shortcut_solution(DEV_WORKSPACE_NAME)
-
-    case 'Custom Data Pipeline Solution':
-        WORKSPACE = DeploymentManager.deploy_data_pipeline_solution(DEV_WORKSPACE_NAME)
-
-    case 'Custom Warehouse Solution':
-        WORKSPACE = DeploymentManager.deploy_warehouse_solution(DEV_WORKSPACE_NAME)
-        
-    case 'Custom Realtime Solution':
-        WORKSPACE = DeploymentManager.deploy_realtime_solution(DEV_WORKSPACE_NAME)
-
-    case 'Custom Variable Library Solution':
-        WORKSPACE = DeploymentManager.deploy_variable_library_solution(DEV_WORKSPACE_NAME)
-
-DeploymentManager.connect_workspace_to_github_repo(WORKSPACE, PROJECT_NAME)
+DeploymentManager.connect_workspace_to_github_repo(DEV_WORKSPACE, PROJECT_NAME)
 
 GitHubRestApi.create_and_merge_pull_request(
     PROJECT_NAME,
@@ -46,9 +24,17 @@ GitHubRestApi.create_and_merge_pull_request(
     'Push dev to test',
     'intial merge')
 
+TEST_WORKSPACE = FabricRestApi.create_workspace(TEST_WORKSPACE_NAME)
+FabricRestApi.connect_workspace_to_github_repo(TEST_WORKSPACE, PROJECT_NAME, 'test')
+FabricRestApi.disconnect_workspace_from_git(TEST_WORKSPACE['id'])
+
 GitHubRestApi.create_and_merge_pull_request(
     PROJECT_NAME,
     'test', 
     'main',
     'Push test to prod',
     'intial merge')
+
+PROD_WORKSPACE = FabricRestApi.create_workspace(PROD_WORKSPACE_NAME)
+FabricRestApi.connect_workspace_to_github_repo(PROD_WORKSPACE, PROJECT_NAME, 'prod')
+FabricRestApi.disconnect_workspace_from_git(PROD_WORKSPACE['id'])
