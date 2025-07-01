@@ -303,7 +303,20 @@ class GitHubRestApi:
             body,
             content_type='application/vnd.github+json')
 
+    @classmethod
+    def create_and_merge_pull_request(
+        cls, 
+        repo_name, 
+        source_branch_name, 
+        target_branch_name, 
+        commit_title,
+        commit_comment):
+        """Create and Merge Pull Request"""
+        
+        pull_request = cls.create_pull_request(repo_name, source_branch_name, target_branch_name)
+        pull_request_number = pull_request['number']
 
+        cls.merge_pull_request(repo_name, pull_request_number, commit_title, commit_comment)
 
     @classmethod
     def create_workspace_readme(cls, repo_name):

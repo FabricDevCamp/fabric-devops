@@ -39,12 +39,16 @@ match os.getenv("SOLUTION_NAME"):
 
 DeploymentManager.connect_workspace_to_github_repo(WORKSPACE, PROJECT_NAME)
 
-pull_request = GitHubRestApi.create_pull_request(PROJECT_NAME, 'dev', 'test')
-
-pull_request_id = pull_request['number']
-
-GitHubRestApi.merge_pull_request(
+GitHubRestApi.create_and_merge_pull_request(
     PROJECT_NAME,
-    pull_request_id, 
-    'Push dev to test', 
+    'dev', 
+    'test',
+    'Push dev to test',
+    'intial merge')
+
+GitHubRestApi.create_and_merge_pull_request(
+    PROJECT_NAME,
+    'test', 
+    'main',
+    'Push test to prod',
     'intial merge')
