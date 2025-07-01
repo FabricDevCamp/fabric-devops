@@ -1282,10 +1282,10 @@ class DeploymentManager:
         AppLogger.log_job(f"Setup workspace [{workspace['displayName']} with GIT integration]")
 
         GitHubRestApi.create_repository(repo_name)  
-        GitHubRestApi.copy_files_from_folder_to_repo(repo_name, 'Hello')        
+        GitHubRestApi.copy_files_from_folder_to_repo(repo_name, 'Hello')
         GitHubRestApi.create_branch(repo_name, 'test')
         GitHubRestApi.create_branch(repo_name, 'dev')
         GitHubRestApi.set_default_branch(repo_name, 'dev')
-        FabricRestApi.connect_workspace_to_github_repo(workspace, 'dev')
+        FabricRestApi.connect_workspace_to_github_repo(workspace, repo_name, 'dev')
 
         AppLogger.log_job_complete(workspace['id'])

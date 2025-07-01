@@ -1058,10 +1058,8 @@ class FabricRestApi:
         return FabricRestApi.create_github_connection(github_repo_url, workspace)
 
     @classmethod
-    def connect_workspace_to_github_repo(cls, workspace, branch = 'main'):
+    def connect_workspace_to_github_repo(cls, workspace, repo_name, branch = 'main'):
         """Connect Workspace to GitHub Repository"""
-
-        repo_name = workspace['displayName'].replace(" ", "-")
 
         AppLogger.log_substep(f"Connecting workspace [{workspace['displayName']}] " + \
                            f"to GitHub repo [{repo_name}]")
