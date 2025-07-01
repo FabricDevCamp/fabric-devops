@@ -2,7 +2,7 @@
 
 import os
 
-from fabric_devops import DeploymentManager
+from fabric_devops import DeploymentManager, GitHubRestApi
 
 PROJECT_NAME = os.getenv("PROJECT_NAME")
 SOLUTION_NAME = os.getenv("SOLUTION_NAME")
@@ -38,3 +38,13 @@ match os.getenv("SOLUTION_NAME"):
         WORKSPACE = DeploymentManager.deploy_variable_library_solution(DEV_WORKSPACE_NAME)
 
 DeploymentManager.connect_workspace_to_github_repo(WORKSPACE, PROJECT_NAME)
+
+pull_request = GitHubRestApi.create_pull_request(PROJECT_NAME, 'dev', 'test')
+
+pull_request_id = pull_request['number']
+
+GitHubRestApi.merge_pull_request(
+    PROJECT_NAME,
+    pull_request_id, 
+    'Push dev to test', 
+    'intial merge')

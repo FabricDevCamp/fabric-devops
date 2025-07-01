@@ -36,10 +36,11 @@ class GitHubRestApi:
             return None
 
     @classmethod
-    def _execute_post_request(cls, endpoint, post_body=''):
+    def _execute_post_request(cls, endpoint, post_body='', content_type = 'application/json'):
+
         """Execute POST request with support for Long-running Operations (LRO)"""
         rest_url = cls.BASE_URL + endpoint
-        request_headers = {'Content-Type':'application/json',
+        request_headers = {'Content-Type': content_type,
                            'Authorization': f'token {cls.ACCESS_TOKEN}'}           
         response = requests.post(url=rest_url, json=post_body, headers=request_headers, timeout=60)
 
@@ -90,11 +91,13 @@ class GitHubRestApi:
             return None
 
     @classmethod
-    def _execute_put_request(cls, endpoint, post_body=''):
+    def _execute_put_request(cls, endpoint, post_body='',  content_type = 'application/json'):
         """Execute PUT request """
         rest_url = cls.BASE_URL + endpoint
-        request_headers = {'Content-Type':'application/json',
-                           'Authorization': f'token {cls.ACCESS_TOKEN}'}           
+        request_headers = {
+            'Content-Type': content_type,
+            'Authorization': f'token {cls.ACCESS_TOKEN}'
+        }           
         response = requests.put(url=rest_url, json=post_body, headers=request_headers, timeout=60)
 
         if response.status_code in { 200, 201 }:
@@ -253,6 +256,54 @@ class GitHubRestApi:
         }
 
         return cls._execute_post_request(endpoint_refs, body)
+
+    @classmethod
+    def create_pull_request(cls, repo_name, source_branch_name, target_branch_name):
+        """Create GitHub Repository Branch"""
+        AppLogger.log_substep(f"Creating pull request for branch [{source_branch_name}]")
+
+        endpoint_pull_requests = f"repos/{cls.GITHUB_ORGANIZATION}/{repo_name}/pulls"
+
+        body = {
+            'owner': cls.GITHUB_ORGANIZATION,
+            'repo': repo_name,
+            'title': 'Feature 1',
+            'body': 'Please pull these awesome changes in!',
+            'head': (cls.GITHUB_ORGANIZATION + ":" + source_branch_name),
+            'base': target_branch_name
+        }
+
+        print(body)
+
+        return cls._execute_post_request(
+            endpoint_pull_requests,
+            body,
+            content_type='application/vnd.github.raw+json')
+
+    @classmethod
+    def merge_pull_request(cls, repo_name, pull_number, commit_title, commit_comment):
+        """Create GitHub Repository Branch"""
+        AppLogger.log_substep(f"Merge pull request [{commit_title}]")
+
+        endpoint_pull_request_merge = f"repos/{cls.GITHUB_ORGANIZATION}/{repo_name}/pulls/{pull_number}/merge"
+
+        body = {
+            'owner': cls.GITHUB_ORGANIZATION,
+            'repo': repo_name, 
+            'pull_number': str(pull_number),
+            'commit_title': commit_title,
+            'commit_message': commit_comment,
+        }
+
+        print(endpoint_pull_request_merge)
+        print(body)
+
+        return cls._execute_put_request(
+            endpoint_pull_request_merge,
+            body,
+            content_type='application/vnd.github+json')
+
+
 
     @classmethod
     def create_workspace_readme(cls, repo_name):
