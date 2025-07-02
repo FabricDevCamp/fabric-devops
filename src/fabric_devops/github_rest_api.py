@@ -258,7 +258,13 @@ class GitHubRestApi:
         return cls._execute_post_request(endpoint_refs, body)
 
     @classmethod
-    def create_pull_request(cls, repo_name, source_branch_name, target_branch_name):
+    def create_pull_request(
+        cls, 
+        repo_name, 
+        source_branch_name, 
+        target_branch_name, 
+        commit_title, 
+        commit_comment):
         """Create GitHub Repository Branch"""
         AppLogger.log_substep(f"Creating pull request for branch [{source_branch_name}]")
 
@@ -267,8 +273,8 @@ class GitHubRestApi:
         body = {
             'owner': cls.GITHUB_ORGANIZATION,
             'repo': repo_name,
-            'title': 'Feature 1',
-            'body': 'Please pull these awesome changes in!',
+            'title': commit_title,
+            'body': commit_comment,
             'head': (cls.GITHUB_ORGANIZATION + ":" + source_branch_name),
             'base': target_branch_name
         }
@@ -308,7 +314,14 @@ class GitHubRestApi:
         commit_comment):
         """Create and Merge Pull Request"""
         
-        pull_request = cls.create_pull_request(repo_name, source_branch_name, target_branch_name)
+        pull_request = cls.create_pull_request(
+            repo_name, 
+            source_branch_name,
+            target_branch_name,
+            commit_title,
+            commit_comment
+            )
+        
         pull_request_number = pull_request['number']
 
         cls.merge_pull_request(repo_name, pull_request_number, commit_title, commit_comment)
