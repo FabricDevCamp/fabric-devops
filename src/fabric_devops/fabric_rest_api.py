@@ -1062,7 +1062,7 @@ class FabricRestApi:
         """Connect Workspace to GitHub Repository"""
 
         AppLogger.log_substep(f"Connecting workspace [{workspace['displayName']}] " + \
-                           f"to GitHub repo [{repo_name}]")
+                              f"to branch[{branch}] in GitHub repo [{repo_name}]")
 
         connection_id = cls.get_github_repo_connection(repo_name, workspace)['id']
 
@@ -1083,7 +1083,7 @@ class FabricRestApi:
             commit_to_git_request = {
                 'mode': 'All',
                 'workspaceHead': init_response['workspaceHead'],
-                'comment': 'Saul Goodman'
+                'comment': 'Initial commit'
             }
             cls.commit_workspace_to_git(workspace['id'], commit_to_git_request)
 
