@@ -324,7 +324,8 @@ class GitHubRestApi:
         commit_title,
         commit_comment):
         """Create and Merge Pull Request"""
-        
+        AppLogger.log_step(f"Creating and merging pull request for branch [{source_branch_name}]")
+
         pull_request = cls.create_pull_request(
             repo_name, 
             source_branch_name,
