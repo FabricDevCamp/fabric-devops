@@ -36,5 +36,5 @@ GitHubRestApi.create_and_merge_pull_request(
     'intial merge')
 
 PROD_WORKSPACE = FabricRestApi.create_workspace(PROD_WORKSPACE_NAME)
-FabricRestApi.connect_workspace_to_github_repo(PROD_WORKSPACE, PROJECT_NAME, 'prod')
+FabricRestApi.connect_workspace_to_github_repo(PROD_WORKSPACE, PROJECT_NAME, 'main')
 FabricRestApi.disconnect_workspace_from_git(PROD_WORKSPACE['id'])
