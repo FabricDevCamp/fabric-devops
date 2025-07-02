@@ -331,12 +331,9 @@ class GitHubRestApi:
             target_branch_name,
             commit_title,
             commit_comment
-            )
+        )
         
         pull_request_number = pull_request['number']
-
-        time.sleep(5)
-
         cls.merge_pull_request(repo_name, pull_request_number, commit_title, commit_comment)
 
     @classmethod
