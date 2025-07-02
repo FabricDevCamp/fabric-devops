@@ -289,6 +289,17 @@ class GitHubRestApi:
         """Create GitHub Repository Branch"""
         AppLogger.log_substep(f"Merge pull request [{commit_title}]")
 
+        endpoint_pull_request = f"repos/{cls.GITHUB_ORGANIZATION}/{repo_name}/pulls/{pull_number}"
+        pull_request = cls._execute_get_request(endpoint_pull_request)
+
+        pull_request_mergable = pull_request['mergeable']
+
+        while pull_request_mergable is not True:
+            AppLogger.log_substep("Not mergable yet")
+            time.sleep(2)
+            pull_request = cls._execute_get_request(endpoint_pull_request)
+            pull_request_mergable = pull_request['mergeable']
+
         endpoint_pull_request_merge = f"repos/{cls.GITHUB_ORGANIZATION}/{repo_name}/pulls/{pull_number}/merge"
 
         body = {
