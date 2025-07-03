@@ -1,24 +1,26 @@
-"""Demo 08 - Deploy Complete Fabric Solution"""
+from azure.identity import ClientSecretCredential
 
-from fabric_devops import DeploymentManager, AppLogger, StagingEnvironments, FabricRestApi
+from fabric_cicd import FabricWorkspace, publish_all_items, unpublish_all_orphan_items
 
-AppLogger.clear_console()
+client_id = "your-client-id"
+client_secret = "your-client-secret"
+tenant_id = "your-tenant-id"
+token_credential = ClientSecretCredential(client_id=client_id, client_secret=client_secret, tenant_id=tenant_id)
 
-AppLogger.log_job("Deploying Power BI Solution")
+# Sample values for FabricWorkspace parameters
+workspace_id = "your-workspace-id"
+environment = "your-environment"
+repository_directory = "your-repository-directory"
+item_type_in_scope = ["Notebook", "Environment"]
 
-WORKSPACE_NAME = "Apollo-test"
-WORKSPACE = FabricRestApi.get_workspace_by_name(WORKSPACE_NAME)
-SEMANTIC_MODEL_NAME = 'Product Sales Imported Model'
-SEMANTIC_MODEL = FabricRestApi.get_item_by_name(
-    WORKSPACE['id'],
-    SEMANTIC_MODEL_NAME,
-    'SemanticModel')
-DEPOYMENT_JOB = StagingEnvironments.get_test_environment()
-WEB_DATASOURCE_PATH = DEPOYMENT_JOB.parameters[DEPOYMENT_JOB.web_datasource_path_parameter]
+# Initialize the FabricWorkspace object with the required parameters
+target_workspace = FabricWorkspace(
+    workspace_id=workspace_id,
+    environment=environment,
+    repository_directory=repository_directory,
+    item_type_in_scope=item_type_in_scope,
+    token_credential=token_credential,
+)
 
-DeploymentManager.update_imported_semantic_model_source(
-    WORKSPACE,
-    SEMANTIC_MODEL_NAME,
-    WEB_DATASOURCE_PATH)
-
-FabricRestApi.create_and_bind_semantic_model_connecton(WORKSPACE, SEMANTIC_MODEL['id'])
+# Publish all items defined in item_type_in_scope
+publish_all_items(target_workspace)

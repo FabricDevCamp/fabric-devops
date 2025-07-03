@@ -1,0 +1,37 @@
+find_replace:
+    "f37daaac-3f23-4ffb-94ad-24db96021ccb": #  source workspace Id - [Apollo-test]
+        PROD: "059e3d84-ec88-4c66-bf5c-0681040bdfda"  #  target workspace Id - [Apollo]
+
+    "bed662ac-bfc4-4ab1-a133-126b915674f5": # [Product Sales Summary.Report] in [Apollo-test]
+        PROD: "e09774fe-991e-48f6-9867-b2298e0d67e4" # [Product Sales Summary.Report] in [Apollo]
+
+    "ba2f6de2-8e72-493c-87ca-a42e93d97083": # [Product Sales Time Intelligence.Report] in [Apollo-test]
+        PROD: "a47a0aaf-978d-4414-b1c4-a0e16529ba9b" # [Product Sales Time Intelligence.Report] in [Apollo]
+
+    "f7255fbd-8633-4e81-90c8-ded82cc98554": # [Product Sales Top 10 Cities.Report] in [Apollo-test]
+        PROD: "45b2f327-7b1f-4cab-8db9-9c5c70b2feb8" # [Product Sales Top 10 Cities.Report] in [Apollo]
+
+    "7ca81c25-40b4-4f7b-af2c-dff4c0c948ce": # [sales.SemanticModel] in [Apollo-test]
+        PROD: "25f2a52b-0341-4dfa-800c-93f8793c979d" # [sales.SemanticModel] in [Apollo]
+
+    "2995a717-3535-4876-9c53-2af6d03a7a3e": # [Product Sales DirectLake Model.SemanticModel] in [Apollo-test]
+        PROD: "24eb2b4f-4a1f-46aa-82cd-1358fc721a51" # [Product Sales DirectLake Model.SemanticModel] in [Apollo]
+
+    "1c602ba9-3578-4c92-b5df-326ccdad9496": # [sales.SQLEndpoint] in [Apollo-test]
+        PROD: "f369142f-7826-46d2-bf70-36c36d21ad82" # [sales.SQLEndpoint] in [Apollo]
+
+    "08724304-1a2e-48e4-9c6b-0e422b86d150": # [Build 01 Silver Layer.Notebook] in [Apollo-test]
+        PROD: "ac605eb2-212e-4899-b92f-864a0ef69201" # [Build 01 Silver Layer.Notebook] in [Apollo]
+
+    "42771af1-0f53-4136-8ee5-f9abd6148cef": # [Build 02 Gold Layer.Notebook] in [Apollo-test]
+        PROD: "3aaa55f3-7af5-4912-8cf4-0b44de283052" # [Build 02 Gold Layer.Notebook] in [Apollo]
+
+    "2fb7fad7-9aec-4c15-8342-f6dfdd1b254b": # [Create Lakehouse Tables.DataPipeline] in [Apollo-test]
+        PROD: "06208b3b-10cd-4567-bb31-2a7ac3226cb2" # [Create Lakehouse Tables.DataPipeline] in [Apollo]
+
+    "19759c86-eb43-4b00-940c-72f24603c9f2": # [SolutionConfig.VariableLibrary] in [Apollo-test]
+        PROD: "94d72ce0-2112-43e9-98d2-53162cd16132" # [SolutionConfig.VariableLibrary] in [Apollo]
+
+    "335d99ed-122d-4e94-a7e1-0a4472c73d7a": # [sales.Lakehouse] in [Apollo-test]
+        PROD: "4476c7c3-372c-4ca2-a4d2-11cf2ebce3d4" # [sales.Lakehouse] in [Apollo]
+

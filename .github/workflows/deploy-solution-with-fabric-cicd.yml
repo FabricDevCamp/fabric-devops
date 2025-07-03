@@ -1,0 +1,55 @@
+
+name: Deploy with GIT Integration and fabric_cicd
+run-name: Deploy ${{inputs.solution_name}} with GIT Integration and fabric_cicd
+
+on:
+  workflow_dispatch:
+    inputs:
+      project_name:
+        description: Project Name
+        required: true
+        default: "Apollo"
+      solution_name:
+        type: choice
+        description: Solution to deploy
+        options: 
+        - Custom Power BI Solution
+        - Custom Notebook Solution
+        - Custom Shortcut Solution
+        - Custom Data Pipeline Solution
+        - Custom Warehouse Solution
+        - Custom Realtime Solution
+        - Custom Variable Library Solution
+        - Deploy All Solutions
+
+jobs:
+  deployment-job:    
+    name: Deploy ${{inputs.solution_name}} with GIT Connection
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.12"
+
+      - name: Install MSAL
+        run: |
+          pip install msal
+
+      - name: Deploy Solution        
+        env:
+          FABRIC_CLIENT_ID: ${{ secrets.FABRIC_CLIENT_ID }}
+          FABRIC_CLIENT_SECRET: ${{ secrets.FABRIC_CLIENT_SECRET }}
+          FABRIC_TENANT_ID: ${{ secrets.FABRIC_TENANT_ID }}          
+          FABRIC_CAPACITY_ID: ${{ secrets.FABRIC_CAPACITY_ID }}       
+          ADMIN_USER_ID: ${{ secrets.ADMIN_USER_ID }}
+          SERVICE_PRINCIPAL_OBJECT_ID: ${{ secrets.SERVICE_PRINCIPAL_OBJECT_ID }}
+          PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
+          PROJECT_NAME: ${{ inputs.project_name }}
+          SOLUTION_NAME: ${{inputs.solution_name}}
+        run:
+          python src/deploy_solution_with_fabric_cicd.py
