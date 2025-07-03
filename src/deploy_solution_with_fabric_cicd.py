@@ -36,14 +36,15 @@ parameter_file_content = DeploymentManager.generate_parameter_yml_file(
 
 GitHubRestApi.write_file_to_repo(
     PROJECT_NAME,
+    "test",
     "workspace/parameter.yml",
     parameter_file_content,
-    "param file commit"
+    "param file commit"    
 )
 
 # GitHubRestApi.create_and_merge_pull_request(
 #     PROJECT_NAME,
-#     'test', 
+#     'test',
 #     'main',
 #     'Push test to main',
 #     'intial merge')

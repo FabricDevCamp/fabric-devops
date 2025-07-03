@@ -353,13 +353,14 @@ class GitHubRestApi:
         cls._execute_put_request(endpoint, body)
 
     @classmethod
-    def write_file_to_repo(cls, repo_name, file_path, file_content, comment = 'default message'):
+    def write_file_to_repo(cls, repo_name, branch, file_path, file_content, comment = 'default message'):
         """Create Content"""        
         base64_content = base64.b64encode(file_content.encode('utf-8')).decode('utf-8')
         endpoint = f"repos/{cls.GITHUB_ORGANIZATION}/{repo_name}/contents/{file_path}"
         body = {
             "message": comment,
-            "content": base64_content
+            "content": base64_content,
+            "branch": branch
         }
         
         cls._execute_put_request_with_file(endpoint, body)
@@ -393,6 +394,6 @@ class GitHubRestApi:
                 file_content = file.read()
                 relative_file_path = file_path.replace(folder_path, '')\
                                               .replace('\\', '/')
-                cls.write_file_to_repo(repo_name, relative_file_path, file_content)
+                cls.write_file_to_repo(repo_name, 'main', relative_file_path, file_content)
 
 
