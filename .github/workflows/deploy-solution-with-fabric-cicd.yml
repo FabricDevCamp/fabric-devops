@@ -1,6 +1,6 @@
 
 name: Deploy with GIT Integration and fabric_cicd
-run-name: Deploy ${{inputs.solution_name}} with GIT plus fabric_cicd
+run-name: Deploy ${{inputs.solution_name}} with GIT plus fabric_cicd 
 
 on:
   workflow_dispatch:
