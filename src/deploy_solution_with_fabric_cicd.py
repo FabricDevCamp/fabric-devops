@@ -36,7 +36,7 @@ parameter_file_content = DeploymentManager.generate_parameter_yml_file(
 
 GitHubRestApi.write_file_to_repo(
     PROJECT_NAME,
-    f"workspace/parameter.yml"
+    "workspace/parameter.yml",
     parameter_file_content,
     "param file commit"
 )
