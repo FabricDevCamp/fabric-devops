@@ -1308,14 +1308,14 @@ class DeploymentManager:
         file_content = 'find_replace:\n\n'
 
         file_content += tab + '# [Workspace Id]\n'
-        file_content += tab + '- find_value: "' + source_workspace['id'] + f'": # [{source_workspace["displayName"]}]\n'
+        file_content += tab + '- find_value: "' + source_workspace['id'] + f'" # [{source_workspace["displayName"]}]\n'
         file_content += tab + '  replace_value:\n'
         file_content += tab + tab + f'{environment_name}: "{target_workspace["id"]}" # [{target_workspace["displayName"]}]\n\n'
 
         for workspace_item in source_workspace_items:
             item_name = workspace_item['displayName'] + "." + workspace_item['type']
             file_content += tab + f'# [{item_name}]\n'
-            file_content += tab + '- find_value: "' + workspace_item['id'] + f'": # [{source_workspace["displayName"]}]\n'
+            file_content += tab + '- find_value: "' + workspace_item['id'] + f'" # [{source_workspace["displayName"]}]\n'
             file_content += tab + '  replace_value:\n'
 
             if item_name in target_items:
