@@ -2,6 +2,7 @@
 
 import time
 import base64
+from nacl import encoding, public
 import os
 from json.decoder import JSONDecodeError
 
@@ -201,7 +202,7 @@ class GitHubRestApi:
         return None
 
     @classmethod
-    def create_repository(cls, repo_name, branches = None, private = False):
+    def create_repository(cls, repo_name, branches = None, private = False, add_secrets = False):
         """Create GitHub Repository"""
         AppLogger.log_step(f"Creating new GitHub repo [{repo_name}]")
         repo = cls.get_github_repository_by_name(repo_name)
@@ -223,6 +224,9 @@ class GitHubRestApi:
         if branches is not None:
             for branch in branches:
                 cls.create_branch(repo_name, branch)
+
+        if add_secrets:
+            cls.add_repository_secrets(repo_name)
 
         return repo
 
@@ -382,7 +386,6 @@ class GitHubRestApi:
         offset = file_path.find(item_folder_path) + len(item_folder_path)
         return file_path[offset:].replace('\\', '/')
 
-
     @classmethod
     def copy_files_from_folder_to_repo(cls, repo_name, folder_path):
         """Copy files to repo"""
@@ -396,4 +399,72 @@ class GitHubRestApi:
                                               .replace('\\', '/')
                 cls.write_file_to_repo(repo_name, 'main', relative_file_path, file_content)
 
+    @classmethod
+    def _get_org_public_key(cls):
+        """Create GitHub Repository Branch"""
+        endpoint = f"/orgs/{cls.GITHUB_ORGANIZATION}/actions/secrets/public-key"
+        return cls._execute_get_request(endpoint)
 
+    @classmethod
+    def create_organization_secret(cls, repo_name, secret_name, secret_value):
+        """Create repository secret"""
+
+        public_key_result = cls._get_org_public_key()
+        public_key_id = public_key_result['key_id']
+        public_key_value = public_key_result['key']        
+        public_key = public.PublicKey(public_key_value.encode("utf-8"), encoding.Base64Encoder())
+        sealed_box = public.SealedBox(public_key)
+        encrypted = sealed_box.encrypt(secret_value.encode("utf-8"))
+        base64_encrypted = base64.b64encode(encrypted).decode("utf-8")
+
+        endpoint = f"/orgs/{cls.GITHUB_ORGANIZATION}/actions/secrets/{secret_name}"
+        body = {
+            'owner': cls.GITHUB_ORGANIZATION,
+            'repo': repo_name,
+            'secret_name': secret_name,
+            'encrypted_value': base64_encrypted,
+            'key_id': public_key_id,
+            'visibility': 'all'
+        }
+
+        cls._execute_put_request(endpoint, body, 'application/vnd.github+json')
+
+    @classmethod
+    def _get_repo_public_key(cls, repo_name):
+        """Create GitHub Repository Branch"""
+        endpoint = f"/repos/{cls.GITHUB_ORGANIZATION}/{repo_name}/actions/secrets/public-key"
+        return cls._execute_get_request(endpoint)
+
+    @classmethod
+    def create_repository_secret(cls, repo_name, secret_name, secret_value):
+        """Create repository secret"""
+
+        public_key_result = cls._get_repo_public_key(repo_name)
+        public_key_id = public_key_result['key_id']
+        public_key_value = public_key_result['key']        
+        public_key = public.PublicKey(public_key_value.encode("utf-8"), encoding.Base64Encoder())
+        sealed_box = public.SealedBox(public_key)
+        encrypted = sealed_box.encrypt(secret_value.encode("utf-8"))
+        base64_encrypted = base64.b64encode(encrypted).decode("utf-8")
+
+        endpoint = f"/repos/{cls.GITHUB_ORGANIZATION}/{repo_name}/actions/secrets/{secret_name}"
+        body = {
+            'owner': cls.GITHUB_ORGANIZATION,
+            'repo': repo_name,
+            'secret_name': secret_name,
+            'encrypted_value': base64_encrypted,
+            'key_id': public_key_id
+        }
+
+        cls._execute_put_request(endpoint, body, 'application/vnd.github+json')
+
+    @classmethod
+    def add_repository_secrets(cls, repo_name):
+        """Add respository secrets"""
+        cls.create_repository_secret(repo_name, 'FABRIC_CLIENT_ID', EnvironmentSettings.FABRIC_CLIENT_ID)
+        cls.create_repository_secret(repo_name, 'FABRIC_CLIENT_SECRET', EnvironmentSettings.FABRIC_CLIENT_SECRET)
+        cls.create_repository_secret(repo_name, 'FABRIC_TENANT_ID', EnvironmentSettings.FABRIC_TENANT_ID)
+        cls.create_repository_secret(repo_name, 'ADMIN_USER_ID', EnvironmentSettings.ADMIN_USER_ID)
+        cls.create_repository_secret(repo_name, 'FABRIC_CAPACITY_ID', EnvironmentSettings.FABRIC_CAPACITY_ID)
+        cls.create_repository_secret(repo_name, 'PERSONAL_ACCESS_TOKEN_GITHUB', EnvironmentSettings.PERSONAL_ACCESS_TOKEN_GITHUB)
+        cls.create_repository_secret(repo_name, 'SERVICE_PRINCIPAL_OBJECT_ID', EnvironmentSettings.SERVICE_PRINCIPAL_OBJECT_ID)
