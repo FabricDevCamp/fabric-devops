@@ -1,5 +1,7 @@
 """Setup Deployment Pipelines"""
 
-from fabric_devops import GitHubRestApi
+from fabric_devops import GitHubRestApi, DeploymentManager
 
-GitHubRestApi.create_repository('Test69', add_secrets=True)
+param = DeploymentManager.generate_parameter_yml_file('Apollo-dev', 'Apollo-test', 'TEST')
+
+print(param)

@@ -1305,15 +1305,20 @@ class DeploymentManager:
         source_workspace_items  = FabricRestApi.list_workspace_items(source_workspace['id'])
 
         tab = (' ' * 4)
-        file_content = 'find_replace:\n'
+        file_content = 'find_replace:\n\n'
 
-        file_content += tab + '"' + source_workspace['id'] + f'": #  source workspace Id - [{source_workspace["displayName"]}]\n'
-        file_content += tab + tab + f'{environment_name}: "{target_workspace["id"]}"  #  target workspace Id - [{target_workspace["displayName"]}]\n\n'
+        file_content += tab + '# [Workspace Id]\n'
+        file_content += tab + '- find_value: "' + source_workspace['id'] + f'": # [{source_workspace["displayName"]}]\n'
+        file_content += tab + '  replace_value:\n'
+        file_content += tab + tab + f'{environment_name}: "{target_workspace["id"]}" # [{target_workspace["displayName"]}]\n\n'
 
         for workspace_item in source_workspace_items:
             item_name = workspace_item['displayName'] + "." + workspace_item['type']
-            file_content += tab + '"' + workspace_item['id'] + f'": # [{item_name}] in [{source_workspace["displayName"]}]\n'
+            file_content += tab + f'# [{item_name}]\n'
+            file_content += tab + '- find_value: "' + workspace_item['id'] + f'": # [{source_workspace["displayName"]}]\n'
+            file_content += tab + '  replace_value:\n'
+
             if item_name in target_items:
-                file_content += tab + tab + f'{environment_name}: "{target_items[item_name]}" # [{item_name}] in [{target_workspace["displayName"]}]\n\n'
+                file_content += tab + tab + f'{environment_name}: "{target_items[item_name]}" # [{target_workspace["displayName"]}]\n\n'
 
         return file_content

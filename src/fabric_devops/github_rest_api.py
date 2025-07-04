@@ -299,7 +299,6 @@ class GitHubRestApi:
         pull_request_mergable = pull_request['mergeable']
 
         while pull_request_mergable is not True:
-            AppLogger.log_substep("Not mergable yet")
             time.sleep(2)
             pull_request = cls._execute_get_request(endpoint_pull_request)
             pull_request_mergable = pull_request['mergeable']
