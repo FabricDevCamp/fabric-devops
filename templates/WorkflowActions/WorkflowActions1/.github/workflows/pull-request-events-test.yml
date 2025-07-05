@@ -1,0 +1,27 @@
+name: Pull Request Events Test
+
+run-name: Pull Request Events Test - ${{ github.event_name }} - ${{ github.ref_name }}
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  deployment-job:    
+    name: Event Test
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.12"
+
+      - name: Pull Request Event Test
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: 
+          python src/pull_request_events_test.py
