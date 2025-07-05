@@ -3,6 +3,9 @@ run-name: Publish All Items
 
 on:
   workflow_dispatch:
+  push:
+    branches: [ 'test', 'main']
+
 
 jobs:
   deployment-job:
