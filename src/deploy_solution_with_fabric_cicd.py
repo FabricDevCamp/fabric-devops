@@ -33,47 +33,54 @@ DeploymentManager.apply_post_deploy_fixes(
     StagingEnvironments.get_test_environment(),
     True)
 
-AppLogger.log_step("Create parameter.yml")
 
-parameter_file_content = DeploymentManager.generate_parameter_yml_file(
-    DEV_WORKSPACE_NAME,
-    TEST_WORKSPACE_NAME,
-    "TEST"
-)
-
-GitHubRestApi.write_file_to_repo(
+GitHubRestApi.create_and_merge_pull_request(
     PROJECT_NAME,
-    "test",
-    "workspace/parameter.yml",
-    parameter_file_content,
-    "param file commit"    
-)
+    'test',
+    'main',
+    'Push test to main',
+    'intial merge')
 
-AppLogger.log_step("Create workspace.config.json")
+PROD_WORKSPACE = FabricRestApi.create_workspace(PROD_WORKSPACE_NAME)
+FabricRestApi.connect_workspace_to_github_repo(PROD_WORKSPACE, PROJECT_NAME, 'main')
+FabricRestApi.disconnect_workspace_from_git(PROD_WORKSPACE['id'])
 
-workspace_config = DeploymentManager.generate_workspace_config_file(
-    TEST_WORKSPACE['id'], 
-    "TEST"
-)
-
-
-GitHubRestApi.write_file_to_repo(
-    PROJECT_NAME,
-    "test",
-    "workspace/workspace.config.json",
-    workspace_config,
-    "workspace config file commit"    
-)
+DeploymentManager.apply_post_deploy_fixes(
+    PROD_WORKSPACE_NAME,
+    StagingEnvironments.get_prod_environment(),
+    True)
 
 
-AppLogger.log_step("All done")
-# GitHubRestApi.create_and_merge_pull_request(
+
+
+# AppLogger.log_step("Create parameter.yml")
+
+# parameter_file_content = DeploymentManager.generate_parameter_yml_file(
+#     DEV_WORKSPACE_NAME,
+#     TEST_WORKSPACE_NAME,
+#     "TEST"
+# )
+
+# GitHubRestApi.write_file_to_repo(
 #     PROJECT_NAME,
-#     'test',
-#     'main',
-#     'Push test to main',
-#     'intial merge')
+#     "test",
+#     "workspace/parameter.yml",
+#     parameter_file_content,
+#     "param file commit"    
+# )
 
-# PROD_WORKSPACE = FabricRestApi.create_workspace(PROD_WORKSPACE_NAME)
-# FabricRestApi.connect_workspace_to_github_repo(PROD_WORKSPACE, PROJECT_NAME, 'main')
-# FabricRestApi.disconnect_workspace_from_git(PROD_WORKSPACE['id'])
+# AppLogger.log_step("Create workspace.config.json")
+
+# workspace_config = DeploymentManager.generate_workspace_config_file(
+#     TEST_WORKSPACE['id'], 
+#     "TEST"
+# )
+
+
+# GitHubRestApi.write_file_to_repo(
+#     PROJECT_NAME,
+#     "test",
+#     "workspace/workspace.config.json",
+#     workspace_config,
+#     "workspace config file commit"    
+# )
