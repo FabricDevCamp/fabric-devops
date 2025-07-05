@@ -1,6 +1,7 @@
 """Publish All Items"""
 
 import os
+import json
 
 from azure.identity import ClientSecretCredential
 
@@ -12,9 +13,15 @@ tenant_id = os.getenv("FABRIC_TENANT_ID")
 token_credential = \
     ClientSecretCredential(client_id=client_id, client_secret=client_secret, tenant_id=tenant_id)
 
+config_file = '../workspace/workspace.config.json'
+
+with open(config_file, 'r', encoding='utf-8') as file:
+    config = json.load(file)
+    print(config)
+
 # Sample values for FabricWorkspace parameters
-workspace_id = "f54cd087-3253-4529-81eb-dfc4cfd445c8"
-environment = "TEST"
+workspace_id = config['workspace_id']
+environment = config['environment']
 repository_directory = "workspace"
 item_type_in_scope = [ "Lakehouse", "Notebook", "SemanticModel", "Report"]
 
