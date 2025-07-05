@@ -2,7 +2,7 @@
 
 import os
 
-from fabric_devops import DeploymentManager, GitHubRestApi, FabricRestApi
+from fabric_devops import DeploymentManager, GitHubRestApi, FabricRestApi, AppLogger
 
 PROJECT_NAME = os.getenv("PROJECT_NAME")
 SOLUTION_NAME = os.getenv("SOLUTION_NAME")
@@ -28,6 +28,8 @@ TEST_WORKSPACE = FabricRestApi.create_workspace(TEST_WORKSPACE_NAME)
 FabricRestApi.connect_workspace_to_github_repo(TEST_WORKSPACE, PROJECT_NAME, 'test')
 FabricRestApi.disconnect_workspace_from_git(TEST_WORKSPACE['id'])
 
+AppLogger.log_step("Create parameter.yml")
+
 parameter_file_content = DeploymentManager.generate_parameter_yml_file(
     DEV_WORKSPACE_NAME,
     TEST_WORKSPACE_NAME,
@@ -42,6 +44,8 @@ GitHubRestApi.write_file_to_repo(
     "param file commit"    
 )
 
+AppLogger.log_step("Create workspace.config.json")
+
 workspace_config = DeploymentManager.generate_workspace_config_file(
     TEST_WORKSPACE['id]'], "TEST")
 
@@ -55,6 +59,7 @@ GitHubRestApi.write_file_to_repo(
 )
 
 
+AppLogger.log_step("All done")
 # GitHubRestApi.create_and_merge_pull_request(
 #     PROJECT_NAME,
 #     'test',
