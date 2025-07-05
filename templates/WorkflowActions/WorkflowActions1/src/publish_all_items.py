@@ -13,7 +13,12 @@ tenant_id = os.getenv("FABRIC_TENANT_ID")
 token_credential = \
     ClientSecretCredential(client_id=client_id, client_secret=client_secret, tenant_id=tenant_id)
 
-config_file = '../workspace/workspace.config.json'
+github_workpace = os.getenv('GITHUB_WORKSPACE')
+print(github_workpace)
+
+config_file = github_workpace +  'workspace/workspace.config.json'
+
+print(config_file)
 
 with open(config_file, 'r', encoding='utf-8') as file:
     config = json.load(file)
