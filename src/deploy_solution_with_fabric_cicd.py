@@ -47,7 +47,9 @@ GitHubRestApi.write_file_to_repo(
 AppLogger.log_step("Create workspace.config.json")
 
 workspace_config = DeploymentManager.generate_workspace_config_file(
-    TEST_WORKSPACE['id]'], "TEST")
+    TEST_WORKSPACE['id'], 
+    "TEST"
+)
 
 
 GitHubRestApi.write_file_to_repo(
