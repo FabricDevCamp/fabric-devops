@@ -16,7 +16,7 @@ token_credential = \
 github_workpace = os.getenv('GITHUB_WORKSPACE')
 print(github_workpace)
 
-config_file = github_workpace +  'workspace/workspace.config.json'
+config_file = github_workpace +  '/workspace/workspace.config.json'
 
 print(config_file)
 
