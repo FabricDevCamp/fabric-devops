@@ -15,7 +15,7 @@ item_type_in_scope = ["Notebook", "Environment"]
 
 # Initialize the FabricWorkspace object with the required parameters
 target_workspace = FabricWorkspace(
-    workspace_id=workspace_id,
+    workspace_id=workspace_id,    
     environment=environment,
     repository_directory=repository_directory,
     item_type_in_scope=item_type_in_scope,

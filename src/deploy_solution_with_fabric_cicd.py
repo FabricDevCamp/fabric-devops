@@ -42,6 +42,19 @@ GitHubRestApi.write_file_to_repo(
     "param file commit"    
 )
 
+workspace_config = DeploymentManager.generate_workspace_config_file(
+    TEST_WORKSPACE['id]'], "TEST")
+
+
+GitHubRestApi.write_file_to_repo(
+    PROJECT_NAME,
+    "test",
+    "workspace/workspace.config.json",
+    workspace_config,
+    "workspace config file commit"    
+)
+
+
 # GitHubRestApi.create_and_merge_pull_request(
 #     PROJECT_NAME,
 #     'test',

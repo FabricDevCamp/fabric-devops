@@ -1322,3 +1322,13 @@ class DeploymentManager:
                 file_content += tab + tab + f'{environment_name}: "{target_items[item_name]}" # [{target_workspace["displayName"]}]\n\n'
 
         return file_content
+
+    @classmethod
+    def generate_workspace_config_file(cls, workspace_id, environment):
+                
+        config  = {
+            'workspace_id': workspace_id,
+            'environment': environment
+        }
+
+        return json.dumps(config, indent=4)
