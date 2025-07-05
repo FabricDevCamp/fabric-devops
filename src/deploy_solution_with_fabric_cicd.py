@@ -61,20 +61,11 @@ parameter_file_content = DeploymentManager.generate_parameter_yml_file(
 
 GitHubRestApi.write_file_to_repo(
     PROJECT_NAME,
-    "test",
+    "dev",
     "workspace/parameter.yml",
     parameter_file_content,
     "param file commit"    
 )
-
-GitHubRestApi.write_file_to_repo(
-    PROJECT_NAME,
-    "prod",
-    "workspace/parameter.yml",
-    parameter_file_content,
-    "param file commit"    
-)
-
 
 AppLogger.log_step("Create workspace.config.json")
 
@@ -85,16 +76,22 @@ workspace_config = DeploymentManager.generate_workspace_config_file(
 
 GitHubRestApi.write_file_to_repo(
     PROJECT_NAME,
-    "test",
+    "dev",
     "workspace/workspace.config.json",
     workspace_config,
     "workspace config file commit"    
 )
 
-GitHubRestApi.write_file_to_repo(
+GitHubRestApi.create_and_merge_pull_request(
     PROJECT_NAME,
-    "main",
-    "workspace/workspace.config.json",
-    workspace_config,
-    "workspace config file commit"    
-)
+    'dev',
+    'test',
+    'Push config to test',
+    'Push config to test')
+
+GitHubRestApi.create_and_merge_pull_request(
+    PROJECT_NAME,
+    'test',
+    'main',
+    'Push config to prod',
+    'Push config to prod')
