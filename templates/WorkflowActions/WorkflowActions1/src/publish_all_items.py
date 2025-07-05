@@ -18,29 +18,33 @@ print(github_workpace, flush=True)
 
 config_file = github_workpace +  '/workspace/workspace.config.json'
 
-print(config_file, flush=True)
 
-with open(config_file, 'r', encoding='utf-8') as file:
-    config = json.load(file)
-    print(config, flush=True)
+if os.path.exists(config_file) is False:
+    print(f"'{config_file}' does not exists.")
+else:        
+    print(config_file, flush=True)
 
-# Sample values for FabricWorkspace parameters
-workspace_id = config['workspace_id']
-environment = config['environment']
-repository_directory = "workspace"
-item_type_in_scope = [ "Lakehouse", "Notebook", "SemanticModel", "Report"]
+    with open(config_file, 'r', encoding='utf-8') as file:
+        config = json.load(file)
+        print(config, flush=True)
 
-# Initialize the FabricWorkspace object with the required parameters
-target_workspace = FabricWorkspace(
-    workspace_id=workspace_id,
-    environment=environment,
-    repository_directory=repository_directory,
-    item_type_in_scope=item_type_in_scope,
-    token_credential=token_credential,
-)
+    # Sample values for FabricWorkspace parameters
+    workspace_id = config['workspace_id']
+    environment = config['environment']
+    repository_directory = "workspace"
+    item_type_in_scope = [ "Lakehouse", "Notebook", "SemanticModel", "Report"]
 
-# Publish all items defined in item_type_in_scope
-publish_all_items(target_workspace)
+    # Initialize the FabricWorkspace object with the required parameters
+    target_workspace = FabricWorkspace(
+        workspace_id=workspace_id,
+        environment=environment,
+        repository_directory=repository_directory,
+        item_type_in_scope=item_type_in_scope,
+        token_credential=token_credential,
+    )
 
-# Unpublish all items defined in item_type_in_scope not found in repository
-unpublish_all_orphan_items(target_workspace)
+    # Publish all items defined in item_type_in_scope
+    publish_all_items(target_workspace)
+
+    # Unpublish all items defined in item_type_in_scope not found in repository
+    unpublish_all_orphan_items(target_workspace)
