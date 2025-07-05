@@ -14,6 +14,7 @@ token_credential = \
     ClientSecretCredential(client_id=client_id, client_secret=client_secret, tenant_id=tenant_id)
 
 github_workpace = os.getenv('GITHUB_WORKSPACE')
+branch = os.getenv('BRANCH_NAME')
 print(github_workpace, flush=True)
 
 config_file = github_workpace +  '/workspace/workspace.config.json'
@@ -28,9 +29,12 @@ else:
         config = json.load(file)
         print(config, flush=True)
 
+    workspace_config = config[branch] 
+
     # Sample values for FabricWorkspace parameters
-    workspace_id = config['workspace_id']
-    environment = config['environment']
+    workspace_id = workspace_config['workspace_id']
+    environment = workspace_config['environment']
+    
     repository_directory = "workspace"
     item_type_in_scope = [ "Lakehouse", "Notebook", "SemanticModel", "Report"]
 

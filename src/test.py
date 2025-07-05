@@ -2,6 +2,6 @@
 
 from fabric_devops import GitHubRestApi, DeploymentManager
 
-param = DeploymentManager.generate_parameter_yml_file('Apollo-dev', 'Apollo-test', 'TEST')
+param = DeploymentManager.generate_workspace_config_file('Apollo-test', 'Apollo')
 
 print(param)

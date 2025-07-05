@@ -51,36 +51,50 @@ DeploymentManager.apply_post_deploy_fixes(
     True)
 
 
+AppLogger.log_step("Create parameter.yml")
+
+parameter_file_content = DeploymentManager.generate_parameter_yml_file(
+    DEV_WORKSPACE_NAME,
+    TEST_WORKSPACE_NAME,
+    PROD_WORKSPACE_NAME
+)
+
+GitHubRestApi.write_file_to_repo(
+    PROJECT_NAME,
+    "test",
+    "workspace/parameter.yml",
+    parameter_file_content,
+    "param file commit"    
+)
+
+GitHubRestApi.write_file_to_repo(
+    PROJECT_NAME,
+    "prod",
+    "workspace/parameter.yml",
+    parameter_file_content,
+    "param file commit"    
+)
 
 
-# AppLogger.log_step("Create parameter.yml")
+AppLogger.log_step("Create workspace.config.json")
 
-# parameter_file_content = DeploymentManager.generate_parameter_yml_file(
-#     DEV_WORKSPACE_NAME,
-#     TEST_WORKSPACE_NAME,
-#     "TEST"
-# )
+workspace_config = DeploymentManager.generate_workspace_config_file(
+    TEST_WORKSPACE_NAME,
+    PROD_WORKSPACE_NAME
+)
 
-# GitHubRestApi.write_file_to_repo(
-#     PROJECT_NAME,
-#     "test",
-#     "workspace/parameter.yml",
-#     parameter_file_content,
-#     "param file commit"    
-# )
+GitHubRestApi.write_file_to_repo(
+    PROJECT_NAME,
+    "test",
+    "workspace/workspace.config.json",
+    workspace_config,
+    "workspace config file commit"    
+)
 
-# AppLogger.log_step("Create workspace.config.json")
-
-# workspace_config = DeploymentManager.generate_workspace_config_file(
-#     TEST_WORKSPACE['id'], 
-#     "TEST"
-# )
-
-
-# GitHubRestApi.write_file_to_repo(
-#     PROJECT_NAME,
-#     "test",
-#     "workspace/workspace.config.json",
-#     workspace_config,
-#     "workspace config file commit"    
-# )
+GitHubRestApi.write_file_to_repo(
+    PROJECT_NAME,
+    "main",
+    "workspace/workspace.config.json",
+    workspace_config,
+    "workspace config file commit"    
+)
