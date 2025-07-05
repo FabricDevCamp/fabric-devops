@@ -2,7 +2,7 @@
 
 import os
 
-from fabric_devops import DeploymentManager, GitHubRestApi, FabricRestApi, AppLogger
+from fabric_devops import DeploymentManager, GitHubRestApi, FabricRestApi, AppLogger, StagingEnvironments
 
 PROJECT_NAME = os.getenv("PROJECT_NAME")
 SOLUTION_NAME = os.getenv("SOLUTION_NAME")
@@ -27,6 +27,11 @@ GitHubRestApi.create_and_merge_pull_request(
 TEST_WORKSPACE = FabricRestApi.create_workspace(TEST_WORKSPACE_NAME)
 FabricRestApi.connect_workspace_to_github_repo(TEST_WORKSPACE, PROJECT_NAME, 'test')
 FabricRestApi.disconnect_workspace_from_git(TEST_WORKSPACE['id'])
+
+DeploymentManager.apply_post_deploy_fixes(
+    TEST_WORKSPACE_NAME,
+    StagingEnvironments.get_test_environment(),
+    True)
 
 AppLogger.log_step("Create parameter.yml")
 
