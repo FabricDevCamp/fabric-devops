@@ -3,6 +3,7 @@
 import base64
 import json
 import os
+import re
 
 from .app_logger import AppLogger
 from .fabric_rest_api import FabricRestApi
