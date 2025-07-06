@@ -99,7 +99,7 @@ class ItemDefinitionFactory:
         item_part = next((part for part in item_definition['parts'] if part['path'] == part_path), None)
         if item_part is not None:
             item_definition['parts'].remove(item_part)
-            item_part['payload'] = cls._search_and_replace_with_regex_in_payload(item_part['payload'], search_replace_terms)
+            item_part['payload'] = cls._search_and_replace_in_payload_with_regex(item_part['payload'], search_replace_terms)
             item_definition['parts'].append(item_part)
         return item_definition
 
