@@ -1282,7 +1282,6 @@ class DeploymentManager:
         AppLogger.log_job(f"Setup workspace [{workspace['displayName']} with GIT integration]")
 
         GitHubRestApi.create_repository(repo_name, add_secrets=True)
-        GitHubRestApi.copy_files_from_folder_to_repo(repo_name, 'WorkflowActions1')
         GitHubRestApi.create_branch(repo_name, 'test')
         GitHubRestApi.create_branch(repo_name, 'dev')
         GitHubRestApi.set_default_branch(repo_name, 'dev')

@@ -50,6 +50,23 @@ DeploymentManager.apply_post_deploy_fixes(
     StagingEnvironments.get_prod_environment(),
     True)
 
+AppLogger.log_step('Add Workflow Files')
+GitHubRestApi.copy_files_from_folder_to_repo(PROJECT_NAME, 'dev', 'WorkflowActions1')
+
+GitHubRestApi.create_and_merge_pull_request(
+    PROJECT_NAME,
+    'dev',
+    'test',
+    'Push config to test',
+    'Push config to test')
+
+GitHubRestApi.create_and_merge_pull_request(
+    PROJECT_NAME,
+    'test',
+    'main',
+    'Push config to prod',
+    'Push config to prod')
+
 
 AppLogger.log_step("Create parameter.yml")
 

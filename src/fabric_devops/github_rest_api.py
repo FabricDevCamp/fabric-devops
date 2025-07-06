@@ -386,7 +386,7 @@ class GitHubRestApi:
         return file_path[offset:].replace('\\', '/')
 
     @classmethod
-    def copy_files_from_folder_to_repo(cls, repo_name, folder_path):
+    def copy_files_from_folder_to_repo(cls, repo_name, branch, folder_path):
         """Copy files to repo"""
         folder_path = f".//templates//WorkflowActions//{folder_path}//"
         for root, dirs, files in os.walk(folder_path):
@@ -396,7 +396,7 @@ class GitHubRestApi:
                 file_content = file.read()
                 relative_file_path = file_path.replace(folder_path, '')\
                                               .replace('\\', '/')
-                cls.write_file_to_repo(repo_name, 'main', relative_file_path, file_content)
+                cls.write_file_to_repo(repo_name, branch, relative_file_path, file_content)
 
     @classmethod
     def _get_org_public_key(cls):
