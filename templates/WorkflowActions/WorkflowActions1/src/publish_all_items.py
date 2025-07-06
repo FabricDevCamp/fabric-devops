@@ -51,4 +51,5 @@ else:
     publish_all_items(target_workspace)
 
     # Unpublish all items defined in item_type_in_scope not found in repository
-    unpublish_all_orphan_items(target_workspace)
+    # this fails when trying to delete default semantic model for lakehouse
+    # unpublish_all_orphan_items(target_workspace)
