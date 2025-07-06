@@ -870,6 +870,11 @@ class FabricRestApi:
         return None
 
     @classmethod
+    def get_datasources_for_semantic_model(cls, workspace_id, semantic_model_id):
+        """Get datasources for semantic model"""
+        return cls.list_datasources_for_semantic_model(workspace_id, semantic_model_id)
+
+    @classmethod
     def get_sql_endpoint_from_semantic_model(cls, workspace_id, semantic_model_id):
         """Get Web datasource URL from semantic model"""
         data_sources = cls.list_datasources_for_semantic_model(workspace_id, semantic_model_id)

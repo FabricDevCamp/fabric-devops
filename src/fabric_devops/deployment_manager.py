@@ -1320,12 +1320,106 @@ class DeploymentManager:
         tab = (' ' * 4)
         file_content = 'find_replace:\n\n'
 
+        file_content += tab + '# [Workspace Id]\n'
+        file_content += tab + '- find_value: "' + dev_workspace['id'] + f'" # [{dev_workspace["displayName"]}]\n'
+        file_content += tab + '  replace_value:\n'
+        file_content += tab + tab + f'TEST: "{test_workspace["id"]}" # [{test_workspace["displayName"]}]\n'
+        file_content += tab + tab + f'PROD: "{prod_workspace["id"]}" # [{prod_workspace["displayName"]}]\n\n'
+
+        for workspace_item in dev_workspace_items:
+            item_name = workspace_item['displayName'] + "." + workspace_item['type']
+            file_content += tab + f'# [{item_name}]\n'
+            file_content += tab + '- find_value: "' + workspace_item['id'] + f'" # [{dev_workspace["displayName"]}]\n'
+            file_content += tab + '  replace_value:\n'
+            if item_name in test_items:
+                file_content += tab + tab + f'TEST: "{test_items[item_name]}" # [{test_workspace["displayName"]}]\n'
+            if item_name in prod_items:
+                file_content += tab + tab + f'PROD: "{prod_items[item_name]}" # [{prod_workspace["displayName"]}]\n\n'
+
+            if workspace_item['type'] == 'SemanticModel':
+
+                dev_datasources = FabricRestApi.get_datasources_for_semantic_model(
+                    dev_workspace['id'],
+                    workspace_item['id']
+                )
+
+                test_datasources = FabricRestApi.get_datasources_for_semantic_model(
+                    test_workspace['id'],
+                    test_items[item_name]
+                )
+
+                prod_datasources = FabricRestApi.get_datasources_for_semantic_model(
+                    prod_workspace['id'],
+                    prod_items[item_name]
+                )
+
+                for index, dev_datasource in enumerate(dev_datasources):
+                    if dev_datasource['datasourceType'] == "Web":
+                        dev_url = dev_datasource['connectionDetails']['url']
+                        test_url = test_datasources[index]['connectionDetails']['url']
+                        prod_url = prod_datasources[index]['connectionDetails']['url']
+                        file_content += tab + '# [Web Datasource Url]\n'
+                        file_content += tab + '- find_value: "' + dev_url + f'" # [{dev_workspace["displayName"]}]\n'
+                        file_content += tab + '  replace_value:\n'
+                        file_content += tab + tab + f'TEST: "{test_url}" # [{test_workspace["displayName"]}]\n'
+                        file_content += tab + tab + f'PROD: "{prod_url}" # [{prod_workspace["displayName"]}]\n\n'
+
+                    if dev_datasource['datasourceType'] == "Sql":
+                        dev_sql_server = dev_datasource['connectionDetails']['server']
+                        dev_sql_database = dev_datasource['connectionDetails']['database']
+                        test_sql_server = test_datasources[index]['connectionDetails']['server']
+                        test_sql_database = test_datasources[index]['connectionDetails']['database']
+                        prod_sql_server = prod_datasources[index]['connectionDetails']['server']
+                        prod_sql_database = prod_datasources[index]['connectionDetails']['database']
+
+                        file_content += tab + '# [SQL Datasource Server]\n'
+                        file_content += tab + '- find_value: "' + dev_sql_server + f'" # [{dev_workspace["displayName"]}]\n'
+                        file_content += tab + '  replace_value:\n'
+                        file_content += tab + tab + f'TEST: "{test_sql_server}" # [{test_workspace["displayName"]}]\n'
+                        file_content += tab + tab + f'PROD: "{prod_sql_server}" # [{prod_workspace["displayName"]}]\n\n'
+
+                        file_content += tab + '# [SQL Datasource Database]\n'
+                        file_content += tab + '- find_value: "' + dev_sql_database + f'" # [{dev_workspace["displayName"]}]\n'
+                        file_content += tab + '  replace_value:\n'
+                        file_content += tab + tab + f'TEST: "{test_sql_database}" # [{test_workspace["displayName"]}]\n'
+                        file_content += tab + tab + f'PROD: "{prod_sql_database}" # [{prod_workspace["displayName"]}]\n\n'
+
+        return file_content
+
+    @classmethod
+    def generate_parameter_yml_file_backup(
+        cls,
+        dev_workspace_name,
+        test_workspace_name,
+        prod_workspace_name):
+        """Generate parameter.yml file"""
+
+        dev_workspace = FabricRestApi.get_workspace_by_name(dev_workspace_name)
+        dev_workspace_items = FabricRestApi.list_workspace_items(dev_workspace['id'])
+        
+        test_workspace = FabricRestApi.get_workspace_by_name(test_workspace_name)
+        test_workspace_items  = FabricRestApi.list_workspace_items(test_workspace['id'])
+
+        test_items = {}
+        for test_item in test_workspace_items:
+            item_name = test_item['displayName'] + "." + test_item['type']
+            test_items[item_name] = test_item['id']
+    
+        prod_workspace = FabricRestApi.get_workspace_by_name(prod_workspace_name)
+        prod_workspace_items  = FabricRestApi.list_workspace_items(prod_workspace['id'])
+
+        prod_items = {}
+        for prod_item in prod_workspace_items:
+            item_name = prod_item['displayName'] + "." + prod_item['type']
+            prod_items[item_name] = prod_item['id']
+    
+        tab = (' ' * 4)
+        file_content = 'find_replace:\n\n'
+
         file_content += tab + '# [Workspace Id]\n\n'
         file_content += tab + '- find_value: "' + dev_workspace['id'] + f'" # [{dev_workspace["displayName"]}]\n'
         file_content += tab + '  replace_value:\n'
-        file_content += tab + tab + f'TEST: "{test_workspace["id"]}" # [{test_workspace["displayName"]}]\n\n'
-        file_content += tab + '- find_value: "' + test_workspace['id'] + f'" # [{test_workspace["displayName"]}]\n'
-        file_content += tab + '  replace_value:\n'
+        file_content += tab + tab + f'TEST: "{test_workspace["id"]}" # [{test_workspace["displayName"]}]\n'
         file_content += tab + tab + f'PROD: "{prod_workspace["id"]}" # [{prod_workspace["displayName"]}]\n\n'
 
         for workspace_item in dev_workspace_items:
