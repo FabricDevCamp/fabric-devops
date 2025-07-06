@@ -35,6 +35,16 @@ class ItemDefinitionFactory:
         return base64.b64encode(payload_content.encode('utf-8')).decode('utf-8')
 
     @classmethod
+    def _search_and_replace_in_payload_with_regex(cls, payload, search_replace_terms):
+        payload_bytes = base64.b64decode(payload)
+        payload_content = payload_bytes.decode('utf-8')
+
+        for search, replace in search_replace_terms.items():
+            payload_content, count = re.subn(search, replace, payload_content)
+
+        return base64.b64encode(payload_content.encode('utf-8')).decode('utf-8')
+
+    @classmethod
     def get_template_file(cls, path):
         """get contents of a file from templates folder"""
         file_path = f".//templates//ItemDefinitionTemplateFiles//{path}"
@@ -80,6 +90,16 @@ class ItemDefinitionFactory:
         if item_part is not None:
             item_definition['parts'].remove(item_part)
             item_part['payload'] = cls._search_and_replace_in_payload(item_part['payload'], search_replace_text)
+            item_definition['parts'].append(item_part)
+        return item_definition
+
+    @classmethod
+    def update_item_definition_part_with_regex(cls, item_definition, part_path, search_replace_terms):
+        """Update Item Definition Part"""
+        item_part = next((part for part in item_definition['parts'] if part['path'] == part_path), None)
+        if item_part is not None:
+            item_definition['parts'].remove(item_part)
+            item_part['payload'] = cls._search_and_replace_with_regex_in_payload(item_part['payload'], search_replace_terms)
             item_definition['parts'].append(item_part)
         return item_definition
 
@@ -249,6 +269,8 @@ class ItemDefinitionFactory:
             'type': "Report",
             'definition': item_definition
         }
+
+
 
     @classmethod
     def get_data_pipeline_create_request(cls, display_name, pipeline_definition):

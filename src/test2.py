@@ -1,19 +1,26 @@
 
-from fabric_devops import GitHubRestApi
 
-PROJECT_NAME = 'Apollo'
+from fabric_devops import DeploymentManager, ItemDefinitionFactory, AppLogger, StagingEnvironments
 
-DEPLOYMENT_PIPELINE_NAME = PROJECT_NAME
-DEV_WORKSPACE_NAME = f"{PROJECT_NAME}-dev"
-TEST_WORKSPACE_NAME = f"{PROJECT_NAME}-test"
-PROD_WORKSPACE_NAME = f"{PROJECT_NAME}"
 
-pull_request = GitHubRestApi.create_pull_request(PROJECT_NAME, 'dev', 'test')
+import re
 
-pull_request_id = pull_request['number']
 
-GitHubRestApi.merge_pull_request(
-    PROJECT_NAME, 
-    pull_request_id, 
-    "Initial merge",
-    "here it is")
+lakehouse_id = '11111111-1111-1111-1111-111111111111'
+lakehouse_name = 'rufus'
+workspace_id = '22222222-2222-2222-2222-222222222222'
+
+definition = ItemDefinitionFactory.get_template_file('Notebooks/HelloWorld.py')
+
+find_and_replace={
+    r'("default_lakehouse"\s*:\s*)".*"': rf'\1"{lakehouse_id}"',
+    r'("default_lakehouse_name"\s*:\s*)".*"': rf'\1"{lakehouse_name}"',
+    r'("default_lakehouse_workspace_id"\s*:\s*)".*"': rf'\1"{workspace_id}"',
+    r'("known_lakehouses"\s*:\s*)\[[\s\S]*?\]': rf'\1[{{"id": "{lakehouse_id}"}}]',
+}
+
+
+for find, replace in find_and_replace.items():
+    definition, count = re.subn(find, replace, definition)
+
+print(definition)

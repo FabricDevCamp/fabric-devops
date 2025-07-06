@@ -2,6 +2,7 @@
 
 import base64
 import json
+import re
 
 from .app_logger import AppLogger
 #from .app_settings import EnvironmentSettings
@@ -1029,6 +1030,38 @@ class DeploymentManager:
         FabricRestApi.update_item_definition(workspace['id'], notebook, notebook_definition)        
 
     @classmethod
+    def update_source_lakehouse_in_notebook(cls,
+                workspace_name,
+                notebook_name,
+                lakehouse_name):
+        """Update datasource path in notebook"""
+        workspace = FabricRestApi.get_workspace_by_name(workspace_name)
+        notebook = FabricRestApi.get_item_by_name(workspace['id'], notebook_name, 'Notebook')
+        lakehouse = FabricRestApi.get_item_by_name(workspace['id'], lakehouse_name, "Lakehouse")
+
+        workspace_id = workspace['id']
+        lakehouse_id = lakehouse['id']
+
+        search_replace_terms = {
+            r'("default_lakehouse"\s*:\s*)".*"': rf'\1"{lakehouse_id}"',
+            r'("default_lakehouse_name"\s*:\s*)".*"': rf'\1"{lakehouse_name}"',
+            r'("default_lakehouse_workspace_id"\s*:\s*)".*"': rf'\1"{workspace_id}"',
+            r'("known_lakehouses"\s*:\s*)\[[\s\S]*?\]': rf'\1[{{"id": "{lakehouse_id}"}}]',
+        }
+
+        notebook_definition = FabricRestApi.get_item_definition(workspace['id'], notebook)
+
+        notebook_definition = {
+            'definition': ItemDefinitionFactory.update_item_definition_part_with_regex(
+                notebook_definition['definition'],
+                'notebook-content.py',
+                search_replace_terms)
+        }
+
+        FabricRestApi.update_item_definition(workspace['id'], notebook, notebook_definition)
+
+
+    @classmethod
     def apply_post_deploy_fixes(cls,
                                 workspace_name,
                                 deployment_job,
@@ -1070,8 +1103,13 @@ class DeploymentManager:
         for notebook in notebooks:
             # Apply fixes for [Create Lakehouse Tables.Notebook]
             if notebook['displayName'] == 'Create Lakehouse Tables':
+                cls.update_source_lakehouse_in_notebook(
+                    workspace_name,
+                    notebook['displayName'],
+                    "sales")
+
                 cls.update_datasource_path_in_notebook(
-                    workspace_name, 
+                    workspace_name,
                     notebook['displayName'],
                     deployment_job)
                 
