@@ -3,7 +3,7 @@
 import os
 
 from fabric_devops import FabricRestApi, ItemDefinitionFactory, AppLogger, EnvironmentSettings, \
-                          VariableLibrary
+                          StagingEnvironments, VariableLibrary
 
 def deploy_powerbi_solution():
     """Deploy Power BI Solution"""
@@ -40,26 +40,55 @@ def deploy_powerbi_solution():
 
     AppLogger.log_job_complete(workspace['id'])
 
-def deploy_notebook_solution():
+def deploy_notebook_solution(
+    target_workspace,
+    deploy_job = StagingEnvironments.get_dev_environment()):
     """Deploy Notebook Solution"""
 
-    AppLogger.log_job("Deploying Lakehouse solution with Notebook")
-
-    workspace_name = "Custom Notebook Solution"
     lakehouse_name = "sales"
-    notebook_name = "Create Lakehouse Tables"
-    semantic_model_name = 'Product Sales DirectLake Model'
-    report_name = 'Product Sales Summary'
 
-    workspace = FabricRestApi.create_workspace(workspace_name)
+    AppLogger.log_job(f"Deploying Custom Notebook Solution to [{target_workspace}]")
+
+    deploy_job.display_deployment_parameters('web')
+
+    workspace = FabricRestApi.create_workspace(target_workspace)
+    
+    FabricRestApi.update_workspace_description(workspace['id'], 'Custom Notebook Solution')
+
+    web_datasource_path = deploy_job.parameters[deploy_job.web_datasource_path_parameter]
+    
+    variable_library = VariableLibrary()
+    variable_library.add_variable("web_datasource_path", web_datasource_path)
+    
+    create_library_request = \
+        ItemDefinitionFactory.get_variable_library_create_request(
+            "environment_settings",
+            variable_library
+    )
+
+    FabricRestApi.create_item(workspace['id'], create_library_request)
+
+
     lakehouse = FabricRestApi.create_lakehouse(workspace['id'], lakehouse_name)
 
     create_notebook_request = \
-        ItemDefinitionFactory.get_notebook_create_request(workspace['id'],  \
-                                                        lakehouse,     \
-                                                        notebook_name, \
-                                                        'CreateLakehouseTables.py')
+        ItemDefinitionFactory.get_create_item_request_from_folder(
+            'Create Lakehouse Tables.Notebook')
+
+    notebook_redirects = {
+        '{WORKSPACE_ID}': workspace['id'],
+        '{LAKEHOUSE_ID}': lakehouse['id'],
+        '{LAKEHOUSE_NAME}': lakehouse['displayName'],
+        '{WEB_DATASOURCE_PATH}': deploy_job.parameters[deploy_job.web_datasource_path_parameter]
+    }
+
+    create_notebook_request = \
+        ItemDefinitionFactory.update_part_in_create_request(create_notebook_request,
+                                                            'notebook-content.py', 
+                                                            notebook_redirects)
+
     notebook = FabricRestApi.create_item(workspace['id'], create_notebook_request)
+
     FabricRestApi.run_notebook(workspace['id'], notebook)
 
     sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse)
@@ -67,23 +96,33 @@ def deploy_notebook_solution():
     FabricRestApi.refresh_sql_endpoint_metadata(workspace['id'], sql_endpoint['database'])
 
     create_model_request = \
-        ItemDefinitionFactory.get_directlake_model_create_request(semantic_model_name,
-                                                                'sales_model_DirectLake.bim',
-                                                                sql_endpoint['server'],
-                                                                sql_endpoint['database'])
+        ItemDefinitionFactory.get_create_item_request_from_folder(
+            'Product Sales DirectLake Model.SemanticModel')
+
+    model_redirects = {
+        '{SQL_ENDPOINT_SERVER}': sql_endpoint['server'],
+        '{SQL_ENDPOINT_DATABASE}': sql_endpoint['database']
+    }
+
+    create_model_request = \
+        ItemDefinitionFactory.update_part_in_create_request(create_model_request,
+                                                            'definition/expressions.tmdl',
+                                                            model_redirects)
 
     model = FabricRestApi.create_item(workspace['id'], create_model_request)
 
     FabricRestApi.create_and_bind_semantic_model_connecton(workspace, model['id'], lakehouse)
 
     create_report_request = \
-        ItemDefinitionFactory.get_report_create_request(model['id'],
-                                                        report_name,
-                                                        'product_sales_summary.json')
+        ItemDefinitionFactory.get_create_report_request_from_folder(
+            'Product Sales Summary.Report',
+            model['id'])
 
     FabricRestApi.create_item(workspace['id'], create_report_request)
 
     AppLogger.log_job_complete(workspace['id'])
+
+    return workspace
 
 def deploy_shortcut_solution():
     """Deploy Shortcut Solution"""
