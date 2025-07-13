@@ -1,6 +1,6 @@
 
-name: Deploy with fabric-cicd to Azure DevOps
-run-name: Deploy ${{inputs.solution_name}} to Azure DevOps with fabric-cicd support
+name: Deploy with fabric-cicd to GitHub
+run-name: Deploy ${{inputs.solution_name}} to GitHub with fabric-cicd support
 
 on:
   workflow_dispatch:
@@ -40,6 +40,10 @@ jobs:
         run: |
           pip install msal
 
+      - name: Install MSAL
+        run: |
+          pip install PyNaCl
+
       - name: Deploy Solution        
         env:
           FABRIC_CLIENT_ID: ${{ secrets.FABRIC_CLIENT_ID }}
@@ -52,4 +56,4 @@ jobs:
           PROJECT_NAME: ${{ inputs.project_name }}
           SOLUTION_NAME: ${{inputs.solution_name}}
         run:
-          python src/deploy_to_ado_with_fabric_cicd.py
+          python src/deploy_with_fabric_cicd_to_githib.py
