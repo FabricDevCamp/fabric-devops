@@ -56,4 +56,4 @@ jobs:
           PROJECT_NAME: ${{ inputs.project_name }}
           SOLUTION_NAME: ${{inputs.solution_name}}
         run:
-          python src/deploy_with_fabric_cicd_to_githib.py
+          python src/deploy_with_fabric_cicd_to_github.py
