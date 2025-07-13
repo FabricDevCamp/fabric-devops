@@ -1,6 +1,6 @@
 
-name: Deploy to GitHub with fabric_cicd
-run-name: Deploy ${{inputs.solution_name}} to [${{inputs.project_name}}] with fabric_cicd support
+name: Deploy with fabric-cicd to GitHub
+run-name: Deploy ${{inputs.solution_name}} to GitHub with fabric-cicd support
 
 on:
   workflow_dispatch:

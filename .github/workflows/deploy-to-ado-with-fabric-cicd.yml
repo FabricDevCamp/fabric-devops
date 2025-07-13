@@ -1,6 +1,6 @@
 
-name: Deploy to GitHub with fabric_cicd
-run-name: Deploy ${{inputs.solution_name}} to Azure DevOps with fabric_cicd support
+name: Deploy with fabric-cicd to Azure DevOps
+run-name: Deploy ${{inputs.solution_name}} to Azure DevOps with fabric-cicd support
 
 on:
   workflow_dispatch:
