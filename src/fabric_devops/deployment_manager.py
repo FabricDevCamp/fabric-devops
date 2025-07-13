@@ -67,7 +67,7 @@ class DeploymentManager:
         return workspace
 
     @classmethod
-    def deploy_notebook_solution_xx(cls,
+    def deploy_notebook_solution(cls,
                                  target_workspace,
                                  deploy_job = StagingEnvironments.get_dev_environment()):
         """Deploy Notebook Solution"""
@@ -138,7 +138,7 @@ class DeploymentManager:
         return workspace
 
     @classmethod
-    def deploy_notebook_solution(
+    def deploy_notebook_solution_with_varlib(
         cls,
         target_workspace,
         deploy_job = StagingEnvironments.get_dev_environment()):
