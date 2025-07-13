@@ -92,7 +92,10 @@ class EntraIdTokenManager():
         try:
             accounts = app.get_accounts()
             authentication_result = \
-                app.acquire_token_silent([scope], account=accounts[0])  
+                app.acquire_token_silent([scope], account=accounts[0])
+            if authentication_result is None:
+                authentication_result = app.acquire_token_interactive([scope])
+    
         except IndexError:
             authentication_result = app.acquire_token_interactive([scope])
             
@@ -155,14 +158,15 @@ class EntraIdTokenManager():
         """"Get Access Token for Azure Dev """
         ado_resource_id = '499b84ac-1321-427f-aa17-267ca6975798'
         if EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL:
-            scope_for_service_principal = ado_resource_id + "//.default" 
+            scope_for_service_principal = ado_resource_id + "/.default"
             return cls._get_access_token_for_service_principal(scope_for_service_principal)
         else:
-            scope_for_user = ado_resource_id + "//user_impersonation"
+            scope_for_user = ado_resource_id + "/user_impersonation"
             if EnvironmentSettings.RUNNING_IN_GITHUB:
-                return cls._get_access_token_for_user(scope_for_user)
-            else:
                 return cls._get_access_token_for_user_with_device_code(scope_for_user)
+            else:
+                return cls._get_access_token_for_user(scope_for_user)
+                
 
     @classmethod
     def get_kqldb_access_token(cls, query_service_url):

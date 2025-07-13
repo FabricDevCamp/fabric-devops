@@ -2,10 +2,10 @@
 
 import time
 import base64
-from nacl import encoding, public
 import os
 from json.decoder import JSONDecodeError
 
+from nacl import encoding, public
 import requests
 
 from .app_logger import AppLogger

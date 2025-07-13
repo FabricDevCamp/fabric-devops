@@ -52,9 +52,11 @@ class DeploymentJob:
         """add deployment parameter"""
         self._parameters.update({ parameter_name: deployment_value })
 
-    def display_deployment_parameters(self):
+    def display_deployment_parameters(self, parameter_filter = None):
         """Display Deployment Parameters"""
         AppLogger.log_table_header(f'Deployment parameters for [{self.id}]')
         for key, value in self.parameters.items():
-            AppLogger.log_table_row(key, value)
+            if (parameter_filter is None) or \
+               (parameter_filter in key):
+                AppLogger.log_table_row(key, value)
  

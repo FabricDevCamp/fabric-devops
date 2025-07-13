@@ -5,8 +5,8 @@ import os
 class EnvironmentSettings:
     """Environment Settings"""
 
-    RUN_AS_SERVICE_PRINCIPAL = True
-    RUNNING_IN_GITHUB = os.getenv('GITHUB_ACTIONS') == 'true'
+    RUN_AS_SERVICE_PRINCIPAL = False
+    RUNNING_IN_GITHUB = False # os.getenv('GITHUB_ACTIONS') == 'true'
     RUNNING_LOCALLY = (RUNNING_IN_GITHUB is False)
 
     FABRIC_CLIENT_ID = os.getenv("FABRIC_CLIENT_ID")

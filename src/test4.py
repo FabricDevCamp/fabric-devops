@@ -1,26 +1,9 @@
-from azure.identity import ClientSecretCredential
 
-from fabric_cicd import FabricWorkspace, publish_all_items, unpublish_all_orphan_items
+from fabric_devops import AdoProjectManager
 
-client_id = "your-client-id"
-client_secret = "your-client-secret"
-tenant_id = "your-tenant-id"
-token_credential = ClientSecretCredential(client_id=client_id, client_secret=client_secret, tenant_id=tenant_id)
 
-# Sample values for FabricWorkspace parameters
-workspace_id = "your-workspace-id"
-environment = "your-environment"
-repository_directory = "your-repository-directory"
-item_type_in_scope = ["Notebook", "Environment"]
+project_name = "Angie"
 
-# Initialize the FabricWorkspace object with the required parameters
-target_workspace = FabricWorkspace(
-    workspace_id=workspace_id,    
-    environment=environment,
-    repository_directory=repository_directory,
-    item_type_in_scope=item_type_in_scope,
-    token_credential=token_credential,
-)
+response = AdoProjectManager.get_pull_requests(project_name)
 
-# Publish all items defined in item_type_in_scope
-publish_all_items(target_workspace)
+print(response)

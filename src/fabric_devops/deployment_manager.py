@@ -2,7 +2,6 @@
 
 import base64
 import json
-import re
 
 from .app_logger import AppLogger
 #from .app_settings import EnvironmentSettings
@@ -12,6 +11,7 @@ from .item_definition_factory import ItemDefinitionFactory
 from .variable_library import VariableLibrary, Valueset
 from .staging_environments import StagingEnvironments
 from .github_rest_api import GitHubRestApi
+from .ado_project_manager import AdoProjectManager
 
 class DeploymentManager:
     """Deployment Manager"""
@@ -68,6 +68,161 @@ class DeploymentManager:
 
     @classmethod
     def deploy_notebook_solution(cls,
+                                 target_workspace,
+                                 deploy_job = StagingEnvironments.get_dev_environment()):
+        """Deploy Notebook Solution"""
+
+        lakehouse_name = "sales"
+
+        AppLogger.log_job(f"Deploying Custom Notebook Solution to [{target_workspace}]")
+
+        deploy_job.display_deployment_parameters("web")
+
+        workspace = FabricRestApi.create_workspace(target_workspace)
+
+        FabricRestApi.update_workspace_description(workspace['id'], 'Custom Notebook Solution')
+
+        lakehouse = FabricRestApi.create_lakehouse(workspace['id'], lakehouse_name)
+
+        create_notebook_request = \
+            ItemDefinitionFactory.get_create_item_request_from_folder(
+                'Create Lakehouse Tables.Notebook')
+
+        notebook_redirects = {
+            '{WORKSPACE_ID}': workspace['id'],
+            '{LAKEHOUSE_ID}': lakehouse['id'],
+            '{LAKEHOUSE_NAME}': lakehouse['displayName'],
+            '{WEB_DATASOURCE_PATH}': deploy_job.parameters[deploy_job.web_datasource_path_parameter]
+        }
+
+        create_notebook_request = \
+            ItemDefinitionFactory.update_part_in_create_request(create_notebook_request,
+                                                                'notebook-content.py', 
+                                                                notebook_redirects)
+
+        notebook = FabricRestApi.create_item(workspace['id'], create_notebook_request)
+
+        FabricRestApi.run_notebook(workspace['id'], notebook)
+
+        sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse)
+
+        FabricRestApi.refresh_sql_endpoint_metadata(workspace['id'], sql_endpoint['database'])
+
+        create_model_request = \
+            ItemDefinitionFactory.get_create_item_request_from_folder(
+                'Product Sales DirectLake Model.SemanticModel')
+
+        model_redirects = {
+            '{SQL_ENDPOINT_SERVER}': sql_endpoint['server'],
+            '{SQL_ENDPOINT_DATABASE}': sql_endpoint['database']
+        }
+
+        create_model_request = \
+            ItemDefinitionFactory.update_part_in_create_request(create_model_request,
+                                                                'definition/expressions.tmdl',
+                                                                model_redirects)
+
+        model = FabricRestApi.create_item(workspace['id'], create_model_request)
+
+        FabricRestApi.create_and_bind_semantic_model_connecton(workspace, model['id'], lakehouse)
+
+        create_report_request = \
+            ItemDefinitionFactory.get_create_report_request_from_folder(
+                'Product Sales Summary.Report',
+                model['id'])
+
+        FabricRestApi.create_item(workspace['id'], create_report_request)
+
+        AppLogger.log_job_complete(workspace['id'])
+
+        return workspace
+
+    def deploy_notebook_solution_with_variable(cls,
+                                 target_workspace,
+                                 deploy_job = StagingEnvironments.get_dev_environment()):
+        """Deploy Notebook Solution"""
+
+        lakehouse_name = "sales"
+
+        AppLogger.log_job(f"Deploying Custom Notebook Solution to [{target_workspace}]")
+
+        deploy_job.display_deployment_parameters()
+
+        workspace = FabricRestApi.create_workspace(target_workspace)
+      
+        FabricRestApi.update_workspace_description(workspace['id'], 'Custom Notebook Solution')
+
+        web_datasource_path = deploy_job.parameters[deploy_job.web_datasource_path_parameter]
+        
+        variable_library = VariableLibrary()
+        variable_library.add_variable("web_datasource_path", web_datasource_path)
+        
+        create_library_request = \
+            ItemDefinitionFactory.get_variable_library_create_request(
+                "environment_settings",
+                variable_library
+        )
+
+        FabricRestApi.create_item(workspace['id'], create_library_request)
+
+
+        lakehouse = FabricRestApi.create_lakehouse(workspace['id'], lakehouse_name)
+
+        create_notebook_request = \
+            ItemDefinitionFactory.get_create_item_request_from_folder(
+                'Create Lakehouse Tables.Notebook')
+
+        notebook_redirects = {
+            '{WORKSPACE_ID}': workspace['id'],
+            '{LAKEHOUSE_ID}': lakehouse['id'],
+            '{LAKEHOUSE_NAME}': lakehouse['displayName'],
+            '{WEB_DATASOURCE_PATH}': deploy_job.parameters[deploy_job.web_datasource_path_parameter]
+        }
+
+        create_notebook_request = \
+            ItemDefinitionFactory.update_part_in_create_request(create_notebook_request,
+                                                                'notebook-content.py', 
+                                                                notebook_redirects)
+
+        notebook = FabricRestApi.create_item(workspace['id'], create_notebook_request)
+
+        FabricRestApi.run_notebook(workspace['id'], notebook)
+
+        sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse)
+
+        FabricRestApi.refresh_sql_endpoint_metadata(workspace['id'], sql_endpoint['database'])
+
+        create_model_request = \
+            ItemDefinitionFactory.get_create_item_request_from_folder(
+                'Product Sales DirectLake Model.SemanticModel')
+
+        model_redirects = {
+            '{SQL_ENDPOINT_SERVER}': sql_endpoint['server'],
+            '{SQL_ENDPOINT_DATABASE}': sql_endpoint['database']
+        }
+
+        create_model_request = \
+            ItemDefinitionFactory.update_part_in_create_request(create_model_request,
+                                                                'definition/expressions.tmdl',
+                                                                model_redirects)
+
+        model = FabricRestApi.create_item(workspace['id'], create_model_request)
+
+        FabricRestApi.create_and_bind_semantic_model_connecton(workspace, model['id'], lakehouse)
+
+        create_report_request = \
+            ItemDefinitionFactory.get_create_report_request_from_folder(
+                'Product Sales Summary.Report',
+                model['id'])
+
+        FabricRestApi.create_item(workspace['id'], create_report_request)
+
+        AppLogger.log_job_complete(workspace['id'])
+
+        return workspace
+
+    @classmethod
+    def deploy_notebook_solution_backup(cls,
                                  target_workspace,
                                  deploy_job = StagingEnvironments.get_dev_environment()):
         """Deploy Notebook Solution"""
@@ -880,6 +1035,16 @@ class DeploymentManager:
             AppLogger.log_substep(f"Deleting {repo['name']}")
             GitHubRestApi.delete_github_repository(repo['name'])
 
+    @classmethod 
+    def delete_all_ado_projects(cls):
+        """Delete All Azure DevOps Projects"""
+        AppLogger.log_step("Deleting Demo Azure DevOps projects")
+ 
+        projects = AdoProjectManager.get_projects()
+        for project in projects:
+            AdoProjectManager.delete_project(project['id'])
+
+
     @classmethod
     def cleanup_dev_environment(cls):
         """Clean Up Dev Environment"""
@@ -888,6 +1053,7 @@ class DeploymentManager:
         cls.delete_all_workspaces()
         cls.delete_all_connections()
         cls.delete_all_github_repos()
+        cls.delete_all_ado_projects()
         AppLogger.log_job_ended("Cleanup of dev environment complete")
 
     @classmethod
@@ -1326,6 +1492,23 @@ class DeploymentManager:
         FabricRestApi.connect_workspace_to_github_repo(workspace, repo_name, 'dev')
 
         AppLogger.log_job_complete(workspace['id'])
+
+    @classmethod
+    def connect_workspace_to_ado_repo(cls, workspace, project_name = None):
+        """Setup Workspace with GIT Connection"""
+        
+        if project_name is None:
+            project_name = workspace['displayName'].replace(" ", "-")
+
+        AppLogger.log_job(f"Setup workspace [{workspace['displayName']} with GIT integration]")
+
+        AdoProjectManager.create_project_with_pipelines(project_name)
+
+        FabricRestApi.connect_workspace_to_ado_repo(workspace, project_name, 'dev')
+
+        AppLogger.log_job_complete(workspace['id'])
+
+
 
     @classmethod
     def generate_parameter_yml_file(

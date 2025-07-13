@@ -1,9 +1,11 @@
 """Deploy solution with fabric_cicd"""
 
-from fabric_devops import DeploymentManager, GitHubRestApi, FabricRestApi, AppLogger
+import os
 
-PROJECT_NAME = 'Carrie'
-SOLUTION_NAME = 'Custom Notebook Solution'
+from fabric_devops import DeploymentManager, GitHubRestApi, FabricRestApi, AppLogger, StagingEnvironments
+
+PROJECT_NAME = os.getenv("PROJECT_NAME")
+SOLUTION_NAME = os.getenv("SOLUTION_NAME")
 
 DEPLOYMENT_PIPELINE_NAME = PROJECT_NAME
 DEV_WORKSPACE_NAME = f"{PROJECT_NAME}-dev"

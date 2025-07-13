@@ -1,20 +1,19 @@
-"""Setup Deployment Pipelines"""
+
 import json
-import os
-
-config  = {
-    'workspace_id': '11111111-1111-1111-1111-111111111111'
-}
-
-config_json = json.dumps(config, indent=4)
+from fabric_devops import EntraIdTokenManager, AdoProjectManager
 
 
-deploy_config_file = 'deploy.config.json'
+projects = AdoProjectManager.get_projects()
 
-folder_path = f".//templates//Exports/"
-if not os.path.exists(folder_path):
-    os.makedirs(folder_path)
+for project in projects:
+    AdoProjectManager.delete_project(project['id'])
 
-full_path = folder_path + deploy_config_file
-with open(full_path, 'w', encoding='utf-8') as file:
-    file.write(config_json)
+projects = AdoProjectManager.get_projects()
+
+for project in projects:
+    print(f"{project['id']}: {project['name']}")
+
+
+
+# project = AdoProjectManager.create_project("TestG")
+# print( json.dumps(project, indent=4) )

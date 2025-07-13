@@ -1,5 +1,5 @@
 
-name: Deploy with GIT plus fabric_cicd
+name: Deploy to GitHub with fabric_cicd
 run-name: Deploy ${{inputs.solution_name}} to [${{inputs.project_name}}] with fabric_cicd support
 
 on:
@@ -56,4 +56,4 @@ jobs:
           PROJECT_NAME: ${{ inputs.project_name }}
           SOLUTION_NAME: ${{inputs.solution_name}}
         run:
-          python src/deploy_solution_with_fabric_cicd.py
+          python src/deploy_to_githib_with_fabric_cicd.py

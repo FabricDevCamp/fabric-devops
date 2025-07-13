@@ -95,6 +95,11 @@ class FabricRestApi:
         request_headers = {'Content-Type':'application/json',
                            'Authorization': f'Bearer {access_token}'}
         response = requests.post(url=rest_url, headers=request_headers, json=post_body, timeout=60)
+
+        print('first response')
+        print(response)
+        print(response.headers)
+
         if response.status_code == 202:
             operation_state_url = response.headers.get('Location')
             wait_time = 10 # int(response.headers.get('Retry-After'))
@@ -104,7 +109,7 @@ class FabricRestApi:
             while operation_state['status'] == 'NotStarted' or \
                   operation_state['status'] == 'InProgress' or \
                   (operation_state['status'] == 'Failed' and \
-                   operation_state['errorCode'] == 'RequestExecutionFailed'  ):
+                   operation_state['failureReason']['errorCode'] == 'RequestExecutionFailed'  ):
                 time.sleep(wait_time)
                 response = requests.get(url=operation_state_url,
                                         headers=request_headers,
@@ -1046,7 +1051,72 @@ class FabricRestApi:
         cls._execute_patch_request(rest_url, post_body)
         AppLogger.log_substep('Active valueset set successfullly')
 
-    
+
+    @classmethod
+    def connect_workspace_to_ado_repo(cls, workspace, project_name, branch = 'main'):
+        """Connect Workspace to GitHub Repository"""
+
+        AppLogger.log_substep(f"Connecting workspace [{workspace['displayName']}] " + \
+                              f"to branch[{branch}] in Azure DevOps repo [{project_name}]")
+
+        cls.create_ado_repository_connection(workspace['id'], project_name, branch)
+
+        AppLogger.log_substep("Workspace connection created successfully")
+
+
+        init_request = {
+            'initializationStrategy': 'PreferWorkspace'
+        }
+
+        init_response = cls.initialize_git_connection(workspace['id'], init_request)
+
+        required_action = init_response['requiredAction']
+
+        if required_action == 'CommitToGit':
+            commit_to_git_request = {
+                'mode': 'All',
+                'workspaceHead': init_response['workspaceHead'],
+                'comment': 'Initial commit'
+            }
+            cls.commit_workspace_to_git(workspace['id'], commit_to_git_request)
+
+        if required_action == 'UpdateFromGit':
+            update_from_git_request = {
+                "workspaceHead": init_response['workspaceHead'],
+                "remoteCommitHash": init_response['remoteCommitHash'],
+                "conflictResolution": {
+                    "conflictResolutionType": "Workspace",
+                    "conflictResolutionPolicy": "PreferWorkspace"
+                },
+                "options": {
+                    "allowOverrideItems": True
+                }
+                            
+            }
+            cls.update_workspace_from_git(workspace['id'], update_from_git_request)
+
+        AppLogger.log_substep("Workspace connection successfully created and synchronized")
+
+    @classmethod
+    def create_ado_repository_connection(cls, workspace_id, project_name, branch = 'main'):
+        """Connect Workspace to GIT Repository"""
+        endpoint = f"workspaces/{workspace_id}/git/connect"
+
+        workspace_folder = "workspace"
+
+        connect_request = {
+            "gitProviderDetails": {
+                "organizationName": "FabricDevCamp",
+                "projectName": project_name,
+                "gitProviderType": "AzureDevOps",
+                "repositoryName": project_name,
+                "branchName": branch,
+                "directoryName": f"/{workspace_folder}"
+            }
+        }
+
+        return cls._execute_post_request(endpoint, connect_request)
+
     @classmethod
     def get_github_repo_connection(cls, repo_name, workspace = None):
         """Get GitHub Repo Connection"""

@@ -22,7 +22,8 @@
 # copy CSV files to lakehouse to load data into bronze layer 
 import requests
 
-csv_base_url = "{WEB_DATASOURCE_PATH}"
+csv_base_url = notebookutils.variableLibrary.get("$(/**/environment_settings/web_datasource_path)")
+# csv_base_url = 'https://fabricdevcamp.blob.core.windows.net/sampledata/ProductSales/Dev/'
 
 csv_files = { "Customers.csv", "Products.csv", "Invoices.csv", "InvoiceDetails.csv" }
 

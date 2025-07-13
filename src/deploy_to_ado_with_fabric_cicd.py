@@ -51,7 +51,7 @@ DeploymentManager.apply_post_deploy_fixes(
     True)
 
 AppLogger.log_step('Add Workflow Files')
-GitHubRestApi.copy_files_from_folder_to_repo(PROJECT_NAME, 'dev', 'WorkflowActions1')
+GitHubRestApi.copy_files_from_folder_to_repo(PROJECT_NAME, 'dev', 'SetupForFabricCICD')
 
 GitHubRestApi.create_and_merge_pull_request(
     PROJECT_NAME,
