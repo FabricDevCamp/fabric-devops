@@ -1046,7 +1046,6 @@ class DeploymentManager:
         for project in projects:
             AdoProjectManager.delete_project(project['id'])
 
-
     @classmethod
     def cleanup_dev_environment(cls):
         """Clean Up Dev Environment"""
