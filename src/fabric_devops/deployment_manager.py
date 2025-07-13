@@ -24,7 +24,7 @@ class DeploymentManager:
 
         AppLogger.log_job(f"Deploying Customer Power BI Solution to [{target_workspace}]")
 
-        deploy_job.display_deployment_parameters()
+        deploy_job.display_deployment_parameters('web')
 
         workspace = FabricRestApi.create_workspace(target_workspace)
 
@@ -67,7 +67,7 @@ class DeploymentManager:
         return workspace
 
     @classmethod
-    def deploy_notebook_solution(cls,
+    def deploy_notebook_solution_xx(cls,
                                  target_workspace,
                                  deploy_job = StagingEnvironments.get_dev_environment()):
         """Deploy Notebook Solution"""
@@ -137,16 +137,18 @@ class DeploymentManager:
 
         return workspace
 
-    def deploy_notebook_solution_with_variable(cls,
-                                 target_workspace,
-                                 deploy_job = StagingEnvironments.get_dev_environment()):
+    @classmethod
+    def deploy_notebook_solution(
+        cls,
+        target_workspace,
+        deploy_job = StagingEnvironments.get_dev_environment()):
         """Deploy Notebook Solution"""
 
         lakehouse_name = "sales"
 
         AppLogger.log_job(f"Deploying Custom Notebook Solution to [{target_workspace}]")
 
-        deploy_job.display_deployment_parameters()
+        deploy_job.display_deployment_parameters('web')
 
         workspace = FabricRestApi.create_workspace(target_workspace)
       
