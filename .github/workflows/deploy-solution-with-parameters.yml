@@ -47,6 +47,10 @@ jobs:
         run: |
           pip install msal
 
+      - name: Install PyNaCl
+        run: |
+          pip install PyNaCl
+
       - name: Deploy Solution with Parameters
         env:
           FABRIC_CLIENT_ID: ${{ secrets.FABRIC_CLIENT_ID }}
