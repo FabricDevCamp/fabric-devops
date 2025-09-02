@@ -1,4 +1,8 @@
 from fabric_devops import DeploymentManager, FabricRestApi
 
+workspace_name = "Contoso"
+workspace = FabricRestApi.get_workspace_by_name(workspace_name)
 
-DeploymentManager.deploy_notebook_solution_simple("Contoso")
+FabricRestApi.delete_workspace(workspace['id'])
+
+Deplo
