@@ -709,6 +709,11 @@ def deploy_fabcon_solution():
 
     AppLogger.log_job_complete(workspace['id'])
 
+if os.getenv("RUN_AS_SERVICE_PRINCIPAL") == 'true':
+    EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL = True
+else:
+    EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL = False
+
 match os.getenv("SOLUTION_NAME"):
 
     case 'Custom Power BI Solution':

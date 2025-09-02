@@ -18,6 +18,10 @@ on:
         - Custom Realtime Solution
         - Custom FabCon Solution
         - Deploy All Solutions
+      run_as_service_principal:
+        type: boolean
+        description: Run as service principal
+        default: true
 
 jobs:
   deployment-job:
@@ -49,8 +53,8 @@ jobs:
           FABRIC_CAPACITY_ID: ${{ secrets.FABRIC_CAPACITY_ID }}       
           ADMIN_USER_ID: ${{ secrets.ADMIN_USER_ID }}
           SERVICE_PRINCIPAL_OBJECT_ID: ${{ secrets.SERVICE_PRINCIPAL_OBJECT_ID }}
-          AZURE_STORAGE_ACCOUNT_KEY: ${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }}
           PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
           SOLUTION_NAME: ${{inputs.solution_name}}    
+          RUN_AS_SERVICE_PRINCIPAL: ${{inputs.run_as_service_principal}}
         run: 
           python src/deploy_solution.py
