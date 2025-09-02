@@ -40,18 +40,19 @@ def deploy_powerbi_solution():
 
     AppLogger.log_job_complete(workspace['id'])
 
-def deploy_notebook_solution(
-    target_workspace,
-    deploy_job = StagingEnvironments.get_dev_environment()):
+def deploy_notebook_solution():
     """Deploy Notebook Solution"""
+
+    AppLogger.log_job("Deploying Notebook Solution")
+
+    workspace_name = "Custom Notebook Solution"
 
     lakehouse_name = "sales"
 
-    AppLogger.log_job(f"Deploying Custom Notebook Solution to [{target_workspace}]")
-
+    deploy_job = StagingEnvironments.get_dev_environment()
     deploy_job.display_deployment_parameters('web')
 
-    workspace = FabricRestApi.create_workspace(target_workspace)
+    workspace = FabricRestApi.create_workspace(workspace_name)
     
     FabricRestApi.update_workspace_description(workspace['id'], 'Custom Notebook Solution')
 
