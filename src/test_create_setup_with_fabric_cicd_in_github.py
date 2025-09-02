@@ -1,4 +1,4 @@
-"""Deploy solution with fabric_cicd"""
+"""Test"""
 
 from fabric_devops import DeploymentManager, GitHubRestApi, FabricRestApi, AppLogger
 

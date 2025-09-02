@@ -271,8 +271,6 @@ class ItemDefinitionFactory:
             'definition': item_definition
         }
 
-
-
     @classmethod
     def get_data_pipeline_create_request(cls, display_name, pipeline_definition):
         """Get Create Request for Data Pipeline using pipeline-content.json file"""
@@ -443,6 +441,18 @@ class ItemDefinitionFactory:
     def export_item_definitions_from_workspace(cls, workspace_name):
         """Export Item Definiitons from Workspace"""
 
+        AppLogger.log_step(f"Exporting Workspace Item Definitions from {workspace_name}")
+
+        workspace = FabricRestApi.get_workspace_by_name(workspace_name)
+
+        export_response = FabricRestApi.export_item_definitions(workspace['id'])
+
+        cls._write_exported_workspace_to_exports_folder(workspace_name, 'exports.json', export_response)
+
+    @classmethod
+    def export_item_definitions_from_workspace_oldway(cls, workspace_name):
+        """Export Item Definiitons from Workspace"""
+
         workspace = FabricRestApi.get_workspace_by_name(workspace_name)
 
         items = FabricRestApi.list_workspace_items(workspace['id'])
@@ -459,6 +469,7 @@ class ItemDefinitionFactory:
                     cls._write_file_to_exports_folder(workspace_name, item_folder, part_path, part_content)
             except:
                 AppLogger.log_substep(f"Could not export {item['displayName']}.{item['type']}")
+
 
     @classmethod
     def _delete_exports_folder_contents(cls, workspace_name):
@@ -482,3 +493,17 @@ class ItemDefinitionFactory:
         os.makedirs(os.path.dirname(full_path), exist_ok=True)
         with open(full_path, 'w', encoding='utf-8') as file:
             file.write(file_content)
+
+    @classmethod
+    def _write_exported_workspace_to_exports_folder(cls, workspace_name, file_path , file_content):
+        """Write file to exports folder"""
+ 
+        #file_path = file_path.replace('/', '\\')
+        folder_path = f".//templates//ItemDefinitionExports//{workspace_name}/"
+        if not os.path.exists(folder_path):
+            os.makedirs(folder_path)
+
+        full_path = folder_path + file_path
+        os.makedirs(os.path.dirname(full_path), exist_ok=True)
+        with open(full_path, 'w', encoding='utf-8') as file:
+            file.write(json.dumps(file_content))

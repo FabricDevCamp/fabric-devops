@@ -84,6 +84,23 @@ class DeploymentManager:
 
         lakehouse = FabricRestApi.create_lakehouse(workspace['id'], lakehouse_name)
 
+        web_datasource_path = deploy_job.parameters[deploy_job.web_datasource_path_parameter]
+ 
+        variable_library = VariableLibrary()
+        variable_library.add_variable("workspace_id", workspace['id'])
+        variable_library.add_variable("lakehouse_id", lakehouse['id'])
+        variable_library.add_variable("lakehouse_display_name", lakehouse['displayName'])
+        variable_library.add_variable("web_datasource_path", web_datasource_path)
+
+
+        create_library_request = \
+            ItemDefinitionFactory.get_variable_library_create_request(
+                "environment_settings",
+                variable_library
+        )
+
+        FabricRestApi.create_item(workspace['id'], create_library_request)
+
         create_notebook_request = \
             ItemDefinitionFactory.get_create_item_request_from_folder(
                 'Create Lakehouse Tables.Notebook')
@@ -91,8 +108,7 @@ class DeploymentManager:
         notebook_redirects = {
             '{WORKSPACE_ID}': workspace['id'],
             '{LAKEHOUSE_ID}': lakehouse['id'],
-            '{LAKEHOUSE_NAME}': lakehouse['displayName'],
-            '{WEB_DATASOURCE_PATH}': deploy_job.parameters[deploy_job.web_datasource_path_parameter]
+            '{LAKEHOUSE_NAME}': lakehouse['displayName']
         }
 
         create_notebook_request = \
@@ -224,7 +240,7 @@ class DeploymentManager:
         return workspace
 
     @classmethod
-    def deploy_notebook_solution_backup(cls,
+    def deploy_notebook_solution_simple(cls,
                                  target_workspace,
                                  deploy_job = StagingEnvironments.get_dev_environment()):
         """Deploy Notebook Solution"""
@@ -243,7 +259,7 @@ class DeploymentManager:
 
         create_notebook_request = \
             ItemDefinitionFactory.get_create_item_request_from_folder(
-                'Create Lakehouse Tables.Notebook')
+                'Create Lakehouse Tables.Notebook No Var Lib')
 
         notebook_redirects = {
             '{WORKSPACE_ID}': workspace['id'],
@@ -343,6 +359,117 @@ class DeploymentManager:
                                                 shortcut_location,
                                                 shortcut_subpath,
                                                 connection['id'])
+
+        for notebook_folder in notebook_folders:
+            create_notebook_request = \
+                ItemDefinitionFactory.get_create_notebook_request_from_folder(
+                    notebook_folder,
+                    workspace['id'],
+                    lakehouse)
+
+            notebook = FabricRestApi.create_item(workspace['id'], create_notebook_request)
+            FabricRestApi.run_notebook(workspace['id'], notebook)
+
+        sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse)
+
+        FabricRestApi.refresh_sql_endpoint_metadata(workspace['id'], sql_endpoint['database'])
+
+        create_model_request = \
+            ItemDefinitionFactory.get_create_item_request_from_folder(
+                semantic_model_folder)
+
+        model_redirects = {
+            '{SQL_ENDPOINT_SERVER}': sql_endpoint['server'],
+            '{SQL_ENDPOINT_DATABASE}': sql_endpoint['database']
+        }
+
+        create_model_request = \
+            ItemDefinitionFactory.update_part_in_create_request(create_model_request,
+                                                                'definition/expressions.tmdl',
+                                                                model_redirects)
+
+        model = FabricRestApi.create_item(workspace['id'], create_model_request)
+
+        FabricRestApi.create_and_bind_semantic_model_connecton(workspace, model['id'], lakehouse)
+
+        for report_folder in report_folders:
+            create_report_request = \
+                ItemDefinitionFactory.get_create_report_request_from_folder(
+                    report_folder,
+                    model['id'])
+
+            FabricRestApi.create_item(workspace['id'], create_report_request)
+
+        AppLogger.log_job_complete(workspace['id'])
+
+        return workspace
+
+    @classmethod
+    def deploy_shortcut_solution_with_varlib(cls,
+                                 target_workspace,
+                                 deploy_job = StagingEnvironments.get_dev_environment()):
+        """Deploy Shortcut Solution with VarLib"""
+
+        lakehouse_name = "sales"
+        notebook_folders = [
+            'Create 01 Silver Layer.Notebook',
+            'Create 02 Gold Layer.Notebook'
+        ]
+        semantic_model_folder = 'Product Sales DirectLake Model.SemanticModel'
+        report_folders = [
+            'Product Sales Summary.Report',
+            'Product Sales Time Intelligence.Report'
+        ]
+
+        AppLogger.log_job(f"Deploying Custom Shortcut Solution to [{target_workspace}]")
+
+        deploy_job.display_deployment_parameters(parameter_filter="adls")
+
+        workspace = FabricRestApi.create_workspace(target_workspace)
+
+        FabricRestApi.update_workspace_description(workspace['id'], 'Custom Shortcut Solution')
+
+        lakehouse = FabricRestApi.create_lakehouse(workspace['id'], lakehouse_name)
+
+        adls_container_name = deploy_job.parameters[DeploymentJob.adls_container_name_parameter]
+        adls_container_path = deploy_job.parameters[DeploymentJob.adls_container_path_parameter]
+        adls_server = deploy_job.parameters[DeploymentJob.adls_server_parameter]
+        adls_path = f'/{adls_container_name}{adls_container_path}'
+
+        connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
+            adls_server,
+            adls_path,
+            workspace)
+
+        shortcut_name = "sales-data"
+        shortcut_path = "Files"
+        shortcut_location = adls_server
+        shortcut_subpath = adls_path
+   
+        variable_library = VariableLibrary()
+        variable_library.add_variable("adls_shortcut_location", adls_server)
+        variable_library.add_variable("adls_shortcut_subpath",  adls_path)
+        variable_library.add_variable("adls_connection_id",  connection['id'])
+
+        create_library_request = \
+            ItemDefinitionFactory.get_variable_library_create_request(
+                "environment_settings",
+                variable_library
+        )
+
+        FabricRestApi.create_item(workspace['id'], create_library_request)
+
+        adls_shortcut_location_variable = "$(/**/environment_settings/adls_shortcut_location)"
+        adls_shortcut_subpath_variable = "$(/**/environment_settings/adls_shortcut_subpath)"
+        adls_connection_id_variable = "$(/**/environment_settings/adls_connection_id)"
+
+        FabricRestApi.create_adls_gen2_shortcut(workspace['id'],
+                                                lakehouse['id'],
+                                                shortcut_name,
+                                                shortcut_path,
+                                                adls_shortcut_location_variable,
+                                                adls_shortcut_subpath_variable,
+                                                adls_connection_id_variable)
 
         for notebook_folder in notebook_folders:
             create_notebook_request = \

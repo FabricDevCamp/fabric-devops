@@ -5,7 +5,7 @@ import os
 class EnvironmentSettings:
     """Environment Settings"""
 
-    RUN_AS_SERVICE_PRINCIPAL = True
+    RUN_AS_SERVICE_PRINCIPAL = False
     RUNNING_IN_GITHUB = os.getenv('GITHUB_ACTIONS') == 'true'
     RUNNING_LOCALLY = (RUNNING_IN_GITHUB is False)
 

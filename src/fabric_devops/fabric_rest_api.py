@@ -1,6 +1,7 @@
 """Module to manage calls to Fabric REST APIs"""
 
 import time
+import json
 from json.decoder import JSONDecodeError
 import requests
 from .app_logger import AppLogger
@@ -95,10 +96,6 @@ class FabricRestApi:
         request_headers = {'Content-Type':'application/json',
                            'Authorization': f'Bearer {access_token}'}
         response = requests.post(url=rest_url, headers=request_headers, json=post_body, timeout=60)
-
-        print('first response')
-        print(response)
-        print(response.headers)
 
         if response.status_code == 202:
             operation_state_url = response.headers.get('Location')
@@ -263,6 +260,11 @@ class FabricRestApi:
         return filter(lambda workspace: workspace['type'] == 'Workspace', all_workspaces)
 
     @classmethod
+    def get_workspace_info(cls, workspace_id):
+        """Get Workspace information by ID"""
+        return cls._execute_get_request(f'workspaces/{workspace_id}')
+
+    @classmethod
     def display_workspaces(cls):
         """Display all workspaces accessible to caller"""
         AppLogger.log_step('Workspaces:')
@@ -320,6 +322,9 @@ class FabricRestApi:
             AppLogger.log_substep(f"Deleting connection {connection['displayName']}")
             cls.delete_connection(connection['id'])
 
+        if cls.workspace_has_provisioned_identity(workspace_id):
+            cls.deprovision_workspace_identity(workspace_id)
+
         endpoint = f'workspaces/{workspace_id}'
         cls._execute_delete_request(endpoint)
 
@@ -355,6 +360,30 @@ class FabricRestApi:
           }
         }
         return cls._execute_post_request(endpoint, post_body)
+
+    @classmethod
+    def provision_workspace_identity(cls, workspace_id, workspace_role = 'Admin'):
+        """Provision Workspace Identity"""
+        AppLogger.log_step('Provisioning workspace identity ')
+        rest_url = f"workspaces/{workspace_id}/provisionIdentity"
+        workspace_identity = cls._execute_post_request(rest_url)
+        service_principal_id = workspace_identity['servicePrincipalId']
+        AppLogger.log_substep(f'Workspace identity provisioned with service principal id [{service_principal_id}]')
+        cls.add_workspace_spn(workspace_id, service_principal_id, workspace_role)
+        AppLogger.log_substep(f'Workspace identity added to workspace role of [{workspace_role}]')
+
+    @classmethod
+    def workspace_has_provisioned_identity(cls, workspace_id):
+        """Check if Workspace has a provisioned identity"""
+        workspace_info = cls.get_workspace_info(workspace_id)
+        return 'workspaceIdentity' in workspace_info
+
+    @classmethod
+    def deprovision_workspace_identity(cls, workspace_id):
+        """Deprovision Workspace Identity"""
+        AppLogger.log_substep('Deprovisioning workspace identity ')
+        rest_url = f"workspaces/{workspace_id}/deprovisionIdentity"
+        cls._execute_post_request(rest_url)
 
     @classmethod
     def list_connections(cls):
@@ -516,6 +545,82 @@ class FabricRestApi:
         }
 
         return cls.create_connection(create_connection_request)
+
+    @classmethod
+    def create_sql_connection_with_workspace_identity(cls, server, database,
+                                                     workspace = None, lakehouse = None):
+        """Create SQL Connection"""
+        
+        # provision workspace identity
+        cls.provision_workspace_identity(workspace['id'])
+        
+        display_name = ''
+        display_name = f"Workspace[{workspace['id']}]-" + display_name
+        if lakehouse is not None:
+            display_name = display_name + f"Lakehouse[{lakehouse['displayName']}]"
+        else:
+            display_name = display_name + 'SQL'
+
+        create_connection_request = {
+            'displayName': display_name,
+            'connectivityType': 'ShareableCloud',
+            'privacyLevel': 'Organizational',
+            'connectionDetails': {
+                'type': 'SQL',
+                'creationMethod': 'Sql',
+                'parameters': [ 
+                    { 'value': server, 'dataType': 'Text', 'name': 'server' },
+                    { 'value': database, 'dataType': 'Text', 'name': 'database' }
+                ]
+            },
+            'credentialDetails': {
+                'credentials': {
+                    'credentialType': 'WorkspaceIdentity'
+                },
+                'singleSignOnType': 'None',
+                'connectionEncryption': 'NotEncrypted',
+                'skipTestConnection': 'false'
+            }
+        }
+
+        return cls.create_connection(create_connection_request)
+
+    @classmethod
+    def create_proxy_connection_with_workspace_identity(cls, server, database, workspace):
+        """Create AnalysisServices Connection for proxy model"""
+        
+        # provision workspace identity if needed
+        if cls.workspace_has_provisioned_identity(workspace['id']) is False:
+            cls.provision_workspace_identity(workspace['id'])
+        
+        display_name = ''
+        display_name = f"Workspace[{workspace['id']}]-" + display_name
+        display_name = display_name + f'AnalysisServices[{database}]'
+
+        create_connection_request = {
+            'displayName': display_name,
+            'connectivityType': 'ShareableCloud',
+            'privacyLevel': 'Organizational',
+            'connectionDetails': {
+                'type': 'AnalysisServices',
+                'creationMethod': 'AnalysisServices',
+                'parameters': [ 
+                    { 'value': server, 'dataType': 'Text', 'name': 'server' },
+                    { 'value': database, 'dataType': 'Text', 'name': 'database' }
+                ]
+            },
+            'credentialDetails': {
+                'credentials': {
+                    'credentialType': 'WorkspaceIdentity'
+                },
+                'singleSignOnType': 'MicrosoftEntraID',
+                'connectionEncryption': 'NotEncrypted',
+                'skipTestConnection': 'false'
+            }
+        }
+
+        return cls.create_connection(create_connection_request)
+
 
     @classmethod
     def create_azure_storage_connection_with_account_kex(cls, server, path,
@@ -742,6 +847,50 @@ class FabricRestApi:
         return cls._execute_post_request(endpoint)
 
     @classmethod
+    def export_item_definitions(cls, workspace_id):
+        """Get Item Definition"""
+        endpoint = f"workspaces/{workspace_id}/exportItemDefinitions"
+        post_body  = {
+            'mode': 'All'
+        }
+        return cls._execute_post_request(endpoint, post_body)
+
+    @classmethod
+    def purge_logical_ids(cls, workspace_id):
+        """Get Item Definition"""
+        endpoint = f"workspaces/{workspace_id}/__private/purgeLogicalIds"
+        return cls._execute_post_request(endpoint)
+
+    @classmethod
+    def import_item_definitions(cls, workspace_id, definition_parts):
+        """Get Item Definition"""
+        endpoint = f"workspaces/{workspace_id}/importItemDefinitions"
+        post_body  = {
+            'definitionParts': definition_parts
+        }
+        return cls._execute_post_request(endpoint, post_body)
+
+
+    @classmethod
+    def copy_workspace_items(cls, source_workspace_name, target_workspace_name):        
+        """Get Item Definition"""
+
+        source_workspace = cls.get_workspace_by_name(source_workspace_name)
+        target_workspace = cls.get_workspace_by_name(target_workspace_name) 
+
+        if(target_workspace is None):
+            target_workspace = cls.create_workspace(target_workspace_name)
+
+        source_export = cls.export_item_definitions(source_workspace['id'])
+
+        definition_parts = source_export['DefinitionParts']
+
+        AppLogger.log_step("Importing items")
+        cls.import_item_definitions(target_workspace['id'] , definition_parts)
+        AppLogger.log_substep("items imported")
+
+
+    @classmethod
     def create_lakehouse(cls, workspace_id, display_name, folder_id = None):
         """Create Lakehouse"""
         create_item_request = {
@@ -928,7 +1077,7 @@ class FabricRestApi:
                 AppLogger.log_substep('Creating SQL connection for semantic model')
                 server = datasource['connectionDetails']['server']
                 database = datasource['connectionDetails']['database']
-                connection = cls.create_sql_connection_with_service_principal(server,
+                connection = cls.create_sql_connection_with_workspace_identity(server,
                                                                               database,
                                                                               workspace,
                                                                               lakehouse)
