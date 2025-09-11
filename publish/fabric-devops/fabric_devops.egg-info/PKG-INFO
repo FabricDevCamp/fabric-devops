@@ -1,0 +1,5 @@
+Metadata-Version: 2.4
+Name: fabric-devops
+Version: 0.0.0
+Summary: A library to assist with DevOps when deploying and updating Fabric solutions
+Author: Microsoft Corp

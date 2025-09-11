@@ -1,0 +1,7 @@
+[project]
+name = "fabric-devops"
+authors = [
+    {name = "Microsoft Corp"},
+]
+version = "0.0.0"
+description = "A library to assist with DevOps when deploying and updating Fabric solutions"

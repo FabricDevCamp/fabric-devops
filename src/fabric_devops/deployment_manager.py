@@ -59,7 +59,7 @@ class DeploymentManager:
             ItemDefinitionFactory.get_create_report_request_from_folder(
                 'Product Sales Summary.Report',
                 model['id'])
-
+        
         FabricRestApi.create_item(workspace['id'], create_report_request)
 
         AppLogger.log_job_complete(workspace['id'])
@@ -1592,20 +1592,20 @@ class DeploymentManager:
         sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse)
   
     @classmethod
-    def conn_filter(cls, connection): 
+    def conn_filter_for_github(cls, connection):
         """GitHub connection filter"""
         return connection['connectionDetails']['type'] ==  'GitHubSourceControl'
 
     @classmethod
     def delete_all_github_connections(cls):
         """Delete All GitHub connection"""
-        github_connections = list(filter(cls.conn_filter, FabricRestApi.list_connections()))
+        github_connections = list(filter(cls.conn_filter_for_github, FabricRestApi.list_connections()))
         for connection in github_connections:
             AppLogger.log_step(f"Deleting connection {connection['displayName']}")
             FabricRestApi.delete_connection(connection['id'])
 
     @classmethod
-    def connect_workspace_to_github_repo(cls, workspace, repo_name = None):
+    def sync_workspace_to_github_repo(cls, workspace, repo_name = None):
         """Setup Workspace with GIT Connection"""
         
         if repo_name is None:
@@ -1621,21 +1621,37 @@ class DeploymentManager:
 
         AppLogger.log_job_complete(workspace['id'])
 
+    # @classmethod
+    # def connect_workspace_to_ado_repo_branch(cls, workspace, project_name = None):
+    #     """Setup Workspace with GIT Connection"""
+        
+    #     if project_name is None:
+    #         project_name = workspace['displayName'].replace(" ", "-")
+
+    #     AppLogger.log_job(f"Setup workspace [{workspace['displayName']} with GIT integration]")
+
+    #     AdoProjectManager.create_project_with_pipelines(project_name)
+
+    #     FabricRestApi.connect_workspace_to_ado_repo(workspace, project_name, 'dev')
+
+    #     AppLogger.log_job_complete(workspace['id'])
+
     @classmethod
-    def connect_workspace_to_ado_repo(cls, workspace, project_name = None):
-        """Setup Workspace with GIT Connection"""
+    def sync_workspace_to_ado_repo(cls, workspace, project_name = None):
+        """Setup Git Workspace Connecton to ADO repo"""
         
         if project_name is None:
             project_name = workspace['displayName'].replace(" ", "-")
 
         AppLogger.log_job(f"Setup workspace [{workspace['displayName']} with GIT integration]")
 
-        AdoProjectManager.create_project_with_pipelines(project_name)
-
+        AdoProjectManager.create_project(project_name)
+        AdoProjectManager.create_branch(project_name, 'test', 'main')
+        AdoProjectManager.create_branch(project_name, 'dev', 'test')
+        AdoProjectManager.set_default_branch(project_name, 'dev')
         FabricRestApi.connect_workspace_to_ado_repo(workspace, project_name, 'dev')
 
         AppLogger.log_job_complete(workspace['id'])
-
 
 
     @classmethod

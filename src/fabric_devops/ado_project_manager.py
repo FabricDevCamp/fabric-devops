@@ -321,6 +321,8 @@ class AdoProjectManager:
                     ]
                 }
         cls._execute_post_request(push_endpoint, push_body)
+
+        cls.write_file_to_repo(project_name, 'main', 'workspace/readme.md', f'ReadMe for {project_name}')
         
         return new_project
       

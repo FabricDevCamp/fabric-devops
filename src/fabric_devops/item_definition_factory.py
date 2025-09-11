@@ -125,6 +125,14 @@ class ItemDefinitionFactory:
                                                                     model_id)
 
     @classmethod
+    def get_create_report_request_from_pbir_folder(cls, item_folder, model_id):
+        """generate create item request from folder"""
+        create_request = cls.get_create_item_request_from_folder(item_folder)
+        return cls.update_create_pbir_report_request_with_semantic_model(create_request,
+                                                                         model_id)
+       
+
+    @classmethod
     def update_part_in_create_request(cls, create_item_request, part_path, search_replace_text):
         """Update Item Definition Part"""
         item_definition = create_item_request['definition']
@@ -270,6 +278,27 @@ class ItemDefinitionFactory:
             'type': "Report",
             'definition': item_definition
         }
+
+
+    @classmethod
+    def update_create_pbir_report_request_with_semantic_model(cls, create_report_request, target_model_id):
+        """Update Item Definition Part"""
+        item_definition = create_report_request['definition']
+        item_part = next((part for part in item_definition['parts'] if part['path'] == 'definition.pbir'), None)
+        if item_part is not None:
+            item_definition['parts'].remove(item_part)
+            file_template = cls.get_template_file(r"Reports//definition_pbir.pbir")
+            file_content = file_template.replace('{SEMANTIC_MODEL_ID}', target_model_id)
+            item_part = cls._create_inline_base64_part('definition.pbir', file_content)
+            item_definition['parts'].append(item_part)
+
+        return {
+            'displayName': create_report_request['displayName'],
+            'type': "Report",
+            'definition': item_definition
+        }
+
+
 
     @classmethod
     def get_data_pipeline_create_request(cls, display_name, pipeline_definition):

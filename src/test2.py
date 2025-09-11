@@ -1,8 +1,8 @@
 from fabric_devops import DeploymentManager, FabricRestApi
 
-workspace_name = "Contoso"
-workspace = FabricRestApi.get_workspace_by_name(workspace_name)
+WORKSPACE_NAME = "Contoso"
+#DeploymentManager.deploy_powerbi_solution(WORKSPACE_NAME)
 
-FabricRestApi.delete_workspace(workspace['id'])
+workspace = FabricRestApi.get_workspace_by_name(WORKSPACE_NAME)
 
-Deplo
+FabricRestApi.connect_workspace_to_ado_repo(workspace, workspace['displayName'])

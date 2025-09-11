@@ -11,14 +11,13 @@ def deploy_powerbi_solution():
     AppLogger.log_job("Deploying Power BI Solution")
 
     workspace_name = "Custom Power BI Solution"
-    semantic_model_name = 'Product Sales Imported Model'
-    report_name = 'Product Sales Summary'
 
     workspace = FabricRestApi.create_workspace(workspace_name)
 
     create_model_request = \
-        ItemDefinitionFactory.get_semantic_model_create_request(semantic_model_name,
-                                                                'sales_model_import.bim')
+        ItemDefinitionFactory.get_create_item_request_from_folder(
+            'Product Sales Imported Model Dev.SemanticModel')
+
     model = FabricRestApi.create_item(workspace['id'], create_model_request)
 
     web_url = FabricRestApi.get_web_url_from_semantic_model(workspace['id'], model['id'])
@@ -32,15 +31,85 @@ def deploy_powerbi_solution():
     FabricRestApi.refresh_semantic_model(workspace['id'], model['id'])
 
     create_report_request = \
-        ItemDefinitionFactory.get_report_create_request(model['id'],
-                                                        report_name,
-                                                        'product_sales_summary.json')
+        ItemDefinitionFactory.get_create_report_request_from_folder(
+            'Product Sales Summary.Report',
+            model['id'])
+
+    FabricRestApi.create_item(workspace['id'], create_report_request)
+
+
+    AppLogger.log_job_complete(workspace['id'])
+
+def deploy_notebook_solution():
+    """Deploy Notebook Solution"""
+
+    AppLogger.log_job("Deploying Notebook Solution")
+
+    workspace_name = "Custom Notebook Solution"
+    lakehouse_name = "sales"
+
+    workspace = FabricRestApi.create_workspace(workspace_name)
+
+    FabricRestApi.update_workspace_description(workspace['id'], 'Custom Notebook Solution')
+
+    lakehouse = FabricRestApi.create_lakehouse(workspace['id'], lakehouse_name)
+
+    create_notebook_request = \
+        ItemDefinitionFactory.get_create_item_request_from_folder(
+            'Create Lakehouse Tables.Notebook')
+    
+    WEB_DATASOURCE_PATH_DEV = 'https://fabricdevcamp.blob.core.windows.net/sampledata/ProductSales/Dev/'
+
+    notebook_redirects = {
+        '{WORKSPACE_ID}': workspace['id'],
+        '{LAKEHOUSE_ID}': lakehouse['id'],
+        '{LAKEHOUSE_NAME}': lakehouse['displayName'],
+        '{WEB_DATASOURCE_PATH}': WEB_DATASOURCE_PATH_DEV
+    }
+
+    create_notebook_request = \
+        ItemDefinitionFactory.update_part_in_create_request(create_notebook_request,
+                                                            'notebook-content.py', 
+                                                            notebook_redirects)
+
+    notebook = FabricRestApi.create_item(workspace['id'], create_notebook_request)
+
+    FabricRestApi.run_notebook(workspace['id'], notebook)
+
+    sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse)
+
+    FabricRestApi.refresh_sql_endpoint_metadata(workspace['id'], sql_endpoint['database'])
+
+    create_model_request = \
+        ItemDefinitionFactory.get_create_item_request_from_folder(
+            'Product Sales DirectLake Model.SemanticModel')
+
+    model_redirects = {
+        '{SQL_ENDPOINT_SERVER}': sql_endpoint['server'],
+        '{SQL_ENDPOINT_DATABASE}': sql_endpoint['database']
+    }
+
+    create_model_request = \
+        ItemDefinitionFactory.update_part_in_create_request(create_model_request,
+                                                            'definition/expressions.tmdl',
+                                                            model_redirects)
+
+    model = FabricRestApi.create_item(workspace['id'], create_model_request)
+
+    FabricRestApi.create_and_bind_semantic_model_connecton(workspace, model['id'], lakehouse)
+
+    create_report_request = \
+        ItemDefinitionFactory.get_create_report_request_from_folder(
+            'Product Sales Summary.Report',
+            model['id'])
 
     FabricRestApi.create_item(workspace['id'], create_report_request)
 
     AppLogger.log_job_complete(workspace['id'])
 
-def deploy_notebook_solution():
+    return workspace
+
+def deploy_notebook_solution_with_variable_library():
     """Deploy Notebook Solution"""
 
     AppLogger.log_job("Deploying Notebook Solution")
@@ -749,4 +818,6 @@ match os.getenv("SOLUTION_NAME"):
         deploy_warehouse_solution()
         deploy_realtime_solution()
         deploy_fabcon_solution()
-   
+
+
+deploy_data_pipeline_solution()

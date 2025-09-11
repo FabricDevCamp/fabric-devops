@@ -1,6 +1,6 @@
 """Test"""
 
-from fabric_devops import DeploymentManager, GitHubRestApi, FabricRestApi, AppLogger
+from fabric_devops import DeploymentManager, GitHubRestApi, FabricRestApi, AppLogger, StagingEnvironments
 
 PROJECT_NAME = 'Carrie'
 SOLUTION_NAME = 'Custom Notebook Solution'
@@ -13,7 +13,7 @@ PROD_WORKSPACE_NAME = f"{PROJECT_NAME}"
 
 DEV_WORKSPACE = DeploymentManager.deploy_solution_by_name(DEV_WORKSPACE_NAME, SOLUTION_NAME)
 
-DeploymentManager.connect_workspace_to_github_repo(DEV_WORKSPACE, PROJECT_NAME)
+DeploymentManager.sync_workspace_to_github_repo(DEV_WORKSPACE, PROJECT_NAME)
 
 GitHubRestApi.create_and_merge_pull_request(
     PROJECT_NAME,
