@@ -31,7 +31,7 @@ DeploymentManager.apply_post_deploy_fixes(
 AdoProjectManager.create_and_merge_pull_request(PROJECT_NAME, 'dev','test')
 
 PROD_WORKSPACE = FabricRestApi.create_workspace(PROD_WORKSPACE_NAME)
-FabricRestApi.connect_workspace_to_github_repo(PROD_WORKSPACE, PROJECT_NAME, 'main')
+FabricRestApi.connect_workspace_to_ado_repo(PROD_WORKSPACE, PROJECT_NAME, 'main')
 FabricRestApi.disconnect_workspace_from_git(PROD_WORKSPACE['id'])
 
 DeploymentManager.apply_post_deploy_fixes(
