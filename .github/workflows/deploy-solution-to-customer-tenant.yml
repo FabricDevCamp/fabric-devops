@@ -64,4 +64,4 @@ jobs:
           CUSTOMER_NAME: ${{ inputs.customer_name }}    
 
         run: 
-          python src/deploy_solution_to customer_tenant.py
+          python src/deploy_solution_to_customer_tenant.py
