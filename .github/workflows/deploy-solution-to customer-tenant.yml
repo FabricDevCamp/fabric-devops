@@ -1,5 +1,5 @@
 
-name: Deploy with Custom Parameters
+name: Deploy Solution to Customer Tenant
 run-name: Deploy ${{inputs.solution_name}} to ${{ inputs.customer_name }}
 
 on:
@@ -64,4 +64,4 @@ jobs:
           CUSTOMER_NAME: ${{ inputs.customer_name }}    
 
         run: 
-          python src/deploy_solution_with_parameters.py
+          python src/deploy_solution_to customer_tenant.py

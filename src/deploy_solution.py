@@ -818,6 +818,3 @@ match os.getenv("SOLUTION_NAME"):
         deploy_warehouse_solution()
         deploy_realtime_solution()
         deploy_fabcon_solution()
-
-
-deploy_data_pipeline_solution()
