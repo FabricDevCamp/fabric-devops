@@ -1240,26 +1240,25 @@ class DeploymentManager:
                                               web_datasource_path):
         """Update Imported Sementic Model Source"""
         model = FabricRestApi.get_item_by_name(workspace['id'], semantic_model_name, 'SemanticModel')
-        old_web_datasource_path = FabricRestApi.get_web_url_from_semantic_model(workspace['id'], model['id'])
+        old_web_datasource_path = FabricRestApi.get_web_url_from_semantic_model(workspace['id'], model['id']) + '/'
 
-        old_model_definition = FabricRestApi.get_item_definition(workspace['id'], model)
+        if web_datasource_path == old_web_datasource_path:
+            print (f"No change in web datasource path for model [{semantic_model_name}]")
+        else:
+            old_model_definition = FabricRestApi.get_item_definition(workspace['id'], model)
+    
+            search_replace_terms = {
+                old_web_datasource_path: web_datasource_path
+            }
 
-        print( 'here it is...')
+            model_definition = {
+                'definition': ItemDefinitionFactory.update_item_definition_part(
+                    old_model_definition['definition'],
+                    'definition/expressions.tmdl',
+                    search_replace_terms)
+            }
 
-        search_replace_terms = {
-            old_web_datasource_path: web_datasource_path
-        }
-
-        print (search_replace_terms)
-
-        model_definition = {
-            'definition': ItemDefinitionFactory.update_item_definition_part(
-                old_model_definition['definition'],
-                'definition/expressions.tmdl',
-                search_replace_terms)
-        }
-
-        FabricRestApi.update_item_definition(workspace['id'], model, model_definition)
+            FabricRestApi.update_item_definition(workspace['id'], model, model_definition)
 
     @classmethod
     def update_directlake_semantic_model_source(cls,
