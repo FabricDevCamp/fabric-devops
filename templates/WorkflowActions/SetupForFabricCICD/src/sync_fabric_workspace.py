@@ -23,7 +23,7 @@ else:
     with open(config_file, 'r', encoding='utf-8') as file:
         config = json.load(file)
 
-    workspace_config = config[branch] 
+    workspace_config = config[branch])
 
     # Sample values for FabricWorkspace parameters
     workspace_id = workspace_config['workspace_id']
@@ -31,6 +31,8 @@ else:
     
     repository_directory = "workspace"
     item_type_in_scope = [ "Lakehouse", "Notebook", "SemanticModel", "Report"]
+
+    print( 'milestone 1')
 
     # Initialize the FabricWorkspace object with the required parameters
     target_workspace = FabricWorkspace(
@@ -41,12 +43,16 @@ else:
         token_credential=token_credential,
     )
 
+    print( 'milestone 2')
+
     # Get commit heads from workspace and remote branch
     # https://learn.microsoft.com/en-us/rest/api/fabric/core/git/get-status
     git_status_url = f"{target_workspace.base_api_url}/git/status"
     git_status = target_workspace.endpoint.invoke(method="GET", url=git_status_url)
     workspace_head = git_status["body"]["workspaceHead"]
     remote_head = os.getenv("BUILD_SOURCEVERSION")
+
+    print( 'milestone 3')
 
     # Force update to sync workspace with remote branch
     # https://learn.microsoft.com/en-us/rest/api/fabric/core/git/update-from-git
@@ -61,3 +67,6 @@ else:
         "options": {"allowOverrideItems": True},
     }
     target_workspace.endpoint.invoke(method="POST", url=git_update_url, body=git_update_body, max_retries=10)
+
+    print( 'milestone 3')
+
