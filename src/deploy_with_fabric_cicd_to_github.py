@@ -117,7 +117,7 @@ GitHubRestApi.create_and_merge_pull_request(
 
 # create first feature workspace
 FEATURE_NAME = 'feature1'
-FEATURE_WORKSPACE_NAME = F'dev-{FEATURE_NAME}'
+FEATURE_WORKSPACE_NAME = F'{PROJECT_NAME}-dev-{FEATURE_NAME}'
 FEATURE_WORKSPACE = FabricRestApi.create_workspace(FEATURE_WORKSPACE_NAME)
 GitHubRestApi.create_branch(PROJECT_NAME,FEATURE_NAME)
 FabricRestApi.connect_workspace_to_github_repo(FEATURE_WORKSPACE, PROJECT_NAME, FEATURE_NAME)

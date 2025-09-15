@@ -1,11 +1,24 @@
-from fabric_devops import DeploymentManager, FabricRestApi, ItemDefinitionFactory
+"""Test3"""
+import json
+from fabric_devops import DeploymentManager, FabricRestApi, EnvironmentSettings, AdoProjectManager
 
-#workspace = FabricRestApi.create_workspace("Acme")
-#FabricRestApi.provision_workspace_identity(workspace['id'])
+WORKSPACE1_NAME = "Apollo-dev"
+workspace1 = FabricRestApi.get_workspace_by_name(WORKSPACE1_NAME)
 
-workspace = FabricRestApi.get_workspace_by_name("Acme")
 
-if FabricRestApi.workspace_has_provisioned_identity(workspace['id']):
-    print("Workspace has a provisioned identity.")
-else:
-    print("Workspace does not have a provisioned identity.")
+git_status = FabricRestApi.get_git_status(workspace1['id'])
+
+update_from_git_request = {
+        "workspaceHead": git_status['workspaceHead'],
+        "remoteCommitHash": git_status['remoteCommitHash'],
+                "conflictResolution": {
+                    "conflictResolutionType": "Workspace",
+                    "conflictResolutionPolicy": "PreferWorkspace"
+                },
+                "options": {
+                    "allowOverrideItems": True
+                }
+                            
+            }
+
+FabricRestApi.update_workspace_from_git(workspace1['id'], update_from_git_request)

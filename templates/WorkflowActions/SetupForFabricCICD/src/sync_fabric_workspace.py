@@ -14,18 +14,14 @@ token_credential = \
 
 github_workpace = os.getenv('GITHUB_WORKSPACE')
 branch = os.getenv('BRANCH_NAME')
-print(github_workpace, flush=True)
 
 config_file = github_workpace +  '/workspace/workspace.config.json'
 
 if os.path.exists(config_file) is False:
     print(f"'{config_file}' does not exists.")
-else:        
-    print(config_file, flush=True)
-
+else:
     with open(config_file, 'r', encoding='utf-8') as file:
         config = json.load(file)
-        print(config, flush=True)
 
     workspace_config = config[branch] 
 
@@ -44,15 +40,6 @@ else:
         item_type_in_scope=item_type_in_scope,
         token_credential=token_credential,
     )
-
-    # Update Git credentials in Fabric
-    # https://learn.microsoft.com/en-us/rest/api/fabric/core/git/update-my-git-credentials
-    git_credential_url = f"{target_workspace.base_api_url}/git/myGitCredentials"
-    git_credential_body = {
-        "source": "ConfiguredConnection",
-        "connectionId": "47d1f273-7091-47c4-b45d-df8f1231ea74",
-    }
-    target_workspace.endpoint.invoke(method="PATCH", url=git_credential_url, body=git_credential_body)
 
     # Get commit heads from workspace and remote branch
     # https://learn.microsoft.com/en-us/rest/api/fabric/core/git/get-status
