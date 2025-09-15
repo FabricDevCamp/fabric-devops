@@ -1834,15 +1834,21 @@ class DeploymentManager:
     @classmethod
     def generate_workspace_config_file(
         cls,
+        dev_workspace_name,
         test_workspace_name,
         prod_workspace_name):
         """Generate workspace config"""
 
+        dev_workspace = FabricRestApi.get_workspace_by_name(dev_workspace_name)
         test_workspace = FabricRestApi.get_workspace_by_name(test_workspace_name)
         prod_workspace = FabricRestApi.get_workspace_by_name(prod_workspace_name)
 
                 
         config  = {
+            'dev': {
+                'workspace_id': dev_workspace['id'],
+                'environment': 'DEV'
+            },
             'test': {
                 'workspace_id': test_workspace['id'],
                 'environment': 'TEST'

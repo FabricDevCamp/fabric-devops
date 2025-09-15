@@ -77,6 +77,7 @@ AppLogger.log_step('Add Workflow Files')
 # AppLogger.log_step("Create workspace.config.json")
 
 # workspace_config = DeploymentManager.generate_workspace_config_file(
+#     DEV_WORKSPACE_NAME,
 #     TEST_WORKSPACE_NAME,
 #     PROD_WORKSPACE_NAME
 # )
