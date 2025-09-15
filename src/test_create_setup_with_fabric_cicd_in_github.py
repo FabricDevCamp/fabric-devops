@@ -111,3 +111,16 @@ GitHubRestApi.create_and_merge_pull_request(
     'main',
     'Push config to prod',
     'Push config to prod')
+
+
+# create feature workspace
+FEATURE_NAME = 'feature1'
+FEATURE_WORKSPACE_NAME = F'dev-{FEATURE_NAME}'
+FEATURE_WORKSPACE = FabricRestApi.create_workspace(FEATURE_WORKSPACE_NAME)
+GitHubRestApi.create_branch(PROJECT_NAME,FEATURE_NAME)
+FabricRestApi.connect_workspace_to_github_repo(FEATURE_WORKSPACE, PROJECT_NAME, FEATURE_NAME)
+
+DeploymentManager.apply_post_deploy_fixes(
+    FEATURE_WORKSPACE_NAME,
+    StagingEnvironments.get_dev_environment(),
+    True)
