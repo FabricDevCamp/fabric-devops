@@ -1244,9 +1244,13 @@ class DeploymentManager:
 
         old_model_definition = FabricRestApi.get_item_definition(workspace['id'], model)
 
+        print( 'here it is...')
+
         search_replace_terms = {
             old_web_datasource_path: web_datasource_path
         }
+
+        print (search_replace_terms)
 
         model_definition = {
             'definition': ItemDefinitionFactory.update_item_definition_part(

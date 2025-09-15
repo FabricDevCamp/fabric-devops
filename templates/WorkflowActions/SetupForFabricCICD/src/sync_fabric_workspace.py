@@ -23,7 +23,7 @@ else:
     with open(config_file, 'r', encoding='utf-8') as file:
         config = json.load(file)
 
-    workspace_config = config[branch])
+    workspace_config = config[branch]
 
     # Sample values for FabricWorkspace parameters
     workspace_id = workspace_config['workspace_id']
@@ -49,7 +49,7 @@ else:
     git_status_url = f"{target_workspace.base_api_url}/git/status"
     git_status = target_workspace.endpoint.invoke(method="GET", url=git_status_url)
     workspace_head = git_status["body"]["workspaceHead"]
-    remote_head = os.getenv("BUILD_SOURCEVERSION")
+    remote_head = git_status["body"]["remoteCommitHash"]
 
     print( 'milestone 3')
 
@@ -65,7 +65,7 @@ else:
         },
         "options": {"allowOverrideItems": True},
     }
-    target_workspace.endpoint.invoke(method="POST", url=git_update_url, body=git_update_body, max_retries=10)
+    target_workspace.endpoint.invoke(method="POST", url=git_update_url, body=git_update_body)
 
     print( 'milestone 3')
 
