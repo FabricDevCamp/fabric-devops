@@ -674,7 +674,7 @@ class AdoProjectManager:
     def create_and_merge_pull_request(cls, project_name, source_branch, target_branch):
         """Create Pull Request"""
         AppLogger.log_step(f'Creating pull request to push changes from [{source_branch}] to [{target_branch}]')
-        title = f'Pushing changes from [{source_branch}] to [{target_branch}]'
+        title = f'Pushing changes from {source_branch} to {target_branch}'
         pull_request = cls.create_pull_request(project_name, source_branch, target_branch, title, 'Auto commit')
         time.sleep(5)
         cls.merge_pull_request(project_name, pull_request)
