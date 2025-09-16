@@ -40,7 +40,11 @@ DeploymentManager.apply_post_deploy_fixes(
 
 AppLogger.log_step('Add Workflow Files')
 
-AdoProjectManager.copy_files_from_folder_to_repo(PROJECT_NAME, 'dev', 'GitHub_SetupForFabricCICD')
+AdoProjectManager.copy_files_from_folder_to_repo(
+    PROJECT_NAME, 
+    'dev', 
+    'ADO_SetupForFabricCICD'
+)
 
 AdoProjectManager.create_and_merge_pull_request(PROJECT_NAME, 'dev','test')
 AdoProjectManager.create_and_merge_pull_request(PROJECT_NAME, 'test','main')
@@ -69,7 +73,6 @@ workspace_config = DeploymentManager.generate_workspace_config_file(
     PROD_WORKSPACE_NAME
 )
 
-
 AdoProjectManager.write_file_to_repo(
     PROJECT_NAME,
     "dev",
@@ -77,12 +80,3 @@ AdoProjectManager.write_file_to_repo(
     workspace_config,
     "TODO: param file commit"
 )
-
-AdoProjectManager.copy_files_from_folder_to_repo(
-    PROJECT_NAME, 
-    'dev', 
-    'ADO_SetupForFabricCICD'
-)
-
-AdoProjectManager.create_and_merge_pull_request(PROJECT_NAME, 'dev','test')
-AdoProjectManager.create_and_merge_pull_request(PROJECT_NAME, 'test','main')
