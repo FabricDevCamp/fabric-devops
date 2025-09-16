@@ -477,7 +477,10 @@ class AdoProjectManager:
 
     @classmethod
     def copy_files_from_folder_to_repo(cls, project_name, branch, folder_path):
-        """Copy files to repo"""
+        """Copy files to repo"""                    
+        variable_group = AdoProjectManager.create_variable_group("environmental_variables", project_name)
+        variable_group_id = variable_group['id']
+
         folder_path = f".//templates//WorkflowActions//{folder_path}//"
         for root, dirs, files in os.walk(folder_path):
             for file in files:
@@ -487,6 +490,9 @@ class AdoProjectManager:
                 relative_file_path = file_path.replace(folder_path, '')\
                                               .replace('\\', '/')
                 cls.write_file_to_repo(project_name, branch, relative_file_path, file_content)
+                if relative_file_path.lower().endswith('.yml') and '.pipelines/' in relative_file_path:
+                    pipeline_name = relative_file_path.replace('.yml', '').replace('.pipelines/', '')
+                    cls.create_pipeline(project_name, pipeline_name, relative_file_path, variable_group_id)
 
     @classmethod
     def create_variable_group(cls, name, project_name):
