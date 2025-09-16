@@ -27,7 +27,7 @@ DeploymentManager.apply_post_deploy_fixes(
     StagingEnvironments.get_test_environment(),
     True)
 
-AdoProjectManager.create_and_merge_pull_request(PROJECT_NAME, 'dev','test')
+AdoProjectManager.create_and_merge_pull_request(PROJECT_NAME, 'test','main')
 
 PROD_WORKSPACE = FabricRestApi.create_workspace(PROD_WORKSPACE_NAME)
 FabricRestApi.connect_workspace_to_ado_repo(PROD_WORKSPACE, PROJECT_NAME, 'main')
