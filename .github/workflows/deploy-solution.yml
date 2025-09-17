@@ -13,7 +13,6 @@ on:
         - Custom Notebook Solution
         - Custom Shortcut Solution
         - Custom Data Pipeline Solution
-        - Custom Variable Library Solution
         - Custom Warehouse Solution
         - Custom Realtime Solution
         - Custom FabCon Solution
