@@ -253,7 +253,6 @@ class DeploymentManager:
 
         return workspace
 
-
     @classmethod
     def deploy_shortcut_solution(cls,
                                  target_workspace,
