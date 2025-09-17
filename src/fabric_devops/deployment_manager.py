@@ -254,7 +254,7 @@ class DeploymentManager:
         return workspace
 
 
-     @classmethod
+    @classmethod
     def deploy_shortcut_solution(cls,
                                  target_workspace,
                                  deploy_job = StagingEnvironments.get_dev_environment()):
