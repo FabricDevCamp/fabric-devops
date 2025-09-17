@@ -18,7 +18,10 @@ class DeploymentManager:
 
     
     @classmethod
-    def deploy_solution_by_name(cls, solution_name, target_workspace = None):
+    def deploy_solution_by_name(cls, 
+                                solution_name, 
+                                target_workspace = None,
+                                deploy_job = StagingEnvironments.get_dev_environment() ):
         """Deploy Solution by Name"""
 
         if target_workspace is None:
@@ -28,19 +31,19 @@ class DeploymentManager:
 
         match solution_name:
             case 'Custom Power BI Solution':
-                workspace = cls.deploy_powerbi_solution(target_workspace)
+                workspace = cls.deploy_powerbi_solution(target_workspace, deploy_job)
             case 'Custom Notebook Solution':
-                workspace = cls.deploy_notebook_solution(target_workspace)
+                workspace = cls.deploy_notebook_solution(target_workspace, deploy_job)
             case 'Custom Shortcut Solution':
-                workspace = cls.deploy_shortcut_solution(target_workspace)
+                workspace = cls.deploy_shortcut_solution(target_workspace, deploy_job)
             case 'Custom Data Pipeline Solution':
-                workspace = cls.deploy_data_pipeline_solution(target_workspace)
+                workspace = cls.deploy_data_pipeline_solution(target_workspace, deploy_job)
             case 'Custom Variable Library Solution':
-                workspace = cls.deploy_variable_library_solution(target_workspace)
+                workspace = cls.deploy_variable_library_solution(target_workspace, deploy_job)
             case 'Custom Warehouse Solution':
-                workspace = cls.deploy_warehouse_solution(target_workspace)
+                workspace = cls.deploy_warehouse_solution(target_workspace, deploy_job)
             case 'Custom Realtime Solution':
-                workspace = cls.deploy_realtime_solution(target_workspace)
+                workspace = cls.deploy_realtime_solution(target_workspace, deploy_job)
         
         if workspace is None:
             raise Exception(f'Unknown solution name [{solution_name}]')

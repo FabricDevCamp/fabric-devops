@@ -18,6 +18,13 @@ on:
         - Custom Realtime Solution
         - Custom FabCon Solution
         - Deploy All Solutions
+      target_environment:
+        type: choice
+        description: Target Environment
+        options: 
+        - Dev
+        - Test
+        - Prod
       run_as_service_principal:
         type: boolean
         description: Run as service principal
@@ -55,6 +62,7 @@ jobs:
           SERVICE_PRINCIPAL_OBJECT_ID: ${{ secrets.SERVICE_PRINCIPAL_OBJECT_ID }}
           PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
           SOLUTION_NAME: ${{inputs.solution_name}}    
+          TARGET_ENVIRONMENT: ${{inputs.target_environment}}
           RUN_AS_SERVICE_PRINCIPAL: ${{inputs.run_as_service_principal}}
         run: 
           python src/deploy_solution.py

@@ -1,7 +1,7 @@
 """Deploy Solution"""
 import os
 
-from fabric_devops import DeploymentManager, EnvironmentSettings, AppLogger
+from fabric_devops import DeploymentManager, EnvironmentSettings, AppLogger, StagingEnvironments
 
 if os.getenv("RUN_AS_SERVICE_PRINCIPAL") == 'true':
     EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL = True
@@ -9,8 +9,17 @@ else:
     EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL = False
 
 solution_name = os.getenv("SOLUTION_NAME")
+workspace_name = solution_name
 
-workspace = DeploymentManager.deploy_solution_by_name(solution_name)
+match os.getenv("TARGET_ENVIRONMENT"):
+    case 'Dev':
+        deploy_job =  StagingEnvironments.get_dev_environment()
+    case 'Test':
+        deploy_job =  StagingEnvironments.get_test_environment()
+    case 'Prod':
+        deploy_job =  StagingEnvironments.get_prod_environment()
+
+workspace = DeploymentManager.deploy_solution_by_name(solution_name, workspace_name, deploy_job)
 
 AppLogger.log_job_complete(workspace['id'])
 

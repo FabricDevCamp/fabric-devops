@@ -69,7 +69,7 @@ class AppLogger:
         column2_width = cls.TABLE_WIDTH  - column1_width
         column2_value_length = len(column2_value)
         column2_offset = column2_width - column2_value_length - 5
-        row = f'  > {column1_value}{" " * column1_offset}| {column2_value}{" " * column2_offset}|'
+        row = f'  > {column1_value}{" " * column1_offset}= {column2_value}{" " * column2_offset}'
         print(row, flush=True)
 
     @classmethod
