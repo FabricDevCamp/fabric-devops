@@ -3,15 +3,16 @@ import os
 
 from fabric_devops import DeploymentManager, EnvironmentSettings, AppLogger
 
-
-
 if os.getenv("RUN_AS_SERVICE_PRINCIPAL") == 'true':
     EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL = True
 else:
     EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL = False
 
 solution_name = os.getenv("SOLUTION_NAME")
-DeploymentManager.deploy_solution_by_name(solution_name)
+
+workspace = DeploymentManager.deploy_solution_by_name(solution_name)
+
+AppLogger.log_job_complete(workspace['id'])
 
 
 # def deploy_powerbi_solution():

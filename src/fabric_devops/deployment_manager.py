@@ -18,8 +18,12 @@ class DeploymentManager:
 
     
     @classmethod
-    def deploy_solution_by_name(cls, target_workspace, solution_name):
+    def deploy_solution_by_name(cls, solution_name, target_workspace = None):
         """Deploy Solution by Name"""
+
+        if target_workspace is None:
+            target_workspace = solution_name
+
         workspace = None
 
         match solution_name:
@@ -90,8 +94,6 @@ class DeploymentManager:
                 model['id'])
         
         FabricRestApi.create_item(workspace['id'], create_report_request)
-
-        AppLogger.log_job_complete(workspace['id'])
 
         return workspace
 
