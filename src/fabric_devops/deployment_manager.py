@@ -1113,7 +1113,7 @@ class DeploymentManager:
         return workspace
 
 
-   @classmethod
+    @classmethod
     def get_deployment_pipeline_by_name(cls, display_name):
         """Get Deployment Pipeline by Name"""
         for pipeline in FabricRestApi.list_deployment_pipelines():
