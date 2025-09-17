@@ -38,10 +38,10 @@ DeploymentManager.apply_post_deploy_fixes(
     StagingEnvironments.get_prod_environment(),
     True)
 
-AppLogger.log_step('Add Workflow Files')
+AppLogger.log_step('Copying pipeline files and registering ADO pipelines')
 
 AdoProjectManager.copy_files_from_folder_to_repo(
-    PROJECT_NAME, 
+    PROJECT_NAME,
     'dev', 
     'ADO_SetupForFabricCICD'
 )
@@ -49,7 +49,7 @@ AdoProjectManager.copy_files_from_folder_to_repo(
 AdoProjectManager.create_and_merge_pull_request(PROJECT_NAME, 'dev','test')
 AdoProjectManager.create_and_merge_pull_request(PROJECT_NAME, 'test','main')
 
-AppLogger.log_step("Create parameter.yml")
+AppLogger.log_step("Generating parameter.yml used by fabric-cicd")
 
 parameter_file_content = DeploymentManager.generate_parameter_yml_file(
     DEV_WORKSPACE_NAME,
@@ -62,10 +62,10 @@ AdoProjectManager.write_file_to_repo(
     "dev",
     "workspace/parameter.yml",
     parameter_file_content,
-    "TODO: param file commit"
+    "Adding parameter.yml used by fabric-cicd"
 )
 
-AppLogger.log_step("Create workspace.config.json")
+AppLogger.log_step("Generating workspace.config.json file")
 
 workspace_config = DeploymentManager.generate_workspace_config_file(
     DEV_WORKSPACE_NAME,
@@ -78,5 +78,8 @@ AdoProjectManager.write_file_to_repo(
     "dev",
     "workspace/workspace.config.json",
     workspace_config,
-    "TODO: param file commit"
+    "Adding workspace.config.json"
 )
+
+AdoProjectManager.create_and_merge_pull_request(PROJECT_NAME, 'dev','test')
+AdoProjectManager.create_and_merge_pull_request(PROJECT_NAME, 'test','main')

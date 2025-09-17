@@ -6,7 +6,7 @@ variables:
 - group: 'environmental_variables'
 
 jobs:
-- job: Publish All Items
+- job: publish-all-items-with-fabric-cicd
   pool:
     vmImage: ubuntu-latest
   
@@ -26,11 +26,10 @@ jobs:
       workingDirectory: '$(Build.SourcesDirectory)/src'
       failOnStderr: true  
     env:
+      BRANCH_NAME: $(Build.SourceBranchName)
       FABRIC_CLIENT_ID: $(FABRIC_CLIENT_ID)
       FABRIC_CLIENT_SECRET: $(FABRIC_CLIENT_SECRET)
       FABRIC_TENANT_ID: $(FABRIC_TENANT_ID)
       SERVICE_PRINCIPAL_OBJECT_ID: $(SERVICE_PRINCIPAL_OBJECT_ID)
       ADMIN_USER_ID: $(ADMIN_USER_ID)
       FABRIC_CAPACITY_ID: $(FABRIC_CAPACITY_ID)
-
-      BRANCH_NAME: 'WTF'
