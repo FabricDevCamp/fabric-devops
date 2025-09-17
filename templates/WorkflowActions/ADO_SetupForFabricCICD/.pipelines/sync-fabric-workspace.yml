@@ -6,7 +6,7 @@ variables:
 - group: 'environmental_variables'
 
 jobs:
-- job: sync-fabric-workspace-from-git
+- job: sync_fabric_workspace_from_git
   pool:
     vmImage: ubuntu-latest
   

@@ -6,7 +6,7 @@ variables:
 - group: 'environmental_variables'
 
 jobs:
-- job: publish-all-items-with-fabric-cicd
+- job: publish_all_items_with_fabric_cicd
   pool:
     vmImage: ubuntu-latest
   

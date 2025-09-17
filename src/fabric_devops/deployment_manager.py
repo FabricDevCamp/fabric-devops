@@ -1243,7 +1243,7 @@ class DeploymentManager:
         old_web_datasource_path = FabricRestApi.get_web_url_from_semantic_model(workspace['id'], model['id']) + '/'
 
         if web_datasource_path == old_web_datasource_path:
-            print (f"No change in web datasource path for model [{semantic_model_name}]")
+            AppLogger.log_substep(f"Verified web datasource path: [{web_datasource_path}]")
         else:
             old_model_definition = FabricRestApi.get_item_definition(workspace['id'], model)
     
@@ -1613,8 +1613,8 @@ class DeploymentManager:
         
         if repo_name is None:
             repo_name = workspace['displayName'].replace(" ", "-")
-
-        AppLogger.log_job(f"Setup workspace [{workspace['displayName']} with GIT integration]")
+        
+        AppLogger.log_job(f"Configuring GIT integration in GitHub for workspace [{workspace['displayName']}]")
 
         GitHubRestApi.create_repository(repo_name, add_secrets=True)
         GitHubRestApi.create_branch(repo_name, 'test')
@@ -1646,7 +1646,7 @@ class DeploymentManager:
         if project_name is None:
             project_name = workspace['displayName'].replace(" ", "-")
 
-        AppLogger.log_job(f"Setup workspace [{workspace['displayName']} with GIT integration]")
+        AppLogger.log_job(f"Configuring GIT integration in Azure DevOps for workspace [{workspace['displayName']}]")
 
         AdoProjectManager.create_project(project_name)
         AdoProjectManager.create_branch(project_name, 'test', 'main')
