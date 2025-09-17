@@ -411,7 +411,7 @@ class FabricRestApi:
                 f"{connection['connectionDetails']['type']} - {connection['displayName']}")            
 
     @classmethod
-    def create_connection(cls, create_connection_request, top_level_step = True):
+    def create_connection(cls, create_connection_request, top_level_step = false):
         """ Create new connection"""
         log_message = f"Creating {create_connection_request['connectionDetails']['type']} " + \
                       f"connection named {create_connection_request['displayName']} ..."

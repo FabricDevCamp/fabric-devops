@@ -2,7 +2,7 @@
 import json
 import os
 
-from azure.identity import AzureCliCredential, ClientSecretCredential
+from azure.identity import ClientSecretCredential
 
 from fabric_cicd import FabricWorkspace
 
@@ -12,10 +12,13 @@ tenant_id = os.getenv("FABRIC_TENANT_ID")
 token_credential = \
     ClientSecretCredential(client_id=client_id, client_secret=client_secret, tenant_id=tenant_id)
 
-github_workpace = os.getenv('GITHUB_WORKSPACE')
+sources_directory = os.getenv('SOURCES_DIRECTORY')
 branch = os.getenv('BRANCH_NAME')
 
-config_file = github_workpace +  '/workspace/workspace.config.json'
+config_file = sources_directory + '/workspace/workspace.config.json'
+
+print(f'file: {config_file}')
+
 
 if os.path.exists(config_file) is False:
     print(f"'{config_file}' does not exists.")

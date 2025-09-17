@@ -27,6 +27,7 @@ jobs:
       failOnStderr: true  
     env:
       BRANCH_NAME: $(Build.SourceBranchName)
+      SOURCES_DIRECTORY: $(Build.SourcesDirectory)
       FABRIC_CLIENT_ID: $(FABRIC_CLIENT_ID)
       FABRIC_CLIENT_SECRET: $(FABRIC_CLIENT_SECRET)
       FABRIC_TENANT_ID: $(FABRIC_TENANT_ID)

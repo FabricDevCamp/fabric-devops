@@ -13,12 +13,12 @@ tenant_id = os.getenv("FABRIC_TENANT_ID")
 token_credential = \
     ClientSecretCredential(client_id=client_id, client_secret=client_secret, tenant_id=tenant_id)
 
-github_workpace = os.getenv('GITHUB_WORKSPACE')
+sources_directory = os.getenv('SOURCES_DIRECTORY')
 branch = os.getenv('BRANCH_NAME')
-print(github_workpace, flush=True)
 
-config_file = github_workpace +  '/workspace/workspace.config.json'
+config_file = sources_directory + '/workspace/workspace.config.json'
 
+print(f'file: {config_file}')
 
 if os.path.exists(config_file) is False:
     print(f"'{config_file}' does not exists.")
@@ -29,7 +29,7 @@ else:
         config = json.load(file)
         print(config, flush=True)
 
-    workspace_config = config[branch] 
+    workspace_config = config[branch]
 
     # Sample values for FabricWorkspace parameters
     workspace_id = workspace_config['workspace_id']
