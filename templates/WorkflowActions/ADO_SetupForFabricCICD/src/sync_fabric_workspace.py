@@ -32,7 +32,7 @@ else:
     workspace_id = workspace_config['workspace_id']
     environment = workspace_config['environment']
     
-    repository_directory = "workspace"
+    repository_directory = "."
     item_type_in_scope = [ "Lakehouse", "Notebook", "SemanticModel", "Report"]
 
     print( 'milestone 1')
@@ -70,5 +70,5 @@ else:
     }
     target_workspace.endpoint.invoke(method="POST", url=git_update_url, body=git_update_body)
 
-    print( 'milestone 3')
+    print( 'milestone 4')
 

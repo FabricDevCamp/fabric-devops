@@ -1,5 +1,6 @@
 """Publish All Items"""
 
+from pathlib import Path
 import os
 import json
 
@@ -35,14 +36,13 @@ else:
     workspace_id = workspace_config['workspace_id']
     environment = workspace_config['environment']
     
-    repository_directory = "workspace"
     item_type_in_scope = [ "Lakehouse", "Notebook", "SemanticModel", "Report"]
 
     # Initialize the FabricWorkspace object with the required parameters
     target_workspace = FabricWorkspace(
         workspace_id=workspace_id,
         environment=environment,
-        repository_directory=repository_directory,
+        repository_directory = str(Path(__file__).resolve().parent.parent / "workspace"),
         item_type_in_scope=item_type_in_scope,
         token_credential=token_credential,
     )
