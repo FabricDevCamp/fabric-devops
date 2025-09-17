@@ -31,7 +31,7 @@ class AppLogger:
         """log that job has ended"""
         cls.log_step("Deployment job completed")
         if workspace_id is not None:
-             workspace_laucnh_url = f'https://app.powerbi.com/groups/{workspace_id}/list?experience=fabric-developer'
+             workspace_laucnh_url = f'https://app.powerbi.com/groups/{workspace_id}/list?experience=power-bi'
              cls.log_substep(f'Workspace launch URL: {workspace_laucnh_url}')
         print(' ', flush=True)
 
