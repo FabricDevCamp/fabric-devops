@@ -24,7 +24,7 @@ jobs:
       scriptSource: 'filePath'
       scriptPath: 'src/sync_fabric_workspace.py' 
       workingDirectory: '$(Build.SourcesDirectory)/src'
-      failOnStderr: true  
+      failOnStderr: false  
     env:
       BRANCH_NAME: $(Build.SourceBranchName)      
       SOURCES_DIRECTORY: $(Build.SourcesDirectory)
