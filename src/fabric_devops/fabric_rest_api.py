@@ -364,7 +364,7 @@ class FabricRestApi:
     @classmethod
     def provision_workspace_identity(cls, workspace_id, workspace_role = 'Admin'):
         """Provision Workspace Identity"""
-        AppLogger.log_step('Provisioning workspace identity ')
+        AppLogger.log_substep('Provisioning workspace identity')
         rest_url = f"workspaces/{workspace_id}/provisionIdentity"
         workspace_identity = cls._execute_post_request(rest_url)
         service_principal_id = workspace_identity['servicePrincipalId']
@@ -381,7 +381,7 @@ class FabricRestApi:
     @classmethod
     def deprovision_workspace_identity(cls, workspace_id):
         """Deprovision Workspace Identity"""
-        AppLogger.log_substep('Deprovisioning workspace identity ')
+        AppLogger.log_substep('Deprovisioning workspace identity')
         rest_url = f"workspaces/{workspace_id}/deprovisionIdentity"
         cls._execute_post_request(rest_url)
 

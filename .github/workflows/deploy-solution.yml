@@ -1,5 +1,5 @@
 
-name: Deploy Solution
+name: Deploy Solution to Environment
 run-name: Deploy ${{inputs.solution_name}}
 
 on:
