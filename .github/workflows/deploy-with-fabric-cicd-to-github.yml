@@ -29,23 +29,23 @@ jobs:
 
         steps:
             - name: Check out the code
-                uses: actions/checkout@v4
+              uses: actions/checkout@v4
 
             - name: Set up Python
-                uses: actions/setup-python@v2
-                with:
+              uses: actions/setup-python@v2
+              with:
                     python-version: "3.12"
 
             - name: Install MSAL
-                run: |
+              run: |
                     pip install msal
 
             - name: Install PyNaCl
-                run: |
+              run: |
                     pip install PyNaCl
 
             - name: Deploy Solution                
-                env:
+              env:
                     FABRIC_CLIENT_ID: ${{ secrets.FABRIC_CLIENT_ID }}
                     FABRIC_CLIENT_SECRET: ${{ secrets.FABRIC_CLIENT_SECRET }}
                     FABRIC_TENANT_ID: ${{ secrets.FABRIC_TENANT_ID }}                    
@@ -55,5 +55,5 @@ jobs:
                     PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
                     PROJECT_NAME: ${{ inputs.project_name }}
                     SOLUTION_NAME: ${{inputs.solution_name}}
-                run:
+              run:
                     python src/deploy_with_fabric_cicd_to_github.py
