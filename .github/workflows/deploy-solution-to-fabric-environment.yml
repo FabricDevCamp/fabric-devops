@@ -1,6 +1,6 @@
 
-name: Deploy Solution to Environment
-run-name: Deploy ${{inputs.solution_name}}
+name: Deploy Solution to Fabric Environment
+run-name: Deploy ${{inputs.solution_name}} to ${{inputs.target_environment}} Environment
 
 on:
   workflow_dispatch:
@@ -75,4 +75,4 @@ jobs:
           GIT_INTEGRATION_PROVIDER: ${{inputs.git_integration_provider}}
           RUN_AS_SERVICE_PRINCIPAL: ${{inputs.run_as_service_principal}}
         run: 
-          python src/deploy_solution.py
+          python src/deploy_solution_to_fabric_environment.py
