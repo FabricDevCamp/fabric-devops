@@ -27,8 +27,9 @@ match os.getenv("GIT_INTEGRATION_PROVIDER"):
         AdoProjectManager.create_project(workspace_name)
         FabricRestApi.connect_workspace_to_ado_repo(workspace, workspace_name)
     case 'GitHub':
-        GitHubRestApi.create_repository(workspace_name)
-        FabricRestApi.connect_workspace_to_github_repo(workspace, workspace_name)
+        repo_name = workspace_name.replace(" ", "-")
+        GitHubRestApi.create_repository(repo_name)
+        FabricRestApi.connect_workspace_to_github_repo(workspace, repo_name)
 
 AppLogger.log_job_complete(workspace['id'])
 
