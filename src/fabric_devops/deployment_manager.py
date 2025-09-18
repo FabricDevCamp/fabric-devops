@@ -43,6 +43,8 @@ class DeploymentManager:
                 workspace = cls.deploy_realtime_solution(target_workspace)
             case 'Custom Medallion Warehouse Solution':
                 workspace = cls.deploy_medallion_warehouse_solution(target_workspace, deploy_job)
+            case 'Custom Notebook Solution with Variable Library':
+                workspace = cls.deploy_notebook_solution_with_varlib(target_workspace, deploy_job)
         
         if workspace is None:
             raise LookupError(f'Unknown solution name [{solution_name}]')
@@ -392,6 +394,8 @@ class DeploymentManager:
 
         AppLogger.log_job("Deploying Warehouse solution")
 
+        deploy_job.display_deployment_parameters('adls')
+
         workspace = FabricRestApi.create_workspace(target_workspace)
 
         data_prep_folder = FabricRestApi.create_folder(workspace['id'], 'data_prep')
@@ -726,6 +730,7 @@ class DeploymentManager:
 
 
 # var lib samples
+
     @classmethod
     def deploy_notebook_solution_with_varlib(
         cls,
@@ -741,7 +746,7 @@ class DeploymentManager:
 
         workspace = FabricRestApi.create_workspace(target_workspace)
         
-        FabricRestApi.update_workspace_description(workspace['id'], 'Custom Notebook Solution')
+        FabricRestApi.update_workspace_description(workspace['id'], 'Custom Notebook Solution with Variable Library')
 
         web_datasource_path = deploy_job.parameters[deploy_job.web_datasource_path_parameter]
         
@@ -756,18 +761,16 @@ class DeploymentManager:
 
         FabricRestApi.create_item(workspace['id'], create_library_request)
 
-
         lakehouse = FabricRestApi.create_lakehouse(workspace['id'], lakehouse_name)
 
         create_notebook_request = \
             ItemDefinitionFactory.get_create_item_request_from_folder(
-                'Create Lakehouse Tables.Notebook')
+                'Create Lakehouse Tables with VarLib.Notebook')
 
         notebook_redirects = {
             '{WORKSPACE_ID}': workspace['id'],
             '{LAKEHOUSE_ID}': lakehouse['id'],
-            '{LAKEHOUSE_NAME}': lakehouse['displayName'],
-            '{WEB_DATASOURCE_PATH}': deploy_job.parameters[deploy_job.web_datasource_path_parameter]
+            '{LAKEHOUSE_NAME}': lakehouse['displayName']
         }
 
         create_notebook_request = \
@@ -807,8 +810,6 @@ class DeploymentManager:
                 model['id'])
 
         FabricRestApi.create_item(workspace['id'], create_report_request)
-
-        AppLogger.log_job_complete(workspace['id'])
 
         return workspace
 

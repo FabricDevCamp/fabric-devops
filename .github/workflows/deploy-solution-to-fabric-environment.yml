@@ -16,6 +16,7 @@ on:
                 - Custom Warehouse Solution
                 - Custom Realtime Solution
                 - Custom Medallion Warehouse Solution
+                - Custom Notebook Solution with Variable Library
                 - Deploy All Solutions
                 default: Custom Power BI Solution
             target_environment:
