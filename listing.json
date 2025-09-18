@@ -1,17 +1,43 @@
- {
-            "allowConnectionUsageInGateway": false,
-            "id": "281367a6-0380-47ff-a331-7ec500abc485",
-            "displayName": "ADO Connect for SPN",
-            "connectivityType": "ShareableCloud",
-            "connectionDetails": {
-                "path": "https://dev.azure.com/fabricdevcamp/dingo/_git/dingo/",
-                "type": "AzureDevOpsSourceControl"
-            },
-            "privacyLevel": "Private",
-            "credentialDetails": {
-                "credentialType": "ServicePrincipal",
-                "singleSignOnType": "None",
-                "connectionEncryption": "NotEncrypted",
-                "skipTestConnection": false
-            }
+{
+    "type": "CosmosDB",
+    "creationMethods": [
+        {
+            "name": "CosmosDB.Contents",
+            "parameters": [
+                {
+                    "name": "host",
+                    "dataType": "Text",
+                    "required": true,
+                    "allowedValues": null
+                },
+                {
+                    "name": "NUMBER_OF_RETRIES",
+                    "dataType": "Text",
+                    "required": false,
+                    "allowedValues": null
+                },
+                {
+                    "name": "ENABLE_AVERAGE_FUNCTION_PASSDOWN",
+                    "dataType": "Text",
+                    "required": false,
+                    "allowedValues": null
+                },
+                {
+                    "name": "ENABLE_SORT_PASSDOWN_FOR_MULTIPLE_COLUMNS",
+                    "dataType": "Text",
+                    "required": false,
+                    "allowedValues": null
+                }
+            ]
         }
+    ],
+    "supportedCredentialTypes": [
+        "Key",
+        "OAuth2",
+        "WorkspaceIdentity"
+    ],
+    "supportedConnectionEncryptionTypes": [
+        "NotEncrypted"
+    ],
+    "supportsSkipTestConnection": false
+}

@@ -17,7 +17,7 @@ github_workpace = os.getenv('GITHUB_WORKSPACE')
 branch = os.getenv('BRANCH_NAME')
 print(github_workpace, flush=True)
 
-config_file = github_workpace +  '/workspace/workspace.config.json'
+config_file = github_workpace +    '/workspace/workspace.config.json'
 
 
 if os.path.exists(config_file) is False:

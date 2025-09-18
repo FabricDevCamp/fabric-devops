@@ -75,7 +75,7 @@ table Customers
 				    #"Duplicated Column1" = Table.DuplicateColumn(#"Duplicated Column", "Country", "Country - Copy"),
 				    #"Merged Columns1" = Table.CombineColumns(#"Duplicated Column1",{"City Name - Copy", "Country - Copy"},Combiner.CombineTextByDelimiter(", ", QuoteStyle.None),"City")
 				in 
-				   #"Merged Columns1"
+				     #"Merged Columns1"
 				```
 
 	annotation PBI_NavigationStepName = Navigation

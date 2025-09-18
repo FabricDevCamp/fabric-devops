@@ -35,8 +35,8 @@ table Sales
 			IF( 
 			  HASONEVALUE(Customers[Customer]), 
 			  RANKX( 
-			    ALLSELECTED(Customers), 
-			    CALCULATE([Sales Revenue])
+			  ALLSELECTED(Customers), 
+			  CALCULATE([Sales Revenue])
 			  )
 			)
 			```
@@ -49,8 +49,8 @@ table Sales
 			IF( 
 			  HASONEVALUE(Products[Product]), 
 			  RANKX( 
-			    ALLSELECTED(Products), 
-			    CALCULATE([Sales Revenue])
+			  ALLSELECTED(Products), 
+			  CALCULATE([Sales Revenue])
 			  )
 			)
 			```
@@ -63,8 +63,8 @@ table Sales
 			IF( 
 			  HASONEVALUE(Customers[City]), 
 			  RANKX( 
-			    ALLSELECTED(Customers[City]), 
-			    CALCULATE([Sales Revenue])
+			  ALLSELECTED(Customers[City]), 
+			  CALCULATE([Sales Revenue])
 			  )
 			)
 			```
@@ -151,14 +151,14 @@ table Sales
 		mode: import
 		source = ```
 				let
-				    Source = Csv.Document(Web.Contents(CSV_FILE_ROOT, [RelativePath="InvoiceDetails.csv"]),[Delimiter=",", Columns=5, Encoding=65001, QuoteStyle=QuoteStyle.None]),
-				    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
-				    #"Merged Queries" = Table.NestedJoin(PromotedHeaders, {"InvoiceId"}, Invoices, {"InvoiceId"}, "Invoices", JoinKind.LeftOuter),
-				    #"Expanded Invoices" = Table.ExpandTableColumn(#"Merged Queries", "Invoices", {"Date", "CustomerId"}, {"Date", "CustomerId"}),
-				    #"Removed Columns" = Table.RemoveColumns(#"Expanded Invoices",{"InvoiceId"}),
-				    #"Changed Type" = Table.TransformColumnTypes(#"Removed Columns",{{"ProductId", Int64.Type}}),
-				    #"Renamed Columns" = Table.RenameColumns(#"Changed Type",{{"SalesAmount", "Sales"}}),
-				    #"Changed Type1" = Table.TransformColumnTypes(#"Renamed Columns",{{"Id", Int64.Type}, {"Quantity", Int64.Type}, {"Sales", Currency.Type}, {"Date", type date}})
+				  Source = Csv.Document(Web.Contents(CSV_FILE_ROOT, [RelativePath="InvoiceDetails.csv"]),[Delimiter=",", Columns=5, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				  PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				  #"Merged Queries" = Table.NestedJoin(PromotedHeaders, {"InvoiceId"}, Invoices, {"InvoiceId"}, "Invoices", JoinKind.LeftOuter),
+				  #"Expanded Invoices" = Table.ExpandTableColumn(#"Merged Queries", "Invoices", {"Date", "CustomerId"}, {"Date", "CustomerId"}),
+				  #"Removed Columns" = Table.RemoveColumns(#"Expanded Invoices",{"InvoiceId"}),
+				  #"Changed Type" = Table.TransformColumnTypes(#"Removed Columns",{{"ProductId", Int64.Type}}),
+				  #"Renamed Columns" = Table.RenameColumns(#"Changed Type",{{"SalesAmount", "Sales"}}),
+				  #"Changed Type1" = Table.TransformColumnTypes(#"Renamed Columns",{{"Id", Int64.Type}, {"Quantity", Int64.Type}, {"Sales", Currency.Type}, {"Date", type date}})
 				in 
 				   #"Changed Type1"
 				```

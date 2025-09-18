@@ -92,7 +92,7 @@ table Calendar
 		mode: import
 		source = ```
 				
-				Var CalenderStart = Date(Year(Min(Sales[Date])) , 1, 1)  
+				Var CalenderStart = Date(Year(Min(Sales[Date])) , 1, 1)    
 				Var CalendarEnd = Date(Year(MAX(Sales[Date])), 12, 31)
 				Return ADDCOLUMNS(
 				    CALENDAR(CalenderStart, CalendarEnd),

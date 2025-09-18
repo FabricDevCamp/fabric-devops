@@ -95,14 +95,14 @@ table Calendar
 				Var CalenderStart = Date(Year(Min(Sales[Date])) , 1, 1)  
 				Var CalendarEnd = Date(Year(MAX(Sales[Date])), 12, 31)
 				Return ADDCOLUMNS(
-				    CALENDAR(CalenderStart, CalendarEnd),
-				    "Year", Year([Date]),
-				    "Quarter", FORMAT([Date], "yyyy-\Qq"),
-				    "Month", FORMAT([Date], "yyyy-dd"),
-				    "MonthInYear", FORMAT([Date], "mmmm"),
-				    "MonthInYearSort", MONTH([Date]),
-				    "DayOfWeek", FORMAT([Date], "dddd"),
-				    "DayOfWeekSort", WEEKDAY([Date])
+				  CALENDAR(CalenderStart, CalendarEnd),
+				  "Year", Year([Date]),
+				  "Quarter", FORMAT([Date], "yyyy-\Qq"),
+				  "Month", FORMAT([Date], "yyyy-dd"),
+				  "MonthInYear", FORMAT([Date], "mmmm"),
+				  "MonthInYearSort", MONTH([Date]),
+				  "DayOfWeek", FORMAT([Date], "dddd"),
+				  "DayOfWeekSort", WEEKDAY([Date])
 				)
 				```
 

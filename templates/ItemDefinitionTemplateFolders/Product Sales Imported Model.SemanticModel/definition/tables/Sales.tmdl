@@ -33,11 +33,11 @@ table Sales
 	measure 'Customer Rank' = ```
 			
 			IF( 
-			  HASONEVALUE(Customers[Customer]), 
-			  RANKX( 
+			    HASONEVALUE(Customers[Customer]), 
+			    RANKX( 
 			    ALLSELECTED(Customers), 
 			    CALCULATE([Sales Revenue])
-			  )
+			    )
 			)
 			```
 		formatString: 0
@@ -47,11 +47,11 @@ table Sales
 	measure 'Product Rank' = ```
 			
 			IF( 
-			  HASONEVALUE(Products[Product]), 
-			  RANKX( 
+			    HASONEVALUE(Products[Product]), 
+			    RANKX( 
 			    ALLSELECTED(Products), 
 			    CALCULATE([Sales Revenue])
-			  )
+			    )
 			)
 			```
 		formatString: 0
@@ -61,11 +61,11 @@ table Sales
 	measure 'City Rank' = ```
 			
 			IF( 
-			  HASONEVALUE(Customers[City]), 
-			  RANKX( 
+			    HASONEVALUE(Customers[City]), 
+			    RANKX( 
 			    ALLSELECTED(Customers[City]), 
 			    CALCULATE([Sales Revenue])
-			  )
+			    )
 			)
 			```
 		formatString: 0
@@ -160,7 +160,7 @@ table Sales
 				    #"Renamed Columns" = Table.RenameColumns(#"Changed Type",{{"SalesAmount", "Sales"}}),
 				    #"Changed Type1" = Table.TransformColumnTypes(#"Renamed Columns",{{"Id", Int64.Type}, {"Quantity", Int64.Type}, {"Sales", Currency.Type}, {"Date", type date}})
 				in 
-				   #"Changed Type1"
+				     #"Changed Type1"
 				```
 
 	annotation PBI_NavigationStepName = Navigation

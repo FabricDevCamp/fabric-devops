@@ -4,16 +4,16 @@
 
 # META {
 # META   "dependencies": {
-# META     "lakehouse": {
-# META       "default_lakehouse": "e0b7fefe-ff4f-41f4-8415-2baec4ded36e",
-# META       "default_lakehouse_name": "sales",
-# META       "default_lakehouse_workspace_id": "bd6fb0b1-47b8-4fcb-ba41-76292775c72d",
-# META       "known_lakehouses": [
-# META         {
-# META           "id": "e0b7fefe-ff4f-41f4-8415-2baec4ded36e"
-# META         }
-# META       ]
+# META   "lakehouse": {
+# META     "default_lakehouse": "e0b7fefe-ff4f-41f4-8415-2baec4ded36e",
+# META     "default_lakehouse_name": "sales",
+# META     "default_lakehouse_workspace_id": "bd6fb0b1-47b8-4fcb-ba41-76292775c72d",
+# META     "known_lakehouses": [
+# META     {
+# META       "id": "e0b7fefe-ff4f-41f4-8415-2baec4ded36e"
 # META     }
+# META     ]
+# META   }
 # META   }
 # META }
 
@@ -29,11 +29,11 @@ csv_files = { "Customers.csv", "Products.csv", "Invoices.csv", "InvoiceDetails.c
 folder_path = "Files/sales-data/"
 
 for csv_file in csv_files:
-    csv_file_path = csv_base_url + csv_file
-    with requests.get(csv_file_path) as response:
-        csv_content = response.content.decode('utf-8-sig')
-        mssparkutils.fs.put(folder_path + csv_file, csv_content, True)
-        print(csv_file + " copied to Lakehouse file in OneLake")
+  csv_file_path = csv_base_url + csv_file
+  with requests.get(csv_file_path) as response:
+    csv_content = response.content.decode('utf-8-sig')
+    mssparkutils.fs.put(folder_path + csv_file, csv_content, True)
+    print(csv_file + " copied to Lakehouse file in OneLake")
 
 # CELL ********************
 
@@ -42,25 +42,25 @@ from pyspark.sql.types import StructType, StructField, StringType, LongType, Flo
 
 # create schema for products table using StructType and StructField 
 schema_products = StructType([
-    StructField("ProductId", LongType() ),
-    StructField("Product", StringType() ),
-    StructField("Category", StringType() )
+  StructField("ProductId", LongType() ),
+  StructField("Product", StringType() ),
+  StructField("Category", StringType() )
 ])
 
 # Load CSV file into Spark DataFrame and validate data using schema
 df_products = (
-    spark.read.format("csv")
-         .option("header","true")
-         .schema(schema_products)
-         .load("Files/sales-data/Products.csv")
+  spark.read.format("csv")
+     .option("header","true")
+     .schema(schema_products)
+     .load("Files/sales-data/Products.csv")
 )
 
 # save DataFrame as lakehouse table in Delta format
 ( df_products.write
-             .mode("overwrite")
-             .option("overwriteSchema", "True")
-             .format("delta")
-             .save("Tables/silver_products")
+       .mode("overwrite")
+       .option("overwriteSchema", "True")
+       .format("delta")
+       .save("Tables/silver_products")
 )
 
 # display table schema and data
@@ -74,30 +74,30 @@ from pyspark.sql.types import StructType, StructField, StringType, LongType, Dat
 
 # create schema for customers table using StructType and StructField 
 schema_customers = StructType([
-    StructField("CustomerId", LongType() ),
-    StructField("FirstName", StringType() ),
-    StructField("LastName", StringType() ),
-    StructField("Country", StringType() ),
-    StructField("City", StringType() ),
-    StructField("DOB", DateType() ),
+  StructField("CustomerId", LongType() ),
+  StructField("FirstName", StringType() ),
+  StructField("LastName", StringType() ),
+  StructField("Country", StringType() ),
+  StructField("City", StringType() ),
+  StructField("DOB", DateType() ),
 ])
 
 # Load CSV file into Spark DataFrame with schema and support to infer dates
 df_customers = (
-    spark.read.format("csv")
-         .option("header","true")
-         .schema(schema_customers)
-         .option("dateFormat", "MM/dd/yyyy")
-         .option("inferSchema", "true")
-         .load("Files/sales-data/Customers.csv")
+  spark.read.format("csv")
+     .option("header","true")
+     .schema(schema_customers)
+     .option("dateFormat", "MM/dd/yyyy")
+     .option("inferSchema", "true")
+     .load("Files/sales-data/Customers.csv")
 )
 
 # save DataFrame as lakehouse table in Delta format
 ( df_customers.write
-              .mode("overwrite")
-              .option("overwriteSchema", "True")
-              .format("delta")
-              .save("Tables/silver_customers")
+        .mode("overwrite")
+        .option("overwriteSchema", "True")
+        .format("delta")
+        .save("Tables/silver_customers")
 )
 
 # display table schema and data
@@ -111,28 +111,28 @@ from pyspark.sql.types import StructType, StructField, LongType, FloatType, Date
 
 # create schema for invoices table using StructType and StructField 
 schema_invoices = StructType([
-    StructField("InvoiceId", LongType() ),
-    StructField("Date", DateType() ),
-    StructField("TotalSalesAmount", FloatType() ),
-    StructField("CustomerId", LongType() )
+  StructField("InvoiceId", LongType() ),
+  StructField("Date", DateType() ),
+  StructField("TotalSalesAmount", FloatType() ),
+  StructField("CustomerId", LongType() )
 ])
 
 # Load CSV file into Spark DataFrame with schema and support to infer dates
 df_invoices = (
-    spark.read.format("csv")
-         .option("header","true")
-         .schema(schema_invoices)
-         .option("dateFormat", "MM/dd/yyyy")
-         .option("inferSchema", "true") 
-         .load("Files/sales-data/Invoices.csv")
+  spark.read.format("csv")
+     .option("header","true")
+     .schema(schema_invoices)
+     .option("dateFormat", "MM/dd/yyyy")
+     .option("inferSchema", "true") 
+     .load("Files/sales-data/Invoices.csv")
 )
 
 # save DataFrame as lakehouse table in Delta format
 ( df_invoices.write
-             .mode("overwrite")
-             .option("overwriteSchema", "True")
-             .format("delta")
-             .save("Tables/silver_invoices")
+       .mode("overwrite")
+       .option("overwriteSchema", "True")
+       .format("delta")
+       .save("Tables/silver_invoices")
 )
 
 # display table schema and data
@@ -146,27 +146,27 @@ from pyspark.sql.types import StructType, StructField, LongType, FloatType
 
 # create schema for invoice_details table using StructType and StructField 
 schema_invoice_details = StructType([
-    StructField("Id", LongType() ),
-    StructField("Quantity", LongType() ),
-    StructField("SalesAmount", FloatType() ),
-    StructField("InvoiceId", LongType() ),
-    StructField("ProductId", LongType() )
+  StructField("Id", LongType() ),
+  StructField("Quantity", LongType() ),
+  StructField("SalesAmount", FloatType() ),
+  StructField("InvoiceId", LongType() ),
+  StructField("ProductId", LongType() )
 ])
 
 # Load CSV file into Spark DataFrame and validate data using schema
 df_invoice_details = (
-    spark.read.format("csv")
-         .option("header","true")
-         .schema(schema_invoice_details)
-         .load("Files/sales-data/InvoiceDetails.csv")
+  spark.read.format("csv")
+     .option("header","true")
+     .schema(schema_invoice_details)
+     .load("Files/sales-data/InvoiceDetails.csv")
 )
 
 # save DataFrame as lakehouse table in Delta format
 ( df_invoice_details.write
-                    .mode("overwrite")
-                    .option("overwriteSchema", "True")
-                    .format("delta")
-                    .save("Tables/silver_invoice_details")
+          .mode("overwrite")
+          .option("overwriteSchema", "True")
+          .format("delta")
+          .save("Tables/silver_invoice_details")
 )
 
 # display table schema and data
@@ -179,17 +179,17 @@ df_invoice_details.show()
 
 # load DataFrame from silver layer table
 df_gold_products = (
-    spark.read
-         .format("delta")
-         .load("Tables/silver_products")
+  spark.read
+     .format("delta")
+     .load("Tables/silver_products")
 )
 
 # write DataFrame to new gold layer table 
 ( df_gold_products.write
-                  .mode("overwrite")
-                  .option("overwriteSchema", "True")
-                  .format("delta")
-                  .save("Tables/products")
+          .mode("overwrite")
+          .option("overwriteSchema", "True")
+          .format("delta")
+          .save("Tables/products")
 )
 
 # display table schema and data
@@ -203,22 +203,22 @@ from pyspark.sql.functions import concat_ws, floor, datediff, current_date, col
 
 # load DataFrame from silver layer table and perform transforms
 df_gold_customers = (
-    spark.read
-         .format("delta")
-         .load("Tables/silver_customers")
-         .withColumnRenamed("City", "CityName")
-         .withColumn("City", concat_ws(', ', col('CityName'), col('Country')) )
-         .withColumn("Customer", concat_ws(' ', col('FirstName'), col('LastName')) )
-         .withColumn("Age",( floor( datediff( current_date(), col("DOB") )/365.25) ))   
-         .drop('FirstName', 'LastName')
+  spark.read
+     .format("delta")
+     .load("Tables/silver_customers")
+     .withColumnRenamed("City", "CityName")
+     .withColumn("City", concat_ws(', ', col('CityName'), col('Country')) )
+     .withColumn("Customer", concat_ws(' ', col('FirstName'), col('LastName')) )
+     .withColumn("Age",( floor( datediff( current_date(), col("DOB") )/365.25) ))   
+     .drop('FirstName', 'LastName')
 )
 
 # write DataFrame to new gold layer table 
 ( df_gold_customers.write
-                   .mode("overwrite")
-                   .option("overwriteSchema", "True")
-                   .format("delta")
-                   .save("Tables/customers")
+           .mode("overwrite")
+           .option("overwriteSchema", "True")
+           .format("delta")
+           .save("Tables/customers")
 )
 
 # display table schema and data
@@ -237,23 +237,23 @@ df_silver_invoice_details = spark.read.format("delta").load("Tables/silver_invoi
 
 # perform join to merge columns from both DataFrames and transform data 
 df_gold_sales = (
-    df_silver_invoice_details
-        .join(df_silver_invoices, 
-              df_silver_invoice_details['InvoiceId'] == df_silver_invoices['InvoiceId'])
-        .withColumnRenamed('SalesAmount', 'Sales')
-        .withColumn("DateKey", (year(col('Date'))*10000) + 
-                               (month(col('Date'))*100) + 
-                               (dayofmonth(col('Date')))   )
-        .drop('InvoiceId', 'TotalSalesAmount', 'InvoiceId', 'Id')
-        .select('Date', "DateKey", "CustomerId", "ProductId", "Sales", "Quantity")
+  df_silver_invoice_details
+    .join(df_silver_invoices, 
+        df_silver_invoice_details['InvoiceId'] == df_silver_invoices['InvoiceId'])
+    .withColumnRenamed('SalesAmount', 'Sales')
+    .withColumn("DateKey", (year(col('Date'))*10000) + 
+                 (month(col('Date'))*100) + 
+                 (dayofmonth(col('Date')))   )
+    .drop('InvoiceId', 'TotalSalesAmount', 'InvoiceId', 'Id')
+    .select('Date', "DateKey", "CustomerId", "ProductId", "Sales", "Quantity")
 )
 
 # write DataFrame to new gold layer table 
 ( df_gold_sales.write
-               .mode("overwrite")
-               .option("overwriteSchema", "True")
-               .format("delta")
-               .save("Tables/sales")
+         .mode("overwrite")
+         .option("overwriteSchema", "True")
+         .format("delta")
+         .save("Tables/sales")
 )
 
 # display table schema and data
@@ -280,29 +280,29 @@ df_calendar_ps = pd.date_range(start_date, end_date, freq='D').to_frame()
 
 # convert pandas DataFrame to Spark DataFrame and add calculated calendar columns
 df_calendar_spark = (
-     spark.createDataFrame(df_calendar_ps)
-       .withColumnRenamed("0", "timestamp")
-       .withColumn("Date", to_date(col('timestamp')))
-       .withColumn("DateKey", (year(col('timestamp'))*10000) + 
-                              (month(col('timestamp'))*100) + 
-                              (dayofmonth(col('timestamp')))   )
-       .withColumn("Year", year(col('timestamp'))  )
-       .withColumn("Quarter", date_format(col('timestamp'),"yyyy-QQ")  )
-       .withColumn("Month", date_format(col('timestamp'),'yyyy-MM')  )
-       .withColumn("Day", dayofmonth(col('timestamp'))  )
-       .withColumn("MonthInYear", date_format(col('timestamp'),'MMMM')  )
-       .withColumn("MonthInYearSort", month(col('timestamp'))  )
-       .withColumn("DayOfWeek", date_format(col('timestamp'),'EEEE')  )
-       .withColumn("DayOfWeekSort", dayofweek(col('timestamp')))
-       .drop('timestamp')
+   spark.createDataFrame(df_calendar_ps)
+     .withColumnRenamed("0", "timestamp")
+     .withColumn("Date", to_date(col('timestamp')))
+     .withColumn("DateKey", (year(col('timestamp'))*10000) + 
+                (month(col('timestamp'))*100) + 
+                (dayofmonth(col('timestamp')))   )
+     .withColumn("Year", year(col('timestamp'))  )
+     .withColumn("Quarter", date_format(col('timestamp'),"yyyy-QQ")  )
+     .withColumn("Month", date_format(col('timestamp'),'yyyy-MM')  )
+     .withColumn("Day", dayofmonth(col('timestamp'))  )
+     .withColumn("MonthInYear", date_format(col('timestamp'),'MMMM')  )
+     .withColumn("MonthInYearSort", month(col('timestamp'))  )
+     .withColumn("DayOfWeek", date_format(col('timestamp'),'EEEE')  )
+     .withColumn("DayOfWeekSort", dayofweek(col('timestamp')))
+     .drop('timestamp')
 )
 
 # write DataFrame to new gold layer table 
 ( df_calendar_spark.write
-                   .mode("overwrite")
-                   .option("overwriteSchema", "True")
-                   .format("delta")
-                   .save("Tables/calendar")
+           .mode("overwrite")
+           .option("overwriteSchema", "True")
+           .format("delta")
+           .save("Tables/calendar")
 )
 
 # display table schema and data

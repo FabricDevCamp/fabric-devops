@@ -15,7 +15,7 @@ token_credential = \
 github_workpace = os.getenv('GITHUB_WORKSPACE')
 branch = os.getenv('BRANCH_NAME')
 
-config_file = github_workpace +  '/workspace/workspace.config.json'
+config_file = github_workpace +    '/workspace/workspace.config.json'
 
 if os.path.exists(config_file) is False:
     print(f"'{config_file}' does not exists.")

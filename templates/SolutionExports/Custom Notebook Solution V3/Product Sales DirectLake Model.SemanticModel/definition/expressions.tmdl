@@ -1,8 +1,8 @@
 expression DatabaseQuery = ```
 		let
-		    database = Sql.Database("4zzdkw4hunvuhp4ttpl5hvkkzm-wgyg7pnyi7fu7osboyuso5ohfu.datawarehouse.fabric.microsoft.com", "a25c46ee-90a8-4e70-856e-ef792dd1ac7a")
+		  database = Sql.Database("4zzdkw4hunvuhp4ttpl5hvkkzm-wgyg7pnyi7fu7osboyuso5ohfu.datawarehouse.fabric.microsoft.com", "a25c46ee-90a8-4e70-856e-ef792dd1ac7a")
 		in
-		    database
+		  database
 		
 		```
 	lineageTag: e6ce57a1-3ed6-471d-8e43-42dc52215549

@@ -3,18 +3,18 @@
 # METADATA ********************
 
 # META {
-# META   "synapse": {
+# META     "synapse": {
 # META     "lakehouse": {
-# META       "default_lakehouse": "{LAKEHOUSE_ID}",
-# META       "default_lakehouse_name": "{LAKEHOUSE_NAME}",
-# META       "default_lakehouse_workspace_id": "{WORKSPACE_ID}",
-# META       "known_lakehouses": [
+# META         "default_lakehouse": "{LAKEHOUSE_ID}",
+# META         "default_lakehouse_name": "{LAKEHOUSE_NAME}",
+# META         "default_lakehouse_workspace_id": "{WORKSPACE_ID}",
+# META         "known_lakehouses": [
 # META         {
-# META           "id": "{LAKEHOUSE_ID}"
+# META             "id": "{LAKEHOUSE_ID}"
 # META         }
-# META       ]
+# META         ]
 # META     }
-# META   }
+# META     }
 # META }
 
 # CELL ********************
@@ -76,10 +76,10 @@ df_customers = (
 
 # save DataFrame as lakehouse table in Delta format
 ( df_customers.write
-              .mode("overwrite")
-              .option("overwriteSchema", "True")
-              .format("delta")
-              .save("Tables/customers")
+                .mode("overwrite")
+                .option("overwriteSchema", "True")
+                .format("delta")
+                .save("Tables/customers")
 )
 
 # display table schema and data

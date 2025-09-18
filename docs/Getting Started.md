@@ -12,49 +12,49 @@ within the context of a GitHub workflow.
 >This guide will lead you through the following steps to get you
 started with local development on your developer workstation.
 
-1.  Fork the **fabric_devops** repository into your own repository
+1.    Fork the **fabric_devops** repository into your own repository
 
-2.  Clone the forked repository to a local **fabric_devops** folder on
-    your developer workstation
+2.    Clone the forked repository to a local **fabric_devops** folder on
+        your developer workstation
 
-3.  Open the local copy of the **fabric_devops** folder in Visual Studio
-    Code
+3.    Open the local copy of the **fabric_devops** folder in Visual Studio
+        Code
 
-4.  Update configuration data in the **.env** file for local development
-    and debugging
+4.    Update configuration data in the **.env** file for local development
+        and debugging
 
-5.  Run a set of demo Python scripts to experiment with sample Python
-    code in the **fabric_devops** project
+5.    Run a set of demo Python scripts to experiment with sample Python
+        code in the **fabric_devops** project
 
 >After you move through the steps which enable you to run and
 test the sample code locally, this guide will then lead you through the
 following steps to enable running and testing the same code within the
 context of GitHub workflow actions.
 
-1.  Enable workflows in your forked copy of the **fabric_devops**
-    repository
+1.    Enable workflows in your forked copy of the **fabric_devops**
+        repository
 
-2.  Update configuration data by adding GitHub action secrets
+2.    Update configuration data by adding GitHub action secrets
 
-3.  Experiment by running the sample GitHub actions that are part of the
-    **fabric_devops** project
+3.    Experiment by running the sample GitHub actions that are part of the
+        **fabric_devops** project
 
 ## Fork the fabric_devops repository
 
 Begin by forking the **fabric_devops** repository.
 
-1.  Navigate to the repository in the browser at
-    <https://github.com/FabricDevCamp/fabric-devops>.
+1.    Navigate to the repository in the browser at
+        <https://github.com/FabricDevCamp/fabric-devops>.
 
-2.  Drop down the **Fork** menu in the upper right of the page.
+2.    Drop down the **Fork** menu in the upper right of the page.
 
-3.  Select the **Create a new fork** command.
+3.    Select the **Create a new fork** command.
 
 <img src="./images/GettingStarted/media/image1.png"
 style="width:7.94in;height:3.13in"
 alt="A screenshot of a computer AI-generated content may be incorrect." />
 
-4.  Next, select the **Create fork** command.
+4.    Next, select the **Create fork** command.
 
 <img src="./images/GettingStarted/media/image2.png"
 style="width:5.28659in;height:3.83505in"
@@ -96,28 +96,28 @@ style="width:9.11806in;height:3.0261in" />
 Here is what you need to edit.
 
 - Configuration for Entra Id application used to authenticate as service
-  principal
+    principal
 
-  - **FABRIC_CLIENT_ID**
+    - **FABRIC_CLIENT_ID**
 
-  - **FABRIC_CLIENT_SECRET**
+    - **FABRIC_CLIENT_SECRET**
 
-  - **FABRIC_TENANT_ID**
+    - **FABRIC_TENANT_ID**
 
-  - **SERVICE_PRINCIPAL_OBJECT_ID**
+    - **SERVICE_PRINCIPAL_OBJECT_ID**
 
 - The Azure object Id for your Entra Id user account
 
-  - **ADMIN_USER_ID**
+    - **ADMIN_USER_ID**
 
 - Capacity Id
 
-  - **FABRIC_CAPACITY_ID**
+    - **FABRIC_CAPACITY_ID**
 
 - Personal access token used to create connections between Fabric
-  workspace and GitHub
+    workspace and GitHub
 
-  - **PERSONAL_ACCESS_TOKEN_GITHUB**
+    - **PERSONAL_ACCESS_TOKEN_GITHUB**
 
 Sss
 
@@ -167,27 +167,27 @@ implemented using Microsoft Authentication Library (MSAL) for Python
 
 - MSAL used to authenticate with Entra Id and acquire access tokens
 
-  - MSAL provides **ConfidentialClientApplication** used acquire access
-    tokens for service principals
+    - MSAL provides **ConfidentialClientApplication** used acquire access
+        tokens for service principals
 
-  - MSAL provides **PublicClientApplication** used acquire access tokens
-    for service principals
+    - MSAL provides **PublicClientApplication** used acquire access tokens
+        for service principals
 
 - Installing MSAL
 
-  - Library installed from Python Package Index (PyPI) at
-    **https://pypi.org/project/msal/**
+    - Library installed from Python Package Index (PyPI) at
+        **https://pypi.org/project/msal/**
 
-  - Install command from terminal in Visual Studio Code: **pip install
-    msal**
+    - Install command from terminal in Visual Studio Code: **pip install
+        msal**
 
 - Permission scopes for requesting access tokens for Fabric REST APIs
 
-  - For service principal tokens:
-    **https://api.fabric.microsoft.com/.default**
+    - For service principal tokens:
+        **https://api.fabric.microsoft.com/.default**
 
-  - For user tokens:
-    **https://api.fabric.microsoft.com/user_impersonation**
+    - For user tokens:
+        **https://api.fabric.microsoft.com/user_impersonation**
 
 ## Running Demo Scripts
 
@@ -283,19 +283,19 @@ ssss
 Python SDK for Fabric REST API adds valuable productivity boost
 
 - Abstracts away executing HTTP requests, adding **Authorization**
-  header and handling responses
+    header and handling responses
 
 - Parses together target REST URLs containing workspace Id, item Ids and
-  specific endpoints
+    specific endpoints
 
 - Handles serializing/deserializing JSON payloads sent back and forth
-  over the wire
+    over the wire
 
 - Provides automatic support for API calls which implement
-  **long-running operations (LRO)** pattern
+    **long-running operations (LRO)** pattern
 
 - Provides automatic support for dealing with **continuation tokens**
-  and merging **paginated results**
+    and merging **paginated results**
 
 ``` python
 

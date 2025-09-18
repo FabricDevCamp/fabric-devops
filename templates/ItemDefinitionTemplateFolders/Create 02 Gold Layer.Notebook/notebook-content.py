@@ -3,18 +3,18 @@
 # METADATA ********************
 
 # META {
-# META   "synapse": {
+# META     "synapse": {
 # META     "lakehouse": {
-# META       "default_lakehouse": "{LAKEHOUSE_ID}",
-# META       "default_lakehouse_name": "{LAKEHOUSE_NAME}",
-# META       "default_lakehouse_workspace_id": "{WORKSPACE_ID}",
-# META       "known_lakehouses": [
+# META         "default_lakehouse": "{LAKEHOUSE_ID}",
+# META         "default_lakehouse_name": "{LAKEHOUSE_NAME}",
+# META         "default_lakehouse_workspace_id": "{WORKSPACE_ID}",
+# META         "known_lakehouses": [
 # META         {
-# META           "id": "{LAKEHOUSE_ID}"
+# META             "id": "{LAKEHOUSE_ID}"
 # META         }
-# META       ]
+# META         ]
 # META     }
-# META   }
+# META     }
 # META }
 
 # CELL ********************
@@ -30,10 +30,10 @@ df_gold_products = (
 
 # write DataFrame to new gold layer table 
 ( df_gold_products.write
-                  .mode("overwrite")
-                  .option("overwriteSchema", "True")
-                  .format("delta")
-                  .save("Tables/products")
+                    .mode("overwrite")
+                    .option("overwriteSchema", "True")
+                    .format("delta")
+                    .save("Tables/products")
 )
 
 # display table schema and data
@@ -53,16 +53,16 @@ df_gold_customers = (
          .withColumnRenamed("City", "CityName")
          .withColumn("City", concat_ws(', ', col('CityName'), col('Country')) )
          .withColumn("Customer", concat_ws(' ', col('FirstName'), col('LastName')) )
-         .withColumn("Age",( floor( datediff( current_date(), col("DOB") )/365.25) ))   
+         .withColumn("Age",( floor( datediff( current_date(), col("DOB") )/365.25) ))     
          .drop('FirstName', 'LastName')
 )
 
 # write DataFrame to new gold layer table 
 ( df_gold_customers.write
-                   .mode("overwrite")
-                   .option("overwriteSchema", "True")
-                   .format("delta")
-                   .save("Tables/customers")
+                     .mode("overwrite")
+                     .option("overwriteSchema", "True")
+                     .format("delta")
+                     .save("Tables/customers")
 )
 
 # display table schema and data
@@ -83,21 +83,21 @@ df_silver_invoice_details = spark.read.format("delta").load("Tables/silver_invoi
 df_gold_sales = (
     df_silver_invoice_details
         .join(df_silver_invoices, 
-              df_silver_invoice_details['InvoiceId'] == df_silver_invoices['InvoiceId'])
+                df_silver_invoice_details['InvoiceId'] == df_silver_invoices['InvoiceId'])
         .withColumnRenamed('SalesAmount', 'Sales')
         .withColumn("DateKey", (year(col('Date'))*10000) + 
-                               (month(col('Date'))*100) + 
-                               (dayofmonth(col('Date')))   )
+                                 (month(col('Date'))*100) + 
+                                 (dayofmonth(col('Date')))     )
         .drop('InvoiceId', 'TotalSalesAmount', 'InvoiceId', 'Id')
         .select('Date', "DateKey", "CustomerId", "ProductId", "Sales", "Quantity")
 )
 
 # write DataFrame to new gold layer table 
 ( df_gold_sales.write
-               .mode("overwrite")
-               .option("overwriteSchema", "True")
-               .format("delta")
-               .save("Tables/sales")
+                 .mode("overwrite")
+                 .option("overwriteSchema", "True")
+                 .format("delta")
+                 .save("Tables/sales")
 )
 
 # display table schema and data
@@ -125,28 +125,28 @@ df_calendar_ps = pd.date_range(start_date, end_date, freq='D').to_frame()
 # convert pandas DataFrame to Spark DataFrame and add calculated calendar columns
 df_calendar_spark = (
      spark.createDataFrame(df_calendar_ps)
-       .withColumnRenamed("0", "timestamp")
-       .withColumn("Date", to_date(col('timestamp')))
-       .withColumn("DateKey", (year(col('timestamp'))*10000) + 
-                              (month(col('timestamp'))*100) + 
-                              (dayofmonth(col('timestamp')))   )
-       .withColumn("Year", year(col('timestamp'))  )
-       .withColumn("Quarter", date_format(col('timestamp'),"yyyy-QQ")  )
-       .withColumn("Month", date_format(col('timestamp'),'yyyy-MM')  )
-       .withColumn("Day", dayofmonth(col('timestamp'))  )
-       .withColumn("MonthInYear", date_format(col('timestamp'),'MMMM')  )
-       .withColumn("MonthInYearSort", month(col('timestamp'))  )
-       .withColumn("DayOfWeek", date_format(col('timestamp'),'EEEE')  )
-       .withColumn("DayOfWeekSort", dayofweek(col('timestamp')))
-       .drop('timestamp')
+         .withColumnRenamed("0", "timestamp")
+         .withColumn("Date", to_date(col('timestamp')))
+         .withColumn("DateKey", (year(col('timestamp'))*10000) + 
+                                (month(col('timestamp'))*100) + 
+                                (dayofmonth(col('timestamp')))     )
+         .withColumn("Year", year(col('timestamp'))    )
+         .withColumn("Quarter", date_format(col('timestamp'),"yyyy-QQ")    )
+         .withColumn("Month", date_format(col('timestamp'),'yyyy-MM')    )
+         .withColumn("Day", dayofmonth(col('timestamp'))    )
+         .withColumn("MonthInYear", date_format(col('timestamp'),'MMMM')    )
+         .withColumn("MonthInYearSort", month(col('timestamp'))    )
+         .withColumn("DayOfWeek", date_format(col('timestamp'),'EEEE')    )
+         .withColumn("DayOfWeekSort", dayofweek(col('timestamp')))
+         .drop('timestamp')
 )
 
 # write DataFrame to new gold layer table 
 ( df_calendar_spark.write
-                   .mode("overwrite")
-                   .option("overwriteSchema", "True")
-                   .format("delta")
-                   .save("Tables/calendar")
+                     .mode("overwrite")
+                     .option("overwriteSchema", "True")
+                     .format("delta")
+                     .save("Tables/calendar")
 )
 
 # display table schema and data

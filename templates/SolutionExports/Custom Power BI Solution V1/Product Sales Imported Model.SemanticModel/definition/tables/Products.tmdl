@@ -44,11 +44,11 @@ table Products
 		mode: import
 		source =
 				let
-				    Source = Csv.Document(Web.Contents(CSV_FILE_ROOT, [RelativePath="Products.csv"]),[Delimiter=",", Columns=3, Encoding=65001, QuoteStyle=QuoteStyle.None]),
-				    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
-				    #"Changed Type" = Table.TransformColumnTypes(PromotedHeaders,{{"ProductId", Int64.Type}, {"Product", type text}, {"Category", type text}})
+				  Source = Csv.Document(Web.Contents(CSV_FILE_ROOT, [RelativePath="Products.csv"]),[Delimiter=",", Columns=3, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				  PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				  #"Changed Type" = Table.TransformColumnTypes(PromotedHeaders,{{"ProductId", Int64.Type}, {"Product", type text}, {"Category", type text}})
 				in
-				    #"Changed Type"
+				  #"Changed Type"
 
 	annotation PBI_NavigationStepName = Navigation
 

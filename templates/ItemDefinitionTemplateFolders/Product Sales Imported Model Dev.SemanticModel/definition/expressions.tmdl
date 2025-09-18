@@ -12,7 +12,7 @@ expression Invoices = ```
 		    #"Changed Type" = Table.TransformColumnTypes(PromotedHeaders,{{"Date", type date}, {"TotalSalesAmount", Currency.Type}}),
 		    #"Removed Columns" = Table.RemoveColumns(#"Changed Type",{"TotalSalesAmount"})
 		in 
-		   #"Removed Columns"
+		     #"Removed Columns"
 		```
 	lineageTag: 88beae85-75cf-4bc4-93cf-d833a88be5ad
 

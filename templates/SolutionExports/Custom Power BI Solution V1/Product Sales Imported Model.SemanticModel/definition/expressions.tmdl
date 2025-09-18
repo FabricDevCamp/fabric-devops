@@ -7,10 +7,10 @@ expression CSV_FILE_ROOT = "https://fabricdevcamp.blob.core.windows.net/sampleda
 
 expression Invoices = ```
 		let
-		    Source = Csv.Document(Web.Contents(CSV_FILE_ROOT, [RelativePath="Invoices.csv"]),[Delimiter=",", Columns=4, Encoding=65001, QuoteStyle=QuoteStyle.None]),
-		    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
-		    #"Changed Type" = Table.TransformColumnTypes(PromotedHeaders,{{"Date", type date}, {"TotalSalesAmount", Currency.Type}}),
-		    #"Removed Columns" = Table.RemoveColumns(#"Changed Type",{"TotalSalesAmount"})
+		  Source = Csv.Document(Web.Contents(CSV_FILE_ROOT, [RelativePath="Invoices.csv"]),[Delimiter=",", Columns=4, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+		  PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+		  #"Changed Type" = Table.TransformColumnTypes(PromotedHeaders,{{"Date", type date}, {"TotalSalesAmount", Currency.Type}}),
+		  #"Removed Columns" = Table.RemoveColumns(#"Changed Type",{"TotalSalesAmount"})
 		in 
 		   #"Removed Columns"
 		```

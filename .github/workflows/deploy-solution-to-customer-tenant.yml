@@ -3,65 +3,65 @@ name: Deploy Solution to Tenant Workspace
 run-name: Deploy ${{inputs.solution_name}} to ${{ inputs.customer_name }}
 
 on:
-  workflow_dispatch:
-    inputs:
-      solution_name:
-        type: choice
-        description: Solution to deploy
-        options: 
-        - Custom Power BI Solution
-        - Custom Notebook Solution
-        - Custom Shortcut Solution
-        - Custom Data Pipeline Solution
-        - Custom Variable Library Solution
-        - Custom Warehouse Solution
+    workflow_dispatch:
+        inputs:
+            solution_name:
+                type: choice
+                description: Solution to deploy
+                options: 
+                - Custom Power BI Solution
+                - Custom Notebook Solution
+                - Custom Shortcut Solution
+                - Custom Data Pipeline Solution
+                - Custom Variable Library Solution
+                - Custom Warehouse Solution
 
-      customer_name:
-        type: choice
-        description: Target Customer
-        options: 
-        - Adventure Works
-        - Contoso
-        - Fabrikam
-        - Northwind
-        - Seamark Farms
-        - Wingtip Toys
-        - Deploy To All Customers
+            customer_name:
+                type: choice
+                description: Target Customer
+                options: 
+                - Adventure Works
+                - Contoso
+                - Fabrikam
+                - Northwind
+                - Seamark Farms
+                - Wingtip Toys
+                - Deploy To All Customers
 
 
 jobs:
-  deployment-job:    
-    name: Deploy ${{inputs.solution_name}} to ${{ inputs.customer_name }}
-    runs-on: ubuntu-latest
+    deployment-job:        
+        name: Deploy ${{inputs.solution_name}} to ${{ inputs.customer_name }}
+        runs-on: ubuntu-latest
 
-    steps:
-      - name: Check out the code
-        uses: actions/checkout@v4
+        steps:
+            - name: Check out the code
+                uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.12"
+            - name: Set up Python
+                uses: actions/setup-python@v2
+                with:
+                    python-version: "3.12"
 
-      - name: Install MSAL
-        run: |
-          pip install msal
+            - name: Install MSAL
+                run: |
+                    pip install msal
 
-      - name: Install PyNaCl
-        run: |
-          pip install PyNaCl
+            - name: Install PyNaCl
+                run: |
+                    pip install PyNaCl
 
-      - name: Deploy Solution with Parameters
-        env:
-          FABRIC_CLIENT_ID: ${{ secrets.FABRIC_CLIENT_ID }}
-          FABRIC_CLIENT_SECRET: ${{ secrets.FABRIC_CLIENT_SECRET }}
-          FABRIC_TENANT_ID: ${{ secrets.FABRIC_TENANT_ID }}          
-          FABRIC_CAPACITY_ID: ${{ secrets.FABRIC_CAPACITY_ID }}       
-          ADMIN_USER_ID: ${{ secrets.ADMIN_USER_ID }}
-          SERVICE_PRINCIPAL_OBJECT_ID: ${{ secrets.SERVICE_PRINCIPAL_OBJECT_ID }}
-          PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
-          SOLUTION_NAME: ${{ inputs.solution_name }}    
-          CUSTOMER_NAME: ${{ inputs.customer_name }}    
+            - name: Deploy Solution with Parameters
+                env:
+                    FABRIC_CLIENT_ID: ${{ secrets.FABRIC_CLIENT_ID }}
+                    FABRIC_CLIENT_SECRET: ${{ secrets.FABRIC_CLIENT_SECRET }}
+                    FABRIC_TENANT_ID: ${{ secrets.FABRIC_TENANT_ID }}                    
+                    FABRIC_CAPACITY_ID: ${{ secrets.FABRIC_CAPACITY_ID }}             
+                    ADMIN_USER_ID: ${{ secrets.ADMIN_USER_ID }}
+                    SERVICE_PRINCIPAL_OBJECT_ID: ${{ secrets.SERVICE_PRINCIPAL_OBJECT_ID }}
+                    PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
+                    SOLUTION_NAME: ${{ inputs.solution_name }}        
+                    CUSTOMER_NAME: ${{ inputs.customer_name }}        
 
-        run: 
-          python src/deploy_solution_to_customer_tenant.py
+                run: 
+                    python src/deploy_solution_to_customer_tenant.py

@@ -26,8 +26,8 @@ table Sales
 			IF( 
 			  HASONEVALUE(Customers[City]), 
 			  RANKX( 
-			    ALLSELECTED(Customers[City]), 
-			    CALCULATE([Sales Revenue])
+			  ALLSELECTED(Customers[City]), 
+			  CALCULATE([Sales Revenue])
 			  )
 			)
 			```
@@ -39,8 +39,8 @@ table Sales
 			IF( 
 			  HASONEVALUE(Customers[Customer]), 
 			  RANKX( 
-			    ALLSELECTED(Customers), 
-			    CALCULATE([Sales Revenue])
+			  ALLSELECTED(Customers), 
+			  CALCULATE([Sales Revenue])
 			  )
 			)
 			```
@@ -52,8 +52,8 @@ table Sales
 			IF( 
 			  HASONEVALUE(Products[Product]), 
 			  RANKX( 
-			    ALLSELECTED(Products), 
-			    CALCULATE([Sales Revenue])
+			  ALLSELECTED(Products), 
+			  CALCULATE([Sales Revenue])
 			  )
 			)
 			```

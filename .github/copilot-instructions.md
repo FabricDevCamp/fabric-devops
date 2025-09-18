@@ -18,7 +18,7 @@ to implement CI/CD pipelines for DevOps and change control with Fabric solutions
 
 ## Libraries and Frameworks
 - Use Microsoft Authentication Library (MSAL) for Python for authentication and token acquisition
-  for  users and service principals.
+    for    users and service principals.
 
 ## Documentation
 - Generate clear and concise documentation for functions and classes using docstrings.

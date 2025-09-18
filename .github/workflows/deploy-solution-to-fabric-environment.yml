@@ -3,76 +3,76 @@ name: Deploy Solution to Fabric Environment
 run-name: Deploy ${{inputs.solution_name}} to ${{inputs.target_environment}} Environment
 
 on:
-  workflow_dispatch:
-    inputs:
-      solution_name:
-        type: choice
-        description: Solution to deploy
-        options: 
-        - Custom Power BI Solution
-        - Custom Notebook Solution
-        - Custom Shortcut Solution
-        - Custom Data Pipeline Solution
-        - Custom Warehouse Solution
-        - Custom Realtime Solution
-        - Custom FabCon Solution
-        - Deploy All Solutions
-        default: Custom Power BI Solution
-      target_environment:
-        type: choice
-        description: Target Environment
-        options: 
-        - Dev
-        - Test
-        - Prod
-        default: Dev
-      git_integration_provider:
-        type: choice
-        description: Git Integration Provider
-        options: 
-        - None
-        - Azure DevOps
-        - GitHub
-        default: None
-      run_as_service_principal:
-        type: boolean
-        description: Run as service principal
-        default: true
+    workflow_dispatch:
+        inputs:
+            solution_name:
+                type: choice
+                description: Solution to deploy
+                options: 
+                - Custom Power BI Solution
+                - Custom Notebook Solution
+                - Custom Shortcut Solution
+                - Custom Data Pipeline Solution
+                - Custom Warehouse Solution
+                - Custom Realtime Solution
+                - Custom Medallion Warehouse Solution
+                - Deploy All Solutions
+                default: Custom Power BI Solution
+            target_environment:
+                type: choice
+                description: Target Environment
+                options: 
+                - Dev
+                - Test
+                - Prod
+                default: Dev
+            git_integration_provider:
+                type: choice
+                description: Git Integration Provider
+                options: 
+                - None
+                - Azure DevOps
+                - GitHub
+                default: None
+            run_as_service_principal:
+                type: boolean
+                description: Run as service principal
+                default: true
 
 jobs:
-  deployment-job:
-    name: Deploy ${{inputs.solution_name}}
-    runs-on: ubuntu-latest
+    deployment-job:
+        name: Deploy ${{inputs.solution_name}}
+        runs-on: ubuntu-latest
 
-    steps:
-      - name: Check out the code
-        uses: actions/checkout@v4
+        steps:
+            - name: Check out the code
+                uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.12"
+            - name: Set up Python
+                uses: actions/setup-python@v2
+                with:
+                    python-version: "3.12"
 
-      - name: Install MSAL
-        run: |
-          pip install msal
+            - name: Install MSAL
+                run: |
+                    pip install msal
 
-      - name: Install PyNaCl
-        run: |
-          pip install PyNaCl
+            - name: Install PyNaCl
+                run: |
+                    pip install PyNaCl
 
-      - name: Deploy Solution        
-        env:
-          FABRIC_CLIENT_ID: ${{ secrets.FABRIC_CLIENT_ID }}
-          FABRIC_CLIENT_SECRET: ${{ secrets.FABRIC_CLIENT_SECRET }}
-          FABRIC_TENANT_ID: ${{ secrets.FABRIC_TENANT_ID }}          
-          FABRIC_CAPACITY_ID: ${{ secrets.FABRIC_CAPACITY_ID }}       
-          ADMIN_USER_ID: ${{ secrets.ADMIN_USER_ID }}
-          SERVICE_PRINCIPAL_OBJECT_ID: ${{ secrets.SERVICE_PRINCIPAL_OBJECT_ID }}
-          PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
-          SOLUTION_NAME: ${{inputs.solution_name}}    
-          TARGET_ENVIRONMENT: ${{inputs.target_environment}}
-          GIT_INTEGRATION_PROVIDER: ${{inputs.git_integration_provider}}
-          RUN_AS_SERVICE_PRINCIPAL: ${{inputs.run_as_service_principal}}
-        run: 
-          python src/deploy_solution_to_fabric_environment.py
+            - name: Deploy Solution                
+                env:
+                    FABRIC_CLIENT_ID: ${{ secrets.FABRIC_CLIENT_ID }}
+                    FABRIC_CLIENT_SECRET: ${{ secrets.FABRIC_CLIENT_SECRET }}
+                    FABRIC_TENANT_ID: ${{ secrets.FABRIC_TENANT_ID }}                    
+                    FABRIC_CAPACITY_ID: ${{ secrets.FABRIC_CAPACITY_ID }}             
+                    ADMIN_USER_ID: ${{ secrets.ADMIN_USER_ID }}
+                    SERVICE_PRINCIPAL_OBJECT_ID: ${{ secrets.SERVICE_PRINCIPAL_OBJECT_ID }}
+                    PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
+                    SOLUTION_NAME: ${{inputs.solution_name}}        
+                    TARGET_ENVIRONMENT: ${{inputs.target_environment}}
+                    GIT_INTEGRATION_PROVIDER: ${{inputs.git_integration_provider}}
+                    RUN_AS_SERVICE_PRINCIPAL: ${{inputs.run_as_service_principal}}
+                run: 
+                    python src/deploy_solution_to_fabric_environment.py

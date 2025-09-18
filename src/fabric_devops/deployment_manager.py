@@ -16,7 +16,6 @@ from .ado_project_manager import AdoProjectManager
 class DeploymentManager:
     """Deployment Manager"""
 
-    
     @classmethod
     def deploy_solution_by_name(cls, 
                                 solution_name, 
@@ -42,6 +41,8 @@ class DeploymentManager:
                 workspace = cls.deploy_warehouse_solution(target_workspace, deploy_job)
             case 'Custom Realtime Solution':
                 workspace = cls.deploy_realtime_solution(target_workspace)
+            case 'Custom Medallion Warehouse Solution':
+                workspace = cls.deploy_medallion_warehouse_solution(target_workspace, deploy_job)
         
         if workspace is None:
             raise LookupError(f'Unknown solution name [{solution_name}]')
@@ -259,8 +260,8 @@ class DeploymentManager:
 
     @classmethod
     def deploy_data_pipeline_solution(cls,
-                                      target_workspace,
-                                      deploy_job = StagingEnvironments.get_dev_environment()):
+                                        target_workspace,
+                                        deploy_job = StagingEnvironments.get_dev_environment()):
         """Deploy Data Pipeline Solution"""
 
         lakehouse_name = "sales"
@@ -424,12 +425,12 @@ class DeploymentManager:
             template_file = f"DataPipelines//{data_pipeline['template']}"
             template_content = ItemDefinitionFactory.get_template_file(template_file)
             template_content = template_content.replace('{WORKSPACE_ID}', workspace['id']) \
-                                               .replace('{LAKEHOUSE_ID}', lakehouse['id']) \
-                                               .replace('{WAREHOUSE_ID}', warehouse['id']) \
-                                               .replace('{WAREHOUSE_CONNECT_STRING}', warehouse_connect_string) \
-                                               .replace('{CONNECTION_ID}', connection['id']) \
-                                               .replace('{CONTAINER_NAME}', adls_container_name) \
-                                               .replace('{CONTAINER_PATH}', adls_container_path)                                                       
+                                                 .replace('{LAKEHOUSE_ID}', lakehouse['id']) \
+                                                 .replace('{WAREHOUSE_ID}', warehouse['id']) \
+                                                 .replace('{WAREHOUSE_CONNECT_STRING}', warehouse_connect_string) \
+                                                 .replace('{CONNECTION_ID}', connection['id']) \
+                                                 .replace('{CONTAINER_NAME}', adls_container_name) \
+                                                 .replace('{CONTAINER_PATH}', adls_container_path)                                                         
 
             pipeline_create_request = ItemDefinitionFactory.get_data_pipeline_create_request(
                 data_pipeline['name'],
@@ -559,21 +560,21 @@ class DeploymentManager:
         return workspace
 
     @classmethod
-    def deploy_fabcon_solution(
+    def deploy_medallion_warehouse_solution(
             cls,
             target_workspace,
             deploy_job = StagingEnvironments.get_dev_environment()):
-        """Deploy FabCon Solution"""
+        """Deploy Medallion Warehouse Solution"""
 
         bronze_lakehouse_name = "sales_bronze"
         silver_lakehouse_name = "sales_silver"
         gold_warehouse_name = "sales"
 
-        semantic_model_name = 'Product Sales DirectLake Model'
-        reports = [
-            { 'name': 'Product Sales Summary', 'template':'product_sales_summary.json'},
-            { 'name': 'Product Sales Time Intelligence', 'template':'product_sales_time_intelligence.json'},
-            { 'name': 'Product Sales Top 10 Cities', 'template':'product_sales_top_ten_cities_report.json'},
+        semantic_model_folder = 'Product Sales DirectLake Model.SemanticModel'
+        report_folders = [
+            'Product Sales Summary.Report',
+            'Product Sales Time Intelligence.Report',
+            'Product Sales Top 10 Cities.Report'
         ]
 
         AppLogger.log_job(f"Deploying FabCon Solution to [{target_workspace}]")
@@ -679,7 +680,7 @@ class DeploymentManager:
                                                 .replace('{WAREHOUSE_CONNECT_STRING}', warehouse_connect_string) \
                                                 .replace('{CONNECTION_ID}', connection['id']) \
                                                 .replace('{CONTAINER_NAME}', adls_container_name) \
-                                                .replace('{CONTAINER_PATH}', adls_container_path)                                                       
+                                                .replace('{CONTAINER_PATH}', adls_container_path)                                                         
 
             pipeline_create_request = ItemDefinitionFactory.get_data_pipeline_create_request(
                 data_pipeline['name'],
@@ -693,27 +694,35 @@ class DeploymentManager:
             FabricRestApi.run_data_pipeline(workspace['id'], pipeline)
 
         create_model_request = \
-            ItemDefinitionFactory.get_directlake_model_create_request(
-                    semantic_model_name,
-                    'sales_model_DirectLake.bim',
-                    warehouse_connect_string,
-                    gold_warehouse['id'])
+            ItemDefinitionFactory.get_create_item_request_from_folder(
+                semantic_model_folder)
+
+        model_redirects = {
+            '{SQL_ENDPOINT_SERVER}': warehouse_connect_string,
+            '{SQL_ENDPOINT_DATABASE}': gold_warehouse['id']
+        }
+
+        create_model_request = \
+            ItemDefinitionFactory.update_part_in_create_request(
+                create_model_request,
+                'definition/expressions.tmdl',
+                model_redirects)
 
         model = FabricRestApi.create_item(workspace['id'], create_model_request)
 
         FabricRestApi.create_and_bind_semantic_model_connecton(workspace, model['id'], gold_warehouse)
 
-        for report_data in reports:
-            create_report_request = ItemDefinitionFactory.get_report_create_request(
-                model['id'],
-                report_data['name'],
-                report_data['template'])
-                
+        for report_folder in report_folders:
+            
+            create_report_request = \
+                ItemDefinitionFactory.get_create_report_request_from_folder(
+                    report_folder,
+                    model['id'])
+
             FabricRestApi.create_item(workspace['id'], create_report_request)
-
-        AppLogger.log_job_complete(workspace['id'])
-
+ 
         return workspace
+        
 
 
 # var lib samples
@@ -731,7 +740,7 @@ class DeploymentManager:
         deploy_job.display_deployment_parameters('web')
 
         workspace = FabricRestApi.create_workspace(target_workspace)
-      
+        
         FabricRestApi.update_workspace_description(workspace['id'], 'Custom Notebook Solution')
 
         web_datasource_path = deploy_job.parameters[deploy_job.web_datasource_path_parameter]
@@ -944,12 +953,12 @@ class DeploymentManager:
         variable_library = VariableLibrary()
         variable_library.add_variable("web_datasource_path", web_datasource_path)
         variable_library.add_variable("adls_server", adls_server)
-        variable_library.add_variable("adls_container_name",  adls_container_name)
-        variable_library.add_variable("adls_container_path",  adls_container_path)
-        variable_library.add_variable("adls_connection_id",  connection['id'])
-        variable_library.add_variable("lakehouse_id",  lakehouse['id'])
-        variable_library.add_variable("notebook_id_build_silver",  notebook_ids[0])
-        variable_library.add_variable("notebook_id_build_gold",  notebook_ids[1])
+        variable_library.add_variable("adls_container_name",    adls_container_name)
+        variable_library.add_variable("adls_container_path",    adls_container_path)
+        variable_library.add_variable("adls_connection_id",    connection['id'])
+        variable_library.add_variable("lakehouse_id",    lakehouse['id'])
+        variable_library.add_variable("notebook_id_build_silver",    notebook_ids[0])
+        variable_library.add_variable("notebook_id_build_gold",    notebook_ids[1])
 
         create_library_request = \
             ItemDefinitionFactory.get_variable_library_create_request(
@@ -1046,11 +1055,11 @@ class DeploymentManager:
         shortcut_path = "Files"
         shortcut_location = adls_server
         shortcut_subpath = adls_path
-   
+     
         variable_library = VariableLibrary()
         variable_library.add_variable("adls_shortcut_location", adls_server)
-        variable_library.add_variable("adls_shortcut_subpath",  adls_path)
-        variable_library.add_variable("adls_connection_id",  connection['id'])
+        variable_library.add_variable("adls_shortcut_subpath",    adls_path)
+        variable_library.add_variable("adls_connection_id",    connection['id'])
 
         create_library_request = \
             ItemDefinitionFactory.get_variable_library_create_request(
@@ -1250,8 +1259,8 @@ class DeploymentManager:
 
     @classmethod
     def update_imported_semantic_model_source(cls, workspace,
-                                              semantic_model_name, 
-                                              web_datasource_path):
+                                                semantic_model_name, 
+                                                web_datasource_path):
         """Update Imported Sementic Model Source"""
         model = FabricRestApi.get_item_by_name(workspace['id'], semantic_model_name, 'SemanticModel')
         old_web_datasource_path = FabricRestApi.get_web_url_from_semantic_model(workspace['id'], model['id']) + '/'
@@ -1284,7 +1293,7 @@ class DeploymentManager:
         lakehouse = FabricRestApi.get_item_by_name(workspace['id'], lakehouse_name, 'Lakehouse')
         model = FabricRestApi.get_item_by_name(workspace['id'], semantic_model_name, 'SemanticModel')
         
-        old_sql_endpoint =  FabricRestApi.get_sql_endpoint_from_semantic_model(
+        old_sql_endpoint =    FabricRestApi.get_sql_endpoint_from_semantic_model(
             workspace['id'],
             model['id']
         )
@@ -1378,7 +1387,7 @@ class DeploymentManager:
                                 deployment_job,
                                 run_etl_jobs = False):
         
-        """Apply Post Deploy Fixes"""                  
+        """Apply Post Deploy Fixes"""                    
         AppLogger.log_step(f"Applying post deploy fixes to [{workspace_name}]")
         workspace = FabricRestApi.get_workspace_by_name(workspace_name)
         workspace_items = FabricRestApi.list_workspace_items(workspace['id'])
@@ -1427,7 +1436,7 @@ class DeploymentManager:
             if run_etl_jobs and 'Create' in notebook['displayName']:                
                 FabricRestApi.run_notebook(workspace['id'], notebook)
 
-        sql_endpoints =  list(filter(lambda item: item['type']=='SQLEndpoint', workspace_items))
+        sql_endpoints =    list(filter(lambda item: item['type']=='SQLEndpoint', workspace_items))
         for sql_endpoint in sql_endpoints:
             FabricRestApi.refresh_sql_endpoint_metadata(
                 workspace['id'],
@@ -1437,9 +1446,9 @@ class DeploymentManager:
         for model in models:
 
             # Apply fixes for [Product Sales Imported Model.SemanticModel]
-            if model['displayName'] ==  'Product Sales Imported Model':
+            if model['displayName'] ==    'Product Sales Imported Model':
                 # fix connection to imported models
-                datasource_path =  \
+                datasource_path =    \
                     deployment_job.parameters[deployment_job.web_datasource_path_parameter]
 
                 DeploymentManager.update_imported_semantic_model_source(
@@ -1452,7 +1461,7 @@ class DeploymentManager:
                     model['id'])
 
             # Apply fixes for [Product Sales DirectLake Model.SemanticModel]
-            if model['displayName'] ==  'Product Sales DirectLake Model':
+            if model['displayName'] ==    'Product Sales DirectLake Model':
                 # fix connection to lakehouse SQL endpoint
                 target_lakehouse_name = 'sales'
                 DeploymentManager.update_directlake_semantic_model_source(
@@ -1511,7 +1520,7 @@ class DeploymentManager:
                 break
 
         if variables is not None:
-            variable_library  = VariableLibrary(variables)
+            variable_library    = VariableLibrary(variables)
 
             valueset = Valueset(deployment_job.name)
 
@@ -1524,7 +1533,7 @@ class DeploymentManager:
             # set additional overrides with workspace-specific ids
             lakehouse_id_parameter = 'lakehouse_id'
             notebook_id_build_silver_parameter = 'notebook_id_build_silver'
-            notebook_id_build_gold_parameter  = 'notebook_id_build_gold'
+            notebook_id_build_gold_parameter    = 'notebook_id_build_gold'
             adls_connection_id_parameter = 'adls_connection_id'
 
             lakehouse = FabricRestApi.get_item_by_name(workspace['id'], 'sales', 'Lakehouse')
@@ -1605,13 +1614,13 @@ class DeploymentManager:
         """Get SQL Endpoint"""
         workspace = FabricRestApi.get_workspace_by_name(workspace_name)
         lakehouse = FabricRestApi.get_item_by_name(workspace['id'], 
-                                                   lakehouse_name, 'Lakehouse')
+                                                     lakehouse_name, 'Lakehouse')
         sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse)
-  
+    
     @classmethod
     def conn_filter_for_github(cls, connection):
         """GitHub connection filter"""
-        return connection['connectionDetails']['type'] ==  'GitHubSourceControl'
+        return connection['connectionDetails']['type'] ==    'GitHubSourceControl'
 
     @classmethod
     def delete_all_github_connections(cls):
@@ -1683,7 +1692,7 @@ class DeploymentManager:
         dev_workspace_items = FabricRestApi.list_workspace_items(dev_workspace['id'])
         
         test_workspace = FabricRestApi.get_workspace_by_name(test_workspace_name)
-        test_workspace_items  = FabricRestApi.list_workspace_items(test_workspace['id'])
+        test_workspace_items    = FabricRestApi.list_workspace_items(test_workspace['id'])
 
         test_items = {}
         for test_item in test_workspace_items:
@@ -1691,7 +1700,7 @@ class DeploymentManager:
             test_items[item_name] = test_item['id']
     
         prod_workspace = FabricRestApi.get_workspace_by_name(prod_workspace_name)
-        prod_workspace_items  = FabricRestApi.list_workspace_items(prod_workspace['id'])
+        prod_workspace_items    = FabricRestApi.list_workspace_items(prod_workspace['id'])
 
         prod_items = {}
         for prod_item in prod_workspace_items:
@@ -1703,7 +1712,7 @@ class DeploymentManager:
 
         file_content += tab + '# [Workspace Id]\n'
         file_content += tab + '- find_value: "' + dev_workspace['id'] + f'" # [{dev_workspace["displayName"]}]\n'
-        file_content += tab + '  replace_value:\n'
+        file_content += tab + '    replace_value:\n'
         file_content += tab + tab + f'TEST: "{test_workspace["id"]}" # [{test_workspace["displayName"]}]\n'
         file_content += tab + tab + f'PROD: "{prod_workspace["id"]}" # [{prod_workspace["displayName"]}]\n\n'
 
@@ -1711,7 +1720,7 @@ class DeploymentManager:
             item_name = workspace_item['displayName'] + "." + workspace_item['type']
             file_content += tab + f'# [{item_name}]\n'
             file_content += tab + '- find_value: "' + workspace_item['id'] + f'" # [{dev_workspace["displayName"]}]\n'
-            file_content += tab + '  replace_value:\n'
+            file_content += tab + '    replace_value:\n'
             if item_name in test_items:
                 file_content += tab + tab + f'TEST: "{test_items[item_name]}" # [{test_workspace["displayName"]}]\n'
             if item_name in prod_items:
@@ -1741,7 +1750,7 @@ class DeploymentManager:
                         prod_url = prod_datasources[index]['connectionDetails']['url']
                         file_content += tab + '# [Web Datasource Url]\n'
                         file_content += tab + '- find_value: "' + dev_url + f'" # [{dev_workspace["displayName"]}]\n'
-                        file_content += tab + '  replace_value:\n'
+                        file_content += tab + '    replace_value:\n'
                         file_content += tab + tab + f'TEST: "{test_url}" # [{test_workspace["displayName"]}]\n'
                         file_content += tab + tab + f'PROD: "{prod_url}" # [{prod_workspace["displayName"]}]\n\n'
 
@@ -1755,13 +1764,13 @@ class DeploymentManager:
 
                         file_content += tab + '# [SQL Datasource Server]\n'
                         file_content += tab + '- find_value: "' + dev_sql_server + f'" # [{dev_workspace["displayName"]}]\n'
-                        file_content += tab + '  replace_value:\n'
+                        file_content += tab + '    replace_value:\n'
                         file_content += tab + tab + f'TEST: "{test_sql_server}" # [{test_workspace["displayName"]}]\n'
                         file_content += tab + tab + f'PROD: "{prod_sql_server}" # [{prod_workspace["displayName"]}]\n\n'
 
                         file_content += tab + '# [SQL Datasource Database]\n'
                         file_content += tab + '- find_value: "' + dev_sql_database + f'" # [{dev_workspace["displayName"]}]\n'
-                        file_content += tab + '  replace_value:\n'
+                        file_content += tab + '    replace_value:\n'
                         file_content += tab + tab + f'TEST: "{test_sql_database}" # [{test_workspace["displayName"]}]\n'
                         file_content += tab + tab + f'PROD: "{prod_sql_database}" # [{prod_workspace["displayName"]}]\n\n'
 
@@ -1779,7 +1788,7 @@ class DeploymentManager:
         dev_workspace_items = FabricRestApi.list_workspace_items(dev_workspace['id'])
         
         test_workspace = FabricRestApi.get_workspace_by_name(test_workspace_name)
-        test_workspace_items  = FabricRestApi.list_workspace_items(test_workspace['id'])
+        test_workspace_items    = FabricRestApi.list_workspace_items(test_workspace['id'])
 
         test_items = {}
         for test_item in test_workspace_items:
@@ -1787,7 +1796,7 @@ class DeploymentManager:
             test_items[item_name] = test_item['id']
     
         prod_workspace = FabricRestApi.get_workspace_by_name(prod_workspace_name)
-        prod_workspace_items  = FabricRestApi.list_workspace_items(prod_workspace['id'])
+        prod_workspace_items    = FabricRestApi.list_workspace_items(prod_workspace['id'])
 
         prod_items = {}
         for prod_item in prod_workspace_items:
@@ -1799,7 +1808,7 @@ class DeploymentManager:
 
         file_content += tab + '# [Workspace Id]\n\n'
         file_content += tab + '- find_value: "' + dev_workspace['id'] + f'" # [{dev_workspace["displayName"]}]\n'
-        file_content += tab + '  replace_value:\n'
+        file_content += tab + '    replace_value:\n'
         file_content += tab + tab + f'TEST: "{test_workspace["id"]}" # [{test_workspace["displayName"]}]\n'
         file_content += tab + tab + f'PROD: "{prod_workspace["id"]}" # [{prod_workspace["displayName"]}]\n\n'
 
@@ -1807,7 +1816,7 @@ class DeploymentManager:
             item_name = workspace_item['displayName'] + "." + workspace_item['type']
             file_content += tab + f'# [{item_name}]\n'
             file_content += tab + '- find_value: "' + workspace_item['id'] + f'" # [{dev_workspace["displayName"]}]\n'
-            file_content += tab + '  replace_value:\n'
+            file_content += tab + '    replace_value:\n'
             if item_name in test_items:
                 file_content += tab + tab + f'TEST: "{test_items[item_name]}" # [{test_workspace["displayName"]}]\n\n'
 
@@ -1821,14 +1830,14 @@ class DeploymentManager:
                     test_items[item_name]
                 )
                 file_content += tab + '- find_value: "' + dev_datasource_path + f'" # [{dev_workspace["displayName"]}]\n'
-                file_content += tab + '  replace_value:\n'
+                file_content += tab + '    replace_value:\n'
                 file_content += tab + tab + f'TEST: "{test_datasource_path}" # [{test_workspace["displayName"]}]\n\n'
 
         for workspace_item in test_workspace_items:
             item_name = workspace_item['displayName'] + "." + workspace_item['type']
             file_content += tab + f'# [{item_name}]\n'
             file_content += tab + '- find_value: "' + workspace_item['id'] + f'" # [{test_workspace["displayName"]}]\n'
-            file_content += tab + '  replace_value:\n'
+            file_content += tab + '    replace_value:\n'
             if item_name in prod_items:
                 file_content += tab + tab + f'PROD: "{test_items[item_name]}" # [{prod_workspace["displayName"]}]\n\n'
 
@@ -1842,7 +1851,7 @@ class DeploymentManager:
                     prod_items[item_name]
                 )
                 file_content += tab + '- find_value: "' + test_datasource_path + f'" # [{test_workspace["displayName"]}]\n'
-                file_content += tab + '  replace_value:\n'
+                file_content += tab + '    replace_value:\n'
                 file_content += tab + tab + f'PROD: "{prod_datasource_path}" # [{prod_workspace["displayName"]}]\n\n'
 
 
@@ -1861,7 +1870,7 @@ class DeploymentManager:
         prod_workspace = FabricRestApi.get_workspace_by_name(prod_workspace_name)
 
                 
-        config  = {
+        config    = {
             'dev': {
                 'workspace_id': dev_workspace['id'],
                 'environment': 'DEV'
