@@ -47,6 +47,8 @@ class DeploymentManager:
                 workspace = cls.deploy_notebook_solution_with_varlib(target_workspace, deploy_job)
             case "Custom Shortcut Solution with Variable Library":
                 workspace = cls.deploy_shortcut_solution_with_varlib(target_workspace, deploy_job)
+            case 'Custom Data Pipeline Solution with Variable Library':
+                workspace = cls.deploy_data_pipeline_solution_with_varlib(target_workspace, deploy_job)
         
         if workspace is None:
             raise LookupError(f'Unknown solution name [{solution_name}]')
@@ -728,10 +730,6 @@ class DeploymentManager:
             FabricRestApi.create_item(workspace['id'], create_report_request)
  
         return workspace
-        
-
-
-# var lib samples
 
     @classmethod
     def deploy_notebook_solution_with_varlib(
@@ -924,9 +922,6 @@ class DeploymentManager:
 
         return workspace
 
-
-
-
     # @classmethod
     # def deploy_notebook_solution_with_variable_library(cls,
     #                              target_workspace,
@@ -1015,13 +1010,10 @@ class DeploymentManager:
     #     return workspace
 
     @classmethod
-    def deploy_variable_library_solution(cls,
+    def deploy_data_pipeline_solution_with_varlib(cls,
                                          target_workspace, 
                                          deploy_job = StagingEnvironments.get_dev_environment()):
-        """Deploy Variable Library Solution"""
-
-        # currently, this cannot run as SPN, it only works when running as user
-        #EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL = False
+        """Deploy Data Pipeline Solution with Variable Library"""
 
         lakehouse_name = "sales"
         notebook_folders = [
@@ -1066,7 +1058,6 @@ class DeploymentManager:
             top_level_step=True)
 
         variable_library = VariableLibrary()
-        variable_library.add_variable("web_datasource_path", web_datasource_path)
         variable_library.add_variable("adls_server", adls_server)
         variable_library.add_variable("adls_container_name",    adls_container_name)
         variable_library.add_variable("adls_container_path",    adls_container_path)
@@ -1123,8 +1114,6 @@ class DeploymentManager:
                     model['id'])
 
             FabricRestApi.create_item(workspace['id'], create_report_request)
-
-        AppLogger.log_job_complete(workspace['id'])
 
         return workspace
 
