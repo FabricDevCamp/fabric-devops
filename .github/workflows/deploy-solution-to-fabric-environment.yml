@@ -46,33 +46,33 @@ jobs:
 
         steps:
             - name: Check out the code
-                uses: actions/checkout@v4
+              uses: actions/checkout@v4
 
             - name: Set up Python
-                uses: actions/setup-python@v2
-                with:
+              uses: actions/setup-python@v2
+              with:
                     python-version: "3.12"
 
             - name: Install MSAL
-                run: |
-                    pip install msal
+              run: |
+                    pip install msal -q
 
             - name: Install PyNaCl
-                run: |
-                    pip install PyNaCl
+              run: |
+                    pip install PyNaCl -q
 
             - name: Deploy Solution                
-                env:
-                    FABRIC_CLIENT_ID: ${{ secrets.FABRIC_CLIENT_ID }}
-                    FABRIC_CLIENT_SECRET: ${{ secrets.FABRIC_CLIENT_SECRET }}
-                    FABRIC_TENANT_ID: ${{ secrets.FABRIC_TENANT_ID }}                    
-                    FABRIC_CAPACITY_ID: ${{ secrets.FABRIC_CAPACITY_ID }}             
-                    ADMIN_USER_ID: ${{ secrets.ADMIN_USER_ID }}
-                    SERVICE_PRINCIPAL_OBJECT_ID: ${{ secrets.SERVICE_PRINCIPAL_OBJECT_ID }}
-                    PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
-                    SOLUTION_NAME: ${{inputs.solution_name}}        
-                    TARGET_ENVIRONMENT: ${{inputs.target_environment}}
-                    GIT_INTEGRATION_PROVIDER: ${{inputs.git_integration_provider}}
-                    RUN_AS_SERVICE_PRINCIPAL: ${{inputs.run_as_service_principal}}
-                run: 
+              env:
+                FABRIC_CLIENT_ID: ${{ secrets.FABRIC_CLIENT_ID }}
+                FABRIC_CLIENT_SECRET: ${{ secrets.FABRIC_CLIENT_SECRET }}
+                FABRIC_TENANT_ID: ${{ secrets.FABRIC_TENANT_ID }}                    
+                FABRIC_CAPACITY_ID: ${{ secrets.FABRIC_CAPACITY_ID }}             
+                ADMIN_USER_ID: ${{ secrets.ADMIN_USER_ID }}
+                SERVICE_PRINCIPAL_OBJECT_ID: ${{ secrets.SERVICE_PRINCIPAL_OBJECT_ID }}
+                PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
+                SOLUTION_NAME: ${{inputs.solution_name}}        
+                TARGET_ENVIRONMENT: ${{inputs.target_environment}}
+                GIT_INTEGRATION_PROVIDER: ${{inputs.git_integration_provider}}
+                RUN_AS_SERVICE_PRINCIPAL: ${{inputs.run_as_service_principal}}
+              run: 
                     python src/deploy_solution_to_fabric_environment.py
