@@ -43,7 +43,7 @@ class FabricRestApi:
 
         response = requests.post(url=rest_url, json=post_body, headers=request_headers, timeout=60)
 
-        if response.status_code in { 200, 201 }:
+        if response.status_code in { 200, 201, 204 }:
             try:
                 return response.json()
             except JSONDecodeError:
@@ -83,10 +83,17 @@ class FabricRestApi:
             wait_time = int(response.headers.get('Retry-After'))
             time.sleep(wait_time)
             return cls._execute_post_request(endpoint, post_body)
+   
+        elif response.status_code == 404: # handleNOT FOUND error
+            AppLogger.log_substep('Received 404 NOT FOUND error - waiting 10 seconds and retrying')
+            wait_time = 10
+            time.sleep(wait_time)
+            return cls._execute_post_request(endpoint, post_body)
+        
         else:
             AppLogger.log_error(
                 f'Error executing POST request: {response.status_code} - {response.text}')
-            return None
+            raise RuntimeError(f'Error executing POST request: {response.status_code} - {response.text}')
 
     @classmethod
     def _execute_post_request_for_job_scheduler(cls, endpoint, post_body=''):
