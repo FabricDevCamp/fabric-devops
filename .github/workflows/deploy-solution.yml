@@ -17,6 +17,7 @@ on:
         - Custom Realtime Solution
         - Custom FabCon Solution
         - Deploy All Solutions
+        default: Custom Power BI Solution
       target_environment:
         type: choice
         description: Target Environment
@@ -24,6 +25,15 @@ on:
         - Dev
         - Test
         - Prod
+        default: Dev
+      git_integration_provider:
+        type: choice
+        description: Git Integration Provider
+        options: 
+        - None
+        - Azure DevOps
+        - GitHub
+        default: None
       run_as_service_principal:
         type: boolean
         description: Run as service principal
@@ -62,6 +72,7 @@ jobs:
           PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
           SOLUTION_NAME: ${{inputs.solution_name}}    
           TARGET_ENVIRONMENT: ${{inputs.target_environment}}
+          GIT_INTEGRATION_PROVIDER: ${{inputs.git_integration_provider}}
           RUN_AS_SERVICE_PRINCIPAL: ${{inputs.run_as_service_principal}}
         run: 
           python src/deploy_solution.py
