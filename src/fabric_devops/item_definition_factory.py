@@ -279,7 +279,6 @@ class ItemDefinitionFactory:
             'definition': item_definition
         }
 
-
     @classmethod
     def update_create_pbir_report_request_with_semantic_model(cls, create_report_request, target_model_id):
         """Update Item Definition Part"""
@@ -297,8 +296,6 @@ class ItemDefinitionFactory:
             'type': "Report",
             'definition': item_definition
         }
-
-
 
     @classmethod
     def get_data_pipeline_create_request(cls, display_name, pipeline_definition):
@@ -498,7 +495,6 @@ class ItemDefinitionFactory:
                     cls._write_file_to_exports_folder(workspace_name, item_folder, part_path, part_content)
             except:
                 AppLogger.log_substep(f"Could not export {item['displayName']}.{item['type']}")
-
 
     @classmethod
     def _delete_exports_folder_contents(cls, workspace_name):

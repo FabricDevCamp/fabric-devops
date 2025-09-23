@@ -1,0 +1,75 @@
+table Customers
+	lineageTag: ea65aeaf-81bd-4469-9740-243b6c221ef8
+
+	column CustomerId
+		dataType: string
+		isHidden
+		lineageTag: e17f7fdc-0ff3-405b-90fd-3efb6e8589dc
+		summarizeBy: none
+		sourceColumn: CustomerId
+
+		annotation SummarizationSetBy = Automatic
+
+	column Customer
+		dataType: string
+		lineageTag: d25138ac-091b-4e80-a7b9-19806d21b72e
+		summarizeBy: none
+		sourceColumn: Customer
+
+		annotation SummarizationSetBy = Automatic
+
+	column Country
+		dataType: string
+		lineageTag: 93082c75-ea0c-4cbc-a33e-45d3a0c84010
+		dataCategory: Country
+		summarizeBy: none
+		sourceColumn: Country
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'City Name'
+		dataType: string
+		lineageTag: 398b02a9-3dc1-41c7-ae74-36a0f171534e
+		summarizeBy: none
+		sourceColumn: City Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column DOB
+		dataType: string
+		lineageTag: a8bce815-b500-4f61-9b61-ee66fb456739
+		summarizeBy: none
+		sourceColumn: DOB
+
+		annotation SummarizationSetBy = Automatic
+
+	column City
+		dataType: string
+		lineageTag: 3ed32bf3-838a-49e3-89d9-6fa3d153f0e6
+		dataCategory: Place
+		summarizeBy: none
+		sourceColumn: City
+
+		annotation SummarizationSetBy = Automatic
+
+	column Age = Floor( (TODAY()-Customers[DOB])/365, 1)
+		formatString: 0
+		lineageTag: 710ea202-a41a-4dd3-9cb0-316d0a9ee7a8
+		summarizeBy: none
+
+	partition Customers = m
+		mode: import
+		source =
+				let
+				    Source = PowerPlatform.Dataflows(null),
+				    Workspaces = Source{[Id="Workspaces"]}[Data],
+				    #"7f0153d8-f4ae-471d-bf6b-bac72149225a" = Workspaces{[workspaceId="7f0153d8-f4ae-471d-bf6b-bac72149225a"]}[Data],
+				    #"9e3eea9f-ba31-44e0-9d7f-6b1e51aed897" = #"7f0153d8-f4ae-471d-bf6b-bac72149225a"{[dataflowId="9e3eea9f-ba31-44e0-9d7f-6b1e51aed897"]}[Data],
+				    Customers_ = #"9e3eea9f-ba31-44e0-9d7f-6b1e51aed897"{[entity="Customers",version=""]}[Data]
+				in
+				    Customers_
+
+	annotation PBI_ResultType = Table
+
+	annotation SummarizationSetBy = Automatic
+

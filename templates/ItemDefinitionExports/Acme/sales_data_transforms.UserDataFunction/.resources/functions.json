@@ -1,0 +1,40 @@
+{
+  "Runtime": "PYTHON",
+  "FunctionsMetadata": [
+    {
+      "Name": "ingest_csv_files",
+      "ScriptFile": "function_app.py",
+      "Bindings": [
+        {
+          "Methods": [
+            "POST"
+          ],
+          "Route": "",
+          "AuthLevel": "Anonymous",
+          "Name": "req",
+          "Direction": "In",
+          "Type": "HttpTrigger"
+        },
+        {
+          "ItemType": null,
+          "SubType": "FabricLakehouseClient",
+          "Alias": "sales",
+          "AudienceType": null,
+          "Name": "sales",
+          "Direction": "In",
+          "Type": "FabricItem"
+        }
+      ],
+      "FabricProperties": {
+        "fabricFunctionParameters": [
+          {
+            "dataType": "str",
+            "name": "url"
+          }
+        ],
+        "fabricFunctionReturnType": "str",
+        "fabricMetadataSchemaVersion": "1.1.0"
+      }
+    }
+  ]
+}

@@ -1,43 +1,8 @@
 {
-    "type": "CosmosDB",
-    "creationMethods": [
-        {
-            "name": "CosmosDB.Contents",
-            "parameters": [
-                {
-                    "name": "host",
-                    "dataType": "Text",
-                    "required": true,
-                    "allowedValues": null
-                },
-                {
-                    "name": "NUMBER_OF_RETRIES",
-                    "dataType": "Text",
-                    "required": false,
-                    "allowedValues": null
-                },
-                {
-                    "name": "ENABLE_AVERAGE_FUNCTION_PASSDOWN",
-                    "dataType": "Text",
-                    "required": false,
-                    "allowedValues": null
-                },
-                {
-                    "name": "ENABLE_SORT_PASSDOWN_FOR_MULTIPLE_COLUMNS",
-                    "dataType": "Text",
-                    "required": false,
-                    "allowedValues": null
-                }
-            ]
-        }
-    ],
-    "supportedCredentialTypes": [
-        "Key",
-        "OAuth2",
-        "WorkspaceIdentity"
-    ],
-    "supportedConnectionEncryptionTypes": [
-        "NotEncrypted"
-    ],
-    "supportsSkipTestConnection": false
-}
+  "fileendpoint": {
+    "ConnectionString": "https://onelake.dfs.fabric.microsoft.com/f8a0aa73-6d26-4777-981d-bef327a9cd7f/8bb3caf4-df1e-4236-af20-4c1002667da1/Files",
+    "AccessToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IkhTMjNiN0RvN1RjYVUxUm9MSHdwSXEyNFZZZyIsImtpZCI6IkhTMjNiN0RvN1RjYVUxUm9MSHdwSXEyNFZZZyJ9.eyJhdWQiOiJodHRwczovL3N0b3JhZ2UuYXp1cmUuY29tIiwiaXNzIjoiaHR0cHM6Ly9zdHMud2luZG93cy5uZXQvNWIzNTcyZTYtYTM4Ny00MzZiLWJmOTMtOWJkN2QzZDU0YWNiLyIsImlhdCI6MTc1ODM5ODgxNCwibmJmIjoxNzU4Mzk4ODE0LCJleHAiOjE3NTg0MDEzODcsImFjciI6IjEiLCJhaW8iOiJBYlFBUy84WkFBQUFjbFpIc3dCUk1ENm1FcTBLVzdVQ3kwb0lHbHBVNGlxMEw1bXd1eXROQmJKZzVCUTM1eU9MdmladUJkTG15bk9uWFRQSDlZTG1HTFdseUU4OExyZWxKdzB3d3pROEtNTHpwRmZZSzBHNGgzQURIazFpbXBQb0EwclA3eDBMNWxvdkZGVlk0NVlOU2l5UmMxcjZjT2JIYnRtTW9kRDlDWFRTQ1ltRzkvaytLYURsdXg2em1ISExYM2I2dHNXYkNnRm8yS3FMamlyejhkNWlhK1BzREdSNEx5OU1Hc0FQVlo3UXdtTG0vQU5GTzJrPSIsImFtciI6WyJwd2QiLCJtZmEiXSwiYXBwaWQiOiIwMDAwMDAwOS0wMDAwLTAwMDAtYzAwMC0wMDAwMDAwMDAwMDAiLCJhcHBpZGFjciI6IjIiLCJncm91cHMiOlsiOWFkZjNlNzgtNTQwZS00OGIxLWJkMmYtMTZiMDhkZGYwMzA1IiwiZmNjYjQwZDgtNmU2Zi00MWEyLWIwNTgtMDUyZDA4ZjlhYzg0Il0sImlkdHlwIjoidXNlciIsImlwYWRkciI6IjE3Mi4xNzEuMjM2LjI0IiwibmFtZSI6IlRlZCBQYXR0aXNvbiAoRkRDKSIsIm9pZCI6ImU4ODA1YThmLTIwMWQtNGYwNi05ZTM1LTBkMGIyOWZhZWJlNiIsInB1aWQiOiIxMDAzMjAwNDIyOUM0NzIzIiwicmgiOiIxLkFXRUI1bkkxVzRlamEwT19rNXZYMDlWS3k0R21CdVRVODZoQ2tMYkNzQ2xKZXZGaUFkQmhBUS4iLCJzY3AiOiJ1c2VyX2ltcGVyc29uYXRpb24iLCJzaWQiOiIwMDRjN2EzOS0wNWY4LWIzNzUtZWQ2Yy00YzMwOGE5MGQ1MzUiLCJzdWIiOiJFTTJ3QWdXcC14QWo4VG9ueFhobFRNTWN5Q005VWhLUy1uVHJVQ0tSWDdrIiwidGlkIjoiNWIzNTcyZTYtYTM4Ny00MzZiLWJmOTMtOWJkN2QzZDU0YWNiIiwidW5pcXVlX25hbWUiOiJUZWRAZmFicmljZGV2Y2FtcC5uZXQiLCJ1cG4iOiJUZWRAZmFicmljZGV2Y2FtcC5uZXQiLCJ1dGkiOiJGNWduVXVudzMwS3c2dlpPeEhvWkFRIiwidmVyIjoiMS4wIiwieG1zX2Z0ZCI6IlY5UGhJMGhDaC1hbzRpZTEtQV9IdGJBeUxpSjFVbk56RjI1MWdteUJGdkFCZFhObFlYTjBMV1J6YlhNIiwieG1zX2lkcmVsIjoiMSAxNiJ9.LwnbVn9qJKMEjIQDyQ5E5PRePTnnLBh9oFMyLtuo6InFTz51BpCbRNZAKDkPNg55w2SyvkcxELiX6UPcxL-xL55jK-y56HWnlZqGWLuKawNEhpt6wR5gafGEYfO9JGR3Rq7lsHg9w3CORmKUXIxRWnW_H4iNynHP8boIrUzg1MxLGMvGMjvSmMdyk6ErrpedQ2lYIzZ15Bskx5C4-7zAf5DYZ3cX9AVFK9GYvJG7-1LWiR1gDUox7Cr7HOLpKTPfGBkVHPG7T7-bCMlZ_PxvLF_YymJGhZDCqU9QKJAk98MLZb9rNfxvEZo5zT2U8dYo4dyGzUPcMaPA7LRocmkAMg"
+  },
+  "sqlendpoint": {
+    "ConnectionString": "Data Source=4zzdkw4hunvuhp4ttpl5hvkkzm-oovkb6bgnv3upga5x3zspkonp4.datawarehouse.fabric.microsoft.com",
+    "AccessToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IkhTMjNiN0RvN1RjYVUxUm9MSHdwSXEyNFZZZyIsImtpZCI6IkhTMjNiN0RvN1RjYVUxUm9MSHdwSXEyNFZZZyJ9.eyJhdWQiOiJodHRwczovL2RhdGFiYXNlLndpbmRvd3MubmV0LyIsImlzcyI6Imh0dHBzOi8vc3RzLndpbmRvd3MubmV0LzViMzU3MmU2LWEzODctNDM2Yi1iZjkzLTliZDdkM2Q1NGFjYi8iLCJpYXQiOjE3NTgzOTg4MTQsIm5iZiI6MTc1ODM5ODgxNCwiZXhwIjoxNzU4NDAyODI5LCJhY3IiOiIxIiwiYWlvIjoiQWJRQVMvOFpBQUFBVjdPTE1uaHZvWWFSVGoxN1o2OXoyand3bVBHWENNK253K2ZDSFdReVhYdjRzSkh0QkNHQytWT3J3UmlKbzR4eXhyb0lUc2pMSE1uSFNPMnVVbWh0UGw3VEVYV0J2aFV2MzRBZ0ExamI5NDluVmdySXk0VHZxQVJFcTVzNm9DYXQza0poUGJlUXdkckRiRHY5YVByR3pwUTc2QUFGRDFrazhKd1ovcGp2bm1RQzZMdktBSnRWb05ITXkxSWY0OGYzZG81ZWlxTG5sRGxVaXMyV0s2eVdERHcwREZFOXZRaDAwTy9wblNCODMxdz0iLCJhbXIiOlsicHdkIiwibWZhIl0sImFwcGlkIjoiMDAwMDAwMDktMDAwMC0wMDAwLWMwMDAtMDAwMDAwMDAwMDAwIiwiYXBwaWRhY3IiOiIyIiwiZ3JvdXBzIjpbIjlhZGYzZTc4LTU0MGUtNDhiMS1iZDJmLTE2YjA4ZGRmMDMwNSIsImZjY2I0MGQ4LTZlNmYtNDFhMi1iMDU4LTA1MmQwOGY5YWM4NCJdLCJpZHR5cCI6InVzZXIiLCJpcGFkZHIiOiIxNzIuMTcxLjIzNi4yNCIsIm5hbWUiOiJUZWQgUGF0dGlzb24gKEZEQykiLCJvaWQiOiJlODgwNWE4Zi0yMDFkLTRmMDYtOWUzNS0wZDBiMjlmYWViZTYiLCJwdWlkIjoiMTAwMzIwMDQyMjlDNDcyMyIsInJoIjoiMS5BV0VCNW5JMVc0ZWphME9fazV2WDA5Vkt5OU1IS1FJYkRfZEl1dHdicHF1cmJXWmlBZEJoQVEuIiwic2NwIjoidXNlcl9pbXBlcnNvbmF0aW9uIiwic2lkIjoiMDA0YzdhMzktMDVmOC1iMzc1LWVkNmMtNGMzMDhhOTBkNTM1Iiwic3ViIjoiT3lid0ZEelpJV1RRalU3aWEwRWlSdE1wbHhTemFFRWpQNXVMUFhDb0ZkYyIsInRpZCI6IjViMzU3MmU2LWEzODctNDM2Yi1iZjkzLTliZDdkM2Q1NGFjYiIsInVuaXF1ZV9uYW1lIjoiVGVkQGZhYnJpY2RldmNhbXAubmV0IiwidXBuIjoiVGVkQGZhYnJpY2RldmNhbXAubmV0IiwidXRpIjoiYmVSRnRfbjVRa09BMW9oUmdpOHBBUSIsInZlciI6IjEuMCIsInhtc19mdGQiOiI4VXpoVklmY3Q5Nko3Z2I5NEVkdTl6S2ZNMWhSTmNPcVR6Zmw2cldXMVZrQmRYTnpiM1YwYUMxa2MyMXoiLCJ4bXNfaWRyZWwiOiIxNiAxIn0.XL7L4NVZVMULkEg5P...

@@ -1,0 +1,54 @@
+{
+  "formatVersion": "202502",
+  "computeEngineSettings": {},
+  "name": "SalesDataflow",
+  "queryGroups": [],
+  "documentLocale": "en-US",
+  "queriesMetadata": {
+    "CSV_FILE_ROOT": {
+      "queryId": "a220992c-eb26-444c-a7c5-94de56b412dc",
+      "queryName": "CSV_FILE_ROOT",
+      "loadEnabled": false
+    },
+    "Products": {
+      "queryId": "cab646c6-c903-4d5b-a306-5761a19c9769",
+      "queryName": "Products"
+    },
+    "Customers": {
+      "queryId": "1ab9e7bd-6a3b-48b3-8ac7-b1d2c1b73aa6",
+      "queryName": "Customers"
+    },
+    "Sales": {
+      "queryId": "021f9982-87d6-4561-aea0-ae197380d364",
+      "queryName": "Sales"
+    },
+    "Invoices": {
+      "queryId": "6b2d746a-b3fa-40af-a961-3da1194e1d77",
+      "queryName": "Invoices",
+      "loadEnabled": false
+    },
+    "DefaultDestination": {
+      "queryId": "d40cc27b-57de-4d20-a4a3-0a0da5fb617e",
+      "queryName": "DefaultDestination",
+      "isHidden": true,
+      "loadEnabled": false
+    }
+  },
+  "connections": [
+    {
+      "path": "https://fabricdevcamp.blob.core.windows.net/sampledata/ProductSales/Dev/Products.csv",
+      "kind": "Web",
+      "connectionId": "{\"ClusterId\":\"2339fff6-316e-44a3-b414-9cc9afd74886\",\"DatasourceId\":\"8a45daee-14ee-40cf-85c6-74b89f35a338\"}"
+    },
+    {
+      "path": "https://fabricdevcamp.blob.core.windows.net/sampledata/ProductSales/Dev",
+      "kind": "Web",
+      "connectionId": "{\"ClusterId\":\"2339fff6-316e-44a3-b414-9cc9afd74886\",\"DatasourceId\":\"bcbcec73-50f7-474b-8438-1197503c8ce5\"}"
+    },
+    {
+      "path": "Lakehouse",
+      "kind": "Lakehouse",
+      "connectionId": "{\"ClusterId\":\"2339fff6-316e-44a3-b414-9cc9afd74886\",\"DatasourceId\":\"26d3337b-d7b0-4fec-be2c-22c6ea1f8f49\"}"
+    }
+  ]
+}

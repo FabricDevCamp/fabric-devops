@@ -1,15 +1,28 @@
 """Test1"""
-from fabric_devops import DeploymentManager, FabricRestApi, EnvironmentSettings, AdoProjectManager
+import json
+from fabric_devops import DeploymentManager, AppLogger, FabricRestApi
 
-# EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL = False
-# connections = FabricRestApi.list_connections()
 
-# print(connections)
+WORKSPACE_NAME = "Puff"
 
-WORKSPACE1_NAME = "Acme"
-workspace1 = DeploymentManager.deploy_powerbi_solution(WORKSPACE1_NAME)
-DeploymentManager.sync_workspace_to_ado_repo(workspace1)
+workspace = DeploymentManager.deploy_udf_solution(WORKSPACE_NAME)
 
-# WORKSPACE2_NAME = "Contoso"
-# workspace2 = DeploymentManager.deploy_powerbi_solution(WORKSPACE2_NAME)
-# DeploymentManager.sync_workspace_to_ado_repo(workspace2)
+AppLogger.log_job_complete( workspace['id'] )
+
+
+
+
+
+# udf = FabricRestApi.get_item_by_name(workspace['id'], 'hello_fabric', 'UserDataFunction')
+
+# response = FabricRestApi.call_user_defined_function(
+#     workspace['id'],
+#     udf['id'],
+#     'hello_fabric',
+#     {
+#         "name": "TeddyP"
+#     }
+# )
+
+# AppLogger.log_job_complete( json.dumps(response) )
+

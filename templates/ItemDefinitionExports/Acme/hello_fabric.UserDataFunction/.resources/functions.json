@@ -1,0 +1,57 @@
+{
+  "Runtime": "PYTHON",
+  "FunctionsMetadata": [
+    {
+      "Name": "hello_fabric",
+      "ScriptFile": "function_app.py",
+      "Bindings": [
+        {
+          "Methods": [
+            "POST"
+          ],
+          "Route": "",
+          "AuthLevel": "Anonymous",
+          "Name": "req",
+          "Direction": "In",
+          "Type": "HttpTrigger"
+        }
+      ],
+      "FabricProperties": {
+        "fabricFunctionParameters": [
+          {
+            "dataType": "str",
+            "name": "name"
+          }
+        ],
+        "fabricFunctionReturnType": "str",
+        "fabricMetadataSchemaVersion": "1.1.0"
+      }
+    },
+    {
+      "Name": "manipulate_data",
+      "ScriptFile": "function_app.py",
+      "Bindings": [
+        {
+          "Methods": [
+            "POST"
+          ],
+          "Route": "",
+          "AuthLevel": "Anonymous",
+          "Name": "req",
+          "Direction": "In",
+          "Type": "HttpTrigger"
+        }
+      ],
+      "FabricProperties": {
+        "fabricFunctionParameters": [
+          {
+            "dataType": "list",
+            "name": "data"
+          }
+        ],
+        "fabricFunctionReturnType": "list",
+        "fabricMetadataSchemaVersion": "1.1.0"
+      }
+    }
+  ]
+}

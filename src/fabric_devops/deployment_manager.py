@@ -372,6 +372,121 @@ class DeploymentManager:
         return workspace
 
     @classmethod
+    def deploy_udf_solution(cls,
+                             target_workspace,
+                             deploy_job = StagingEnvironments.get_dev_environment()):
+        """Deploy UDF Solution"""
+
+
+        workspace = FabricRestApi.create_workspace(target_workspace)
+
+        FabricRestApi.update_workspace_description(workspace['id'], 'Custom UDF Solution')
+        
+        lakehouse_name = 'sales'
+        lakehouse = FabricRestApi.create_lakehouse(workspace['id'], lakehouse_name)
+
+        udf_set_folders = [
+            'udf_playground.UserDataFunction',
+            'sales_data_transforms.UserDataFunction'
+        ]
+
+        for udf_set_folder in udf_set_folders:    
+            udf_create_request = ItemDefinitionFactory.get_create_item_request_from_folder(
+                udf_set_folder
+            )
+
+            udf_redirects = {
+                '{WORKSPACE_ID}': workspace['id'],
+                '{LAKEHOUSE_ID}': lakehouse['id']
+            }
+
+            create_udf_create_request  = \
+                ItemDefinitionFactory.update_part_in_create_request(udf_create_request,
+                                                                    'definition.json', 
+                                                                    udf_redirects)
+
+
+            udf = FabricRestApi.create_item(workspace['id'], udf_create_request)
+
+        return workspace
+
+    @classmethod
+    def deploy_dataflow_solution(cls,
+                                 target_workspace,
+                                 deploy_job = StagingEnvironments.get_dev_environment()):
+        """Deploy Dataflow Gen2 Solution"""
+
+   
+        # semantic_model_folder = 'Product Sales DirectLake Model.SemanticModel'
+        # report_folders = [
+        #     'Product Sales Summary.Report',
+        #     'Product Sales Time Intelligence.Report'
+        # ]
+
+        AppLogger.log_job(f"Deploying Custom Dataflow Solution to [{target_workspace}]")
+
+        deploy_job.display_deployment_parameters('web')
+
+        workspace = FabricRestApi.create_workspace(target_workspace)
+
+        FabricRestApi.update_workspace_description(workspace['id'], 'Custom Dataflow Solution')
+
+        web_datasource_path = deploy_job.parameters[deploy_job.web_datasource_path_parameter]
+        connection = FabricRestApi.create_anonymous_web_connection(web_datasource_path, workspace)
+
+        create_dataflow_request = \
+            ItemDefinitionFactory.get_create_item_request_from_folder(
+                'Create Sales Tables.Dataflow')
+
+        dataflow_redirects = {
+            '{CONNECTION_ID}': connection['id']
+        }
+
+        create_dataflow_request = \
+            ItemDefinitionFactory.update_part_in_create_request(create_dataflow_request,
+                                                                'queryMetadata.json',
+                                                                dataflow_redirects)
+        
+        print ( json.dumps(create_dataflow_request, indent=4) )
+
+        dataflow = FabricRestApi.create_item(workspace['id'], create_dataflow_request)
+
+        print (json.dumps(dataflow, indent=4))
+
+        
+        # create_model_request = \
+        #     ItemDefinitionFactory.get_create_item_request_from_folder(
+        #         semantic_model_folder)
+
+        # model_redirects = {
+        #     '{SQL_ENDPOINT_SERVER}': sql_endpoint['server'],
+        #     '{SQL_ENDPOINT_DATABASE}': sql_endpoint['database']
+        # }
+
+        # create_model_request = \
+        #     ItemDefinitionFactory.update_part_in_create_request(create_model_request,
+        #                                                         'definition/expressions.tmdl',
+        #                                                         model_redirects)
+
+        # model = FabricRestApi.create_item(workspace['id'], create_model_request)
+
+        # FabricRestApi.create_and_bind_semantic_model_connecton(workspace, model['id'], lakehouse)
+
+        # for report_folder in report_folders:
+        #     create_report_request = \
+        #         ItemDefinitionFactory.get_create_report_request_from_folder(
+        #             report_folder,
+        #             model['id'])
+
+        #     FabricRestApi.create_item(workspace['id'], create_report_request)
+
+        return workspace
+
+
+
+
+
+    @classmethod
     def deploy_warehouse_solution(
         cls,
         target_workspace,

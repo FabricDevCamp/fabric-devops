@@ -1,0 +1,155 @@
+table Sales
+	lineageTag: f85c7f68-6e1f-40ce-8457-71a68458f080
+
+	measure 'Sales Revenue' = Sum(Sales[Sales])
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: Sales Metrics
+		lineageTag: 31216b01-9f04-4a8e-87bf-91c341f797ef
+
+	measure 'Customer Count' = DISTINCTCOUNT(Sales[CustomerId])
+		formatString: #,0
+		displayFolder: Sales Metrics
+		lineageTag: d0a50bb6-5756-4d48-aef7-5260dbee6cb5
+
+	measure 'First Sale' = FIRSTDATE(Sales[Date])
+		formatString: m/d/yyyy
+		displayFolder: Date Metrics
+		lineageTag: eb707831-f850-4d7a-8f61-fdd2e15c0b8a
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	measure 'Last Sale' = LASTDATE(Sales[Date])
+		formatString: m/d/yyyy
+		displayFolder: Date Metrics
+		lineageTag: 5ac035ce-d142-4ed0-a081-7c1bdd07b9dc
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	measure 'Units Sold' = SUM(Sales[Quantity])
+		formatString: #,0
+		displayFolder: Sales Metrics
+		lineageTag: d703641c-704c-4287-965a-fd96b27044fd
+
+	measure 'Customer Rank' = ```
+			
+			IF( 
+				HASONEVALUE(Customers[Customer]), 
+				RANKX( 
+				ALLSELECTED(Customers), 
+				CALCULATE([Sales Revenue])
+				)
+			)
+			```
+		formatString: 0
+		displayFolder: Rank Metrics
+		lineageTag: 2f823a25-58db-4640-bc89-c14c94552f4b
+
+	measure 'Product Rank' = ```
+			
+			IF( 
+				HASONEVALUE(Products[Product]), 
+				RANKX( 
+				ALLSELECTED(Products), 
+				CALCULATE([Sales Revenue])
+				)
+			)
+			```
+		formatString: 0
+		displayFolder: Rank Metrics
+		lineageTag: cc3f8a68-da6d-4f12-9b75-9d12af58fedf
+
+	measure 'City Rank' = ```
+			
+			IF( 
+				HASONEVALUE(Customers[City]), 
+				RANKX( 
+				ALLSELECTED(Customers[City]), 
+				CALCULATE([Sales Revenue])
+				)
+			)
+			```
+		formatString: 0
+		displayFolder: Rank Metrics
+		lineageTag: ec44490e-46ee-472a-9223-b165f7702334
+
+	column Id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: ae623eda-f1e7-45e8-aced-94591307a493
+		summarizeBy: count
+		sourceColumn: Id
+
+		annotation SummarizationSetBy = Automatic
+
+	column Quantity
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: e54cac6a-c56c-4c80-ad88-325ab16874e6
+		summarizeBy: sum
+		sourceColumn: Quantity
+
+		annotation SummarizationSetBy = Automatic
+
+	column Sales
+		dataType: double
+		isHidden
+		lineageTag: f6e3611f-d912-4b88-8842-8e2d6df6d383
+		summarizeBy: sum
+		sourceColumn: Sales
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column ProductId
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 49f5a7a7-2bc4-4dc4-bdad-37ba169e6ec6
+		summarizeBy: none
+		sourceColumn: ProductId
+
+		annotation SummarizationSetBy = Automatic
+
+	column Date
+		dataType: dateTime
+		isHidden
+		formatString: Long Date
+		lineageTag: c4416f3e-22e1-4440-bb80-27915413103b
+		summarizeBy: none
+		sourceColumn: Date
+
+		variation Variation
+			isDefault
+			relationship: e23a1970-f4e2-45be-a288-86d8f055a1e4
+			defaultHierarchy: LocalDateTable_67662e35-6269-44ce-ba4e-3e4cc9039b91.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column CustomerId
+		dataType: string
+		isHidden
+		lineageTag: 6c7b0156-7410-4c27-804f-d61f2e2bde2d
+		summarizeBy: none
+		sourceColumn: CustomerId
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Sales = m
+		mode: import
+		source =
+				let
+				    Source = PowerPlatform.Dataflows(null),
+				    Workspaces = Source{[Id="Workspaces"]}[Data],
+				    #"7f0153d8-f4ae-471d-bf6b-bac72149225a" = Workspaces{[workspaceId="7f0153d8-f4ae-471d-bf6b-bac72149225a"]}[Data],
+				    #"9e3eea9f-ba31-44e0-9d7f-6b1e51aed897" = #"7f0153d8-f4ae-471d-bf6b-bac72149225a"{[dataflowId="9e3eea9f-ba31-44e0-9d7f-6b1e51aed897"]}[Data],
+				    Sales_ = #"9e3eea9f-ba31-44e0-9d7f-6b1e51aed897"{[entity="Sales",version=""]}[Data]
+				in
+				    Sales_
+
+	annotation PBI_ResultType = Table
+
