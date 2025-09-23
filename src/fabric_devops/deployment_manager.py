@@ -37,6 +37,10 @@ class DeploymentManager:
                 workspace = cls.deploy_shortcut_solution(target_workspace, deploy_job)
             case 'Custom Data Pipeline Solution':
                 workspace = cls.deploy_data_pipeline_solution(target_workspace, deploy_job)
+            case 'Custom User Data Function Solution':
+                workspace = cls.deploy_udf_solution(target_workspace, deploy_job)
+            case 'Custom Dataflow Gen2 Solution':
+                workspace = cls.deploy_dataflow_solution(target_workspace, deploy_job)
             case 'Custom Warehouse Solution':
                 workspace = cls.deploy_warehouse_solution(target_workspace, deploy_job)
             case 'Custom Realtime Solution':
@@ -375,13 +379,12 @@ class DeploymentManager:
     def deploy_udf_solution(cls,
                              target_workspace,
                              deploy_job = StagingEnvironments.get_dev_environment()):
-        """Deploy UDF Solution"""
-
+        """Deploy User Data Function Solution"""
 
         workspace = FabricRestApi.create_workspace(target_workspace)
 
-        FabricRestApi.update_workspace_description(workspace['id'], 'Custom UDF Solution')
-        
+        FabricRestApi.update_workspace_description(workspace['id'], 'Custom User Data Function Solution')
+
         lakehouse_name = 'sales'
         lakehouse = FabricRestApi.create_lakehouse(workspace['id'], lakehouse_name)
 
@@ -406,7 +409,7 @@ class DeploymentManager:
                                                                     udf_redirects)
 
 
-            udf = FabricRestApi.create_item(workspace['id'], udf_create_request)
+            udf = FabricRestApi.create_item(workspace['id'], create_udf_create_request)
 
         return workspace
 
@@ -481,10 +484,6 @@ class DeploymentManager:
         #     FabricRestApi.create_item(workspace['id'], create_report_request)
 
         return workspace
-
-
-
-
 
     @classmethod
     def deploy_warehouse_solution(
