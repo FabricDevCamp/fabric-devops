@@ -1,9 +1,6 @@
 ~$*
 *~
 
-.token_cache
-.token_cache/
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -12,3 +9,7 @@ __pycache__/
 # Environments
 .env
 .venv
+
+# token cache for local development in VSCode
+.token_cache
+.token_cache/
