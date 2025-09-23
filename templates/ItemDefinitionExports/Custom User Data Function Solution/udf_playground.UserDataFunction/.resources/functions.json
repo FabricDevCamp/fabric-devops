@@ -28,7 +28,12 @@
       "fabricProperties": {
         "fabricMetadataSchemaVersion": "1.1.0",
         "fabricFunctionReturnType": "str",
-        "fabricFunctionParameters": []
+        "fabricFunctionParameters": [
+          {
+            "name": "message",
+            "dataType": "str"
+          }
+        ]
       }
     },
     {

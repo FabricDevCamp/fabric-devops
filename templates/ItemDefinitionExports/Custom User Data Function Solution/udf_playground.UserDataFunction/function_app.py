@@ -6,10 +6,10 @@ udf = fn.UserDataFunctions()
 
 @udf.connection(argName="targetLakehouse", alias="sales")
 @udf.function()
-def write_text_file(targetLakehouse: fn.FabricLakehouseClient) -> str:
+def write_text_file(targetLakehouse: fn.FabricLakehouseClient, message: str) -> str:
 
     file_name = "hello_world.txt"
-    file_content = "Hello from a Fabric UDF on a Monday"
+    file_content = message
     files = targetLakehouse.connectToFiles()
 
     logging.info(f'Writing [{file_name}] to lakehouse Files section.')
@@ -56,3 +56,4 @@ def get_udf_context(udfContext: fn.UserDataFunctionContext) -> str:
     logging.info(log_message)
  
     return log_message
+

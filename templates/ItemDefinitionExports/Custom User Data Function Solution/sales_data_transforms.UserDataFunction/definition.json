@@ -4,9 +4,9 @@
   "connectedDataSources": [
     {
       "alias": "sales",
-      "artifactId": "83ac9764-20b3-40ef-8456-263b342d1849",
+      "artifactId": "ec08f4d6-0f38-4a61-8d08-6db84f6c20f1",
       "artifactType": "Lakehouse",
-      "workspaceId": "9206a084-aa42-45ff-8224-4551f63a7990"
+      "workspaceId": "df219ee5-1c02-4c87-a748-0825f7fee416"
     }
   ],
   "functions": [

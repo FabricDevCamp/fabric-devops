@@ -393,6 +393,12 @@ class DeploymentManager:
             'sales_data_transforms.UserDataFunction'
         ]
 
+        notebook_folders = [
+            'udf_playground_test.Notebook',
+            'Create Lakehouse Tables with UDFs.Notebook'
+        ]
+      
+
         for udf_set_folder in udf_set_folders:    
             udf_create_request = ItemDefinitionFactory.get_create_item_request_from_folder(
                 udf_set_folder
@@ -409,7 +415,19 @@ class DeploymentManager:
                                                                     udf_redirects)
 
 
-            udf = FabricRestApi.create_item(workspace['id'], create_udf_create_request)
+            FabricRestApi.create_item(workspace['id'], create_udf_create_request)
+
+        for notebook_folder in notebook_folders:
+            
+            create_notebook_request = \
+                ItemDefinitionFactory.get_create_notebook_request_from_folder(
+                    notebook_folder,
+                    workspace['id'],
+                    lakehouse)
+            
+            notebook = FabricRestApi.create_item(workspace['id'], create_notebook_request)
+            
+            FabricRestApi.run_notebook(workspace['id'], notebook)
 
         return workspace
 
