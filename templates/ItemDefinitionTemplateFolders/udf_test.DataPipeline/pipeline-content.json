@@ -1,0 +1,38 @@
+{
+  "properties": {
+    "activities": [
+      {
+        "name": "Ingest CSV Files",
+        "type": "AzureFunctionActivity",
+        "dependsOn": [],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "typeProperties": {
+          "functionName": "ingest_csv_files",
+          "parameters": {
+            "url": {
+              "value": "@pipeline().parameters.csv_base_path",
+              "type": "Expression"
+            }
+          },
+          "functionSetId": "{FUNCTION_SET_ID}",
+          "workspaceId": "{WORKSPACE_ID}"
+        },
+        "externalReferences": {
+          "connection": "{CONNECTION_ID}"
+        }
+      }
+    ],
+    "parameters": {
+      "csv_base_path": {
+        "type": "string",
+        "defaultValue": "https://fabricdevcamp.blob.core.windows.net/sampledata/ProductSales/Dev/"
+      }
+    }
+  }
+}
