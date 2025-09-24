@@ -30,7 +30,8 @@ match os.getenv("CUSTOMER_NAME"):
     case 'Deploy To All Customers':
         DEPLOYMENT_JOBS = SampleCustomerData.get_all_customers()
 
-for DEPLOYMENT_JOB in DEPLOYMENT_JOBS:    
+for DEPLOYMENT_JOB in DEPLOYMENT_JOBS:
+    workspace_name = f'Tenant - {DEPLOYMENT_JOB.name}'
     workspace = DeploymentManager.deploy_solution_by_name(solution_name, workspace_name, DEPLOYMENT_JOB)
     AppLogger.log_job_complete(workspace['id'])
 
