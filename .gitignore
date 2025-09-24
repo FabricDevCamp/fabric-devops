@@ -13,3 +13,6 @@ __pycache__/
 # token cache for local development in VSCode
 .token_cache
 .token_cache/
+
+# Http Client Test Files
+*.http
