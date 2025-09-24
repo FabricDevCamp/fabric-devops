@@ -18,5 +18,5 @@ __pycache__/
 *.http
 
 # Exports folder
-.exports
-.exports/
+exports
+exports/
