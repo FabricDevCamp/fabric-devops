@@ -1461,7 +1461,7 @@ class FabricRestApi:
     @classmethod
     def call_user_defined_function(cls, workspace_id, function_id, function_name, parameters):
         """Call user defined function"""
-        endpoint = f'https://{workspace_id}.zec.userdatafunctions.fabric.microsoft.com/v1/workspaces/{workspace_id}/userDataFunctions/{function_id}/functions/{function_name}/invoke'
+        endpoint = f'https://{workspace_id}.userdatafunctions.fabric.microsoft.com/v1/workspaces/{workspace_id}/userDataFunctions/{function_id}/functions/{function_name}/invoke'
         print(endpoint)
         return cls._execute_post_request(endpoint, parameters)
 
