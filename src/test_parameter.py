@@ -45,7 +45,7 @@ parameter_file_content = generate_parameter_yml_file(
     "PROD"
 )
 
-folder_path = ".//templates//Exports/"
+folder_path = ".//exports/fabric_cidcd/"
 if not os.path.exists(folder_path):
     os.makedirs(folder_path)
 

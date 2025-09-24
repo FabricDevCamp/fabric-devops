@@ -499,7 +499,7 @@ class ItemDefinitionFactory:
     @classmethod
     def _delete_exports_folder_contents(cls, workspace_name):
         """Delete Exports Folder"""
-        folder_path = f".//templates//ItemDefinitionExports//{workspace_name}"
+        folder_path = f".//exports//WorkspaceItemDefinitions//{workspace_name}"
         os.removedirs(folder_path)
 
     @classmethod
@@ -510,7 +510,7 @@ class ItemDefinitionFactory:
             file_content = file_content_bytes.decode('utf-8')
  
         #file_path = file_path.replace('/', '\\')
-        folder_path = f".//templates//ItemDefinitionExports//{workspace_name}/{item_name}/"
+        folder_path = f".//exports//WorkspaceItemDefinitions//{workspace_name}/{item_name}/"
         if not os.path.exists(folder_path):
             os.makedirs(folder_path)
 
@@ -524,7 +524,7 @@ class ItemDefinitionFactory:
         """Write file to exports folder"""
  
         #file_path = file_path.replace('/', '\\')
-        folder_path = f".//templates//ItemDefinitionExports//{workspace_name}/"
+        folder_path = f".//exports//ExportFromApi//{workspace_name}/"
         if not os.path.exists(folder_path):
             os.makedirs(folder_path)
 

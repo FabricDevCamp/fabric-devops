@@ -1,0 +1,9 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definitionProperties/2.0.0/schema.json",
+  "version": "4.0",
+  "datasetReference": {
+    "byConnection": {
+      "connectionString": "Data Source=powerbi://api.powerbi.com/v1.0/myorg/Acme-dev;initial catalog=\"Product Sales Imported Model\";integrated security=ClaimsToken;semanticmodelid=e8dbdc91-a583-48d7-a6e0-dcd1d743cc01"
+    }
+  }
+}

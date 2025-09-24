@@ -7,7 +7,7 @@ connectors = FabricRestApi.list_supported_connection_types()
 
 connectors_json = json.dumps(connectors, indent=4)
 
-folder_path = ".//templates//Exports//Connectors/"
+folder_path = ".//exports//Connectors/"
 if not os.path.exists(folder_path):
     os.makedirs(folder_path)
 
