@@ -38,11 +38,11 @@ jobs:
 
             - name: Install MSAL
               run: |
-                    pip install msal
+                    pip install msal -q
 
             - name: Install PyNaCl
               run: |
-                    pip install PyNaCl
+                    pip install PyNaCl -q
 
             - name: Deploy Solution                
               env:
