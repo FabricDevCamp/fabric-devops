@@ -39,33 +39,33 @@ jobs:
         runs-on: ubuntu-latest
 
         steps:
-            - name: Check out the code
-              uses: actions/checkout@v4
+          - name: Check out the code
+            uses: actions/checkout@v4
 
-            - name: Set up Python
-              uses: actions/setup-python@v2
-              with:
-                    python-version: "3.12"
+          - name: Set up Python
+            uses: actions/setup-python@v2
+            with:
+              python-version: "3.12"
 
-            - name: Install MSAL
-              run: |
-                    pip install msal
+          - name: Install MSAL
+            run: |
+              pip install msal -q
 
-            - name: Install PyNaCl
-              run: |
-                    pip install PyNaCl
+          - name: Install PyNaCl
+            run: |
+              pip install PyNaCl -q
 
-            - name: Deploy Solution with Deployment Pipeline
-              env:
-                    FABRIC_CLIENT_ID: ${{ secrets.FABRIC_CLIENT_ID }}
-                    FABRIC_CLIENT_SECRET: ${{ secrets.FABRIC_CLIENT_SECRET }}
-                    FABRIC_TENANT_ID: ${{ secrets.FABRIC_TENANT_ID }}                    
-                    FABRIC_CAPACITY_ID: ${{ secrets.FABRIC_CAPACITY_ID }}             
-                    ADMIN_USER_ID: ${{ secrets.ADMIN_USER_ID }}
-                    SERVICE_PRINCIPAL_OBJECT_ID: ${{ secrets.SERVICE_PRINCIPAL_OBJECT_ID }}
-                    PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
-                    PROJECT_NAME: ${{ inputs.project_name }}
-                    SOLUTION_NAME: ${{ inputs.solution_name }}
-                    RUN_AS_SERVICE_PRINCIPAL: ${{inputs.run_as_service_principal}}
-              run:
-                    python src/deploy_solution_with_deployment_pipeline.py
+          - name: Deploy Solution with Deployment Pipeline
+            env:
+              FABRIC_CLIENT_ID: ${{ secrets.FABRIC_CLIENT_ID }}
+              FABRIC_CLIENT_SECRET: ${{ secrets.FABRIC_CLIENT_SECRET }}
+              FABRIC_TENANT_ID: ${{ secrets.FABRIC_TENANT_ID }}                    
+              FABRIC_CAPACITY_ID: ${{ secrets.FABRIC_CAPACITY_ID }}             
+              ADMIN_USER_ID: ${{ secrets.ADMIN_USER_ID }}
+              SERVICE_PRINCIPAL_OBJECT_ID: ${{ secrets.SERVICE_PRINCIPAL_OBJECT_ID }}
+              PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
+              PROJECT_NAME: ${{ inputs.project_name }}
+              SOLUTION_NAME: ${{ inputs.solution_name }}
+              RUN_AS_SERVICE_PRINCIPAL: ${{inputs.run_as_service_principal}}
+            run:
+              python src/deploy_solution_with_deployment_pipeline.py
