@@ -16,3 +16,7 @@ __pycache__/
 
 # Http Client Test Files
 *.http
+
+# Exports folder
+.exports
+.exports/
