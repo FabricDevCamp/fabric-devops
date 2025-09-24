@@ -1342,9 +1342,10 @@ class DeploymentManager:
 
         pipeline_stages = [ 'dev', 'test', 'prod' ]
 
-        dev_workspace = DeploymentManager.deploy_solution_by_name(
-                dev_workspace_name,
-                solution_name)
+        dev_workspace = DeploymentManager.deploy_solution_by_name(                
+            solution_name, 
+            dev_workspace_name
+        )
         
         AppLogger.log_job(f"Setup deployment pipeline [{project_name}] based on [{solution_name}]")
 
