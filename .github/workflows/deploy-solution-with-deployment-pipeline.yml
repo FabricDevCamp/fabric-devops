@@ -27,11 +27,10 @@ on:
                 - Custom Data Pipeline Solution with Variable Library
                 - Deploy All Solutions
                 default: Custom Power BI Solution              
-              run_as_service_principal:
+            run_as_service_principal:
                 type: boolean
                 description: Run as service principal
                 default: true
-
 
 jobs:
     deployment-job:        
