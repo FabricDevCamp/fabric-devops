@@ -2,7 +2,12 @@
 
 import os
 
-from fabric_devops import DeploymentManager, StagingEnvironments, AppLogger
+from fabric_devops import DeploymentManager, StagingEnvironments, EnvironmentSettings
+
+if os.getenv("RUN_AS_SERVICE_PRINCIPAL") == 'true':
+    EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL = True
+else:
+    EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL = False
 
 PROJECT_NAME = os.getenv("PROJECT_NAME")
 SOLUTION_NAME = os.getenv("SOLUTION_NAME")

@@ -12,13 +12,26 @@ on:
             solution_name:
                 type: choice
                 description: Solution Name
-                options: 
+                options:            
                 - Custom Power BI Solution
                 - Custom Notebook Solution
                 - Custom Shortcut Solution
                 - Custom Data Pipeline Solution
-                - Custom Variable Library Solution
+                - Custom User Data Function Solution
+                - Custom Dataflow Gen2 Solution
                 - Custom Warehouse Solution
+                - Custom Realtime Solution
+                - Custom Medallion Warehouse Solution
+                - Custom Notebook Solution with Variable Library
+                - Custom Shortcut Solution with Variable Library
+                - Custom Data Pipeline Solution with Variable Library
+                - Deploy All Solutions
+                default: Custom Power BI Solution              
+              run_as_service_principal:
+                type: boolean
+                description: Run as service principal
+                default: true
+
 
 jobs:
     deployment-job:        
@@ -53,6 +66,6 @@ jobs:
                     PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
                     PROJECT_NAME: ${{ inputs.project_name }}
                     SOLUTION_NAME: ${{ inputs.solution_name }}
-
+                    RUN_AS_SERVICE_PRINCIPAL: ${{inputs.run_as_service_principal}}
               run:
                     python src/deploy_solution_with_deployment_pipeline.py

@@ -2,7 +2,12 @@
 name: Task - Cleanup Environment
 
 on:
-    workflow_dispatch:
+   workflow_dispatch:
+        inputs:
+              run_as_service_principal:
+                type: boolean
+                description: Run as service principal
+                default: true
 
 jobs:
     deployment-job:        
@@ -35,6 +40,6 @@ jobs:
                     ADMIN_USER_ID: ${{ secrets.ADMIN_USER_ID }}
                     SERVICE_PRINCIPAL_OBJECT_ID: ${{ secrets.SERVICE_PRINCIPAL_OBJECT_ID }}
                     PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
-
+                    RUN_AS_SERVICE_PRINCIPAL: ${{inputs.run_as_service_principal}}
               run:
                     python src/task_cleanup_environment.py
