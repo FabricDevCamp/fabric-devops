@@ -491,8 +491,6 @@ class DeploymentManager:
 
         FabricRestApi.run_notebook(workspace['id'], mv_notebook)
 
-        FabricRestApi.refresh_sql_endpoint_metadata(workspace['id'], lakehouse['id'])
-
         sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse)
 
         FabricRestApi.refresh_sql_endpoint_metadata(workspace['id'], sql_endpoint['database'])
@@ -525,9 +523,7 @@ class DeploymentManager:
 
         #     FabricRestApi.create_item(workspace['id'], create_report_request)
  
-        # return workspace
-
-
+        return workspace
 
     @classmethod
     def deploy_udf_solution(cls,
