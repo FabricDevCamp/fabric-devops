@@ -1,0 +1,107 @@
+{
+  "properties": {
+    "jobMode": "Batch",
+    "source": {
+      "type": "DelimitedText",
+      "connectionSettings": {
+        "type": "Lakehouse",
+        "typeProperties": {
+          "workspaceId": "{WORKSPACE_ID}",
+          "artifactId": "{LAKEHOUSE_ID}",
+          "rootFolder": "Files"
+        }
+      }
+    },
+    "destination": {
+      "type": "LakehouseTable",
+      "connectionSettings": {
+        "type": "Lakehouse",
+        "typeProperties": {
+          "workspaceId": "{WORKSPACE_ID}",
+          "artifactId": "{LAKEHOUSE_ID}",
+          "rootFolder": "Tables"
+        }
+      }
+    },
+    "policy": {
+      "timeout": "0.12:00:00"
+    }
+  },
+  "activities": [
+    {
+      "id": "c6e28f74-d9aa-433e-b052-8119e43175c0",
+      "properties": {
+        "source": {
+          "datasetSettings": {
+            "location": {
+              "type": "LakehouseLocation",
+              "fileName": "Products.csv",
+              "folderPath": "sales-data"
+            },
+            "columnDelimiter": ",",
+            "escapeChar": "\\",
+            "firstRowAsHeader": true,
+            "quoteChar": "\""
+          },
+          "storeSettings": {
+            "recursive": true,
+            "enablePartitionDiscovery": false
+          },
+          "formatSettings": {}
+        },
+        "destination": {
+          "writeBehavior": "Append",
+          "datasetSettings": {
+            "schema": "silver",
+            "table": "products"
+          }
+        },
+        "enableStaging": false,
+        "translator": {
+          "type": "TabularTranslator",
+          "mappings": [
+            {
+              "source": {
+                "name": "ProductId",
+                "type": "String",
+                "physicalType": "String"
+              },
+              "destination": {
+                "name": "product_id",
+                "physicalType": "integer"
+              }
+            },
+            {
+              "source": {
+                "name": "Product",
+                "type": "String",
+                "physicalType": "String"
+              },
+              "destination": {
+                "name": "product",
+                "physicalType": "string"
+              }
+            },
+            {
+              "source": {
+                "name": "Category",
+                "type": "String",
+                "physicalType": "String"
+              },
+              "destination": {
+                "name": "category",
+                "physicalType": "string"
+              }
+            }
+          ]
+        },
+        "typeConversionSettings": {
+          "typeConversion": {
+            "allowDataTruncation": true,
+            "treatBooleanAsNumber": false
+          }
+        }
+      }
+    }
+  ]
+}

@@ -27,11 +27,5 @@
       "queryName": "Invoices",
       "loadEnabled": false
     }
-  },
-  "connections": [
-    {
-      "path": "https://fabricdevcamp.blob.core.windows.net/sampledata/ProductSales/Dev/",
-      "kind": "Web",
-      "connectionId": "{\"ClusterId\":\"2339fff6-316e-44a3-b414-9cc9afd74886\",\"DatasourceId\":\"{CONNECTION_ID}\"}"
-    },
+  }
 }

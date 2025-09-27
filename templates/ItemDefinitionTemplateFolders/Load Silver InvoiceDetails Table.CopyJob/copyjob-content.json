@@ -1,0 +1,131 @@
+{
+  "properties": {
+    "jobMode": "Batch",
+    "source": {
+      "type": "DelimitedText",
+      "connectionSettings": {
+        "type": "Lakehouse",
+        "typeProperties": {
+          "workspaceId": "{WORKSPACE_ID}",
+          "artifactId": "{LAKEHOUSE_ID}",
+          "rootFolder": "Files"
+        }
+      }
+    },
+    "destination": {
+      "type": "LakehouseTable",
+      "connectionSettings": {
+        "type": "Lakehouse",
+        "typeProperties": {
+          "workspaceId": "{WORKSPACE_ID}",
+          "artifactId": "{LAKEHOUSE_ID}",
+          "rootFolder": "Tables"
+        }
+      }
+    },
+    "policy": {
+      "timeout": "0.12:00:00"
+    }
+  },
+  "activities": [
+    {
+      "id": "20a331f6-cd6f-4205-8d1c-5e606121a60f",
+      "properties": {
+        "source": {
+          "datasetSettings": {
+            "location": {
+              "type": "LakehouseLocation",
+              "fileName": "InvoiceDetails.csv",
+              "folderPath": "sales-data"
+            },
+            "columnDelimiter": ",",
+            "escapeChar": "\\",
+            "firstRowAsHeader": true,
+            "quoteChar": "\""
+          },
+          "storeSettings": {
+            "recursive": true,
+            "enablePartitionDiscovery": false
+          },
+          "formatSettings": {}
+        },
+        "destination": {
+          "writeBehavior": "Append",
+          "datasetSettings": {
+            "schema": "silver",
+            "table": "invoice_details"
+          }
+        },
+        "enableStaging": false,
+        "translator": {
+          "type": "TabularTranslator",
+          "mappings": [
+            {
+              "source": {
+                "name": "Id",
+                "type": "String",
+                "physicalType": "String"
+              },
+              "destination": {
+                "name": "id",
+                "physicalType": "integer"
+              }
+            },
+            {
+              "source": {
+                "name": "Quantity",
+                "type": "String",
+                "physicalType": "String"
+              },
+              "destination": {
+                "name": "quantity",
+                "physicalType": "integer"
+              }
+            },
+            {
+              "source": {
+                "name": "SalesAmount",
+                "type": "String",
+                "physicalType": "String"
+              },
+              "destination": {
+                "name": "sales_amount",
+                "physicalType": "decimal",
+                "scale": 18,
+                "precision": 38
+              }
+            },
+            {
+              "source": {
+                "name": "InvoiceId",
+                "type": "String",
+                "physicalType": "String"
+              },
+              "destination": {
+                "name": "invoice_id",
+                "physicalType": "integer"
+              }
+            },
+            {
+              "source": {
+                "name": "ProductId",
+                "type": "String",
+                "physicalType": "String"
+              },
+              "destination": {
+                "name": "product_id",
+                "physicalType": "integer"
+              }
+            }
+          ]
+        },
+        "typeConversionSettings": {
+          "typeConversion": {
+            "allowDataTruncation": true,
+            "treatBooleanAsNumber": false
+          }
+        }
+      }
+    }
+  ]
+}

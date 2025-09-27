@@ -14,6 +14,7 @@ on:
                 - Custom Shortcut Solution
                 - Custom Data Pipeline Solution
                 - Custom User Data Function Solution
+                - Custom CopyJob Solution
                 - Custom Dataflow Gen2 Solution
                 - Custom Warehouse Solution
                 - Custom Realtime Solution

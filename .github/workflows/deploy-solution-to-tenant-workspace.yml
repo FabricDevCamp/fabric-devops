@@ -13,6 +13,7 @@ on:
         - Custom Notebook Solution
         - Custom Shortcut Solution
         - Custom Data Pipeline Solution
+        - Custom CopyJob Solution
         - Custom User Data Function Solution
         - Custom Dataflow Gen2 Solution
         - Custom Warehouse Solution

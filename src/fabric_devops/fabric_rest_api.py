@@ -870,12 +870,15 @@ class FabricRestApi:
 
 
     @classmethod
-    def create_lakehouse(cls, workspace_id, display_name, folder_id = None):
+    def create_lakehouse(cls, workspace_id, display_name, folder_id = None, enable_schemas = False):
         """Create Lakehouse"""
         create_item_request = {
             'displayName': display_name, 
             'type': 'Lakehouse' 
         }
+
+        if enable_schemas:
+            create_item_request['creationPayload'] = { 'enableSchemas': True }
         return cls.create_item(workspace_id, create_item_request, folder_id)
 
     @classmethod
@@ -926,6 +929,42 @@ class FabricRestApi:
         response = cls._execute_post_request_for_job_scheduler(rest_url)
         AppLogger.log_substep("Data pipeline run job completed successfully")
         return response
+
+    @classmethod
+    def run_copyjob(cls, workspace_id, copyjob):
+        """Run CopyJob and wait for job completion"""
+        AppLogger.log_substep(f"Running CopyJob [{copyjob['displayName']}]...")
+
+        rest_url = f"workspaces/{workspace_id}/items/{copyjob['id']}" + \
+                    "/jobs/instances?jobType=Execute"
+        response = cls._execute_post_request_for_job_scheduler(rest_url)
+        AppLogger.log_substep("CopyJob run job completed successfully")
+        return response
+
+    @classmethod
+    def apply_changes_to_dataflow(cls, workspace_id, dataflow):
+        """Apply changes to dataflow"""
+        AppLogger.log_substep(f"Applying changes to dataflow [{dataflow['displayName']}]...")
+
+        rest_url = f"workspaces/{workspace_id}/dataflows/{dataflow['id']}" + \
+                    "/jobs/instances?jobType=ApplyChanges"
+        
+        response = cls._execute_post_request_for_job_scheduler(rest_url)
+        AppLogger.log_substep("Dataflow changes applied successfully")
+        return response
+
+    @classmethod
+    def run_dataflow(cls, workspace_id, dataflow):
+        """Apply changes to dataflow"""
+        AppLogger.log_substep(f"Running dataflow [{dataflow['displayName']}]...")
+
+        rest_url = f"workspaces/{workspace_id}/dataflows/{dataflow['id']}" + \
+                    "/jobs/instances?jobType=Execute"
+        
+        response = cls._execute_post_request_for_job_scheduler(rest_url)
+        AppLogger.log_substep("Dataflow run successfully")
+        return response
+
 
     @classmethod
     def get_lakehouse(cls, workspace_id, lakehouse_id):
@@ -984,7 +1023,6 @@ class FabricRestApi:
         """Get warehouse properties"""
         rest_url = f'workspaces/{workspace_id}/eventhouses/{eventhouse_id}'
         return cls._execute_get_request(rest_url)
-
 
     @classmethod
     def list_datasources_for_semantic_model(cls, workspace_id, semantic_model_id):

@@ -1,5 +1,7 @@
-from fabric_devops import DeploymentManager, FabricRestApi
+from fabric_devops import DeploymentManager, EnvironmentSettings, FabricRestApi
 
-WORKSPACE_NAME = "Contoso"
-DeploymentManager.deploy_powerbi_solution(WORKSPACE_NAME)
+EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL = False
 
+WORKSPACE_NAME = "Angelina"
+
+DeploymentManager.deploy_copyjob_solution(WORKSPACE_NAME)

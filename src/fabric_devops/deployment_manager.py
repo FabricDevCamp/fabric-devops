@@ -37,6 +37,8 @@ class DeploymentManager:
                 workspace = cls.deploy_shortcut_solution(target_workspace, deploy_job)
             case 'Custom Data Pipeline Solution':
                 workspace = cls.deploy_data_pipeline_solution(target_workspace, deploy_job)
+            case 'Custom CopyJob Solution':
+                workspace = cls.deploy_copyjob_solution(target_workspace, deploy_job)
             case 'Custom User Data Function Solution':
                 workspace = cls.deploy_udf_solution(target_workspace, deploy_job)
             case 'Custom Dataflow Gen2 Solution':
@@ -376,6 +378,159 @@ class DeploymentManager:
         return workspace
 
     @classmethod
+    def deploy_copyjob_solution(cls,
+                                        target_workspace,
+                                        deploy_job = StagingEnvironments.get_dev_environment()):
+        """Deploy CopyJob Solution"""
+
+        lakehouse_name = "sales"
+             
+        AppLogger.log_job(f"Deploying Custom Data Pipeline Solution to [{target_workspace}]")
+
+        deploy_job.display_deployment_parameters('adls')
+
+        workspace = FabricRestApi.create_workspace(target_workspace)
+
+        lakehouse = FabricRestApi.create_lakehouse(workspace['id'], lakehouse_name, enable_schemas=True)
+
+
+        create_notebook_request = \
+                ItemDefinitionFactory.get_create_item_request_from_folder(
+                    'Create Lakehouse Schemas.Notebook')
+
+        notebook_redirects = {
+            '{WORKSPACE_ID}': workspace['id'],
+            '{LAKEHOUSE_ID}': lakehouse['id'],
+            '{LAKEHOUSE_NAME}': lakehouse['displayName']
+        }
+
+        create_notebook_request = \
+            ItemDefinitionFactory.update_part_in_create_request(create_notebook_request,
+                                                                'notebook-content.sql', 
+                                                                notebook_redirects)
+
+        notebook = FabricRestApi.create_item(workspace['id'], create_notebook_request)
+
+        FabricRestApi.run_notebook(workspace['id'], notebook)
+        
+        adls_server_path = deploy_job.parameters[DeploymentJob.adls_server_parameter]
+        adls_container_name = deploy_job.parameters[DeploymentJob.adls_container_name_parameter]
+        adls_container_path = deploy_job.parameters[DeploymentJob.adls_container_path_parameter]
+        adls_path = adls_container_name + adls_container_path
+
+        connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
+            adls_server_path,
+            adls_path,
+            workspace)
+        
+        ingest_copyjob_create_request = \
+            ItemDefinitionFactory.get_create_item_request_from_folder(
+                'Ingest Sales Data CSV File.CopyJob')
+
+        copyjob_redirects = {
+            '{WORKSPACE_ID}': workspace['id'],
+            '{LAKEHOUSE_ID}': lakehouse['id'],
+            '{CONNECTION_ID}': connection['id']
+        }
+
+        ingest_copyjob_create_request = \
+            ItemDefinitionFactory.update_part_in_create_request(
+                ingest_copyjob_create_request,
+                'copyjob-content.json',
+                copyjob_redirects)
+
+        ingest_copyjob = FabricRestApi.create_item(workspace['id'], ingest_copyjob_create_request)
+
+        FabricRestApi.run_copyjob(workspace['id'], ingest_copyjob)        
+
+        load_copyjob_folders = [
+            'Load Silver Customers Table.CopyJob',
+            'Load Silver InvoiceDetails Table.CopyJob',
+            'Load Silver Invoices Table.CopyJob',
+            'Load Silver Products Table.CopyJob'
+        ]
+
+        for load_copyjob_folder in load_copyjob_folders:
+
+            load_copyjob_create_request = \
+                ItemDefinitionFactory.get_create_item_request_from_folder(
+                    load_copyjob_folder)
+
+            load_copyjob_redirects = {
+                '{WORKSPACE_ID}': workspace['id'],
+                '{LAKEHOUSE_ID}': lakehouse['id'],
+            }
+
+            copyjob_create_request = \
+                ItemDefinitionFactory.update_part_in_create_request(
+                    load_copyjob_create_request,
+                    'copyjob-content.json',
+                    load_copyjob_redirects)
+
+            load_copyjob = FabricRestApi.create_item(workspace['id'], copyjob_create_request)
+
+            FabricRestApi.run_copyjob(workspace['id'], load_copyjob)
+
+
+        create_mv_notebook_request = \
+                ItemDefinitionFactory.get_create_item_request_from_folder(
+                    'Create Lakehouse Materialized Views.Notebook')
+
+        mv_notebook_redirects = {
+            '{WORKSPACE_ID}': workspace['id'],
+            '{LAKEHOUSE_ID}': lakehouse['id'],
+            '{LAKEHOUSE_NAME}': lakehouse['displayName']
+        }
+
+        create_notebook_request = \
+            ItemDefinitionFactory.update_part_in_create_request(create_mv_notebook_request,
+                                                                'notebook-content.sql', 
+                                                                mv_notebook_redirects)
+
+        mv_notebook = FabricRestApi.create_item(workspace['id'], create_mv_notebook_request)
+
+        FabricRestApi.run_notebook(workspace['id'], mv_notebook)
+
+
+        #FabricRestApi.refresh_sql_endpoint_metadata(workspace['id'], lakehouse['id'])
+
+        # sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse)
+
+        # FabricRestApi.refresh_sql_endpoint_metadata(workspace['id'], sql_endpoint['database'])
+
+        # create_model_request = \
+        #     ItemDefinitionFactory.get_create_item_request_from_folder(
+        #         semantic_model_folder)
+
+        # model_redirects = {
+        #     '{SQL_ENDPOINT_SERVER}': sql_endpoint['server'],
+        #     '{SQL_ENDPOINT_DATABASE}': sql_endpoint['database']
+        # }
+
+        # create_model_request = \
+        #     ItemDefinitionFactory.update_part_in_create_request(
+        #         create_model_request,
+        #         'definition/expressions.tmdl',
+        #         model_redirects)
+
+        # model = FabricRestApi.create_item(workspace['id'], create_model_request)
+
+        # FabricRestApi.create_and_bind_semantic_model_connecton(workspace, model['id'], lakehouse)
+
+        # for report_folder in report_folders:
+            
+        #     create_report_request = \
+        #         ItemDefinitionFactory.get_create_report_request_from_folder(
+        #             report_folder,
+        #             model['id'])
+
+        #     FabricRestApi.create_item(workspace['id'], create_report_request)
+ 
+        # return workspace
+
+
+
+    @classmethod
     def deploy_udf_solution(cls,
                              target_workspace,
                              deploy_job = StagingEnvironments.get_dev_environment()):
@@ -452,15 +607,18 @@ class DeploymentManager:
 
         FabricRestApi.update_workspace_description(workspace['id'], 'Custom Dataflow Solution')
 
+        lakehouse = FabricRestApi.create_lakehouse(workspace['id'], "sales")
+
         web_datasource_path = deploy_job.parameters[deploy_job.web_datasource_path_parameter]
         connection = FabricRestApi.create_anonymous_web_connection(web_datasource_path, workspace)
 
         create_dataflow_request = \
             ItemDefinitionFactory.get_create_item_request_from_folder(
-                'Create Sales Tables.Dataflow')
+                'TestDataflow.Dataflow')
 
         dataflow_redirects = {
-            '{CONNECTION_ID}': connection['id']
+            '{CONNECTION_ID}': connection['id'],
+            '{LAKEHOUSE_ID}': lakehouse['id']
         }
 
         create_dataflow_request = \
@@ -468,9 +626,12 @@ class DeploymentManager:
                                                                 'queryMetadata.json',
                                                                 dataflow_redirects)
         
-        print ( json.dumps(create_dataflow_request, indent=4) )
 
         dataflow = FabricRestApi.create_item(workspace['id'], create_dataflow_request)
+
+        FabricRestApi.apply_changes_to_dataflow(workspace['id'], dataflow)
+
+        FabricRestApi.run_dataflow(workspace['id'], dataflow)
 
         print (json.dumps(dataflow, indent=4))
 

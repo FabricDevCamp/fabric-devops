@@ -1,0 +1,140 @@
+{
+  "properties": {
+    "jobMode": "Batch",
+    "source": {
+      "type": "DelimitedText",
+      "connectionSettings": {
+        "type": "Lakehouse",
+        "typeProperties": {
+          "workspaceId": "{WORKSPACE_ID}",
+          "artifactId": "{LAKEHOUSE_ID}",
+          "rootFolder": "Files"
+        }
+      }
+    },
+    "destination": {
+      "type": "LakehouseTable",
+      "connectionSettings": {
+        "type": "Lakehouse",
+        "typeProperties": {
+          "workspaceId": "{WORKSPACE_ID}",
+          "artifactId": "{LAKEHOUSE_ID}",
+          "rootFolder": "Tables"
+        }
+      }
+    },
+    "policy": {
+      "timeout": "0.12:00:00"
+    }
+  },
+  "activities": [
+    {
+      "id": "855fc7fd-2321-460a-9bfc-0dd2fcb4b551",
+      "properties": {
+        "source": {
+          "datasetSettings": {
+            "location": {
+              "type": "LakehouseLocation",
+              "fileName": "Customers.csv",
+              "folderPath": "sales-data"
+            },
+            "columnDelimiter": ",",
+            "escapeChar": "\\",
+            "firstRowAsHeader": true,
+            "quoteChar": "\""
+          },
+          "storeSettings": {
+            "recursive": true,
+            "enablePartitionDiscovery": false
+          },
+          "formatSettings": {}
+        },
+        "destination": {
+          "writeBehavior": "Append",
+          "datasetSettings": {
+            "schema": "silver",
+            "table": "customers"
+          }
+        },
+        "enableStaging": false,
+        "translator": {
+          "type": "TabularTranslator",
+          "mappings": [
+            {
+              "source": {
+                "name": "CustomerId",
+                "type": "String",
+                "physicalType": "String"
+              },
+              "destination": {
+                "name": "customer_id",
+                "physicalType": "integer"
+              }
+            },
+            {
+              "source": {
+                "name": "FirstName",
+                "type": "String",
+                "physicalType": "String"
+              },
+              "destination": {
+                "name": "first_name",
+                "physicalType": "string"
+              }
+            },
+            {
+              "source": {
+                "name": "LastName",
+                "type": "String",
+                "physicalType": "String"
+              },
+              "destination": {
+                "name": "last_name",
+                "physicalType": "string"
+              }
+            },
+            {
+              "source": {
+                "name": "Country",
+                "type": "String",
+                "physicalType": "String"
+              },
+              "destination": {
+                "name": "country",
+                "physicalType": "string"
+              }
+            },
+            {
+              "source": {
+                "name": "City",
+                "type": "String",
+                "physicalType": "String"
+              },
+              "destination": {
+                "name": "city",
+                "physicalType": "string"
+              }
+            },
+            {
+              "source": {
+                "name": "DOB",
+                "type": "String",
+                "physicalType": "String"
+              },
+              "destination": {
+                "name": "dob",
+                "physicalType": "date"
+              }
+            }
+          ]
+        },
+        "typeConversionSettings": {
+          "typeConversion": {
+            "allowDataTruncation": true,
+            "treatBooleanAsNumber": false
+          }
+        }
+      }
+    }
+  ]
+}
