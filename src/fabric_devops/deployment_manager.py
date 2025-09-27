@@ -37,7 +37,7 @@ class DeploymentManager:
                 workspace = cls.deploy_shortcut_solution(target_workspace, deploy_job)
             case 'Custom Data Pipeline Solution':
                 workspace = cls.deploy_data_pipeline_solution(target_workspace, deploy_job)
-            case 'Custom CopyJob Solution':
+            case 'Custom Copy Job Solution':
                 workspace = cls.deploy_copyjob_solution(target_workspace, deploy_job)
             case 'Custom User Data Function Solution':
                 workspace = cls.deploy_udf_solution(target_workspace, deploy_job)
@@ -491,12 +491,11 @@ class DeploymentManager:
 
         FabricRestApi.run_notebook(workspace['id'], mv_notebook)
 
+        FabricRestApi.refresh_sql_endpoint_metadata(workspace['id'], lakehouse['id'])
 
-        #FabricRestApi.refresh_sql_endpoint_metadata(workspace['id'], lakehouse['id'])
+        sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse)
 
-        # sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse)
-
-        # FabricRestApi.refresh_sql_endpoint_metadata(workspace['id'], sql_endpoint['database'])
+        FabricRestApi.refresh_sql_endpoint_metadata(workspace['id'], sql_endpoint['database'])
 
         # create_model_request = \
         #     ItemDefinitionFactory.get_create_item_request_from_folder(
