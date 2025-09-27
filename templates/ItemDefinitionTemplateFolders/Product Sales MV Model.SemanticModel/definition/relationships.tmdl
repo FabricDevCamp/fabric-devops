@@ -1,0 +1,15 @@
+relationship 6b87045c-e33b-eb12-4511-7fbf3ae0dcc8
+	relyOnReferentialIntegrity
+	fromColumn: Sales.ProductId
+	toColumn: Products.ProductId
+
+relationship 548d2686-f6f5-3add-979d-2bded10d78f2
+	relyOnReferentialIntegrity
+	fromColumn: Sales.Date
+	toColumn: Calendar.Date
+
+relationship 43eca1a0-ebfa-5cae-4575-0bc9adf0638d
+	relyOnReferentialIntegrity
+	fromColumn: Sales.CustomerId
+	toColumn: Customers.CustomerId
+

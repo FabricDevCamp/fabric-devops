@@ -1,0 +1,89 @@
+table Customers
+	lineageTag: b575862c-094d-4c5b-87fe-af149b6a75ea
+
+	column CustomerId
+		dataType: int64
+		formatString: 0
+		sourceProviderType: int
+		lineageTag: e83f9a45-2bb8-472e-a91d-730771a91724
+		summarizeBy: none
+		sourceColumn: customer_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column Country
+		dataType: string
+		sourceProviderType: varchar(8000)
+		lineageTag: 1701ab7c-4d15-4478-98a0-9112a25fd69c
+		dataCategory: Country
+		summarizeBy: none
+		sourceColumn: country
+
+		annotation SummarizationSetBy = Automatic
+
+	column City
+		dataType: string
+		sourceProviderType: varchar(8000)
+		lineageTag: 2ff7c1ec-d065-4e62-b72f-8fcf149b134a
+		dataCategory: Place
+		summarizeBy: none
+		sourceColumn: city
+
+		annotation SummarizationSetBy = Automatic
+
+	column DOB
+		dataType: dateTime
+		formatString: Long Date
+		sourceProviderType: date
+		lineageTag: d594bec5-c830-4d78-9dc2-7539a3ef6c7a
+		summarizeBy: none
+		sourceColumn: dob
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Customer
+		dataType: double
+		sourceProviderType: float
+		lineageTag: 0509035b-f30c-49c6-bd29-d7e42f7d145b
+		summarizeBy: none
+		sourceColumn: customer
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Age
+		dataType: int64
+		formatString: 0
+		sourceProviderType: int
+		lineageTag: b0f254a2-1e05-4773-9dc4-4b78bc7e1b1b
+		summarizeBy: none
+		sourceColumn: age
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'City Name'
+		dataType: string
+		sourceProviderType: varchar(8000)
+		lineageTag: cd255f1f-b81b-4855-b54a-e247ad8150aa
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: city_name
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Customers = m
+		mode: directQuery
+		source =
+				let
+				    Source = Sql.Database(SqlDatabaseServer, SqlDatabaseName),
+				    customers = Source{[Schema="gold",Item="customers"]}[Data]
+				in
+				    customers
+
+	annotation PBI_ResultType = Table
+
+	annotation IsTableInBiModel = True
+

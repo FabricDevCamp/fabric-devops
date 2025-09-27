@@ -1,0 +1,114 @@
+table Calendar
+	lineageTag: 7cbe8eb6-1583-46b0-84f4-8fee44083fdc
+
+	column Date
+		dataType: dateTime
+		formatString: Long Date
+		sourceProviderType: date
+		lineageTag: a904db52-05d8-4d6a-a64f-ec82acf9c369
+		summarizeBy: none
+		sourceColumn: date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column DateKey
+		dataType: int64
+		formatString: 0
+		sourceProviderType: int
+		lineageTag: c7ef5c0b-bb6c-402f-ae4e-8ca85293016a
+		summarizeBy: none
+		sourceColumn: date_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column Year
+		dataType: int64
+		formatString: 0
+		sourceProviderType: int
+		lineageTag: b5ad6746-5a0c-49e1-a839-3eabcecd813c
+		summarizeBy: none
+		sourceColumn: year
+
+		annotation SummarizationSetBy = Automatic
+
+	column Quarter
+		dataType: string
+		sourceProviderType: varchar(8000)
+		lineageTag: de206d9c-9d1b-4912-9bf7-bc493a4e2f9c
+		summarizeBy: none
+		sourceColumn: quarter
+
+		annotation SummarizationSetBy = Automatic
+
+	column Month
+		dataType: string
+		sourceProviderType: varchar(8000)
+		lineageTag: 6cecd58c-f8fd-4338-97e7-b12b8253c76d
+		summarizeBy: none
+		sourceColumn: month
+
+		annotation SummarizationSetBy = Automatic
+
+	column Day
+		dataType: int64
+		formatString: 0
+		sourceProviderType: int
+		lineageTag: b95b7981-192a-4852-8557-e822e2c24e46
+		summarizeBy: none
+		sourceColumn: day
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthInYear
+		dataType: string
+		sourceProviderType: varchar(8000)
+		lineageTag: 4a0bfbfa-cf1e-4b8c-aec7-fc6fe593482f
+		summarizeBy: none
+		sourceColumn: month_in_year
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthInYearSort
+		dataType: int64
+		formatString: 0
+		sourceProviderType: int
+		lineageTag: d5f82737-0cb4-4925-ae29-2ea82b3a3dc0
+		summarizeBy: none
+		sourceColumn: month_in_year_sort
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayOfWeek
+		dataType: string
+		sourceProviderType: varchar(8000)
+		lineageTag: 79431798-66c3-4779-9c2f-357230f1e23a
+		summarizeBy: none
+		sourceColumn: day_of_week
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayOfWeekSort
+		dataType: int64
+		formatString: 0
+		sourceProviderType: int
+		lineageTag: ba36e695-e104-423a-9820-47f389aad419
+		summarizeBy: none
+		sourceColumn: day_of_week_sort
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Calendar = m
+		mode: directQuery
+		source =
+				let
+				    Source = Sql.Database(SqlDatabaseServer, SqlDatabaseName),
+				    calendar = Source{[Schema="gold",Item="calendar"]}[Data]
+				in
+				    calendar
+
+	annotation PBI_ResultType = Table
+
+	annotation IsTableInBiModel = True
+

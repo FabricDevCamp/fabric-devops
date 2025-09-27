@@ -1,0 +1,6 @@
+expression SqlDatabaseServer = "{SQL_ENDPOINT_SERVER}"
+	lineageTag: 8f883387-8944-45e6-9ac7-63d5b565fdb8
+
+expression SqlDatabaseName = "{SQL_ENDPOINT_DATABASE}"
+	lineageTag: 6ee1cae1-2a99-4e43-9b43-cf38de5779a4
+

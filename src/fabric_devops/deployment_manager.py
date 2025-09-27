@@ -495,33 +495,39 @@ class DeploymentManager:
 
         FabricRestApi.refresh_sql_endpoint_metadata(workspace['id'], sql_endpoint['database'])
 
-        # create_model_request = \
-        #     ItemDefinitionFactory.get_create_item_request_from_folder(
-        #         semantic_model_folder)
+        create_model_request = \
+            ItemDefinitionFactory.get_create_item_request_from_folder(
+                'Product Sales MV Model.SemanticModel')
 
-        # model_redirects = {
-        #     '{SQL_ENDPOINT_SERVER}': sql_endpoint['server'],
-        #     '{SQL_ENDPOINT_DATABASE}': sql_endpoint['database']
-        # }
+        model_redirects = {
+            '{SQL_ENDPOINT_SERVER}': sql_endpoint['server'],
+            '{SQL_ENDPOINT_DATABASE}': sql_endpoint['database']
+        }
 
-        # create_model_request = \
-        #     ItemDefinitionFactory.update_part_in_create_request(
-        #         create_model_request,
-        #         'definition/expressions.tmdl',
-        #         model_redirects)
+        create_model_request = \
+            ItemDefinitionFactory.update_part_in_create_request(
+                create_model_request,
+                'definition/expressions.tmdl',
+                model_redirects)
 
-        # model = FabricRestApi.create_item(workspace['id'], create_model_request)
+        model = FabricRestApi.create_item(workspace['id'], create_model_request)
 
-        # FabricRestApi.create_and_bind_semantic_model_connecton(workspace, model['id'], lakehouse)
+        FabricRestApi.create_and_bind_semantic_model_connecton(workspace, model['id'], lakehouse)
 
-        # for report_folder in report_folders:
+        report_folders = [
+            'Product Sales Summary.Report',
+            'Product Sales Time Intelligence.Report',
+            'Product Sales Top 10 Cities.Report'
+        ]
+
+        for report_folder in report_folders:
             
-        #     create_report_request = \
-        #         ItemDefinitionFactory.get_create_report_request_from_folder(
-        #             report_folder,
-        #             model['id'])
+            create_report_request = \
+                ItemDefinitionFactory.get_create_report_request_from_folder(
+                    report_folder,
+                    model['id'])
 
-        #     FabricRestApi.create_item(workspace['id'], create_report_request)
+            FabricRestApi.create_item(workspace['id'], create_report_request)
  
         return workspace
 

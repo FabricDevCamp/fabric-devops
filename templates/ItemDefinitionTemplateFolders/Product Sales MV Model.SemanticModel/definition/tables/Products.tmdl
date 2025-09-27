@@ -1,0 +1,55 @@
+table Products
+	lineageTag: 9716fed1-bd87-4050-ad26-91abe5516cb5
+
+	column ProductId
+		dataType: int64
+		formatString: 0
+		sourceProviderType: int
+		lineageTag: 0e3f8cc8-89b0-422f-b50b-9ae243334305
+		summarizeBy: none
+		sourceColumn: product_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column Product
+		dataType: string
+		sourceProviderType: varchar(8000)
+		lineageTag: e09b6a3a-80ef-4f71-96b1-f0ee7774b748
+		summarizeBy: none
+		sourceColumn: product
+
+		annotation SummarizationSetBy = Automatic
+
+	column Category
+		dataType: string
+		sourceProviderType: varchar(8000)
+		lineageTag: 7ffb2b33-3aa2-4caf-a2d2-cedf3aa3f01f
+		summarizeBy: none
+		sourceColumn: category
+
+		annotation SummarizationSetBy = Automatic
+
+	hierarchy 'Product Category'
+		lineageTag: b9f766f0-1646-431d-aa60-6401fe656097
+
+		level Category
+			lineageTag: 42e199a8-5035-490f-98bd-4cb806f6dc54
+			column: Category
+
+		level Product
+			lineageTag: 9a249c11-c232-406e-9af8-abedc794f59d
+			column: Product
+
+	partition Products = m
+		mode: directQuery
+		source =
+				let
+				    Source = Sql.Database(SqlDatabaseServer, SqlDatabaseName),
+				    products = Source{[Schema="gold",Item="products"]}[Data]
+				in
+				    products
+
+	annotation PBI_ResultType = Table
+
+	annotation IsTableInBiModel = True
+

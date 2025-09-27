@@ -1,0 +1,74 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 0,
+        "y": 7.1999998092651367
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 664,
+            "y": 262
+          },
+          "nodeIndex": "Calendar",
+          "nodeLineageTag": "7cbe8eb6-1583-46b0-84f4-8fee44083fdc",
+          "size": {
+            "height": 348,
+            "width": 234
+          },
+          "zIndex": 1
+        },
+        {
+          "location": {
+            "x": 0,
+            "y": 0
+          },
+          "nodeIndex": "Customers",
+          "nodeLineageTag": "b575862c-094d-4c5b-87fe-af149b6a75ea",
+          "size": {
+            "height": 350,
+            "width": 234
+          },
+          "zIndex": 2
+        },
+        {
+          "location": {
+            "x": 658,
+            "y": 0
+          },
+          "nodeIndex": "Products",
+          "nodeLineageTag": "9716fed1-bd87-4050-ad26-91abe5516cb5",
+          "size": {
+            "height": 246,
+            "width": 234
+          },
+          "zIndex": 3
+        },
+        {
+          "location": {
+            "x": 319,
+            "y": 17
+          },
+          "nodeIndex": "Sales",
+          "nodeLineageTag": "d886d6ae-6f5a-4c3c-b518-26ded0347520",
+          "size": {
+            "height": 463,
+            "width": 234
+          },
+          "zIndex": 4
+        }
+      ],
+      "name": "All tables",
+      "zoomValue": 100,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "All tables",
+  "defaultDiagram": "All tables"
+}

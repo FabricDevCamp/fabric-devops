@@ -49,10 +49,11 @@ CREATE MATERIALIZED LAKE VIEW IF NOT EXISTS gold.customers AS
     SELECT
        customer_id,
        country,
-       city,
+       city AS city_name,
+       city || ', ' || country AS city,
        dob,
-       first_name + last_name AS customer,
-       YEAR(CURRENT_TIMESTAMP) - YEAR(dob) AS age
+       YEAR(CURRENT_TIMESTAMP) - YEAR(dob) AS age,
+       first_name + last_name AS customer
     FROM
        silver.customers;
 
