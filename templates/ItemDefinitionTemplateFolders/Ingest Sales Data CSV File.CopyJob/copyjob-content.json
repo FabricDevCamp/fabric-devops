@@ -33,7 +33,7 @@
           "datasetSettings": {
             "location": {
               "type": "AzureBlobFSLocation",
-              "fileSystem": "sampledata"
+              "fileSystem": "{CONTAINER_NAME}"
             },
             "columnDelimiter": ",",
             "escapeChar": "\\",
@@ -42,7 +42,7 @@
           },
           "storeSettings": {
             "recursive": true,
-            "wildcardFolderPath": "/ProductSales/Dev/",
+            "wildcardFolderPath": "{CONTAINER_PATH}",
             "wildcardFileName": "*.csv",
             "enablePartitionDiscovery": false
           },

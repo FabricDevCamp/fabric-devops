@@ -430,7 +430,9 @@ class DeploymentManager:
         copyjob_redirects = {
             '{WORKSPACE_ID}': workspace['id'],
             '{LAKEHOUSE_ID}': lakehouse['id'],
-            '{CONNECTION_ID}': connection['id']
+            '{CONNECTION_ID}': connection['id'],
+            '{CONTAINER_NAME}': adls_container_name,
+            '{CONTAINER_PATH}': adls_container_path,
         }
 
         ingest_copyjob_create_request = \
