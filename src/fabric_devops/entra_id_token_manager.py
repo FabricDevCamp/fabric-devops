@@ -154,6 +154,23 @@ class EntraIdTokenManager():
             return cls._get_access_token_for_user_with_device_code(scope_for_user)
 
     @classmethod
+    def get_sql_access_token(cls):
+        """"Get Fabric Access Token"""
+
+        if EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL:
+            scope_for_service_principal = "https://database.windows.net/.default"
+            return cls._get_access_token_for_service_principal(scope_for_service_principal)
+        
+        scope_for_user = "https://database.windows.net/user_impersonation"
+
+        if EnvironmentSettings.RUNNING_LOCALLY:
+            return cls._get_access_token_for_user(scope_for_user)
+
+        if EnvironmentSettings.RUNNING_IN_GITHUB:
+            return cls._get_access_token_for_user_with_device_code(scope_for_user)
+
+
+    @classmethod
     def get_ado_access_token(cls):
         """"Get Access Token for Azure Dev """
         ado_resource_id = '499b84ac-1321-427f-aa17-267ca6975798'

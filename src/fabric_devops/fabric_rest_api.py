@@ -130,6 +130,7 @@ class FabricRestApi:
                 print('----------------------------')
                 print(response)
                 print('----------------------------')
+                raise RuntimeError('On-demand job started but Failed')
 
             if operation_state['status'] == 'Cancelled':
                 AppLogger.log_error('On-demand job was cancelled')
@@ -891,6 +892,17 @@ class FabricRestApi:
         return cls.create_item(workspace_id, create_item_request, folder_id)
 
     @classmethod
+    def create_sql_database(cls, workspace_id, display_name, folder_id = None):
+        """Create Lakehouse"""
+        create_item_request = {
+            'displayName': display_name, 
+            'type': 'SQLDatabase' 
+        }
+
+        return cls.create_item(workspace_id, create_item_request, folder_id)
+
+
+    @classmethod
     def list_workspace_items(cls, workspace_id, item_type = None):
         """Get items in workspace"""
         endpoint = f'workspaces/{workspace_id}/items'
@@ -965,6 +977,11 @@ class FabricRestApi:
         AppLogger.log_substep("Dataflow run successfully")
         return response
 
+    @classmethod
+    def get_sql_database_properties(cls, workspace_id, sql_database_id):
+        """Get SQL database properties"""
+        rest_url = f'workspaces/{workspace_id}/sqlDatabases/{sql_database_id}'
+        return cls._execute_get_request(rest_url)['properties']
 
     @classmethod
     def get_lakehouse(cls, workspace_id, lakehouse_id):

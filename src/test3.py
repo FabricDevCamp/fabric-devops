@@ -1,10 +1,10 @@
 """Test3"""
+import json
+from fabric_devops import DeploymentManager, EnvironmentSettings, FabricRestApi
 
-from fabric_devops import DeploymentManager, EnvironmentSettings
+EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL = True
 
-EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL = False
-
-DeploymentManager.cleanup_dev_environment()
+print( json.dumps(FabricRestApi.list_capacities(), indent=4) )
 
 
 
