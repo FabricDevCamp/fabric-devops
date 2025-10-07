@@ -17,7 +17,8 @@ __all__ = [
     "StagingEnvironments",
     "SampleCustomerData",
     "AdoProjectManager",
-    "GitHubRestApi"
+    "GitHubRestApi",
+    "SqlDatabaseWriter"
 ]
 
 # Import the submodules
@@ -33,3 +34,5 @@ from .staging_environments import StagingEnvironments
 from .sample_customer_data import SampleCustomerData
 from .ado_project_manager import AdoProjectManager
 from .github_rest_api import GitHubRestApi
+from .sql_database_writer import SqlDatabaseWriter
+

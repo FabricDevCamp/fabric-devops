@@ -1,0 +1,4 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/dataAgent/definition/stageConfiguration/1.0.0/schema.json",
+  "aiInstructions": "Format sales revenue as $ \nFormat sales revenue with 0 decimal places "
+}

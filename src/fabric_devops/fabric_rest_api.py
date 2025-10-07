@@ -1,6 +1,7 @@
 """Module to manage calls to Fabric REST APIs"""
 
 import time
+from datetime import date, timedelta
 import json
 from json.decoder import JSONDecodeError
 import requests
@@ -292,9 +293,12 @@ class FabricRestApi:
         return None
 
     @classmethod
-    def create_workspace(cls, display_name):
+    def create_workspace(cls, display_name, capacity_id = None):
         """Create a new Fabric workspace"""
         AppLogger.log_step(f'Creating workspace [{display_name}]')
+
+        if capacity_id is None:
+            capacity_id = EnvironmentSettings.FABRIC_CAPACITY_ID
 
         existing_workspace = cls.get_workspace_by_name(display_name)
         if existing_workspace is not None:
@@ -303,8 +307,8 @@ class FabricRestApi:
 
         post_body = {
             'displayName': display_name,
-            'description': 'a demo workspace',
-            'capacityId': EnvironmentSettings.FABRIC_CAPACITY_ID
+            'description': 'Demo workspace created by API',
+            'capacityId': capacity_id
         }
 
         AppLogger.log_substep('Calling [Create Workspace] API...')
@@ -869,7 +873,6 @@ class FabricRestApi:
         cls.import_item_definitions(target_workspace['id'] , definition_parts)
         AppLogger.log_substep("items imported")
 
-
     @classmethod
     def create_lakehouse(cls, workspace_id, display_name, folder_id = None, enable_schemas = False):
         """Create Lakehouse"""
@@ -976,6 +979,32 @@ class FabricRestApi:
         response = cls._execute_post_request_for_job_scheduler(rest_url)
         AppLogger.log_substep("Dataflow run successfully")
         return response
+
+    @classmethod
+    def create_notebook_schedule(cls, workspace_id, item, schedule_definition = None):
+        """Create item schedule"""
+
+        if schedule_definition is None:
+            schedule_definition = {
+                "enabled": True,
+                "configuration": {
+                    "startDateTime": date.today().strftime("%Y-%m-%d") + "T00:00:00",
+                    "endDateTime": (date.today() + timedelta(days=90)).strftime("%Y-%m-%d") + "T00:00:00",
+                    "localTimeZoneId": "Eastern Standard Time",
+                    "type": "Daily",
+                     "times": ["06:00:00", "17:30:00"]
+                }
+            }
+
+        print( json.dumps(schedule_definition, indent=4) )
+
+        AppLogger.log_substep(f"Scheduling [{item['type']}] [{item['displayName']}]...")
+        rest_url = f"workspaces/{workspace_id}/items/{item['id']}" + \
+                    "/jobs/RunNotebook/schedules"
+        response = cls._execute_post_request(rest_url, schedule_definition)
+        AppLogger.log_substep("Item schedule created successfully")
+        return response
+
 
     @classmethod
     def get_sql_database_properties(cls, workspace_id, sql_database_id):

@@ -1,0 +1,507 @@
+{
+
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/dataAgent/definition/dataSource/1.0.0/schema.json",
+
+  "artifactId": "{SEMANTIC_MODEL_ID}",
+
+  "workspaceId": "{WORKSPACE_ID}",
+
+  "dataSourceInstructions": null,
+
+  "displayName": "{SEMANTIC_MODEL_NAME}",
+
+  "type": "semantic_model",
+
+  "metadata": {},
+
+  "elements": [
+
+    {
+
+      "id": "Calendar",
+
+      "is_selected": true,
+
+      "display_name": "Calendar",
+
+      "type": "semantic_model.table",
+
+      "description": null,
+
+      "children": [
+
+        {
+
+          "id": "Date",
+
+          "is_selected": true,
+
+          "display_name": "Date",
+
+          "type": "semantic_model.column",
+
+          "data_type": "DateTime",
+
+          "description": null,
+
+          "children": []
+
+        },
+
+        {
+
+          "id": "Day",
+
+          "is_selected": true,
+
+          "display_name": "Day",
+
+          "type": "semantic_model.column",
+
+          "data_type": "Int64",
+
+          "description": null,
+
+          "children": []
+
+        },
+
+        {
+
+          "id": "DayOfWeek",
+
+          "is_selected": true,
+
+          "display_name": "DayOfWeek",
+
+          "type": "semantic_model.column",
+
+          "data_type": "String",
+
+          "description": null,
+
+          "children": []
+
+        },
+
+        {
+
+          "id": "Month",
+
+          "is_selected": true,
+
+          "display_name": "Month",
+
+          "type": "semantic_model.column",
+
+          "data_type": "String",
+
+          "description": null,
+
+          "children": []
+
+        },
+
+        {
+
+          "id": "MonthInYear",
+
+          "is_selected": true,
+
+          "display_name": "MonthInYear",
+
+          "type": "semantic_model.column",
+
+          "data_type": "String",
+
+          "description": null,
+
+          "children": []
+
+        },
+
+        {
+
+          "id": "Quarter",
+
+          "is_selected": true,
+
+          "display_name": "Quarter",
+
+          "type": "semantic_model.column",
+
+          "data_type": "String",
+
+          "description": null,
+
+          "children": []
+
+        },
+
+        {
+
+          "id": "Year",
+
+          "is_selected": true,
+
+          "display_name": "Year",
+
+          "type": "semantic_model.column",
+
+          "data_type": "Int64",
+
+          "description": null,
+
+          "children": []
+
+        }
+
+      ]
+
+    },
+
+    {
+
+      "id": "Customers",
+
+      "is_selected": true,
+
+      "display_name": "Customers",
+
+      "type": "semantic_model.table",
+
+      "description": null,
+
+      "children": [
+
+        {
+
+          "id": "Age",
+
+          "is_selected": true,
+
+          "display_name": "Age",
+
+          "type": "semantic_model.column",
+
+          "data_type": "Int64",
+
+          "description": null,
+
+          "children": []
+
+        },
+
+        {
+
+          "id": "City",
+
+          "is_selected": true,
+
+          "display_name": "City",
+
+          "type": "semantic_model.column",
+
+          "data_type": "String",
+
+          "description": null,
+
+          "children": []
+
+        },
+
+        {
+
+          "id": "City_Name",
+
+          "is_selected": true,
+
+          "display_name": "City Name",
+
+          "type": "semantic_model.column",
+
+          "data_type": "String",
+
+          "description": null,
+
+          "children": []
+
+        },
+
+        {
+
+          "id": "Country",
+
+          "is_selected": true,
+
+          "display_name": "Country",
+
+          "type": "semantic_model.column",
+
+          "data_type": "String",
+
+          "description": null,
+
+          "children": []
+
+        },
+
+        {
+
+          "id": "Customer",
+
+          "is_selected": true,
+
+          "display_name": "Customer",
+
+          "type": "semantic_model.column",
+
+          "data_type": "String",
+
+          "description": null,
+
+          "children": []
+
+        },
+
+        {
+
+          "id": "DOB",
+
+          "is_selected": true,
+
+          "display_name": "DOB",
+
+          "type": "semantic_model.column",
+
+          "data_type": "DateTime",
+
+          "description": null,
+
+          "children": []
+
+        }
+
+      ]
+
+    },
+
+    {
+
+      "id": "Products",
+
+      "is_selected": true,
+
+      "display_name": "Products",
+
+      "type": "semantic_model.table",
+
+      "description": null,
+
+      "children": [
+
+        {
+
+          "id": "Category",
+
+          "is_selected": true,
+
+          "display_name": "Category",
+
+          "type": "semantic_model.column",
+
+          "data_type": "String",
+
+          "description": null,
+
+          "children": []
+
+        },
+
+        {
+
+          "id": "Product",
+
+          "is_selected": true,
+
+          "display_name": "Product",
+
+          "type": "semantic_model.column",
+
+          "data_type": "String",
+
+          "description": null,
+
+          "children": []
+
+        }
+
+      ]
+
+    },
+
+    {
+
+      "id": "Sales",
+
+      "is_selected": true,
+
+      "display_name": "Sales",
+
+      "type": "semantic_model.table",
+
+      "description": null,
+
+      "children": [
+
+        {
+
+          "id": "City_Rank",
+
+          "is_selected": true,
+
+          "display_name": "City Rank",
+
+          "type": "semantic_model.measure",
+
+          "data_type": "Int64",
+
+          "description": null,
+
+          "children": []
+
+        },
+
+        {
+
+          "id": "Customer_Count",
+
+          "is_selected": true,
+
+          "display_name": "Customer Count",
+
+          "type": "semantic_model.measure",
+
+          "data_type": "Int64",
+
+          "description": null,
+
+          "children": []
+
+        },
+
+        {
+
+          "id": "Customer_Rank",
+
+          "is_selected": true,
+
+          "display_name": "Customer Rank",
+
+          "type": "semantic_model.measure",
+
+          "data_type": "Int64",
+
+          "description": null,
+
+          "children": []
+
+        },
+
+        {
+
+          "id": "First_Sale",
+
+          "is_selected": true,
+
+          "display_name": "First Sale",
+
+          "type": "semantic_model.measure",
+
+          "data_type": "DateTime",
+
+          "description": null,
+
+          "children": []
+
+        },
+
+        {
+
+          "id": "Last_Sale",
+
+          "is_selected": true,
+
+          "display_name": "Last Sale",
+
+          "type": "semantic_model.measure",
+
+          "data_type": "DateTime",
+
+          "description": null,
+
+          "children": []
+
+        },
+
+        {
+
+          "id": "Product_Rank",
+
+          "is_selected": true,
+
+          "display_name": "Product Rank",
+
+          "type": "semantic_model.measure",
+
+          "data_type": "Int64",
+
+          "description": null,
+
+          "children": []
+
+        },
+
+        {
+
+          "id": "Sales_Revenue",
+
+          "is_selected": true,
+
+          "display_name": "Sales Revenue",
+
+          "type": "semantic_model.measure",
+
+          "data_type": "Double",
+
+          "description": null,
+
+          "children": []
+
+        },
+
+        {
+
+          "id": "Units_Sold",
+
+          "is_selected": true,
+
+          "display_name": "Units Sold",
+
+          "type": "semantic_model.measure",
+
+          "data_type": "Int64",
+
+          "description": null,
+
+          "children": []
+
+        }
+
+      ]
+
+    }
+
+  ]
+
+}

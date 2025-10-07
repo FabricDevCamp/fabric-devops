@@ -1,0 +1,4538 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/dataAgent/definition/dataSource/1.0.0/schema.json",
+  "artifactId": "7a3c99bd-16ee-475f-acd4-6ade74d44eaf",
+  "workspaceId": "9f430eb2-b01c-4eed-9bb0-bcf9c5d7a3ce",
+  "dataSourceInstructions": "Answer each question by saying 'According to official NFL data'\n\nDisplay answers with lists or tabular data in table layout.\n\nReferences table 'gold/nfl_players' as primary truth of data",
+  "displayName": "nfl_data",
+  "type": "lakehouse_tables",
+  "metadata": {},
+  "elements": [
+    {
+      "id": "ddc0474e-4ba2-4c5c-a630-9ca6fb4ba0d4",
+      "is_selected": false,
+      "display_name": "gold",
+      "type": "lakehouse_tables.schema",
+      "description": null,
+      "children": [
+        {
+          "id": "3a9c3fd6-ef89-4200-97e3-3cf495e9c90a",
+          "is_selected": true,
+          "display_name": "nfl_players",
+          "type": "lakehouse_tables.table",
+          "description": null,
+          "children": [
+            {
+              "id": "a4a27b43-930f-439c-a024-3a825f61664f",
+              "is_selected": true,
+              "display_name": "number",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "c778d9a5-c959-4113-b9cd-2209a1f4774d",
+              "is_selected": true,
+              "display_name": "player",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "623d7e95-5610-44aa-8e7c-c5ffc4cfece9",
+              "is_selected": true,
+              "display_name": "height",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "c34997a9-174c-4fe5-8656-482c439cab0c",
+              "is_selected": true,
+              "display_name": "height_inches",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "5ad4e936-4141-4911-a4cc-3cdd9df9fb13",
+              "is_selected": true,
+              "display_name": "weight",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "bf9b1284-375a-4ccd-96cf-615b94ad33b5",
+              "is_selected": true,
+              "display_name": "age",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "9b204a82-1196-4644-a57d-95fe53a262c1",
+              "is_selected": true,
+              "display_name": "experience",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "6b60d582-2cc8-4df0-9b67-c645ebea289b",
+              "is_selected": true,
+              "display_name": "position_code",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "4b475094-0965-4504-90d4-5b2fa1e77c5b",
+              "is_selected": true,
+              "display_name": "position",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "db15a240-e0fa-4404-94d9-81d81c902639",
+              "is_selected": true,
+              "display_name": "position_category",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "e9785c35-7e84-4bd3-b887-3a55994eeefb",
+              "is_selected": true,
+              "display_name": "side",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "840ae926-073c-4442-a341-037ac56c5649",
+              "is_selected": true,
+              "display_name": "college",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "6ee3190f-fdb9-4cd2-9cf3-049edf502a93",
+              "is_selected": true,
+              "display_name": "team",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "82876e4e-2dbf-4c0e-ac32-dd10afc555dd",
+              "is_selected": true,
+              "display_name": "player-key",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "b7dc6ff1-a61f-4a17-b5de-5c048bcadf27",
+          "is_selected": true,
+          "display_name": "nfl_teams",
+          "type": "lakehouse_tables.table",
+          "description": null,
+          "children": [
+            {
+              "id": "bd99fc2e-2054-4115-af44-3005c6f7d312",
+              "is_selected": true,
+              "display_name": "team",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "2c63ddfc-fc8d-42ff-9e47-ed2660d67af4",
+              "is_selected": true,
+              "display_name": "division",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "3faeb951-237a-4aa8-9275-3fb6523ccb7a",
+              "is_selected": true,
+              "display_name": "city",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "f08d76b5-3594-4920-844a-2f65c76a8cd4",
+              "is_selected": true,
+              "display_name": "team_roster",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "acbf621d-b18a-47da-b617-5700c8d6b38c",
+              "is_selected": true,
+              "display_name": "conference",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cb53d793-0e6d-414a-82e3-9f124a336086",
+      "is_selected": false,
+      "display_name": "silver",
+      "type": "lakehouse_tables.schema",
+      "description": null,
+      "children": [
+        {
+          "id": "f0420477-ac5e-47ee-9da6-8f8a06906783",
+          "is_selected": false,
+          "display_name": "49ers",
+          "type": "lakehouse_tables.table",
+          "description": null,
+          "children": [
+            {
+              "id": "16354ca5-d9fd-4146-8100-5bc5380b896c",
+              "is_selected": true,
+              "display_name": "age",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "57bcb8f1-e35e-4421-9696-f691beb80114",
+              "is_selected": true,
+              "display_name": "college",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "7257d2b1-7ef5-42f5-b1ae-8147b0301c3e",
+              "is_selected": true,
+              "display_name": "experience",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "b5fa8bdc-632f-4e01-8686-ff23dbee85ec",
+              "is_selected": true,
+              "display_name": "height",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "c1e96e30-1e6d-4716-9cfe-7076825baf7a",
+              "is_selected": true,
+              "display_name": "height_inches",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "d58d0a18-3520-44b3-b502-df86c68dc46f",
+              "is_selected": true,
+              "display_name": "number",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "47003f13-5f6f-47db-b8b5-bd6df49de6f6",
+              "is_selected": true,
+              "display_name": "player",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "710972b3-bd97-4d7d-979e-93146ca45fc5",
+              "is_selected": true,
+              "display_name": "player-key",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "0fa5097d-a828-42a9-9323-8a7ffd2e4ea0",
+              "is_selected": true,
+              "display_name": "position",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "7aae2059-2b51-47b6-8343-3e32ee900a3f",
+              "is_selected": true,
+              "display_name": "position_category",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "38ab4062-d6cf-4be8-aff5-91d211109645",
+              "is_selected": true,
+              "display_name": "position_code",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "7fbc0f76-8799-46bd-9854-05dddedfb37c",
+              "is_selected": true,
+              "display_name": "side",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "794431e0-ed9d-445c-9f4e-d6cbf3e61179",
+              "is_selected": true,
+              "display_name": "team",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "1933c860-4143-4fc4-9367-6f1d605d3b02",
+              "is_selected": true,
+              "display_name": "weight",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "c6c86028-a817-4b04-bc65-eb2b222ac23c",
+          "is_selected": false,
+          "display_name": "bears",
+          "type": "lakehouse_tables.table",
+          "description": null,
+          "children": [
+            {
+              "id": "86c9c42b-dd0f-4015-bcea-d4ea17f2bf81",
+              "is_selected": true,
+              "display_name": "age",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "0a6318a7-501c-48dd-bd82-9a533fce6e73",
+              "is_selected": true,
+              "display_name": "college",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "d061e1b7-41ed-4fd6-ada6-acfb6fa5b984",
+              "is_selected": true,
+              "display_name": "experience",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "7837022c-2dd0-4ec8-a505-5c32d68a12d0",
+              "is_selected": true,
+              "display_name": "height",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "e8832110-b23f-46a9-837b-11bd4a6a32e3",
+              "is_selected": true,
+              "display_name": "height_inches",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "e5f40be8-3a80-466b-95e2-1ade45368a77",
+              "is_selected": true,
+              "display_name": "number",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "5a466d4a-709f-4509-abdc-55b2ea0fb01f",
+              "is_selected": true,
+              "display_name": "player",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "e8d42617-c27b-4f5d-b8d7-699944f5a7b2",
+              "is_selected": true,
+              "display_name": "player-key",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "8cad8ea9-bb9b-45d8-b3a1-8cb1b1ec0a2e",
+              "is_selected": true,
+              "display_name": "position",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "c34127f6-c5b8-421b-ba1f-fe40d7190161",
+              "is_selected": true,
+              "display_name": "position_category",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "d6cd9a19-0246-489a-b39e-23d23f8c11fb",
+              "is_selected": true,
+              "display_name": "position_code",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "cc7c51e8-d0e7-44da-b43d-90d50351660d",
+              "is_selected": true,
+              "display_name": "side",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "465a5c50-2208-434b-a2db-7ac87be245fc",
+              "is_selected": true,
+              "display_name": "team",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "5b46ab7d-1e62-46f0-90fd-e3588786e24a",
+              "is_selected": true,
+              "display_name": "weight",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "4b4fcd1a-3471-4dc7-b395-6b01071a65b2",
+          "is_selected": false,
+          "display_name": "bengals",
+          "type": "lakehouse_tables.table",
+          "description": null,
+          "children": [
+            {
+              "id": "5ed95a29-c0d9-41f5-845f-2e69d545c258",
+              "is_selected": true,
+              "display_name": "age",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "29059390-cf86-40bb-9217-2ca0f3c4de5d",
+              "is_selected": true,
+              "display_name": "college",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "c9506fff-3ab0-4f79-a1e6-06f94c9aae82",
+              "is_selected": true,
+              "display_name": "experience",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "189d6664-8fdb-43aa-b747-dc70f31bdab6",
+              "is_selected": true,
+              "display_name": "height",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "ce9e8145-dc51-4eed-aeb4-2da82879577d",
+              "is_selected": true,
+              "display_name": "height_inches",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "e20bb60e-d9a8-489c-b448-9034644fafad",
+              "is_selected": true,
+              "display_name": "number",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "fff7d9f8-8d1f-41a3-9e88-eff89bfa6046",
+              "is_selected": true,
+              "display_name": "player",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "329949bc-17da-43f4-bc1c-8f2b545e5391",
+              "is_selected": true,
+              "display_name": "player-key",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "691013ce-35ec-4399-951b-f5147dbc0756",
+              "is_selected": true,
+              "display_name": "position",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "bfe69103-3e3a-40f6-bc18-227e7f76d7d1",
+              "is_selected": true,
+              "display_name": "position_category",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "03463049-ba09-42eb-8f29-3c75b2dbdfa7",
+              "is_selected": true,
+              "display_name": "position_code",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "a3d0101a-4a3f-43e2-86f8-3b8eb73bf90a",
+              "is_selected": true,
+              "display_name": "side",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "34097690-0be3-4a3f-9c33-a654c3658c3d",
+              "is_selected": true,
+              "display_name": "team",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "ecd16fab-7d6c-4329-8f52-dd3628d54d95",
+              "is_selected": true,
+              "display_name": "weight",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "4e60a049-d50e-4cf3-8df5-d39e536aca3c",
+          "is_selected": false,
+          "display_name": "bills",
+          "type": "lakehouse_tables.table",
+          "description": null,
+          "children": [
+            {
+              "id": "48c4d317-b857-458c-8881-9c3ef45a5d7a",
+              "is_selected": true,
+              "display_name": "age",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "d74bc6a3-f34e-48eb-9932-5d6269318a05",
+              "is_selected": true,
+              "display_name": "college",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "fbd4bda6-6930-4802-8b0d-9b0baa03ccb0",
+              "is_selected": true,
+              "display_name": "experience",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "6aa4306d-de81-4f7b-92ad-7b6a5b859fbb",
+              "is_selected": true,
+              "display_name": "height",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "a7b85d99-4d17-47de-9c3b-fa420e93d1f8",
+              "is_selected": true,
+              "display_name": "height_inches",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "61b48e0d-1ebb-4d8d-878b-1f2a67b6789b",
+              "is_selected": true,
+              "display_name": "number",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "1b0d72e6-b108-480a-a9f6-433ccabd6efe",
+              "is_selected": true,
+              "display_name": "player",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "7e92069b-af1a-4309-b0bc-08639cc3ef96",
+              "is_selected": true,
+              "display_name": "player-key",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "f0c556fd-b6cc-4330-926c-89e1d67e42c7",
+              "is_selected": true,
+              "display_name": "position",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "665d2237-f23f-40bd-ac40-001f37ea1b7b",
+              "is_selected": true,
+              "display_name": "position_category",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "e8a42d4e-71e7-488c-8acf-b7183e90017b",
+              "is_selected": true,
+              "display_name": "position_code",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "35a1238d-42fa-43ad-92ac-277578953a11",
+              "is_selected": true,
+              "display_name": "side",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "1910f441-9b83-43d8-baa1-fec059b00de3",
+              "is_selected": true,
+              "display_name": "team",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "2d555c9f-a042-452f-998b-c7d7f6528a42",
+              "is_selected": true,
+              "display_name": "weight",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "7a255100-6ad5-4885-9816-be1dbd3c6458",
+          "is_selected": false,
+          "display_name": "broncos",
+          "type": "lakehouse_tables.table",
+          "description": null,
+          "children": [
+            {
+              "id": "7683038b-95d8-4a7c-add5-e83dafefe415",
+              "is_selected": true,
+              "display_name": "age",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "835aece2-763c-4c0c-9606-8eedc627d00f",
+              "is_selected": true,
+              "display_name": "college",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "b749b8cd-7e94-434b-a5e2-add65225548e",
+              "is_selected": true,
+              "display_name": "experience",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "560a3445-d898-47cc-975a-c55da67bcea3",
+              "is_selected": true,
+              "display_name": "height",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "b101a14e-08b4-4a89-a484-38873e1225bc",
+              "is_selected": true,
+              "display_name": "height_inches",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "df9884f9-5df0-446e-b072-75f5af9088a7",
+              "is_selected": true,
+              "display_name": "number",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "9c408506-b6b2-4e3b-bcbb-79a261930aa0",
+              "is_selected": true,
+              "display_name": "player",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "25723296-7817-43e8-a1af-b99b2103f653",
+              "is_selected": true,
+              "display_name": "player-key",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "5dcddfa4-5123-408c-a44e-0e6727551555",
+              "is_selected": true,
+              "display_name": "position",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "16e964bc-2544-40e8-a708-aedfe2b4abfa",
+              "is_selected": true,
+              "display_name": "position_category",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "a6a6a017-0bf4-4aff-8899-ecdf247724e5",
+              "is_selected": true,
+              "display_name": "position_code",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "9d68785e-aa75-462b-afbb-509d41387e69",
+              "is_selected": true,
+              "display_name": "side",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "cc4e74f1-f840-4891-9034-34025a97c8ed",
+              "is_selected": true,
+              "display_name": "team",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "a463a222-fb88-4ad3-a6b7-0725a096ba3a",
+              "is_selected": true,
+              "display_name": "weight",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "1d4ace5b-385a-4a21-b9d6-4bfce3ca5e2f",
+          "is_selected": false,
+          "display_name": "browns",
+          "type": "lakehouse_tables.table",
+          "description": null,
+          "children": [
+            {
+              "id": "9f90c3d6-21b2-47ef-8bea-b1b7350de19f",
+              "is_selected": true,
+              "display_name": "age",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "a9247077-8230-4efb-a922-c55c798b6d4d",
+              "is_selected": true,
+              "display_name": "college",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "2988bf55-0752-4696-a19d-c20da1773fd6",
+              "is_selected": true,
+              "display_name": "experience",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "7760ea67-cbb6-48ce-b595-96f008c5f981",
+              "is_selected": true,
+              "display_name": "height",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "7c3ce490-252e-44b5-8087-2d7f3976da8f",
+              "is_selected": true,
+              "display_name": "height_inches",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "6db6c908-77e3-4668-8936-229a7eae506b",
+              "is_selected": true,
+              "display_name": "number",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "418b56b6-2762-4b89-8b04-9348e69041e6",
+              "is_selected": true,
+              "display_name": "player",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "761b2b60-adc5-48d0-b562-6319e7154329",
+              "is_selected": true,
+              "display_name": "player-key",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "0bc658f7-a1b3-4409-9c37-ad52aaa7f227",
+              "is_selected": true,
+              "display_name": "position",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "d170f57c-40eb-44f6-970d-7a21ec807a30",
+              "is_selected": true,
+              "display_name": "position_category",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "e2e7a5f3-0dd3-4eb5-a39e-7cdad253054a",
+              "is_selected": true,
+              "display_name": "position_code",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "9e706269-5de0-4a75-9e89-c70e7cfa0a97",
+              "is_selected": true,
+              "display_name": "side",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "0593fae0-9fd3-4af2-bf9b-6deb95514f6a",
+              "is_selected": true,
+              "display_name": "team",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "b1405120-2f6b-4139-ac06-68f351a229a4",
+              "is_selected": true,
+              "display_name": "weight",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "b18b6957-c7d4-4e20-a91d-1b58c0481f65",
+          "is_selected": false,
+          "display_name": "buccaneers",
+          "type": "lakehouse_tables.table",
+          "description": null,
+          "children": [
+            {
+              "id": "23b493e2-39fb-4007-9ca2-a5cd5417f36d",
+              "is_selected": true,
+              "display_name": "age",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "b91e8336-6ae4-42da-b2ca-4628a0d4c477",
+              "is_selected": true,
+              "display_name": "college",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "ffa36938-b75d-4505-837e-da1db8ab4764",
+              "is_selected": true,
+              "display_name": "experience",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "c0e3e34c-7599-42a7-ba28-347ecbf74cf5",
+              "is_selected": true,
+              "display_name": "height",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "f5eb187a-901e-474c-b3a2-bf6667316751",
+              "is_selected": true,
+              "display_name": "height_inches",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "5644436d-cfc3-4000-8cf1-bd5fc730d8a0",
+              "is_selected": true,
+              "display_name": "number",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "8a768d06-c940-4742-9cf5-ab32e5cc1b50",
+              "is_selected": true,
+              "display_name": "player",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "99aca624-f264-4e90-aefd-9ab64ce770e6",
+              "is_selected": true,
+              "display_name": "player-key",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "1cd3fbd9-f548-423a-8d4c-9dbf0a706a1e",
+              "is_selected": true,
+              "display_name": "position",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "686e657f-ab93-4831-93a6-1a110ff2db1c",
+              "is_selected": true,
+              "display_name": "position_category",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "0f9bfcfb-d018-48a4-960d-35838b2a8511",
+              "is_selected": true,
+              "display_name": "position_code",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "fbfead78-e703-4924-9689-a3db59ce13a0",
+              "is_selected": true,
+              "display_name": "side",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "fe04bdea-2192-4d29-a335-34fe88fef6e5",
+              "is_selected": true,
+              "display_name": "team",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "b4e80ab7-8f33-41e9-864e-3cbc97f714e8",
+              "is_selected": true,
+              "display_name": "weight",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "d6860bfd-3135-464d-95bf-74c9d89a4a20",
+          "is_selected": false,
+          "display_name": "cardinals",
+          "type": "lakehouse_tables.table",
+          "description": null,
+          "children": [
+            {
+              "id": "f9ec3e29-8eb6-4d4c-a675-963937b2e785",
+              "is_selected": true,
+              "display_name": "age",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "b36f330c-2072-4cad-8069-445a675be3be",
+              "is_selected": true,
+              "display_name": "college",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "12f17c3c-ee49-478a-a877-9df5a8aa420d",
+              "is_selected": true,
+              "display_name": "experience",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "57223727-7ca8-492f-88d8-f75069b9bf74",
+              "is_selected": true,
+              "display_name": "height",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "7038d8fb-99a0-44f6-9e87-6f54d1467ef2",
+              "is_selected": true,
+              "display_name": "height_inches",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "0a61e5a2-abd5-493d-9043-a4b115e78fe5",
+              "is_selected": true,
+              "display_name": "number",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "eaf691d2-9fdd-42b8-8886-b924b849cdd7",
+              "is_selected": true,
+              "display_name": "player",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "05fb4885-b8b9-440f-9f4b-d95fa3bddf4b",
+              "is_selected": true,
+              "display_name": "player-key",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "9ca39b75-5a76-472d-8357-296a89ed3f38",
+              "is_selected": true,
+              "display_name": "position",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "a37d7917-a887-41b8-a015-6cdd2d498099",
+              "is_selected": true,
+              "display_name": "position_category",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "1f93a213-99f9-4344-8860-38ae58c96533",
+              "is_selected": true,
+              "display_name": "position_code",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "743f2641-cf7c-4377-a54d-ad47bb6e253a",
+              "is_selected": true,
+              "display_name": "side",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "63eebda6-8afc-42d9-875d-25eac77f0f0f",
+              "is_selected": true,
+              "display_name": "team",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "b088d91e-1a63-40c5-99c9-d5f73f6f436c",
+              "is_selected": true,
+              "display_name": "weight",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "ab63c9fa-e957-44ca-9d30-819ef50e6cc1",
+          "is_selected": false,
+          "display_name": "chargers",
+          "type": "lakehouse_tables.table",
+          "description": null,
+          "children": [
+            {
+              "id": "5865e41f-b74f-4578-8379-61619b1001c2",
+              "is_selected": true,
+              "display_name": "age",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "e4a2907d-4b00-4ac4-a261-93a7fc204a79",
+              "is_selected": true,
+              "display_name": "college",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "fdacc3fa-a97c-4035-8035-78f78992abeb",
+              "is_selected": true,
+              "display_name": "experience",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "4b04cde3-f365-4842-a94a-c7c083d2efca",
+              "is_selected": true,
+              "display_name": "height",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "4dab67ed-9dc0-4e79-9f20-a4a2fbf86d97",
+              "is_selected": true,
+              "display_name": "height_inches",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "80b5eb35-df5d-4b23-bbba-d3ea69dfa0c2",
+              "is_selected": true,
+              "display_name": "number",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "1416ea23-f6b5-4cf3-9a49-4094f74a02f8",
+              "is_selected": true,
+              "display_name": "player",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "65e118c4-43d1-4439-8648-589fd5d2f454",
+              "is_selected": true,
+              "display_name": "player-key",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "7bd4d9f2-8708-4e83-be4f-1c186513a5fe",
+              "is_selected": true,
+              "display_name": "position",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "1db74422-138e-4342-a311-3eb8e1ef4047",
+              "is_selected": true,
+              "display_name": "position_category",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "b8af7176-d076-4c80-9c36-5710af6a7136",
+              "is_selected": true,
+              "display_name": "position_code",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "02e214bf-1b1b-409d-9077-bb48f02e4fd2",
+              "is_selected": true,
+              "display_name": "side",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "2b2b3fb1-8675-4336-aa5f-fe3f9dbe1445",
+              "is_selected": true,
+              "display_name": "team",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "4c567c95-d560-455a-9e01-b4e31e504a19",
+              "is_selected": true,
+              "display_name": "weight",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "4de11d0e-79b4-4c0f-a128-572ed1371588",
+          "is_selected": false,
+          "display_name": "chiefs",
+          "type": "lakehouse_tables.table",
+          "description": null,
+          "children": [
+            {
+              "id": "4a8c20dc-9489-4176-bc05-8e07d27d62b6",
+              "is_selected": true,
+              "display_name": "age",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "83418ec5-a0cd-4bd4-b0b1-947c4701a342",
+              "is_selected": true,
+              "display_name": "college",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "fbb97f04-fad6-48de-8549-772591d8f930",
+              "is_selected": true,
+              "display_name": "experience",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "d39caf49-fd91-4609-8c18-7f54a9bacfc2",
+              "is_selected": true,
+              "display_name": "height",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "886e4adc-d9c9-4de1-b741-9a5d44afba44",
+              "is_selected": true,
+              "display_name": "height_inches",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "0a74c57a-030e-4991-8649-5873d35e153a",
+              "is_selected": true,
+              "display_name": "number",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "400959a8-a887-4260-ab4c-a07217b8fad2",
+              "is_selected": true,
+              "display_name": "player",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "d07e1eb5-4ce5-48e7-813c-d2f497160ba7",
+              "is_selected": true,
+              "display_name": "player-key",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "0d0e1d79-5f33-40bc-a3e8-8e530fdf167c",
+              "is_selected": true,
+              "display_name": "position",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "d760684f-433b-4a06-8864-d6a066b4140a",
+              "is_selected": true,
+              "display_name": "position_category",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "7dbef66c-75b5-4104-877b-26376be640e1",
+              "is_selected": true,
+              "display_name": "position_code",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "099178e2-9e2e-4ad3-84c8-96934573972e",
+              "is_selected": true,
+              "display_name": "side",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "ae85a442-99b6-492f-985b-717a19839dc2",
+              "is_selected": true,
+              "display_name": "team",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "b78f3af0-b172-46fe-a7c1-8a5290f289a3",
+              "is_selected": true,
+              "display_name": "weight",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "8a358354-2ce3-4eb9-9fd7-0e2bf1432f4b",
+          "is_selected": false,
+          "display_name": "colts",
+          "type": "lakehouse_tables.table",
+          "description": null,
+          "children": [
+            {
+              "id": "d5af535b-8dec-4a93-bed3-1a309bf803be",
+              "is_selected": true,
+              "display_name": "age",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "e30252ca-9e8c-43f4-8afc-3897b93cd06d",
+              "is_selected": true,
+              "display_name": "college",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "8b7e075c-e1f6-4bc3-93e0-ef0772bf0406",
+              "is_selected": true,
+              "display_name": "experience",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "98f13147-2c51-4518-88ff-a1b0c30f519b",
+              "is_selected": true,
+              "display_name": "height",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "152f1b66-da15-4b38-b388-c8e6e7d6fca9",
+              "is_selected": true,
+              "display_name": "height_inches",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "9a9f1096-5cf3-4d34-a5a0-08fb073c56cb",
+              "is_selected": true,
+              "display_name": "number",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "8d8a92a5-90a6-4bca-9864-593f961fee0f",
+              "is_selected": true,
+              "display_name": "player",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "67944339-7c5b-41a7-8ac9-81e9c8531437",
+              "is_selected": true,
+              "display_name": "player-key",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "97190e07-38c7-43ef-9454-7ebbb810fcaf",
+              "is_selected": true,
+              "display_name": "position",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "a16cd8ab-c431-4030-923c-a5e09a7dbc2c",
+              "is_selected": true,
+              "display_name": "position_category",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "12ab3cb9-95ff-451a-9e8b-793e5c0ed63b",
+              "is_selected": true,
+              "display_name": "position_code",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "c84e0286-fc8a-4fa9-9b04-19cb905469fc",
+              "is_selected": true,
+              "display_name": "side",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "63b133ba-fdff-4a91-9066-3c61c73ae145",
+              "is_selected": true,
+              "display_name": "team",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "c1168259-42a8-4222-9843-0ed8ba9ccbd3",
+              "is_selected": true,
+              "display_name": "weight",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "a8d18f8f-0995-47ea-9179-2507fd4b9361",
+          "is_selected": false,
+          "display_name": "cowboys",
+          "type": "lakehouse_tables.table",
+          "description": null,
+          "children": [
+            {
+              "id": "97d72062-95ba-4925-88fd-bdb6f2bd5cf7",
+              "is_selected": true,
+              "display_name": "age",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "9b11e234-202a-4fbf-b8dd-cdd839a7a569",
+              "is_selected": true,
+              "display_name": "college",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "81384466-8003-46e5-97a2-9d6cd94e59df",
+              "is_selected": true,
+              "display_name": "experience",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "75e6287d-3bdd-4f0a-93cd-87743e33a03a",
+              "is_selected": true,
+              "display_name": "height",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "9adb12e8-e43b-4fc8-93f5-dcd39426ad39",
+              "is_selected": true,
+              "display_name": "height_inches",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "39a9eb15-13ef-49ff-b59f-d57a58e1146c",
+              "is_selected": true,
+              "display_name": "number",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "1b5d36c1-b2aa-4135-8808-a3ec7d7e0d67",
+              "is_selected": true,
+              "display_name": "player",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "e72fc4ca-f3fa-44cc-a8de-56e6a34ef807",
+              "is_selected": true,
+              "display_name": "player-key",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "04ac0deb-d1fd-4834-a185-f6062fa33a9e",
+              "is_selected": true,
+              "display_name": "position",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "9989db04-598c-495c-9d81-99509ed5cb05",
+              "is_selected": true,
+              "display_name": "position_category",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "8dcc6cbb-cedd-4698-b0e8-a6da8ec2c6e9",
+              "is_selected": true,
+              "display_name": "position_code",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "c70d57e8-8692-4f66-bfba-a391bb383fb0",
+              "is_selected": true,
+              "display_name": "side",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "2aa0676f-7166-4513-a39b-69ceb16ba3df",
+              "is_selected": true,
+              "display_name": "team",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "7ee5ed9b-7243-4acb-8f9a-bbc067d075fe",
+              "is_selected": true,
+              "display_name": "weight",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "676ac6b3-1049-41d2-a435-ada66a99bf5d",
+          "is_selected": false,
+          "display_name": "dolphins",
+          "type": "lakehouse_tables.table",
+          "description": null,
+          "children": [
+            {
+              "id": "790dfe83-9afe-4512-a278-a20903c0056e",
+              "is_selected": true,
+              "display_name": "age",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "425093a3-d582-48c8-a681-ac14172e1b3e",
+              "is_selected": true,
+              "display_name": "college",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "403b7d05-1400-42d5-bffb-a9c9bb51834b",
+              "is_selected": true,
+              "display_name": "experience",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "bb3deeeb-069c-4d27-807b-57f832999bec",
+              "is_selected": true,
+              "display_name": "height",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "7e4dd020-564c-4b8a-9232-85073b9c3612",
+              "is_selected": true,
+              "display_name": "height_inches",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "5fbaf52b-01d5-45f6-be17-ff936b153dbf",
+              "is_selected": true,
+              "display_name": "number",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "18bff9d2-665f-4498-a82e-80640c3fb281",
+              "is_selected": true,
+              "display_name": "player",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "39ad859c-841a-4bd2-972f-571cdfa3993c",
+              "is_selected": true,
+              "display_name": "player-key",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "b032c1f1-0b99-45d5-a5d0-fa2342d16700",
+              "is_selected": true,
+              "display_name": "position",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "afdf9600-dafa-4165-98de-58df09db41d3",
+              "is_selected": true,
+              "display_name": "position_category",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "ad92f3c8-83d5-40a0-a25f-5e1f006e4587",
+              "is_selected": true,
+              "display_name": "position_code",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "4f831701-ed93-43c0-90bb-d477f6ffa5f7",
+              "is_selected": true,
+              "display_name": "side",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "643080fd-37bb-4ebe-8cd9-2c90b88c431e",
+              "is_selected": true,
+              "display_name": "team",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "8a0cd17b-ac7d-4ac0-b6f3-61934304cf3f",
+              "is_selected": true,
+              "display_name": "weight",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "c334e807-7cd0-4136-8cdc-9113c4020c32",
+          "is_selected": false,
+          "display_name": "eagles",
+          "type": "lakehouse_tables.table",
+          "description": null,
+          "children": [
+            {
+              "id": "74e60faf-46ae-4c16-a9aa-8826ff373c36",
+              "is_selected": true,
+              "display_name": "age",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "e4e8d767-8811-47f0-9b72-7f2caa83ec3d",
+              "is_selected": true,
+              "display_name": "college",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "f6b51ba8-c0e9-4369-b189-6e742c54db33",
+              "is_selected": true,
+              "display_name": "experience",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "3c0b5003-4826-4d77-bf81-d18692d1c74f",
+              "is_selected": true,
+              "display_name": "height",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "8957cbec-46d2-4e9a-a538-5af7016687d0",
+              "is_selected": true,
+              "display_name": "height_inches",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "70bd14b3-1c9f-461d-89c2-107a19dde745",
+              "is_selected": true,
+              "display_name": "number",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "41cc48b4-dedd-499c-a7fe-fa6cc0474e17",
+              "is_selected": true,
+              "display_name": "player",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "4c370b42-fd29-4ad9-8794-db40dee7e5a6",
+              "is_selected": true,
+              "display_name": "player-key",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "bdf1de83-c22d-47cb-b279-63e4dc00223f",
+              "is_selected": true,
+              "display_name": "position",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "a7d32fef-2629-4959-b0bf-d3702bc6da37",
+              "is_selected": true,
+              "display_name": "position_category",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "5d85a650-db19-4766-96aa-b7f00e98c08b",
+              "is_selected": true,
+              "display_name": "position_code",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "a8b981a5-d220-411e-8146-013cd0efa098",
+              "is_selected": true,
+              "display_name": "side",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "39e6b76a-95ee-4482-afe3-8d1cab80a003",
+              "is_selected": true,
+              "display_name": "team",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "0dff4f46-aa7a-498c-8b5e-0bedfc9dd34e",
+              "is_selected": true,
+              "display_name": "weight",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "f7a33585-9856-4293-b336-7ea0e52197c7",
+          "is_selected": false,
+          "display_name": "falcons",
+          "type": "lakehouse_tables.table",
+          "description": null,
+          "children": [
+            {
+              "id": "106c440f-6de9-448d-a587-d6911743bb72",
+              "is_selected": true,
+              "display_name": "age",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "03d729b8-3810-495d-b28a-40de2e935263",
+              "is_selected": true,
+              "display_name": "college",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "fa60fdbc-33ed-4520-9e0d-4c15771d6efe",
+              "is_selected": true,
+              "display_name": "experience",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "410c33fb-9880-4487-833c-4ff66a9db300",
+              "is_selected": true,
+              "display_name": "height",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "8c13eafe-94f0-48a8-9b12-3afc25db23d5",
+              "is_selected": true,
+              "display_name": "height_inches",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "b1c1e60e-1497-40cf-a240-b8d2ffa1a1cc",
+              "is_selected": true,
+              "display_name": "number",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "2cd1e2a6-673e-4976-86a8-f2cf95b13e8f",
+              "is_selected": true,
+              "display_name": "player",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "9b6e2fa4-e825-431b-b6a0-de877923fd54",
+              "is_selected": true,
+              "display_name": "player-key",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "2ca699d2-85dc-4e3d-af22-9f389c304061",
+              "is_selected": true,
+              "display_name": "position",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "8d35448f-a162-4f4a-804e-27d3516f2e75",
+              "is_selected": true,
+              "display_name": "position_category",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "ffcb453b-fe40-4d3d-a7c9-67b532631852",
+              "is_selected": true,
+              "display_name": "position_code",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "edde037f-b9e9-49fe-b1e1-a44942e95562",
+              "is_selected": true,
+              "display_name": "side",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "f15edfbf-c2bb-4981-9863-f4c40c91c587",
+              "is_selected": true,
+              "display_name": "team",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "8481e0ef-2c63-4134-b18b-9d6278a37ab3",
+              "is_selected": true,
+              "display_name": "weight",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "d38a63e7-8c88-427f-837a-3c34b43c62a8",
+          "is_selected": false,
+          "display_name": "giants",
+          "type": "lakehouse_tables.table",
+          "description": null,
+          "children": [
+            {
+              "id": "6da74829-bccc-4959-a278-6ad3284a2ae3",
+              "is_selected": true,
+              "display_name": "age",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "041437a9-3f07-4191-99fe-62c1f23f8301",
+              "is_selected": true,
+              "display_name": "college",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "06ab9115-c67d-47c4-9049-15ff15228fc8",
+              "is_selected": true,
+              "display_name": "experience",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "68c6aad0-4d7f-4389-b4d1-20c5356e3ae3",
+              "is_selected": true,
+              "display_name": "height",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "43104616-307c-4b14-a859-4ba36c1efada",
+              "is_selected": true,
+              "display_name": "height_inches",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "520ecb23-8279-4de1-bc1e-517088c2e2f0",
+              "is_selected": true,
+              "display_name": "number",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "e864a6d4-f73c-4466-81ac-4405a8207803",
+              "is_selected": true,
+              "display_name": "player",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "5f285ef5-c054-4282-8b04-b296e370180e",
+              "is_selected": true,
+              "display_name": "player-key",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "a3acfbad-5e4e-438e-9e81-dc1fb2d27255",
+              "is_selected": true,
+              "display_name": "position",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "b48ac2bd-c229-4c9c-b947-e55bccb75808",
+              "is_selected": true,
+              "display_name": "position_category",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "21ecb683-43ab-4f39-bb6f-6f29ea69f6a5",
+              "is_selected": true,
+              "display_name": "position_code",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "0240cfdf-49e0-45c6-885e-4f687e2856fc",
+              "is_selected": true,
+              "display_name": "side",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "97f1b4ba-426e-408e-aa71-14dd2641c036",
+              "is_selected": true,
+              "display_name": "team",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "549aa85c-284f-431c-b62a-f5fea615fb00",
+              "is_selected": true,
+              "display_name": "weight",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "e9615c0c-d02b-44a9-ba1f-7ab861f93e2c",
+          "is_selected": false,
+          "display_name": "jaguars",
+          "type": "lakehouse_tables.table",
+          "description": null,
+          "children": [
+            {
+              "id": "9ef2c202-aa19-42f3-a75c-9cf9c04710e6",
+              "is_selected": true,
+              "display_name": "age",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "b0a4c67c-13b1-43d2-9fdd-6117eedbc429",
+              "is_selected": true,
+              "display_name": "college",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "5a2b3992-09f3-45eb-8ab9-fab34dafb169",
+              "is_selected": true,
+              "display_name": "experience",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "6d69ef7f-512e-44a1-a092-b9c50fa6af41",
+              "is_selected": true,
+              "display_name": "height",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "27b3741e-0768-444f-8896-60ca6d8e17f1",
+              "is_selected": true,
+              "display_name": "height_inches",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "ba42127c-3542-42a2-a44f-d709b7907aba",
+              "is_selected": true,
+              "display_name": "number",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "85a02b51-c9e8-49e1-b1f1-4e6986dbcf21",
+              "is_selected": true,
+              "display_name": "player",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "e0844cc3-a972-458c-96b1-77088fe6c1b5",
+              "is_selected": true,
+              "display_name": "player-key",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "931baed2-0b1b-4857-8ce2-b56d02ca5d54",
+              "is_selected": true,
+              "display_name": "position",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "06abb7b4-21e8-408f-b61b-b8c8f4dd7c78",
+              "is_selected": true,
+              "display_name": "position_category",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "2e5e6d0f-0715-4e9f-b693-090035042792",
+              "is_selected": true,
+              "display_name": "position_code",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "2ba67329-9239-47a4-91f9-157a51dbda72",
+              "is_selected": true,
+              "display_name": "side",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "838ea393-e83f-4f40-97e4-b0b3be096d42",
+              "is_selected": true,
+              "display_name": "team",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "288edab0-b185-470e-ad07-dc96f2ced9d0",
+              "is_selected": true,
+              "display_name": "weight",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "3df80496-9584-4cb2-ada6-a322352b5ed9",
+          "is_selected": false,
+          "display_name": "jets",
+          "type": "lakehouse_tables.table",
+          "description": null,
+          "children": [
+            {
+              "id": "f90b6952-4a7d-4eb1-826a-144617d3c41b",
+              "is_selected": true,
+              "display_name": "age",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "d77a7711-105e-48a7-83a3-2855dd1c1e90",
+              "is_selected": true,
+              "display_name": "college",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "9d39f717-a8e6-417c-a00e-1f016d4cb297",
+              "is_selected": true,
+              "display_name": "experience",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "9d5c6ee4-a0be-4cd7-81ea-c2fbf2914ba8",
+              "is_selected": true,
+              "display_name": "height",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "acf86295-51c3-4b48-8a9c-2f75687357d9",
+              "is_selected": true,
+              "display_name": "height_inches",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "a19fe8d2-720c-4156-8dae-e30c7ff9428b",
+              "is_selected": true,
+              "display_name": "number",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "9744081e-4a61-416a-9a3e-b1a50ed00d8a",
+              "is_selected": true,
+              "display_name": "player",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "8235191c-8226-4e44-9a13-15a35c6f69fe",
+              "is_selected": true,
+              "display_name": "player-key",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "deb8bc77-47ff-4778-862b-ee95a7fe7c0b",
+              "is_selected": true,
+              "display_name": "position",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "3ff8efc0-1fea-428e-8cee-5d3c03fa7e27",
+              "is_selected": true,
+              "display_name": "position_category",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "964c916d-16c5-499a-b69d-cf15915c6a86",
+              "is_selected": true,
+              "display_name": "position_code",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "665534dd-6307-42eb-89f5-c859656db6ee",
+              "is_selected": true,
+              "display_name": "side",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "f0c41f80-7d5a-446d-9e87-4d333448a0c1",
+              "is_selected": true,
+              "display_name": "team",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "56a705a5-9a29-4b21-b67c-a9363b519310",
+              "is_selected": true,
+              "display_name": "weight",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "ce65b544-04f4-46e3-9dd1-4ad7724cb2ea",
+          "is_selected": false,
+          "display_name": "lions",
+          "type": "lakehouse_tables.table",
+          "description": null,
+          "children": [
+            {
+              "id": "d351d8ef-484f-4ee3-a220-f68361eeeb2f",
+              "is_selected": true,
+              "display_name": "age",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "c01e7fc4-61ce-470e-8519-dc9a1481b7d4",
+              "is_selected": true,
+              "display_name": "college",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "bd57b3a0-359b-4373-a7a7-eb17c0335d55",
+              "is_selected": true,
+              "display_name": "experience",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "dfcc8602-6dd2-45d9-b0a2-04349e7347de",
+              "is_selected": true,
+              "display_name": "height",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "b12a503d-2202-452a-9cda-e1372f77afda",
+              "is_selected": true,
+              "display_name": "height_inches",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "cd00f7b1-c3c6-4019-9ea5-78806988cc8a",
+              "is_selected": true,
+              "display_name": "number",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "97a5a807-2e8e-4794-8ac5-d689fde298f0",
+              "is_selected": true,
+              "display_name": "player",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "fc813a1d-83e6-45c9-815e-74582bb836d6",
+              "is_selected": true,
+              "display_name": "player-key",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "c2541e16-df46-4118-a55c-ec6373985fab",
+              "is_selected": true,
+              "display_name": "position",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "3ceb2192-19f3-45c5-8633-6862a06cc598",
+              "is_selected": true,
+              "display_name": "position_category",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "59b65c20-76b5-47df-9426-8312373f9278",
+              "is_selected": true,
+              "display_name": "position_code",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "5b941451-04f9-407b-8035-c6c33526d4f1",
+              "is_selected": true,
+              "display_name": "side",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "3c02d084-98b7-4c4a-b824-7ae837fb8e9f",
+              "is_selected": true,
+              "display_name": "team",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "3cd5bffc-d071-4755-b654-ed3a14a0fe9e",
+              "is_selected": true,
+              "display_name": "weight",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "624ead46-c333-4f29-88ca-835fbd2fc8e8",
+          "is_selected": false,
+          "display_name": "packers",
+          "type": "lakehouse_tables.table",
+          "description": null,
+          "children": [
+            {
+              "id": "0e869ae6-145d-40af-b7f4-f7a89d81aecc",
+              "is_selected": true,
+              "display_name": "age",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "770fe018-4432-4b96-8dec-fbaf5c8f1998",
+              "is_selected": true,
+              "display_name": "college",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "2597282a-b38a-4c43-adfc-bd2d2d2a0d50",
+              "is_selected": true,
+              "display_name": "experience",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "b652f951-9120-4c29-b42c-ecbe3b8a8cf1",
+              "is_selected": true,
+              "display_name": "height",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "6158cb3d-aa5e-4b63-8410-506620134b72",
+              "is_selected": true,
+              "display_name": "height_inches",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "724b325a-45bc-496a-908b-318e7c03d1e4",
+              "is_selected": true,
+              "display_name": "number",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "b8b72def-fdd0-4fb0-bc9c-ce13f8bf9dc6",
+              "is_selected": true,
+              "display_name": "player",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "703ff6c8-b875-4dc8-b7f5-fd3d899e18b8",
+              "is_selected": true,
+              "display_name": "player-key",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "b17c644e-106d-423f-975c-b14c9352b5f1",
+              "is_selected": true,
+              "display_name": "position",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "11e64f71-d102-4b13-9865-598a65fbfa14",
+              "is_selected": true,
+              "display_name": "position_category",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "318bb305-a309-4e99-a39e-5a484c6b2e3e",
+              "is_selected": true,
+              "display_name": "position_code",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "4e5670d4-203c-4d60-acc2-fc3bead26601",
+              "is_selected": true,
+              "display_name": "side",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "b69a7d25-60b5-4ee1-98f0-c4c3c4370a5d",
+              "is_selected": true,
+              "display_name": "team",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "d3046118-ae64-4fcd-bc3b-2d7350adb1cd",
+              "is_selected": true,
+              "display_name": "weight",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "e121959d-24ab-42dd-bc8f-c533571a573d",
+          "is_selected": false,
+          "display_name": "panthers",
+          "type": "lakehouse_tables.table",
+          "description": null,
+          "children": [
+            {
+              "id": "d4421389-2182-483c-8e46-5eb4fb2e6e86",
+              "is_selected": true,
+              "display_name": "age",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "3a1a2dd3-5939-47b7-b9a6-2c816d061a0a",
+              "is_selected": true,
+              "display_name": "college",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "b6974941-b83f-411d-9ed1-44c90f1a7217",
+              "is_selected": true,
+              "display_name": "experience",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "96a57d4c-8c6d-4f28-89d5-e2972d3d2373",
+              "is_selected": true,
+              "display_name": "height",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "f62b41e0-57ac-486c-9fa0-94704e6b7854",
+              "is_selected": true,
+              "display_name": "height_inches",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "50925fe9-59d1-4fb9-b51c-15e819fe3af4",
+              "is_selected": true,
+              "display_name": "number",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "8c708ef6-1cd2-4988-a7d2-f4c89270917b",
+              "is_selected": true,
+              "display_name": "player",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "2f71a5d1-d8a6-4526-8b88-0ddf6ce83dcb",
+              "is_selected": true,
+              "display_name": "player-key",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "1c40e124-5e78-4741-bddf-1e220ada1357",
+              "is_selected": true,
+              "display_name": "position",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "78f44dfc-1b2c-4d76-8c23-909a0d3fcfbe",
+              "is_selected": true,
+              "display_name": "position_category",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "c790ff7e-2cce-4e5f-804c-f6c94307d92e",
+              "is_selected": true,
+              "display_name": "position_code",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "b35395e1-02b4-4fe9-aa2e-57427ab13ec1",
+              "is_selected": true,
+              "display_name": "side",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "4921595b-d07f-437c-b21a-c1b6eef68e35",
+              "is_selected": true,
+              "display_name": "team",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "eb5f5988-b785-4ddb-8031-0310b457dc58",
+              "is_selected": true,
+              "display_name": "weight",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "2645b2c2-97ce-4046-b86e-e3b7d3ad2481",
+          "is_selected": false,
+          "display_name": "patriots",
+          "type": "lakehouse_tables.table",
+          "description": null,
+          "children": [
+            {
+              "id": "9087eb78-1c76-4406-ba57-c4810a682a5e",
+              "is_selected": true,
+              "display_name": "age",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "96e562d0-252e-4721-9331-7cb4c02f114e",
+              "is_selected": true,
+              "display_name": "college",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "626b850a-002b-421f-969a-31aa7385e580",
+              "is_selected": true,
+              "display_name": "experience",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "b98e3883-86ab-4530-8ccc-112f603299b8",
+              "is_selected": true,
+              "display_name": "height",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "ccb9843a-4c9f-47b4-8e89-045d6f3eabb7",
+              "is_selected": true,
+              "display_name": "height_inches",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "3695f9db-73b9-4b85-98e5-a646fb3aa6f3",
+              "is_selected": true,
+              "display_name": "number",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "122796be-9e45-4757-8593-bb1064a14f3b",
+              "is_selected": true,
+              "display_name": "player",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "7e19a9ad-1152-48da-b088-6e3121f3b3cc",
+              "is_selected": true,
+              "display_name": "player-key",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "e29e4cee-c67f-4156-8e96-63a9ce049df7",
+              "is_selected": true,
+              "display_name": "position",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "839db7f7-9968-4bee-b028-b67f64d1ee35",
+              "is_selected": true,
+              "display_name": "position_category",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "2294fab7-57a1-4e4d-a369-176b081c26dd",
+              "is_selected": true,
+              "display_name": "position_code",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "8f73c9dd-32ba-4e61-b79e-60e0699bd045",
+              "is_selected": true,
+              "display_name": "side",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "4b83c2db-7468-4fcb-afd5-86f30fac4cf4",
+              "is_selected": true,
+              "display_name": "team",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "ddf67594-7848-42a2-83ca-999a8c12bc4f",
+              "is_selected": true,
+              "display_name": "weight",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "5736b0d6-9df2-4d26-b00d-d384300f145c",
+          "is_selected": false,
+          "display_name": "raiders",
+          "type": "lakehouse_tables.table",
+          "description": null,
+          "children": [
+            {
+              "id": "d480467f-c4a8-48b6-b1c5-36ca84cd3af5",
+              "is_selected": true,
+              "display_name": "age",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "cf7c83a8-5c25-434a-956a-784b60892fd5",
+              "is_selected": true,
+              "display_name": "college",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "ced6a432-e943-4dfd-8894-8466e4b6720e",
+              "is_selected": true,
+              "display_name": "experience",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "7bf1b1c5-b1f9-4fe4-ab61-e2b0e6c83462",
+              "is_selected": true,
+              "display_name": "height",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "43541522-1421-4739-a057-40f9cdf27d62",
+              "is_selected": true,
+              "display_name": "height_inches",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "daff98c0-6182-4206-837f-4b7a25ca60ff",
+              "is_selected": true,
+              "display_name": "number",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "b7424605-4f0c-4ffc-838c-97be160734c9",
+              "is_selected": true,
+              "display_name": "player",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "7a09f8a6-a5e6-4de7-8d0b-f7491b9c9094",
+              "is_selected": true,
+              "display_name": "player-key",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "62d0f494-13bd-490a-a569-3accb37074b7",
+              "is_selected": true,
+              "display_name": "position",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "69d7e37f-2a13-4cfb-99f7-ed84f46355f3",
+              "is_selected": true,
+              "display_name": "position_category",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "d7517410-21dc-40b9-a10a-c3f218720c64",
+              "is_selected": true,
+              "display_name": "position_code",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "cabd251c-caa5-41ca-a092-16081345f6ce",
+              "is_selected": true,
+              "display_name": "side",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "0fb15958-1bee-4f30-8511-e47e30bb9581",
+              "is_selected": true,
+              "display_name": "team",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "f37355ba-f5d7-444a-9d99-46be93f3a545",
+              "is_selected": true,
+              "display_name": "weight",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "e8ff66d9-a76f-4a89-b871-fa8b90c55644",
+          "is_selected": false,
+          "display_name": "rams",
+          "type": "lakehouse_tables.table",
+          "description": null,
+          "children": [
+            {
+              "id": "eb312c1c-515c-4a3f-be54-eac459228eb7",
+              "is_selected": true,
+              "display_name": "age",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "a3faee74-2e64-400f-8f1a-a08c1965b4a6",
+              "is_selected": true,
+              "display_name": "college",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "d2460977-167a-4b96-87de-9f964fc83c5b",
+              "is_selected": true,
+              "display_name": "experience",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "e9123198-046b-4668-92fb-dd840e4feb16",
+              "is_selected": true,
+              "display_name": "height",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "f1c1977b-bbd2-4698-ab8c-2e93c73e2ddf",
+              "is_selected": true,
+              "display_name": "height_inches",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "cf8862d4-f214-48cb-a950-085b26ef6583",
+              "is_selected": true,
+              "display_name": "number",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "3a5d7b9f-15cb-4246-8210-6da8e104f1cb",
+              "is_selected": true,
+              "display_name": "player",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "953c66af-4851-4167-81cf-f0890c583f41",
+              "is_selected": true,
+              "display_name": "player-key",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "853349a4-e622-4003-a92d-b282ba7779cc",
+              "is_selected": true,
+              "display_name": "position",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "9724857f-f91d-4863-8d0f-f5a1eef3bde2",
+              "is_selected": true,
+              "display_name": "position_category",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "708384f3-db0c-4d15-95e3-799a3e3b6a92",
+              "is_selected": true,
+              "display_name": "position_code",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "9aaf4480-13fc-47c0-8180-a9061cf8159c",
+              "is_selected": true,
+              "display_name": "side",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "2c9c40e0-f224-46ba-8dbb-796d9fe57adb",
+              "is_selected": true,
+              "display_name": "team",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "3479519d-00a7-44fc-9874-ea16c3851e6d",
+              "is_selected": true,
+              "display_name": "weight",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "5a275816-4d06-4554-8ceb-1532f2e85d42",
+          "is_selected": false,
+          "display_name": "ravens",
+          "type": "lakehouse_tables.table",
+          "description": null,
+          "children": [
+            {
+              "id": "2fbea5b3-a91f-4374-a984-b2c240b51cd5",
+              "is_selected": true,
+              "display_name": "age",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "697e00de-c65a-4c8b-90c1-44059e8c6fd4",
+              "is_selected": true,
+              "display_name": "college",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "71869638-b37c-4e53-a03c-47eef530516a",
+              "is_selected": true,
+              "display_name": "experience",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "f4cd10fd-d584-4c9d-9a87-500478ceb62f",
+              "is_selected": true,
+              "display_name": "height",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "52466da3-f5b6-4b64-b210-0fecd7a7c386",
+              "is_selected": true,
+              "display_name": "height_inches",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "d5d68435-e71e-4e4c-9db9-9a9928fd5320",
+              "is_selected": true,
+              "display_name": "number",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "fd58104a-1a23-4ebe-8e64-8f8a8ef2b66f",
+              "is_selected": true,
+              "display_name": "player",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "fb6e2a65-07c8-4210-844c-b5e340867da8",
+              "is_selected": true,
+              "display_name": "player-key",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "74bcb14a-13c4-4244-8d14-07dbcdfbcd62",
+              "is_selected": true,
+              "display_name": "position",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "d82ad3e4-b17b-4e1c-8ca4-f85251f4c6e7",
+              "is_selected": true,
+              "display_name": "position_category",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "7a5e1ef4-8f76-4969-bc56-7477b51a7117",
+              "is_selected": true,
+              "display_name": "position_code",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "52e0fc7f-2f9f-4852-9e4e-0f4746a81b02",
+              "is_selected": true,
+              "display_name": "side",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "9901cd40-e130-49db-959b-a7d32e53258e",
+              "is_selected": true,
+              "display_name": "team",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "197de929-a34c-4640-8728-31c482d54c7d",
+              "is_selected": true,
+              "display_name": "weight",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "8e707ea9-b2f6-4e57-81fc-eb67b492e769",
+          "is_selected": false,
+          "display_name": "redskins",
+          "type": "lakehouse_tables.table",
+          "description": null,
+          "children": [
+            {
+              "id": "b0c7543f-4c81-4e30-a549-068f83b5dfd0",
+              "is_selected": true,
+              "display_name": "age",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "334e5486-4d66-49fa-ac34-5efa5fb22eda",
+              "is_selected": true,
+              "display_name": "college",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "147fcbb7-8e07-4f8d-b51d-38ec42afafe2",
+              "is_selected": true,
+              "display_name": "experience",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "6c5cbb2e-ac9d-4d9d-9532-d1a735384360",
+              "is_selected": true,
+              "display_name": "height",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "a7b2a845-8dc1-44b3-b10b-8d9b06d623d2",
+              "is_selected": true,
+              "display_name": "height_inches",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "76559a89-3ccf-447a-98ae-9fb067618496",
+              "is_selected": true,
+              "display_name": "number",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "0133ef67-fb2f-4b7e-bfc7-feb6e417eb97",
+              "is_selected": true,
+              "display_name": "player",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "2361de62-4c7f-41e2-956e-4a537194843f",
+              "is_selected": true,
+              "display_name": "player-key",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "2a936a02-a63b-4209-b6ad-c1557f324c61",
+              "is_selected": true,
+              "display_name": "position",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "06c0ff3b-d7b1-45ea-ae63-0920ed14f2fd",
+              "is_selected": true,
+              "display_name": "position_category",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "ab8fdd17-c5d7-4e00-8f19-84cf8b965840",
+              "is_selected": true,
+              "display_name": "position_code",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "2705b284-bd64-445b-a714-ad993c3c5c52",
+              "is_selected": true,
+              "display_name": "side",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "dc9bcae5-61f0-4086-b41f-a33bd87b69fe",
+              "is_selected": true,
+              "display_name": "team",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "39d6ec6c-c663-45a0-8874-bedfd99c39f6",
+              "is_selected": true,
+              "display_name": "weight",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "5cae7303-6e8c-4eaf-93a8-43e9ccd075df",
+          "is_selected": false,
+          "display_name": "saints",
+          "type": "lakehouse_tables.table",
+          "description": null,
+          "children": [
+            {
+              "id": "08c8be1a-9173-47ba-8bba-23bb64e31e86",
+              "is_selected": true,
+              "display_name": "age",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "b115b0c0-bed4-47fe-918f-6e2ee787192c",
+              "is_selected": true,
+              "display_name": "college",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "512546c8-3c02-40b5-a624-8b1ab306003b",
+              "is_selected": true,
+              "display_name": "experience",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "1bcefc7f-eb87-4c07-ba4b-7611a9786837",
+              "is_selected": true,
+              "display_name": "height",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "5351fb6e-bb8c-49ac-a092-d73f76386997",
+              "is_selected": true,
+              "display_name": "height_inches",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "f5ee7846-d544-4daa-a2b0-a5d2d636fddf",
+              "is_selected": true,
+              "display_name": "number",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "bb712d33-2450-4ea8-b6aa-91e9d20d9df2",
+              "is_selected": true,
+              "display_name": "player",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "3d08c182-e2db-45c2-b560-dc526c29323b",
+              "is_selected": true,
+              "display_name": "player-key",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "9f410368-247c-4ec8-b152-5272f670c84d",
+              "is_selected": true,
+              "display_name": "position",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "00fad5a4-a681-42c8-a8d2-7a57fa7a8bec",
+              "is_selected": true,
+              "display_name": "position_category",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "bac6a26d-ce22-4b5a-bfca-594c77549730",
+              "is_selected": true,
+              "display_name": "position_code",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "40fbac1c-f5f3-49e6-906b-c63099baa80a",
+              "is_selected": true,
+              "display_name": "side",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "5ca6ff29-4c9b-49fd-a1e8-00ccd02f12ad",
+              "is_selected": true,
+              "display_name": "team",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "17bd0ed6-38f8-40f0-94de-5d3490bb971e",
+              "is_selected": true,
+              "display_name": "weight",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "afb846a8-5488-47c2-b9ea-58888236b3d8",
+          "is_selected": false,
+          "display_name": "seahawks",
+          "type": "lakehouse_tables.table",
+          "description": null,
+          "children": [
+            {
+              "id": "0d3f4cf4-a5ed-4109-9756-01c41f852dc0",
+              "is_selected": true,
+              "display_name": "age",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "ee1d79e0-725d-486c-839f-a964454b534a",
+              "is_selected": true,
+              "display_name": "college",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "5e5ca999-b5b0-4062-ac87-484a3ea707e2",
+              "is_selected": true,
+              "display_name": "experience",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "20362dc0-5d22-4025-8951-1a805d72cf86",
+              "is_selected": true,
+              "display_name": "height",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "9117e0c8-659c-47d0-a05b-c163772e6a45",
+              "is_selected": true,
+              "display_name": "height_inches",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "df2d1d51-dfc8-493f-96c5-31a4791e9757",
+              "is_selected": true,
+              "display_name": "number",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "7e389d76-5d0f-478f-8791-d17ffa1a3bd3",
+              "is_selected": true,
+              "display_name": "player",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "25c2d346-6dae-4f0d-8917-75f6a0f1e9d5",
+              "is_selected": true,
+              "display_name": "player-key",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "232c3811-1e23-4aaf-8d7b-207d180d2317",
+              "is_selected": true,
+              "display_name": "position",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "275f899b-1509-46ce-a76f-f6f6092e6e13",
+              "is_selected": true,
+              "display_name": "position_category",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "f49328da-1959-4f8f-a952-ce41158a7ceb",
+              "is_selected": true,
+              "display_name": "position_code",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "dab499e6-7523-4b54-bf11-85a13690f77d",
+              "is_selected": true,
+              "display_name": "side",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "8c2ae959-354c-46bb-8fa1-cfe5bf1b8c72",
+              "is_selected": true,
+              "display_name": "team",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "f8d722d2-39f6-4437-a8ff-16e1d6dc97ff",
+              "is_selected": true,
+              "display_name": "weight",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "9b58c2d1-11cd-47d1-a966-de34f9f19f1b",
+          "is_selected": false,
+          "display_name": "steelers",
+          "type": "lakehouse_tables.table",
+          "description": null,
+          "children": [
+            {
+              "id": "deec7c30-67b2-42a1-a887-4dc0664fdcc2",
+              "is_selected": true,
+              "display_name": "age",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "fa4e37d6-a487-4c08-8d51-e599abce091a",
+              "is_selected": true,
+              "display_name": "college",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "a31d35be-bfe1-40b4-a7be-a4c0fd0f73b3",
+              "is_selected": true,
+              "display_name": "experience",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "875cca10-8b14-4b33-b219-d7ba7e84f2d6",
+              "is_selected": true,
+              "display_name": "height",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "7149519f-1e4d-479d-85ff-c771e72e867a",
+              "is_selected": true,
+              "display_name": "height_inches",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "beabcfe1-de53-4dbe-957c-980eb8647f9b",
+              "is_selected": true,
+              "display_name": "number",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "90653d0c-29f8-4b31-a732-4a4e68251bf2",
+              "is_selected": true,
+              "display_name": "player",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "4932133e-083d-43f5-a1df-bb95c31d4535",
+              "is_selected": true,
+              "display_name": "player-key",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "671d23c9-c09e-4060-916a-5a3e9ab6c8f5",
+              "is_selected": true,
+              "display_name": "position",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "af7f3175-1a6b-436b-9c18-03b3fdbae908",
+              "is_selected": true,
+              "display_name": "position_category",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "231f2dc9-091c-406c-88b4-312529f7f8a8",
+              "is_selected": true,
+              "display_name": "position_code",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "5fdc4cc3-c722-4afd-9e55-f05f9d0dec96",
+              "is_selected": true,
+              "display_name": "side",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "5352c893-424f-4448-bb05-64fdfa2cfa30",
+              "is_selected": true,
+              "display_name": "team",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "c0a99124-7cb7-4f83-a0d7-907eb97efb7f",
+              "is_selected": true,
+              "display_name": "weight",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "cd624565-04af-4578-b88f-6fb39977e2cc",
+          "is_selected": false,
+          "display_name": "texans",
+          "type": "lakehouse_tables.table",
+          "description": null,
+          "children": [
+            {
+              "id": "197d5212-2bfe-4a5d-8e78-246bfaaa451c",
+              "is_selected": true,
+              "display_name": "age",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "a544e4d1-fc0a-436d-8827-c9d5e0f6caa1",
+              "is_selected": true,
+              "display_name": "college",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "02fd4090-6c7a-4502-90d7-c02b511470a2",
+              "is_selected": true,
+              "display_name": "experience",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "bde74d70-2394-485f-8156-ac33641b0b38",
+              "is_selected": true,
+              "display_name": "height",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "8ef9331a-a98b-49e3-9a23-21001dde101f",
+              "is_selected": true,
+              "display_name": "height_inches",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "5ba37903-a0d9-46c2-ab31-c5345cd73877",
+              "is_selected": true,
+              "display_name": "number",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "6d17f52f-a4da-45b8-ac01-a0121840a398",
+              "is_selected": true,
+              "display_name": "player",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "3451c259-4951-4b8e-9776-ea25cf16404c",
+              "is_selected": true,
+              "display_name": "player-key",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "c839bade-d9c9-46ca-af22-f57c6622d16c",
+              "is_selected": true,
+              "display_name": "position",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "f904bdf7-2a83-4427-a521-9665aadbc8b3",
+              "is_selected": true,
+              "display_name": "position_category",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "0c7660ca-6d3d-481a-8928-8b9cef231e4b",
+              "is_selected": true,
+              "display_name": "position_code",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "d2969b2c-d758-435d-ab7a-05117c09b617",
+              "is_selected": true,
+              "display_name": "side",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "04579686-a619-48ee-aed9-9774638ca2be",
+              "is_selected": true,
+              "display_name": "team",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "052cad2a-cf80-49f5-9de1-93dff1024605",
+              "is_selected": true,
+              "display_name": "weight",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "2c2e2efa-ce8f-4892-8c62-d5c38345bdc1",
+          "is_selected": false,
+          "display_name": "titans",
+          "type": "lakehouse_tables.table",
+          "description": null,
+          "children": [
+            {
+              "id": "c238062d-2c7a-4103-b72b-f557247dfced",
+              "is_selected": true,
+              "display_name": "age",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "801a957e-6def-45e2-9811-51f871cac8f7",
+              "is_selected": true,
+              "display_name": "college",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "52f53f06-9f8d-4f8e-bae1-a5d037f071dc",
+              "is_selected": true,
+              "display_name": "experience",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "6cbcf1db-2ee8-44a1-b763-1b4f820eb9c6",
+              "is_selected": true,
+              "display_name": "height",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "1b81b707-6247-47b6-b1dd-37b8880a22f8",
+              "is_selected": true,
+              "display_name": "height_inches",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "7e6cc38f-91a4-421c-8b9e-8b3e588ce868",
+              "is_selected": true,
+              "display_name": "number",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "f3aedfcf-d3b3-46b7-8359-7e42e09f4998",
+              "is_selected": true,
+              "display_name": "player",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "732b341f-e612-4c1f-b8fa-a84d4bc04d2f",
+              "is_selected": true,
+              "display_name": "player-key",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "bc6ccd56-268c-43b1-bace-f35dd069a774",
+              "is_selected": true,
+              "display_name": "position",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "232b4d36-3e05-4988-aa31-969cdec2ebe9",
+              "is_selected": true,
+              "display_name": "position_category",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "6a5088dd-97d2-43f8-b359-b5715e568639",
+              "is_selected": true,
+              "display_name": "position_code",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "ae76f08e-524e-4bdc-ac73-0fb31ea8ec07",
+              "is_selected": true,
+              "display_name": "side",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "edeacc13-a8f7-4fbb-a275-c27cc1530bf5",
+              "is_selected": true,
+              "display_name": "team",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "894ea0fa-b1c7-46d5-a2fa-780a9bf71aea",
+              "is_selected": true,
+              "display_name": "weight",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "380e176a-24d7-488f-997f-7fdcdaace192",
+          "is_selected": false,
+          "display_name": "vikings",
+          "type": "lakehouse_tables.table",
+          "description": null,
+          "children": [
+            {
+              "id": "60a8cb49-d3a9-459c-88a8-fc3721336554",
+              "is_selected": true,
+              "display_name": "age",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "576072c3-ed21-4f5d-9ba9-50130631f735",
+              "is_selected": true,
+              "display_name": "college",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "0e56f497-54df-4771-9b7f-defbb00e2234",
+              "is_selected": true,
+              "display_name": "experience",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "8f743018-24d2-4ad2-ab29-7c01841d1642",
+              "is_selected": true,
+              "display_name": "height",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "cc3e9368-2774-44a6-bf81-8e24881428ce",
+              "is_selected": true,
+              "display_name": "height_inches",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "ede8a2e0-08c0-423e-bb9b-4d3ae9697803",
+              "is_selected": true,
+              "display_name": "number",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "4e55510c-8476-4f3b-9f7c-33837222f622",
+              "is_selected": true,
+              "display_name": "player",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "989f126a-38f6-4833-b978-775e59ba2f6e",
+              "is_selected": true,
+              "display_name": "player-key",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "e3cdce10-f218-4844-b219-b9bed7899cdb",
+              "is_selected": true,
+              "display_name": "position",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "942257f7-3632-43f3-948c-a507497a9992",
+              "is_selected": true,
+              "display_name": "position_category",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "6251c672-e4c4-43ed-ac09-93131e8be6e8",
+              "is_selected": true,
+              "display_name": "position_code",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "c0027c02-2fdd-4346-8435-481c836a8d1a",
+              "is_selected": true,
+              "display_name": "side",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "12430a04-a319-4306-bf93-4e872fb7f113",
+              "is_selected": true,
+              "display_name": "team",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            },
+            {
+              "id": "27b9cf1f-108b-4d62-b6d5-69fe396cb77e",
+              "is_selected": true,
+              "display_name": "weight",
+              "type": "lakehouse_tables.column",
+              "data_type": "varchar",
+              "description": null,
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

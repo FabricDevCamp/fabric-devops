@@ -12,7 +12,7 @@ DEV_WORKSPACE_NAME = f"{PROJECT_NAME}-dev"
 TEST_WORKSPACE_NAME = f"{PROJECT_NAME}-test"
 PROD_WORKSPACE_NAME = f"{PROJECT_NAME}"
 
-DEV_WORKSPACE = DeploymentManager.deploy_solution_by_name(DEV_WORKSPACE_NAME, SOLUTION_NAME)
+DEV_WORKSPACE = DeploymentManager.deploy_solution_by_name(SOLUTION_NAME, DEV_WORKSPACE_NAME)
 
 DeploymentManager.sync_workspace_to_ado_repo(DEV_WORKSPACE, PROJECT_NAME)
 

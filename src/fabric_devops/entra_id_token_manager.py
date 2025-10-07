@@ -197,3 +197,18 @@ class EntraIdTokenManager():
                 return cls._get_access_token_for_user_with_device_code(scope_for_user)
             else:
                 return cls._get_access_token_for_user(scope_for_user)
+
+    @classmethod
+    def get_azure_access_token(cls):
+        """"Get Access Token for Azure Dev """
+        azure_resource_id = 'https://management.core.windows.net'
+        if EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL:
+            scope_for_service_principal = azure_resource_id + "/.default"
+            return cls._get_access_token_for_service_principal(scope_for_service_principal)
+        else:
+            scope_for_user = azure_resource_id + "/user_impersonation"
+            if EnvironmentSettings.RUNNING_IN_GITHUB:
+                return cls._get_access_token_for_user_with_device_code(scope_for_user)
+            else:
+                return cls._get_access_token_for_user(scope_for_user)
+                

@@ -1027,6 +1027,184 @@ class DeploymentManager:
  
         return workspace
 
+
+    @classmethod
+    def deploy_data_agent_solution(cls,
+                                 target_workspace,
+                                 deploy_job = StagingEnvironments.get_dev_environment()):
+        """Deploy Data Agent Solution"""
+
+        lakehouse_name = "sales"
+
+        AppLogger.log_job(f"Deploying Custom Data Agent Solution to [{target_workspace}]")
+
+        deploy_job.display_deployment_parameters('web')
+
+        workspace = FabricRestApi.create_workspace(target_workspace)
+
+        FabricRestApi.update_workspace_description(workspace['id'], 'Custom Data Agent Solution')
+
+        lakehouse = FabricRestApi.create_lakehouse(workspace['id'], lakehouse_name)
+
+        create_schema_notebook_request = \
+                ItemDefinitionFactory.get_create_item_request_from_folder(
+                    'Create Lakehouse Schemas.Notebook')
+
+        notebook_redirects = {
+            '{WORKSPACE_ID}': workspace['id'],
+            '{LAKEHOUSE_ID}': lakehouse['id'],
+            '{LAKEHOUSE_NAME}': lakehouse['displayName']
+        }
+
+        create_schema_notebook_request = \
+            ItemDefinitionFactory.update_part_in_create_request(create_schema_notebook_request,
+                                                                'notebook-content.sql', 
+                                                                notebook_redirects)
+
+        schema_notebook = FabricRestApi.create_item(workspace['id'], create_schema_notebook_request)
+
+        FabricRestApi.run_notebook(workspace['id'], schema_notebook)
+
+        create_notebook_request = \
+            ItemDefinitionFactory.get_create_item_request_from_folder(
+                'Build NFL Player Tables.Notebook`')
+
+        notebook_redirects = {
+            '{WORKSPACE_ID}': workspace['id'],
+            '{LAKEHOUSE_ID}': lakehouse['id'],
+            '{LAKEHOUSE_NAME}': lakehouse['displayName']
+        }
+
+        create_notebook_request = \
+            ItemDefinitionFactory.update_part_in_create_request(create_notebook_request,
+                                                                'notebook-content.py', 
+                                                                notebook_redirects)
+
+        notebook = FabricRestApi.create_item(workspace['id'], create_notebook_request)
+
+        FabricRestApi.run_notebook(workspace['id'], notebook)
+
+        sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse)
+
+        FabricRestApi.refresh_sql_endpoint_metadata(workspace['id'], sql_endpoint['database'])
+
+
+        create_agent_request = \
+            ItemDefinitionFactory.get_create_item_request_from_folder(
+                'Sales Agent.DataAgent')
+
+        agent_redirects = {
+            # '{WORKSPACE_ID}': workspace['id'],
+            # '{SEMANTIC_MODEL_ID}': model['id'],
+            # '{SEMANTIC_MODEL_NAME}': model['displayName'],            
+        }
+
+        create_agent_request = \
+            ItemDefinitionFactory.update_part_in_create_request(
+                create_agent_request,
+                'Files/Config/published/semantic-model-Product Sales DirectLake Model/datasource.json',
+                agent_redirects)
+
+        create_agent_request = \
+            ItemDefinitionFactory.update_part_in_create_request(
+                create_agent_request,
+                'Files/Config/draft/semantic-model-Product Sales DirectLake Model/datasource.json',
+                agent_redirects)
+
+
+        agent = FabricRestApi.create_item(workspace['id'], create_agent_request)
+
+        return workspace
+
+
+    @classmethod
+    def deploy_nfl_data_agent_solution(cls,
+                                 target_workspace,
+                                 deploy_job = StagingEnvironments.get_dev_environment()):
+        """Deploy Data Agent Solution"""
+
+        lakehouse_name = "nfl_data"
+
+        AppLogger.log_job(f"Deploying NFL Data Agent Solution to [{target_workspace}]")
+
+        workspace = FabricRestApi.create_workspace(target_workspace)
+
+        FabricRestApi.update_workspace_description(workspace['id'], 'NFL Data Agent Solution')
+
+        lakehouse = FabricRestApi.create_lakehouse(workspace['id'], lakehouse_name, enable_schemas=True)
+
+        create_schema_notebook_request = \
+                ItemDefinitionFactory.get_create_item_request_from_folder(
+                    'Create Lakehouse Schemas.Notebook')
+
+        notebook_redirects = {
+            '{WORKSPACE_ID}': workspace['id'],
+            '{LAKEHOUSE_ID}': lakehouse['id'],
+            '{LAKEHOUSE_NAME}': lakehouse['displayName']
+        }
+
+        create_schema_notebook_request = \
+            ItemDefinitionFactory.update_part_in_create_request(create_schema_notebook_request,
+                                                                'notebook-content.sql', 
+                                                                notebook_redirects)
+
+        schema_notebook = FabricRestApi.create_item(workspace['id'], create_schema_notebook_request)
+
+        FabricRestApi.run_notebook(workspace['id'], schema_notebook)
+
+        create_notebook_request = \
+            ItemDefinitionFactory.get_create_item_request_from_folder(
+                'Build NFL Player Tables.Notebook')
+
+        notebook_redirects = {
+            '{WORKSPACE_ID}': workspace['id'],
+            '{LAKEHOUSE_ID}': lakehouse['id'],
+            '{LAKEHOUSE_NAME}': lakehouse['displayName']
+        }
+
+        create_notebook_request = \
+            ItemDefinitionFactory.update_part_in_create_request(create_notebook_request,
+                                                                'notebook-content.py', 
+                                                                notebook_redirects)
+
+        notebook = FabricRestApi.create_item(workspace['id'], create_notebook_request)
+
+        FabricRestApi.run_notebook(workspace['id'], notebook)
+
+        sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse)
+
+        FabricRestApi.refresh_sql_endpoint_metadata(workspace['id'], sql_endpoint['database'])
+
+
+        # create_agent_request = \
+        #     ItemDefinitionFactory.get_create_item_request_from_folder(
+        #         'Sales Agent.DataAgent')
+
+        # agent_redirects = {
+        #     # '{WORKSPACE_ID}': workspace['id'],
+        #     # '{SEMANTIC_MODEL_ID}': model['id'],
+        #     # '{SEMANTIC_MODEL_NAME}': model['displayName'],            
+        # }
+
+        # create_agent_request = \
+        #     ItemDefinitionFactory.update_part_in_create_request(
+        #         create_agent_request,
+        #         'Files/Config/published/semantic-model-Product Sales DirectLake Model/datasource.json',
+        #         agent_redirects)
+
+        # create_agent_request = \
+        #     ItemDefinitionFactory.update_part_in_create_request(
+        #         create_agent_request,
+        #         'Files/Config/draft/semantic-model-Product Sales DirectLake Model/datasource.json',
+        #         agent_redirects)
+
+
+        # agent = FabricRestApi.create_item(workspace['id'], create_agent_request)
+
+        return workspace
+
+
+
     @classmethod
     def deploy_notebook_solution_with_varlib(
         cls,
