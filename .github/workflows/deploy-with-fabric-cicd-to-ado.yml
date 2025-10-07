@@ -44,6 +44,10 @@ jobs:
               run: |
                     pip install PyNaCl -q
 
+            - name: Install pyodbc
+              run: |
+                    pip install pyodbc -q
+
             - name: Deploy Solution                
               env:
                     FABRIC_CLIENT_ID: ${{ secrets.FABRIC_CLIENT_ID }}
