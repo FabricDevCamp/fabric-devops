@@ -62,7 +62,7 @@ class DeploymentManager:
             case 'NFL Data Agent Solution':
                 workspace = cls.deploy_nfl_data_agent_solution(target_workspace)
             case 'SQL Database in Fabric Solution':
-                workspace = cls.deploy_sql_database_solution(target_workspace)
+                workspace = cls.deploy_sql_database_in_fabric_solution(target_workspace)
 
         if workspace is None:
             raise LookupError(f'Unknown solution name [{solution_name}]')
