@@ -1,9 +1,9 @@
 """Test1.py"""
 
-from fabric_devops import FabricRestApi, EntraIdTokenManager, EnvironmentSettings, DeploymentManager, SampleCustomerData
+from fabric_devops import AppLogger, EntraIdTokenManager, EnvironmentSettings, DeploymentManager, FabricRestApi
 
+workspace = FabricRestApi.get_workspace_by_name("billy Bob")
 
-DeploymentManager.deploy_nfl_data_agent_solution("NFL Agent")
+DeploymentManager.sync_workspace_to_github_repo(workspace)
 
-
-
+AppLogger.log_job_complete(workspace['id'])

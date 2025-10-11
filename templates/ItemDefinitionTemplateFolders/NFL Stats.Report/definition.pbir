@@ -1,0 +1,9 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definitionProperties/2.0.0/schema.json",
+  "version": "4.0",
+  "datasetReference": {
+    "byConnection": {
+      "connectionString": "Data Source=\"powerbi://api.powerbi.com/v1.0/myorg/NFL Agent\";initial catalog=\"NFL Stats\";integrated security=ClaimsToken;semanticmodelid=612c5b14-33fa-4ce9-89a2-46232e4091fe"
+    }
+  }
+}

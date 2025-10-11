@@ -1,0 +1,543 @@
+{
+
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/dataAgent/definition/dataSource/1.0.0/schema.json",
+
+  "artifactId": "{SEMANTIC_MODEL_ID}",
+
+  "workspaceId": "{WORKSPACE_ID}",
+
+  "dataSourceInstructions": null,
+
+  "displayName": "NFL Stats",
+
+  "type": "semantic_model",
+
+  "metadata": {},
+
+  "elements": [
+
+    {
+
+      "id": "d093a278-3503-4b5b-bf0e-2bcdc27e2235",
+
+      "is_selected": true,
+
+      "display_name": "Players",
+
+      "type": "semantic_model.table",
+
+      "description": null,
+
+      "children": [
+
+        {
+
+          "id": "c7b9b687-656f-4f3c-ae2f-b916c4656ac2",
+
+          "is_selected": true,
+
+          "display_name": "Age",
+
+          "type": "semantic_model.column",
+
+          "data_type": "Int64",
+
+          "description": null,
+
+          "children": []
+
+        },
+
+        {
+
+          "id": "e1609f76-1845-4906-b656-2a6d31a99f77",
+
+          "is_selected": true,
+
+          "display_name": "Age Rank",
+
+          "type": "semantic_model.measure",
+
+          "data_type": "Int64",
+
+          "description": null,
+
+          "children": []
+
+        },
+
+        {
+
+          "id": "000355af-5a86-4c4d-ac79-1ff0262ff599",
+
+          "is_selected": true,
+
+          "display_name": "Average Experience",
+
+          "type": "semantic_model.measure",
+
+          "data_type": "Double",
+
+          "description": null,
+
+          "children": []
+
+        },
+
+        {
+
+          "id": "4efa8b5e-ab1e-4130-b079-060ac3925309",
+
+          "is_selected": true,
+
+          "display_name": "Average Height",
+
+          "type": "semantic_model.measure",
+
+          "data_type": "Double",
+
+          "description": null,
+
+          "children": []
+
+        },
+
+        {
+
+          "id": "12cd1a91-4679-4f9a-bb01-169d48f6b26e",
+
+          "is_selected": true,
+
+          "display_name": "Averge Age",
+
+          "type": "semantic_model.measure",
+
+          "data_type": "Double",
+
+          "description": null,
+
+          "children": []
+
+        },
+
+        {
+
+          "id": "2aa1f022-4036-49d7-a6d0-0029e3db5908",
+
+          "is_selected": true,
+
+          "display_name": "Averge Weight",
+
+          "type": "semantic_model.measure",
+
+          "data_type": "Double",
+
+          "description": null,
+
+          "children": []
+
+        },
+
+        {
+
+          "id": "2c745371-aadc-45bd-889e-4c7bb0b18bd7",
+
+          "is_selected": true,
+
+          "display_name": "Category",
+
+          "type": "semantic_model.column",
+
+          "data_type": "String",
+
+          "description": null,
+
+          "children": []
+
+        },
+
+        {
+
+          "id": "c3a04ea6-e3b6-4c48-b0b8-af598bc082cd",
+
+          "is_selected": true,
+
+          "display_name": "College",
+
+          "type": "semantic_model.column",
+
+          "data_type": "String",
+
+          "description": null,
+
+          "children": []
+
+        },
+
+        {
+
+          "id": "5e409ac7-0fd4-46ba-87cd-42f7b8cbc0d0",
+
+          "is_selected": true,
+
+          "display_name": "Experience",
+
+          "type": "semantic_model.column",
+
+          "data_type": "Int64",
+
+          "description": null,
+
+          "children": []
+
+        },
+
+        {
+
+          "id": "bbc5b6fc-f90f-46b3-86e7-84987da9e58c",
+
+          "is_selected": true,
+
+          "display_name": "Height",
+
+          "type": "semantic_model.column",
+
+          "data_type": "String",
+
+          "description": null,
+
+          "children": []
+
+        },
+
+        {
+
+          "id": "6a4532b1-61a9-412d-a609-c7e3e587f69d",
+
+          "is_selected": true,
+
+          "display_name": "Height Inches",
+
+          "type": "semantic_model.column",
+
+          "data_type": "Int64",
+
+          "description": null,
+
+          "children": []
+
+        },
+
+        {
+
+          "id": "e8f7503c-890d-4d76-9e27-e18868359da7",
+
+          "is_selected": true,
+
+          "display_name": "Number",
+
+          "type": "semantic_model.column",
+
+          "data_type": "String",
+
+          "description": null,
+
+          "children": []
+
+        },
+
+        {
+
+          "id": "0866a2d8-e5e6-43c6-8179-9fe19ef78927",
+
+          "is_selected": true,
+
+          "display_name": "Player",
+
+          "type": "semantic_model.column",
+
+          "data_type": "String",
+
+          "description": null,
+
+          "children": []
+
+        },
+
+        {
+
+          "id": "4cd57127-119c-4b5a-979b-efe0bcc84669",
+
+          "is_selected": true,
+
+          "display_name": "Player Count",
+
+          "type": "semantic_model.measure",
+
+          "data_type": "Int64",
+
+          "description": null,
+
+          "children": []
+
+        },
+
+        {
+
+          "id": "64dc846c-e952-436d-811e-5e4714b0e6e8",
+
+          "is_selected": true,
+
+          "display_name": "Player Key",
+
+          "type": "semantic_model.column",
+
+          "data_type": "String",
+
+          "description": null,
+
+          "children": []
+
+        },
+
+        {
+
+          "id": "ddb8d231-bef7-4fe2-9a37-6d729b14add5",
+
+          "is_selected": true,
+
+          "display_name": "Position",
+
+          "type": "semantic_model.column",
+
+          "data_type": "String",
+
+          "description": null,
+
+          "children": []
+
+        },
+
+        {
+
+          "id": "7063d616-a0aa-4a09-a6cf-361a052adc74",
+
+          "is_selected": true,
+
+          "display_name": "Position Code",
+
+          "type": "semantic_model.column",
+
+          "data_type": "String",
+
+          "description": null,
+
+          "children": []
+
+        },
+
+        {
+
+          "id": "cf020428-55a9-4dba-8bfc-06fade95e563",
+
+          "is_selected": true,
+
+          "display_name": "Side",
+
+          "type": "semantic_model.column",
+
+          "data_type": "String",
+
+          "description": null,
+
+          "children": []
+
+        },
+
+        {
+
+          "id": "fa2a03c0-3952-4ac3-ae49-e06e81cc3363",
+
+          "is_selected": true,
+
+          "display_name": "Team",
+
+          "type": "semantic_model.column",
+
+          "data_type": "String",
+
+          "description": null,
+
+          "children": []
+
+        },
+
+        {
+
+          "id": "dee3a431-7fed-416b-8c63-67a61baf4ec1",
+
+          "is_selected": true,
+
+          "display_name": "Total Weight",
+
+          "type": "semantic_model.measure",
+
+          "data_type": "Int64",
+
+          "description": null,
+
+          "children": []
+
+        },
+
+        {
+
+          "id": "b2c2b42a-6e3a-4bc3-997a-79773dd452a9",
+
+          "is_selected": true,
+
+          "display_name": "Weight",
+
+          "type": "semantic_model.column",
+
+          "data_type": "Int64",
+
+          "description": null,
+
+          "children": []
+
+        },
+
+        {
+
+          "id": "d6bb350a-4911-49b9-bf74-52359f3ace74",
+
+          "is_selected": true,
+
+          "display_name": "Weight Rank",
+
+          "type": "semantic_model.measure",
+
+          "data_type": "Int64",
+
+          "description": null,
+
+          "children": []
+
+        }
+
+      ]
+
+    },
+
+    {
+
+      "id": "42fea696-b113-4ff6-87ad-1f35ad63c43d",
+
+      "is_selected": true,
+
+      "display_name": "Teams",
+
+      "type": "semantic_model.table",
+
+      "description": null,
+
+      "children": [
+
+        {
+
+          "id": "7a958333-55ce-4ce8-a7cd-f9af379c979b",
+
+          "is_selected": true,
+
+          "display_name": "City",
+
+          "type": "semantic_model.column",
+
+          "data_type": "String",
+
+          "description": null,
+
+          "children": []
+
+        },
+
+        {
+
+          "id": "59993458-e7cc-4d79-9806-436c2eed1f74",
+
+          "is_selected": true,
+
+          "display_name": "Conference",
+
+          "type": "semantic_model.column",
+
+          "data_type": "String",
+
+          "description": null,
+
+          "children": []
+
+        },
+
+        {
+
+          "id": "f9874254-b5d2-436a-b5b3-4decac896f02",
+
+          "is_selected": true,
+
+          "display_name": "Division",
+
+          "type": "semantic_model.column",
+
+          "data_type": "String",
+
+          "description": null,
+
+          "children": []
+
+        },
+
+        {
+
+          "id": "4cfcc421-ff15-4df9-bceb-9e7de04b1585",
+
+          "is_selected": true,
+
+          "display_name": "Team",
+
+          "type": "semantic_model.column",
+
+          "data_type": "String",
+
+          "description": null,
+
+          "children": []
+
+        },
+
+        {
+
+          "id": "754162d4-2591-4926-96a3-ffb9f6b8cb60",
+
+          "is_selected": true,
+
+          "display_name": "Team Roster",
+
+          "type": "semantic_model.column",
+
+          "data_type": "String",
+
+          "description": null,
+
+          "children": []
+
+        }
+
+      ]
+
+    }
+
+  ]
+
+}

@@ -3,6 +3,7 @@
 import base64
 import json
 import os
+import shutil
 import re
 
 from .app_logger import AppLogger
@@ -476,7 +477,7 @@ class ItemDefinitionFactory:
         cls._write_exported_workspace_to_exports_folder(workspace_name, 'exports.json', export_response)
 
     @classmethod
-    def export_item_definitions_from_workspace_oldway(cls, workspace_name):
+    def export_item_definitions_from_workspace_oldway(cls, workspace_name, item_type = None):
         """Export Item Definiitons from Workspace"""
 
         workspace = FabricRestApi.get_workspace_by_name(workspace_name)
@@ -484,7 +485,18 @@ class ItemDefinitionFactory:
         items = FabricRestApi.list_workspace_items(workspace['id'])
 
         AppLogger.log_step(f"Exporting Workspace Item Definitions from {workspace_name}")
+        
+        cls._delete_exports_folder_contents(workspace_name)
+        
         for item in items:
+            
+            items_to_ignore = [ 'SQLEndpoint' ]
+            if item['type'] in items_to_ignore:
+                continue
+
+            if item_type is not None and item['type'] != item_type:
+                continue
+
             try:
                 AppLogger.log_substep(f"Exporting [{item['displayName']}.{item['type']}]")
                 item_definition = FabricRestApi.get_item_definition(workspace['id'], item)
@@ -500,7 +512,9 @@ class ItemDefinitionFactory:
     def _delete_exports_folder_contents(cls, workspace_name):
         """Delete Exports Folder"""
         folder_path = f".//exports//WorkspaceItemDefinitions//{workspace_name}"
-        os.removedirs(folder_path)
+        
+        if os.path.exists(folder_path):
+            shutil.rmtree(folder_path)
 
     @classmethod
     def _write_file_to_exports_folder(cls, workspace_name, item_name, file_path , file_content, convert_from_base64 = True):

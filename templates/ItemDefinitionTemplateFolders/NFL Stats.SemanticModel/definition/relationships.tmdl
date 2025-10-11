@@ -1,0 +1,5 @@
+relationship 7b368425-b96c-a425-47aa-6a5070623748
+	relyOnReferentialIntegrity
+	fromColumn: Players.Team
+	toColumn: Teams.Team
+

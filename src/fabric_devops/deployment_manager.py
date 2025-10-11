@@ -4,7 +4,7 @@ import base64
 import json
 
 from .app_logger import AppLogger
-#from .app_settings import EnvironmentSettings
+from .environment_settings import EnvironmentSettings
 from .deployment_job import DeploymentJob
 from .fabric_rest_api import FabricRestApi
 from .item_definition_factory import ItemDefinitionFactory
@@ -45,8 +45,6 @@ class DeploymentManager:
                 workspace = cls.deploy_dataflow_solution(target_workspace, deploy_job)
             case 'Custom Warehouse Solution':
                 workspace = cls.deploy_warehouse_solution(target_workspace, deploy_job)
-            case 'Custom Realtime Solution':
-                workspace = cls.deploy_realtime_solution(target_workspace)
             case 'Custom Medallion Warehouse Solution':
                 workspace = cls.deploy_medallion_warehouse_solution(target_workspace, deploy_job)
             case 'Custom Notebook Solution with Variable Library':
@@ -55,7 +53,10 @@ class DeploymentManager:
                 workspace = cls.deploy_shortcut_solution_with_varlib(target_workspace, deploy_job)
             case 'Custom Data Pipeline Solution with Variable Library':
                 workspace = cls.deploy_data_pipeline_solution_with_varlib(target_workspace, deploy_job)
-        
+            # specialty solutions without deployment job parameters
+            case 'Custom Realtime Solution':
+                workspace = cls.deploy_realtime_solution(target_workspace)
+
         if workspace is None:
             raise LookupError(f'Unknown solution name [{solution_name}]')
 
@@ -1118,9 +1119,7 @@ class DeploymentManager:
 
 
     @classmethod
-    def deploy_nfl_data_agent_solution(cls,
-                                 target_workspace,
-                                 deploy_job = StagingEnvironments.get_dev_environment()):
+    def deploy_nfl_data_agent_solution(cls, target_workspace):
         """Deploy Data Agent Solution"""
 
         lakehouse_name = "nfl_data"
@@ -1132,6 +1131,8 @@ class DeploymentManager:
         FabricRestApi.update_workspace_description(workspace['id'], 'NFL Data Agent Solution')
 
         lakehouse = FabricRestApi.create_lakehouse(workspace['id'], lakehouse_name, enable_schemas=True)
+
+        onelake_path = FabricRestApi.get_onelake_path_for_lakehouse(workspace['id'], lakehouse)
 
         create_schema_notebook_request = \
                 ItemDefinitionFactory.get_create_item_request_from_folder(
@@ -1169,38 +1170,65 @@ class DeploymentManager:
 
         notebook = FabricRestApi.create_item(workspace['id'], create_notebook_request)
 
-        FabricRestApi.run_notebook(workspace['id'], notebook)
+        FabricRestApi.run_notebook(workspace['id'], notebook)     
 
-        sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse)
+        create_model_request = \
+            ItemDefinitionFactory.get_create_item_request_from_folder(
+                'NFL Stats.SemanticModel')
 
-        FabricRestApi.refresh_sql_endpoint_metadata(workspace['id'], sql_endpoint['database'])
+        model_redirects = {
+            '{ONELAKE_PATH}': onelake_path
+        }
 
+        create_model_request = \
+            ItemDefinitionFactory.update_part_in_create_request(
+                create_model_request,
+                'definition/expressions.tmdl',
+                model_redirects)
 
-        # create_agent_request = \
-        #     ItemDefinitionFactory.get_create_item_request_from_folder(
-        #         'Sales Agent.DataAgent')
+        model = FabricRestApi.create_item(workspace['id'], create_model_request)
 
-        # agent_redirects = {
-        #     # '{WORKSPACE_ID}': workspace['id'],
-        #     # '{SEMANTIC_MODEL_ID}': model['id'],
-        #     # '{SEMANTIC_MODEL_NAME}': model['displayName'],            
-        # }
+        FabricRestApi.create_and_bind_semantic_model_connecton(workspace, model['id'], lakehouse)
 
-        # create_agent_request = \
-        #     ItemDefinitionFactory.update_part_in_create_request(
-        #         create_agent_request,
-        #         'Files/Config/published/semantic-model-Product Sales DirectLake Model/datasource.json',
-        #         agent_redirects)
+        report_folder  = 'NFL Stats.Report'
+        
+        create_report_request = \
+            ItemDefinitionFactory.get_create_report_request_from_folder(
+                report_folder,
+                model['id'])
 
-        # create_agent_request = \
-        #     ItemDefinitionFactory.update_part_in_create_request(
-        #         create_agent_request,
-        #         'Files/Config/draft/semantic-model-Product Sales DirectLake Model/datasource.json',
-        #         agent_redirects)
+        FabricRestApi.create_item(workspace['id'], create_report_request)
 
+        FabricRestApi.assign_workspace_to_capacity(
+            workspace['id'],
+            EnvironmentSettings.FABRIC_NONTRIAL_CAPACITY_ID
+        )
 
-        # agent = FabricRestApi.create_item(workspace['id'], create_agent_request)
+        create_agent_request = \
+            ItemDefinitionFactory.get_create_item_request_from_folder(
+                'NFL Agent.DataAgent')
 
+        agent_redirects = {
+            '{WORKSPACE_ID}': workspace['id'],
+            '{SEMANTIC_MODEL_ID}': model['id']
+        }
+
+        create_agent_request = \
+            ItemDefinitionFactory.update_part_in_create_request(
+                create_agent_request,
+                'Files/Config/published/semantic-model-NFL Stats/datasource.json',
+                agent_redirects)
+
+        create_agent_request = \
+            ItemDefinitionFactory.update_part_in_create_request(
+                create_agent_request,
+                'Files/Config/draft/semantic-model-NFL Stats/datasource.json',
+                agent_redirects)
+
+        
+        agent = FabricRestApi.create_item(workspace['id'], create_agent_request)
+
+ 
         return workspace
 
 

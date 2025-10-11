@@ -1,0 +1,217 @@
+table Players
+	lineageTag: d093a278-3503-4b5b-bf0e-2bcdc27e2235
+	sourceLineageTag: [gold].[nfl_players]
+
+	measure 'Player Count' = COUNTROWS('Players')
+		formatString: #,0
+		lineageTag: 4cd57127-119c-4b5a-979b-efe0bcc84669
+
+	measure 'Average Experience' = AVERAGE(Players[Experience])
+		formatString: 0.00
+		lineageTag: 000355af-5a86-4c4d-ac79-1ff0262ff599
+
+	measure 'Average Height' = AVERAGE(Players[Height Inches])
+		formatString: 0.00
+		lineageTag: 4efa8b5e-ab1e-4130-b079-060ac3925309
+
+	measure 'Averge Age' = AVERAGE(Players[Age])
+		formatString: 0.00
+		lineageTag: 12cd1a91-4679-4f9a-bb01-169d48f6b26e
+
+	measure 'Weight Rank' = ```
+			
+			  RANKX( 
+			    ALLEXCEPT('Players', Players[Side], Players[Category],Players[Position]), 
+			    CALCULATE( SUM('Players'[Weight]) )
+			)
+			```
+		formatString: 0
+		lineageTag: d6bb350a-4911-49b9-bf74-52359f3ace74
+
+	measure 'Averge Weight' = AVERAGE(Players[Weight])
+		formatString: 0.00
+		lineageTag: 2aa1f022-4036-49d7-a6d0-0029e3db5908
+
+	measure 'Total Weight' = SUM(Players[Weight])
+		formatString: #,0
+		lineageTag: dee3a431-7fed-416b-8c63-67a61baf4ec1
+
+	measure 'Age Rank' = ```
+			
+			  RANKX( 
+			    ALLEXCEPT(Players, Teams[Conference], Teams[Division], Teams[Team]), 
+			    CALCULATE( SUM('Players'[Age]) )
+			)
+			```
+		formatString: 0
+		lineageTag: e1609f76-1845-4906-b656-2a6d31a99f77
+
+	column Number
+		dataType: string
+		lineageTag: e8f7503c-890d-4d76-9e27-e18868359da7
+		sourceLineageTag: number
+		summarizeBy: none
+		sourceColumn: number
+
+		annotation SummarizationSetBy = Automatic
+
+	column Player
+		dataType: string
+		lineageTag: 0866a2d8-e5e6-43c6-8179-9fe19ef78927
+		sourceLineageTag: player
+		summarizeBy: none
+		sourceColumn: player
+
+		annotation SummarizationSetBy = Automatic
+
+	column Height
+		dataType: string
+		lineageTag: bbc5b6fc-f90f-46b3-86e7-84987da9e58c
+		sourceLineageTag: height
+		summarizeBy: none
+		sourceColumn: height
+		sortByColumn: 'Height Inches'
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Height Inches'
+		dataType: int64
+		formatString: 0
+		lineageTag: 6a4532b1-61a9-412d-a609-c7e3e587f69d
+		sourceLineageTag: height_inches
+		summarizeBy: none
+		sourceColumn: height_inches
+
+		changedProperty = SummarizeBy
+
+		annotation SummarizationSetBy = User
+
+	column Weight
+		dataType: int64
+		formatString: 0
+		lineageTag: b2c2b42a-6e3a-4bc3-997a-79773dd452a9
+		sourceLineageTag: weight
+		summarizeBy: none
+		sourceColumn: weight
+
+		changedProperty = SummarizeBy
+
+		annotation SummarizationSetBy = User
+
+	column Age
+		dataType: int64
+		formatString: 0
+		lineageTag: c7b9b687-656f-4f3c-ae2f-b916c4656ac2
+		sourceLineageTag: age
+		summarizeBy: none
+		sourceColumn: age
+
+		changedProperty = SummarizeBy
+
+		annotation SummarizationSetBy = User
+
+	column Experience
+		dataType: int64
+		formatString: 0
+		lineageTag: 5e409ac7-0fd4-46ba-87cd-42f7b8cbc0d0
+		sourceLineageTag: experience
+		summarizeBy: none
+		sourceColumn: experience
+
+		changedProperty = SummarizeBy
+
+		annotation SummarizationSetBy = User
+
+	column 'Position Code'
+		dataType: string
+		lineageTag: 7063d616-a0aa-4a09-a6cf-361a052adc74
+		sourceLineageTag: position_code
+		summarizeBy: none
+		sourceColumn: position_code
+
+		annotation SummarizationSetBy = Automatic
+
+	column Position
+		dataType: string
+		lineageTag: ddb8d231-bef7-4fe2-9a37-6d729b14add5
+		sourceLineageTag: position
+		summarizeBy: none
+		sourceColumn: position
+
+		annotation SummarizationSetBy = Automatic
+
+	column Category
+		dataType: string
+		lineageTag: 2c745371-aadc-45bd-889e-4c7bb0b18bd7
+		sourceLineageTag: position_category
+		summarizeBy: none
+		sourceColumn: position_category
+
+		changedProperty = Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column Side
+		dataType: string
+		lineageTag: cf020428-55a9-4dba-8bfc-06fade95e563
+		sourceLineageTag: side
+		summarizeBy: none
+		sourceColumn: side
+
+		annotation SummarizationSetBy = Automatic
+
+	column College
+		dataType: string
+		lineageTag: c3a04ea6-e3b6-4c48-b0b8-af598bc082cd
+		sourceLineageTag: college
+		summarizeBy: none
+		sourceColumn: college
+
+		annotation SummarizationSetBy = Automatic
+
+	column Team
+		dataType: string
+		lineageTag: fa2a03c0-3952-4ac3-ae49-e06e81cc3363
+		sourceLineageTag: team
+		summarizeBy: none
+		sourceColumn: team
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Player Key'
+		dataType: string
+		lineageTag: 64dc846c-e952-436d-811e-5e4714b0e6e8
+		sourceLineageTag: player-key
+		summarizeBy: none
+		sourceColumn: player-key
+
+		annotation SummarizationSetBy = Automatic
+
+	hierarchy 'Position Hierarchy'
+		lineageTag: 4df86972-ba97-4044-9be1-8b25512a96fa
+
+		level Side
+			lineageTag: 2f6e7c40-4443-4cbd-8539-02a625efbfda
+			column: Side
+
+		level Category
+			lineageTag: f2db02ff-2035-4bc6-b263-7470b6f9322e
+			column: Category
+
+		level Position
+			lineageTag: 9421ad7e-8453-42b8-a459-ee320fe23b83
+			column: Position
+
+		changedProperty = Name
+
+	partition Players = entity
+		mode: directLake
+		source
+			entityName: nfl_players
+			schemaName: gold
+			expressionSource: 'DirectLake - nfl_data'
+
+	changedProperty = Name
+

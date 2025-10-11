@@ -97,6 +97,35 @@ class FabricRestApi:
             raise RuntimeError(f'Error executing POST request: {response.status_code} - {response.text}')
 
     @classmethod
+    def _execute_post_request_for_capacity_assignment(cls, endpoint, post_body=''):
+        """Execute POST request with support without support for Long-running Operations (LRO)"""
+        rest_url = EnvironmentSettings.FABRIC_REST_API_BASE_URL + endpoint
+        access_token = EntraIdTokenManager.get_fabric_access_token()
+        request_headers = {'Content-Type':'application/json',
+                             'Authorization': f'Bearer {access_token}'}
+
+        response = requests.post(url=rest_url, json=post_body, headers=request_headers, timeout=60)
+
+        if response.status_code == 202:
+            return None
+
+        elif response.status_code == 429: # handle TOO MANY REQUESTS error
+            wait_time = int(response.headers.get('Retry-After'))
+            time.sleep(wait_time)
+            return cls._execute_post_request(endpoint, post_body)
+     
+        elif response.status_code == 404: # handleNOT FOUND error
+            AppLogger.log_substep('Received 404 NOT FOUND error - waiting 10 seconds and retrying')
+            wait_time = 10
+            time.sleep(wait_time)
+            return cls._execute_post_request(endpoint, post_body)
+        
+        else:
+            AppLogger.log_error(
+                f'Error executing POST request: {response.status_code} - {response.text}')
+            raise RuntimeError(f'Error executing POST request: {response.status_code} - {response.text}')
+
+    @classmethod
     def _execute_post_request_for_job_scheduler(cls, endpoint, post_body=''):
         """Execute POST request with support for Om-demand Job with Job Scheduler"""
         rest_url = EnvironmentSettings.FABRIC_REST_API_BASE_URL + endpoint
@@ -324,6 +353,29 @@ class FabricRestApi:
             cls.add_workspace_spn(workspace_id, EnvironmentSettings.SERVICE_PRINCIPAL_OBJECT_ID, 'Admin')
 
         return workspace
+
+    @classmethod
+    def assign_workspace_to_capacity(cls, workspace_id, capacity_id):
+        """Create a new Fabric workspace"""
+        AppLogger.log_step(f'Assigning workspace to capacity [{capacity_id}]')
+
+        rest_url = f'workspaces/{workspace_id}/assignToCapacity'
+        post_body = {
+            'capacityId': capacity_id
+        }
+
+        cls._execute_post_request_for_capacity_assignment(rest_url, post_body)
+
+        workspace_info = cls.get_workspace_info(workspace_id)
+
+        AppLogger.log_substep(f"Capacity assignment {workspace_info['capacityAssignmentProgress']}")
+
+        while workspace_info['capacityAssignmentProgress'] != 'Completed':
+            time.sleep(10)
+            workspace_info = cls.get_workspace_info(workspace_id)
+            AppLogger.log_substep(f"Capacity assignment {workspace_info['capacityAssignmentProgress']}")
+      
+        AppLogger.log_substep(f'Workspace has been successfully assigned to capacity [{capacity_id}]')
 
     @classmethod
     def delete_workspace(cls, workspace_id):
@@ -666,6 +718,47 @@ class FabricRestApi:
                 'credentials': {
                     'key': '', # EnvironmentSettings.AZURE_STORAGE_ACCOUNT_KEY,
                     'credentialType': 'Key'
+                },
+                'singleSignOnType': 'None',
+                'connectionEncryption': 'NotEncrypted',
+                'skipTestConnection': 'false'
+            }
+        }
+
+        return cls.create_connection(create_connection_request, top_level_step=top_level_step)
+
+    @classmethod
+    def create_azure_storage_connection_with_service_principal(cls, server, path,
+                                                         workspace = None, lakehouse = None,
+                                                         top_level_step = False):
+        """Create Azure Storage connections"""
+
+        display_name = ''
+        if workspace is not None:
+            display_name = f"Workspace[{workspace['id']}]-" + display_name
+            if lakehouse is not None:
+                display_name = display_name + f"Lakehouse[{lakehouse['displayName']}]"
+        else:
+            display_name = f'ADLS-{server}:{path}'
+
+        create_connection_request = {
+            'displayName': display_name,
+            'connectivityType': 'ShareableCloud',
+            'privacyLevel': 'Organizational',
+            'connectionDetails': {
+                'type': 'AzureDataLakeStorage',
+                'creationMethod': 'AzureDataLakeStorage',
+                'parameters': [ 
+                    { 'value': server, 'dataType': 'Text', 'name': 'server' },
+                    { 'value': path, 'dataType': 'Text', 'name': 'path' }
+                ]
+            },
+            'credentialDetails': {
+                'credentials': {
+                    'tenantId': EnvironmentSettings.FABRIC_TENANT_ID,
+                    'servicePrincipalClientId': EnvironmentSettings.FABRIC_CLIENT_ID,
+                    'servicePrincipalSecret': EnvironmentSettings.FABRIC_CLIENT_SECRET,
+                    'credentialType': 'ServicePrincipal'
                 },
                 'singleSignOnType': 'None',
                 'connectionEncryption': 'NotEncrypted',
@@ -1042,6 +1135,21 @@ class FabricRestApi:
             'database': database
         }
 
+
+    @classmethod
+    def get_onelake_path_for_lakehouse(cls, workspace_id, lakehouse):
+        """Get SQL endpoint properties for lakehouse"""
+
+        AppLogger.log_step(
+            f"Getting OneLake path for lakehouse [{lakehouse['displayName']}]...")
+
+        lakehouse = cls.get_lakehouse(workspace_id, lakehouse['id'])
+
+        onelake_path = lakehouse['properties']['oneLakeTablesPath'].replace('Tables', '')
+        AppLogger.log_substep(f"OneLake path: {onelake_path}")
+
+        return onelake_path
+
     @classmethod
     def refresh_sql_endpoint_metadata(cls, workspace_id, sql_endpoint_id):
         """Refresh SL Endpoint"""
@@ -1157,6 +1265,22 @@ class FabricRestApi:
                                                         semantic_model_id,
                                                          connection['id'])
                 cls.refresh_semantic_model(workspace['id'], semantic_model_id)
+
+            elif datasource['datasourceType'] == 'AzureDataLakeStorage':
+                AppLogger.log_substep('Creating AzureDataLakeStorage connection for semantic model')
+                server    = datasource['connectionDetails']['server']
+                path      = datasource['connectionDetails']['path']
+                connection = cls.create_azure_storage_connection_with_service_principal(server, path, workspace, lakehouse)
+                AppLogger.log_substep('Binding semantic model to OneLake connection')
+                cls.bind_semantic_model_to_connection(workspace['id'],
+                                                        semantic_model_id,
+                                                         connection['id'])
+                cls.refresh_semantic_model(workspace['id'], semantic_model_id)
+            else:
+                AppLogger.log_substep(
+                    f"Datasource type [{datasource['datasourceType']}] not supported")
+                AppLogger.log_substep(
+                    json.dumps( datasource, indent=4 ) )
 
     @classmethod
     def create_adls_gen2_shortcut(cls, workspace_id, lakehouse_id, name, path,

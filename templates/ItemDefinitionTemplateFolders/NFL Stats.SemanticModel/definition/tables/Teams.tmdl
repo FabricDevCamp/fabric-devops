@@ -1,0 +1,79 @@
+table Teams
+	lineageTag: 42fea696-b113-4ff6-87ad-1f35ad63c43d
+	sourceLineageTag: [gold].[nfl_teams]
+
+	column Team
+		dataType: string
+		lineageTag: 4cfcc421-ff15-4df9-bceb-9e7de04b1585
+		sourceLineageTag: team
+		summarizeBy: none
+		sourceColumn: team
+
+		annotation SummarizationSetBy = Automatic
+
+	column Division
+		dataType: string
+		lineageTag: f9874254-b5d2-436a-b5b3-4decac896f02
+		sourceLineageTag: division
+		summarizeBy: none
+		sourceColumn: division
+
+		annotation SummarizationSetBy = Automatic
+
+	column Conference
+		dataType: string
+		lineageTag: 59993458-e7cc-4d79-9806-436c2eed1f74
+		sourceLineageTag: conference
+		summarizeBy: none
+		sourceColumn: conference
+
+		annotation SummarizationSetBy = Automatic
+
+	column City
+		dataType: string
+		lineageTag: 7a958333-55ce-4ce8-a7cd-f9af379c979b
+		sourceLineageTag: city
+		dataCategory: Place
+		summarizeBy: none
+		sourceColumn: city
+
+		changedProperty = DataCategory
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Team Roster'
+		dataType: string
+		lineageTag: 754162d4-2591-4926-96a3-ffb9f6b8cb60
+		sourceLineageTag: team_roster
+		dataCategory: WebUrl
+		summarizeBy: none
+		sourceColumn: team_roster
+
+		changedProperty = DataCategory
+
+		annotation SummarizationSetBy = Automatic
+
+	hierarchy 'Conference Hierarchy'
+		lineageTag: 56e394c8-8589-4d90-8d73-589a35dc58f8
+
+		level Conference
+			lineageTag: b0e53f62-41a0-4a66-82d3-e8d31b0c8835
+			column: Conference
+
+		level Division
+			lineageTag: de58f8a7-f14a-4c35-8598-6ddd3330dd2b
+			column: Division
+
+		level Team
+			lineageTag: ec956276-85f9-47d0-88e3-2e616569b497
+			column: Team
+
+	partition Teams = entity
+		mode: directLake
+		source
+			entityName: nfl_teams
+			schemaName: gold
+			expressionSource: 'DirectLake - nfl_data'
+
+	changedProperty = Name
+

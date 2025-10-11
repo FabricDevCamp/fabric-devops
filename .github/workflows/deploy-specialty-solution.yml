@@ -1,6 +1,6 @@
 
-name: Deploy Solution to Fabric Environment
-run-name: Deploy ${{inputs.solution_name}} to ${{inputs.target_environment}} Environment
+name: Deploy Specialty Solution
+run-name: Deploy ${{inputs.solution_name}}
 
 on:
     workflow_dispatch:
@@ -9,28 +9,10 @@ on:
                 type: choice
                 description: Solution to deploy
                 options: 
-                - Custom Power BI Solution
-                - Custom Notebook Solution
-                - Custom Shortcut Solution
-                - Custom Data Pipeline Solution
-                - Custom User Data Function Solution
-                - Custom Copy Job Solution
-                - Custom Dataflow Gen2 Solution
-                - Custom Warehouse Solution
-                - Custom Medallion Warehouse Solution
-                - Custom Notebook Solution with Variable Library
-                - Custom Shortcut Solution with Variable Library
-                - Custom Data Pipeline Solution with Variable Library
-                - Deploy All Solutions
-                default: Custom Power BI Solution
-            target_environment:
-                type: choice
-                description: Target Environment
-                options: 
-                - Dev
-                - Test
-                - Prod
-                default: Dev
+                - Custom Realtime Solution
+                - NFL Stats Solution
+                - NFL Agent Solution
+                default: Custom Realtime Solution
             git_integration_provider:
                 type: choice
                 description: Git Integration Provider
@@ -79,9 +61,8 @@ jobs:
                 ADMIN_USER_ID: ${{ secrets.ADMIN_USER_ID }}
                 SERVICE_PRINCIPAL_OBJECT_ID: ${{ secrets.SERVICE_PRINCIPAL_OBJECT_ID }}
                 PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
-                SOLUTION_NAME: ${{inputs.solution_name}}        
-                TARGET_ENVIRONMENT: ${{inputs.target_environment}}
+                SOLUTION_NAME: ${{inputs.solution_name}}
                 GIT_INTEGRATION_PROVIDER: ${{inputs.git_integration_provider}}
                 RUN_AS_SERVICE_PRINCIPAL: ${{inputs.run_as_service_principal}}
               run: 
-                    python src/deploy_solution_to_fabric_environment.py
+                    python src/deploy_specialty_solution.py

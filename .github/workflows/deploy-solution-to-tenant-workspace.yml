@@ -17,7 +17,6 @@ on:
         - Custom User Data Function Solution
         - Custom Dataflow Gen2 Solution
         - Custom Warehouse Solution
-        - Custom Realtime Solution
         - Custom Medallion Warehouse Solution
         - Custom Notebook Solution with Variable Library
         - Custom Shortcut Solution with Variable Library
