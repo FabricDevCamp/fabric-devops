@@ -781,90 +781,6 @@ class DeploymentManager:
         return workspace
 
     @classmethod
-    def deploy_realtime_solution(cls, target_workspace):
-        """Deploy Real Time Solution"""
-        
-        workspace_name = target_workspace
-
-        AppLogger.log_job(f'Deploying {workspace_name}')
-
-        eventhouse_name = "Rental Bikes"
-        kql_database_name = "Rental Bike Events"
-        kql_queryset_name = "Rental Bike Queries"
-        eventstream_name = "rental_bike_event_data"
-        realtime_dashboard_name = "Rental Bike Dashboard"
-        semantic_model_name = 'Rental Bike Event Model'
-        report_name = 'Rental Bike Locations Report'
-
-        workspace = FabricRestApi.create_workspace(workspace_name)
-
-        create_eventhouse_request = \
-            ItemDefinitionFactory.get_eventhouse_create_request(eventhouse_name)
-        
-        eventhouse_item = FabricRestApi.create_item(workspace['id'], create_eventhouse_request)
-
-        eventhouse = FabricRestApi.get_eventhouse(workspace['id'], eventhouse_item['id'])
-
-        query_service_uri = eventhouse['properties']['queryServiceUri']
-
-        create_kql_database_request = \
-            ItemDefinitionFactory.get_kql_database_create_request(kql_database_name, 
-                                                                eventhouse)
-        
-        kql_database = FabricRestApi.create_item(workspace['id'], create_kql_database_request)
-
-        create_eventstream_request = \
-            ItemDefinitionFactory.get_eventstream_create_request(eventstream_name,
-                                                                workspace['id'],
-                                                                eventhouse['id'],
-                                                                kql_database)
-        
-        FabricRestApi.create_item(workspace['id'], create_eventstream_request)
-
-        realtime_dashboard_create_request = ItemDefinitionFactory.get_kql_dashboard_create_request(
-            realtime_dashboard_name,
-            workspace['id'],
-            kql_database,
-            query_service_uri)
-        
-        FabricRestApi.create_item(workspace['id'], realtime_dashboard_create_request)
-
-        create_queryset_create_request = ItemDefinitionFactory.get_kql_queryset_create_request(
-            kql_queryset_name,
-            kql_database,
-            query_service_uri,
-            'RealTimeQueryset.json'
-        )
-
-        FabricRestApi.create_item(workspace['id'], create_queryset_create_request)
-
-        template_file_path = 'SemanticModels//bikes_rti_model.bim'
-        bim_model_template = ItemDefinitionFactory.get_template_file(template_file_path)
-
-        bim_model = bim_model_template.replace('{QUERY_SERVICE_URI}', query_service_uri)\
-                                    .replace('{KQL_DATABASE_ID}', kql_database['id'])
-        
-        model_create_request = \
-            ItemDefinitionFactory.get_semantic_model_create_request_from_definition(
-                semantic_model_name,
-                bim_model)
-
-        model = FabricRestApi.create_item(workspace['id'], model_create_request)
-
-        FabricRestApi.patch_oauth_connection_to_kqldb(workspace, model, query_service_uri)
-
-        create_report_request = \
-            ItemDefinitionFactory.get_report_create_request(model['id'],
-                                                            report_name,
-                                                            'rental_bike_sales.json')
-
-        FabricRestApi.create_item(workspace['id'], create_report_request)
-
-        AppLogger.log_job_complete(workspace['id'])
-
-        return workspace
-
-    @classmethod
     def deploy_medallion_warehouse_solution(
             cls,
             target_workspace,
@@ -1028,6 +944,91 @@ class DeploymentManager:
  
         return workspace
 
+   # specialty solutions which do not support parameterization with deploy job
+
+    @classmethod
+    def deploy_realtime_solution(cls, target_workspace):
+        """Deploy Real Time Solution"""
+        
+        workspace_name = target_workspace
+
+        AppLogger.log_job(f'Deploying {workspace_name}')
+
+        eventhouse_name = "Rental Bikes"
+        kql_database_name = "Rental Bike Events"
+        kql_queryset_name = "Rental Bike Queries"
+        eventstream_name = "rental_bike_event_data"
+        realtime_dashboard_name = "Rental Bike Dashboard"
+        semantic_model_name = 'Rental Bike Event Model'
+        report_name = 'Rental Bike Locations Report'
+
+        workspace = FabricRestApi.create_workspace(workspace_name)
+
+        create_eventhouse_request = \
+            ItemDefinitionFactory.get_eventhouse_create_request(eventhouse_name)
+        
+        eventhouse_item = FabricRestApi.create_item(workspace['id'], create_eventhouse_request)
+
+        eventhouse = FabricRestApi.get_eventhouse(workspace['id'], eventhouse_item['id'])
+
+        query_service_uri = eventhouse['properties']['queryServiceUri']
+
+        create_kql_database_request = \
+            ItemDefinitionFactory.get_kql_database_create_request(kql_database_name, 
+                                                                eventhouse)
+        
+        kql_database = FabricRestApi.create_item(workspace['id'], create_kql_database_request)
+
+        create_eventstream_request = \
+            ItemDefinitionFactory.get_eventstream_create_request(eventstream_name,
+                                                                workspace['id'],
+                                                                eventhouse['id'],
+                                                                kql_database)
+        
+        FabricRestApi.create_item(workspace['id'], create_eventstream_request)
+
+        realtime_dashboard_create_request = ItemDefinitionFactory.get_kql_dashboard_create_request(
+            realtime_dashboard_name,
+            workspace['id'],
+            kql_database,
+            query_service_uri)
+        
+        FabricRestApi.create_item(workspace['id'], realtime_dashboard_create_request)
+
+        create_queryset_create_request = ItemDefinitionFactory.get_kql_queryset_create_request(
+            kql_queryset_name,
+            kql_database,
+            query_service_uri,
+            'RealTimeQueryset.json'
+        )
+
+        FabricRestApi.create_item(workspace['id'], create_queryset_create_request)
+
+        template_file_path = 'SemanticModels//bikes_rti_model.bim'
+        bim_model_template = ItemDefinitionFactory.get_template_file(template_file_path)
+
+        bim_model = bim_model_template.replace('{QUERY_SERVICE_URI}', query_service_uri)\
+                                    .replace('{KQL_DATABASE_ID}', kql_database['id'])
+        
+        model_create_request = \
+            ItemDefinitionFactory.get_semantic_model_create_request_from_definition(
+                semantic_model_name,
+                bim_model)
+
+        model = FabricRestApi.create_item(workspace['id'], model_create_request)
+
+        FabricRestApi.patch_oauth_connection_to_kqldb(workspace, model, query_service_uri)
+
+        create_report_request = \
+            ItemDefinitionFactory.get_report_create_request(model['id'],
+                                                            report_name,
+                                                            'rental_bike_sales.json')
+
+        FabricRestApi.create_item(workspace['id'], create_report_request)
+
+        AppLogger.log_job_complete(workspace['id'])
+
+        return workspace
 
     @classmethod
     def deploy_data_agent_solution(cls,
@@ -1116,6 +1117,121 @@ class DeploymentManager:
         agent = FabricRestApi.create_item(workspace['id'], create_agent_request)
 
         return workspace
+
+    
+    @classmethod
+    def deploy_nfl_players_stats_solution(cls, target_workspace):
+        """Deploy NFL Players Stats Solution"""
+
+        lakehouse_name = "nfl_data"
+
+        AppLogger.log_job(f"Deploying NFL Stats Solution to [{target_workspace}]")
+
+        workspace = FabricRestApi.create_workspace(target_workspace)
+
+        FabricRestApi.update_workspace_description(workspace['id'], 'NFL Stats Solution')
+
+        lakehouse = FabricRestApi.create_lakehouse(workspace['id'], lakehouse_name, enable_schemas=True)
+
+        onelake_path = FabricRestApi.get_onelake_path_for_lakehouse(workspace['id'], lakehouse)
+
+        create_schema_notebook_request = \
+                ItemDefinitionFactory.get_create_item_request_from_folder(
+                    'Create Lakehouse Schemas.Notebook')
+
+        notebook_redirects = {
+            '{WORKSPACE_ID}': workspace['id'],
+            '{LAKEHOUSE_ID}': lakehouse['id'],
+            '{LAKEHOUSE_NAME}': lakehouse['displayName']
+        }
+
+        create_schema_notebook_request = \
+            ItemDefinitionFactory.update_part_in_create_request(create_schema_notebook_request,
+                                                                'notebook-content.sql', 
+                                                                notebook_redirects)
+
+        schema_notebook = FabricRestApi.create_item(workspace['id'], create_schema_notebook_request)
+
+        FabricRestApi.run_notebook(workspace['id'], schema_notebook)
+
+        create_notebook_request = \
+            ItemDefinitionFactory.get_create_item_request_from_folder(
+                'Build NFL Player Tables.Notebook')
+
+        notebook_redirects = {
+            '{WORKSPACE_ID}': workspace['id'],
+            '{LAKEHOUSE_ID}': lakehouse['id'],
+            '{LAKEHOUSE_NAME}': lakehouse['displayName']
+        }
+
+        create_notebook_request = \
+            ItemDefinitionFactory.update_part_in_create_request(create_notebook_request,
+                                                                'notebook-content.py', 
+                                                                notebook_redirects)
+
+        notebook = FabricRestApi.create_item(workspace['id'], create_notebook_request)
+
+        FabricRestApi.run_notebook(workspace['id'], notebook)     
+
+        create_model_request = \
+            ItemDefinitionFactory.get_create_item_request_from_folder(
+                'NFL Stats.SemanticModel')
+
+        model_redirects = {
+            '{ONELAKE_PATH}': onelake_path
+        }
+
+        create_model_request = \
+            ItemDefinitionFactory.update_part_in_create_request(
+                create_model_request,
+                'definition/expressions.tmdl',
+                model_redirects)
+
+        model = FabricRestApi.create_item(workspace['id'], create_model_request)
+
+        FabricRestApi.create_and_bind_semantic_model_connecton(workspace, model['id'], lakehouse)
+
+        report_folder  = 'NFL Stats.Report'
+        
+        create_report_request = \
+            ItemDefinitionFactory.get_create_report_request_from_folder(
+                report_folder,
+                model['id'])
+
+        FabricRestApi.create_item(workspace['id'], create_report_request)
+
+        FabricRestApi.assign_workspace_to_capacity(
+            workspace['id'],
+            EnvironmentSettings.FABRIC_NONTRIAL_CAPACITY_ID
+        )
+
+        create_agent_request = \
+            ItemDefinitionFactory.get_create_item_request_from_folder(
+                'NFL Agent.DataAgent')
+
+        agent_redirects = {
+            '{WORKSPACE_ID}': workspace['id'],
+            '{SEMANTIC_MODEL_ID}': model['id']
+        }
+
+        create_agent_request = \
+            ItemDefinitionFactory.update_part_in_create_request(
+                create_agent_request,
+                'Files/Config/published/semantic-model-NFL Stats/datasource.json',
+                agent_redirects)
+
+        create_agent_request = \
+            ItemDefinitionFactory.update_part_in_create_request(
+                create_agent_request,
+                'Files/Config/draft/semantic-model-NFL Stats/datasource.json',
+                agent_redirects)
+
+        
+        agent = FabricRestApi.create_item(workspace['id'], create_agent_request)
+
+ 
+        return workspace
+
 
 
     @classmethod
