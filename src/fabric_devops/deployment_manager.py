@@ -1158,7 +1158,7 @@ class DeploymentManager:
 
         create_notebook_request = \
             ItemDefinitionFactory.get_create_item_request_from_folder(
-                'Build NFL Player Tables.Notebook')
+                'NFL Stats Build Tables.Notebook')
 
         notebook_redirects = {
             '{WORKSPACE_ID}': workspace['id'],
@@ -1229,7 +1229,7 @@ class DeploymentManager:
                 agent_redirects)
 
         
-        agent = FabricRestApi.create_item(workspace['id'], create_agent_request)
+        FabricRestApi.create_item(workspace['id'], create_agent_request)
 
  
         return workspace
