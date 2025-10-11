@@ -1547,10 +1547,12 @@ class DeploymentManager:
 
         AppLogger.log_job(f"Deploying Deploy SQL Database Solution to [{target_workspace}]")
 
-        workspace = FabricRestApi.create_workspace(target_workspace)
+        workspace = FabricRestApi.create_workspace(
+            target_workspace, 
+            EnvironmentSettings.FABRIC_NONTRIAL_CAPACITY_ID
+        )
 
         FabricRestApi.update_workspace_description(workspace['id'], 'SQL Database Solution')
-
 
         sql_db = FabricRestApi.create_sql_database(workspace['id'], DATABASE_NAME)
 
