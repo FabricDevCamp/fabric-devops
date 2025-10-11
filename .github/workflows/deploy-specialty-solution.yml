@@ -10,7 +10,7 @@ on:
                 description: Solution to deploy
                 options: 
                 - Custom Realtime Solution
-                - NFL Stats Solution
+                - NFL Players Stats Solution
                 - NFL Agent Solution
                 default: Custom Realtime Solution
             git_integration_provider:

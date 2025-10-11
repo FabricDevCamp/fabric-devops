@@ -56,6 +56,8 @@ class DeploymentManager:
             # specialty solutions without deployment job parameters
             case 'Custom Realtime Solution':
                 workspace = cls.deploy_realtime_solution(target_workspace)
+            case 'NFL Players Stats Solution':
+                workspace = cls.deploy_nfl_players_stats_solution(target_workspace)
 
         if workspace is None:
             raise LookupError(f'Unknown solution name [{solution_name}]')
