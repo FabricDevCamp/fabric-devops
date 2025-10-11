@@ -11,7 +11,8 @@ on:
                 options: 
                 - Custom Realtime Solution
                 - NFL Players Stats Solution
-                - NFL Agent Solution
+                - NFL Data Agent Solution
+                - SQL Database in Fabric Solution
                 default: Custom Realtime Solution
             git_integration_provider:
                 type: choice
