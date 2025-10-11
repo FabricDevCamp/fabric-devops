@@ -54,7 +54,7 @@ jobs:
                     pip install pyodbc -q
 
             - name: Install Microsoft ODBC
-              run: sudo ACCEPT_EULA=Y apt-get install msodbcsql18 -y
+              run: sudo ACCEPT_EULA=Y apt-get install msodbcsql18 -y 2>/dev/null
 
             - name: Deploy Solution                
               env:
