@@ -26,7 +26,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import time
 
-from pyspark.sql.functions import col, desc, concat, lit, floor, datediff, udf
+from pyspark.sql.functions import col, desc, concat, lit, floor, datediff, udf, lpad
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType, LongType
 
 # METADATA ********************
@@ -281,12 +281,15 @@ def get_roster_data(team):
 
         return (
             spark.createDataFrame(players_data)
-                .withColumn("player-key", concat(col('team'), lit('-'), col('number')))                  
+                .withColumn("player-key", concat(col('team'), lit('#'), lpad(col('number'), 2, '0') ) )                  
                 .withColumn('position', udf_get_position(col('position_code')))
                 .withColumn('position_category', udf_get_position_category(col('position_code')))
                 .withColumn('side', udf_get_position_side(col('position_code')))
                 .replace('R', '0', ['experience'])
-                .withColumn('height_inches', udf_convert_height_to_inches(col('height')))
+                .withColumn('height_inches', udf_convert_height_to_inches(col('height')).cast('long'))
+                .withColumn('weight', col('weight').cast('long'))
+                .withColumn('age', col('age').cast('long'))
+                .withColumn('experience', col('experience').cast('long'))
                 .select(['number', 'player', 'height', 'height_inches', 'weight', 'age', 'experience', 'position_code', 'position', 'position_category', 'side', 'college', 'team', 'player-key'])
             )
         
