@@ -450,6 +450,12 @@ class FabricRestApi:
         cls._execute_post_request(rest_url)
 
     @classmethod
+    def get_workspace_spark_settings(cls, workspace_id):
+        """Get Spark Settings for a workspace"""
+        rest_url = f"workspaces/{workspace_id}/spark/settings"
+        return cls._execute_get_request(rest_url)
+
+    @classmethod
     def list_connections(cls):
         """Get all connections accessible to caller"""
         response = cls._execute_get_request('connections')
@@ -1619,7 +1625,7 @@ class FabricRestApi:
         return cls._execute_post_request(endpoint, connect_request)
 
     @classmethod
-    def connect_workspace_to_github_repo(cls, workspace, repo_name, branch = 'main'):
+    def connect_workspace_to_github_repo(cls, workspace, repo_name, branch = 'main'
         """Connect Workspace to GitHub Repository"""
 
         AppLogger.log_substep(f"Connecting workspace [{workspace['displayName']}] " + \

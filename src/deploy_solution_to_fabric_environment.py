@@ -14,11 +14,11 @@ workspace_name = solution_name
 
 match os.getenv("TARGET_ENVIRONMENT"):
     case 'Dev':
-        deploy_job =  StagingEnvironments.get_dev_environment()
+        deploy_job = StagingEnvironments.get_dev_environment()
     case 'Test':
-        deploy_job =  StagingEnvironments.get_test_environment()
+        deploy_job = StagingEnvironments.get_test_environment()
     case 'Prod':
-        deploy_job =  StagingEnvironments.get_prod_environment()
+        deploy_job = StagingEnvironments.get_prod_environment()
 
 workspace = DeploymentManager.deploy_solution_by_name(solution_name, workspace_name, deploy_job)
 
@@ -30,5 +30,20 @@ match os.getenv("GIT_INTEGRATION_PROVIDER"):
         repo_name = workspace_name.replace(" ", "-")
         GitHubRestApi.create_repository(repo_name)
         FabricRestApi.connect_workspace_to_github_repo(workspace, repo_name)
+
+        # create and connect feature workspace and feature branch
+        FEATURE_NAME = 'feature1'
+        FEATURE_WORKSPACE_NAME = F'{workspace_name} - {FEATURE_NAME}'
+        FEATURE_WORKSPACE = FabricRestApi.create_workspace(FEATURE_WORKSPACE_NAME)
+        GitHubRestApi.create_branch(repo_name, FEATURE_NAME)
+        FabricRestApi.connect_workspace_to_github_repo(FEATURE_WORKSPACE, repo_name, FEATURE_NAME)
+
+        DeploymentManager.apply_post_deploy_fixes(
+            FEATURE_WORKSPACE_NAME,
+            StagingEnvironments.get_dev_environment(),
+            True)
+
+
+
 
 AppLogger.log_job_complete(workspace['id'])
