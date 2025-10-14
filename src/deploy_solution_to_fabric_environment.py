@@ -23,27 +23,46 @@ match os.getenv("TARGET_ENVIRONMENT"):
 workspace = DeploymentManager.deploy_solution_by_name(solution_name, workspace_name, deploy_job)
 
 match os.getenv("GIT_INTEGRATION_PROVIDER"):
+
     case 'Azure DevOps':
+        # create ADO project and connect main repoto workspace
         AdoProjectManager.create_project(workspace_name)
         FabricRestApi.connect_workspace_to_ado_repo(workspace, workspace_name)
-    case 'GitHub':
-        repo_name = workspace_name.replace(" ", "-")
-        GitHubRestApi.create_repository(repo_name)
-        FabricRestApi.connect_workspace_to_github_repo(workspace, repo_name)
 
-        # create and connect feature workspace and feature branch
+        # create feature workspace
         FEATURE_NAME = 'feature1'
         FEATURE_WORKSPACE_NAME = F'{workspace_name} - {FEATURE_NAME}'
         FEATURE_WORKSPACE = FabricRestApi.create_workspace(FEATURE_WORKSPACE_NAME)
-        GitHubRestApi.create_branch(repo_name, FEATURE_NAME)
-        FabricRestApi.connect_workspace_to_github_repo(FEATURE_WORKSPACE, repo_name, FEATURE_NAME)
 
+        # create feature branch and connect to feature workspace
+        AdoProjectManager.create_branch(workspace_name, FEATURE_NAME)
+        FabricRestApi.connect_workspace_to_ado_repo(FEATURE_WORKSPACE, workspace_name, FEATURE_NAME)
+
+        # apply post deploy fixes to feature workspace
         DeploymentManager.apply_post_deploy_fixes(
             FEATURE_WORKSPACE_NAME,
             StagingEnvironments.get_dev_environment(),
             True)
 
+    case 'GitHub':
+        # create GitHub repo and connect to workspace
+        repo_name = workspace_name.replace(" ", "-")
+        GitHubRestApi.create_repository(repo_name)
+        FabricRestApi.connect_workspace_to_github_repo(workspace, repo_name)
 
+        # create feature workspace
+        FEATURE_NAME = 'feature1'
+        FEATURE_WORKSPACE_NAME = F'{workspace_name} - {FEATURE_NAME}'
+        FEATURE_WORKSPACE = FabricRestApi.create_workspace(FEATURE_WORKSPACE_NAME)
 
+        # create feature branch and connect to feature workspace
+        GitHubRestApi.create_branch(repo_name, FEATURE_NAME)
+        FabricRestApi.connect_workspace_to_github_repo(FEATURE_WORKSPACE, repo_name, FEATURE_NAME)
+
+        # apply post deploy fixes to feature workspace
+        DeploymentManager.apply_post_deploy_fixes(
+            FEATURE_WORKSPACE_NAME,
+            StagingEnvironments.get_dev_environment(),
+            True)
 
 AppLogger.log_job_complete(workspace['id'])
