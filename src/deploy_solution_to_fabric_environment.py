@@ -39,10 +39,10 @@ match os.getenv("GIT_INTEGRATION_PROVIDER"):
         FabricRestApi.connect_workspace_to_ado_repo(FEATURE_WORKSPACE, workspace_name, FEATURE_NAME)
 
         # apply post deploy fixes to feature workspace
-        DeploymentManager.apply_post_deploy_fixes(
-            FEATURE_WORKSPACE_NAME,
-            StagingEnvironments.get_dev_environment(),
-            True)
+        # DeploymentManager.apply_post_deploy_fixes(
+        #     FEATURE_WORKSPACE_NAME,
+        #     StagingEnvironments.get_dev_environment(),
+        #     True)
 
     case 'GitHub':
         # create GitHub repo and connect to workspace
@@ -60,9 +60,9 @@ match os.getenv("GIT_INTEGRATION_PROVIDER"):
         FabricRestApi.connect_workspace_to_github_repo(FEATURE_WORKSPACE, repo_name, FEATURE_NAME)
 
         # apply post deploy fixes to feature workspace
-        DeploymentManager.apply_post_deploy_fixes(
-            FEATURE_WORKSPACE_NAME,
-            StagingEnvironments.get_dev_environment(),
-            True)
+        # DeploymentManager.apply_post_deploy_fixes(
+        #     FEATURE_WORKSPACE_NAME,
+        #     StagingEnvironments.get_dev_environment(),
+        #     True)
 
 AppLogger.log_job_complete(workspace['id'])
