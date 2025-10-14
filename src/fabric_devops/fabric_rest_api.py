@@ -1625,7 +1625,7 @@ class FabricRestApi:
         return cls._execute_post_request(endpoint, connect_request)
 
     @classmethod
-    def connect_workspace_to_github_repo(cls, workspace, repo_name, branch = 'main'
+    def connect_workspace_to_github_repo(cls, workspace, repo_name, branch = 'main'):
         """Connect Workspace to GitHub Repository"""
 
         AppLogger.log_substep(f"Connecting workspace [{workspace['displayName']}] " + \
