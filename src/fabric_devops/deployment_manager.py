@@ -1624,8 +1624,6 @@ class DeploymentManager:
 
         model = FabricRestApi.create_item(workspace['id'], create_model_request)
 
-        connection = FabricRestApi.create_anonymous_web_connection(web_datasource_path, workspace)
-
         FabricRestApi.create_and_bind_semantic_model_connecton(
             workspace['id'],
             model['id']
