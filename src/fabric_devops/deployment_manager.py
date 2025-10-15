@@ -2102,35 +2102,35 @@ class DeploymentManager:
         pipelines = list(filter(lambda item: item['type']=='DataPipeline', workspace_items))
         for pipeline in pipelines:
             if pipeline['displayName'] == 'Create Lakehouse Tables':
-                
-            connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
-                adls_server_path,
-                adls_path,
-                workspace)
+                pass
+                # connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
+                # adls_server_path,
+                # adls_path,
+                # workspace)
 
-        create_pipeline_request = \
-            ItemDefinitionFactory.get_create_item_request_from_folder(
-                data_pipeline_folder)
+                # create_pipeline_request = \
+                #     ItemDefinitionFactory.get_create_item_request_from_folder(
+                #         data_pipeline_folder)
 
-        pipeline_redirects = {
-            '{WORKSPACE_ID}': workspace['id'],
-            '{LAKEHOUSE_ID}': lakehouse['id'],
-            '{CONNECTION_ID}': connection['id'],
-            '{CONTAINER_NAME}': adls_container_name,
-            '{CONTAINER_PATH}': adls_container_path,
-            '{NOTEBOOK_ID_BUILD_SILVER}': notebook_ids[0],
-            '{NOTEBOOK_ID_BUILD_GOLD}': notebook_ids[1]
-        }
+                # pipeline_redirects = {
+                #     '{WORKSPACE_ID}': workspace['id'],
+                #     '{LAKEHOUSE_ID}': lakehouse['id'],
+                #     '{CONNECTION_ID}': connection['id'],
+                #     '{CONTAINER_NAME}': adls_container_name,
+                #     '{CONTAINER_PATH}': adls_container_path,
+                #     '{NOTEBOOK_ID_BUILD_SILVER}': notebook_ids[0],
+                #     '{NOTEBOOK_ID_BUILD_GOLD}': notebook_ids[1]
+                # }
 
-        create_pipeline_request = \
-            ItemDefinitionFactory.update_part_in_create_request(
-                create_pipeline_request,
-                'pipeline-content.json',
-                pipeline_redirects)
+                # create_pipeline_request = \
+                #     ItemDefinitionFactory.update_part_in_create_request(
+                #         create_pipeline_request,
+                #         'pipeline-content.json',
+                #         pipeline_redirects)
 
-        pipeline = FabricRestApi.create_item(workspace['id'], create_pipeline_request)
+                # pipeline = FabricRestApi.create_item(workspace['id'], create_pipeline_request)
 
-        FabricRestApi.run_data_pipeline(workspace['id'], pipeline)
+                # FabricRestApi.run_data_pipeline(workspace['id'], pipeline)
 
 
 
