@@ -10,10 +10,10 @@ on:
                 description: Solution to deploy
                 options: 
                 - Custom Realtime Solution
+                - Attendee Bad Behavior Analyzer Solution
                 - NFL Players Stats Solution
                 - NFL Data Agent Solution
                 - SQL Database in Fabric Solution
-                - Attendee Bad Behavior Solution
                 default: Custom Realtime Solution
             git_integration_provider:
                 type: choice

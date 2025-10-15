@@ -30,6 +30,7 @@ class DeploymentManager:
         workspace = None
 
         match solution_name:
+            # solutions that support deployment job parameters
             case 'Custom Power BI Solution':
                 workspace = cls.deploy_powerbi_solution(target_workspace, deploy_job)
             case 'Custom Notebook Solution':
@@ -59,14 +60,14 @@ class DeploymentManager:
             # specialty solutions without deployment job parameters
             case 'Custom Realtime Solution':
                 workspace = cls.deploy_realtime_solution(target_workspace)
+            case 'Attendee Bad Behavior Analyzer Solution':
+                workspace = cls.deploy_abba_solution(target_workspace)
             case 'NFL Players Stats Solution':
                 workspace = cls.deploy_nfl_players_stats_solution(target_workspace)
             case 'NFL Data Agent Solution':
                 workspace = cls.deploy_nfl_data_agent_solution(target_workspace)
             case 'SQL Database in Fabric Solution':
                 workspace = cls.deploy_sql_database_in_fabric_solution(target_workspace)
-            case 'Attendee Bad Behavior Solution':
-                workspace = cls.deploy_abba_solution(target_workspace)
 
         if workspace is None:
             raise LookupError(f'Unknown solution name [{solution_name}]')
@@ -1639,7 +1640,6 @@ class DeploymentManager:
         FabricRestApi.create_item(workspace['id'], create_report_request)
 
         return workspace
-
 
 
     @classmethod
