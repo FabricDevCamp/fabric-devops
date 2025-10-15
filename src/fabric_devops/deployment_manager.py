@@ -65,6 +65,8 @@ class DeploymentManager:
                 workspace = cls.deploy_nfl_data_agent_solution(target_workspace)
             case 'SQL Database in Fabric Solution':
                 workspace = cls.deploy_sql_database_in_fabric_solution(target_workspace)
+            case 'Attendee Bad Behavior Solution':
+                workspace = cls.deploy_abba_solution(target_workspace)
 
         if workspace is None:
             raise LookupError(f'Unknown solution name [{solution_name}]')
@@ -1607,6 +1609,42 @@ class DeploymentManager:
         return workspace
 
     @classmethod
+    def deploy_abba_solution(cls, target_workspace):
+        """Deploy Attendee Bad Behavior Analyzer with Parameters"""
+
+        AppLogger.log_job(f"Deploying Attendee Bad Behavior Analyzer to [{target_workspace}]")
+
+        workspace = FabricRestApi.create_workspace(target_workspace)
+
+        FabricRestApi.update_workspace_description(workspace['id'], 'Attendee Bad Behavior Analyzer Solution')
+
+        create_model_request = \
+            ItemDefinitionFactory.get_create_item_request_from_folder(
+                'Power Hour.SemanticModel')
+
+        model = FabricRestApi.create_item(workspace['id'], create_model_request)
+
+        connection = FabricRestApi.create_anonymous_web_connection(web_datasource_path, workspace)
+
+        FabricRestApi.create_and_bind_semantic_model_connecton(
+            workspace['id'],
+            model['id']
+        )
+
+        FabricRestApi.refresh_semantic_model(workspace['id'], model['id'])
+
+        create_report_request = \
+            ItemDefinitionFactory.get_create_report_request_from_folder(
+                'Power Hour.Report',
+                model['id'])
+        
+        FabricRestApi.create_item(workspace['id'], create_report_request)
+
+        return workspace
+
+
+
+    @classmethod
     def deploy_sql_database_in_fabric_solution(cls, target_workspace):
         """Deploy SQL Database in Fabric Solution"""
 
@@ -1997,6 +2035,144 @@ class DeploymentManager:
         }
 
         FabricRestApi.update_item_definition(workspace['id'], notebook, notebook_definition)
+
+
+    @classmethod
+    def apply_post_sync_fixes(cls,
+                    workspace_name,
+                    deployment_job,
+                    run_etl_jobs = False):
+
+        """Apply Post Sync Fixes"""
+        AppLogger.log_step(f"Applying post sync fixes to [{workspace_name}]")
+        workspace = FabricRestApi.get_workspace_by_name(workspace_name)
+        workspace_items = FabricRestApi.list_workspace_items(workspace['id'])
+
+        adls_container_name = deployment_job.parameters[DeploymentJob.adls_container_name_parameter]
+        adls_container_path = deployment_job.parameters[DeploymentJob.adls_container_path_parameter]
+        adls_server = deployment_job.parameters[DeploymentJob.adls_server_parameter]
+        adls_path = f'/{adls_container_name}{adls_container_path}'
+
+        lakehouses = list(filter(lambda item: item['type']=='Lakehouse', workspace_items))
+        for lakehouse in lakehouses:
+            shortcuts = FabricRestApi.list_shortcuts(workspace['id'], lakehouse['id'])
+            for shortcut in shortcuts:
+                connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
+                                adls_server,
+                                adls_path,
+                                workspace)
+
+                shortcut_name = shortcut['name']
+                shortcut_path = shortcut['path']
+                shortcut_location = adls_server
+                shortcut_subpath = adls_path
+
+                FabricRestApi.create_adls_gen2_shortcut(workspace['id'],
+                                                        lakehouse['id'],
+                                                        shortcut_name,
+                                                        shortcut_path,
+                                                        shortcut_location,
+                                                        shortcut_subpath,
+                                                        connection['id'])
+
+        notebooks = list(filter(lambda item: item['type']=='Notebook', workspace_items))
+        for notebook in notebooks:
+            # Apply fixes for [Create Lakehouse Tables.Notebook]
+            if notebook['displayName'] in ['Create Lakehouse Tables',
+                                           'Build 01 Silver Layer',
+                                           'Build 02 Gold Layer',
+                                           'Create Lakehouse Materialized Views',
+                                           'Create Lakehouse Schemas',
+                                           'Create Lakehouse Tables with VarLib']:
+                # bind notebook to 'sales' lakehouse in same workspace
+                cls.update_source_lakehouse_in_notebook(
+                    workspace_name,
+                    notebook['displayName'],
+                    "sales")
+
+                if notebook['displayName'] == 'Create Lakehouse Tables':
+                    cls.update_datasource_path_in_notebook(
+                        workspace_name,
+                        notebook['displayName'],
+                        deployment_job)
+
+            if run_etl_jobs and 'Create' in notebook['displayName']:                
+                FabricRestApi.run_notebook(workspace['id'], notebook)
+
+        pipelines = list(filter(lambda item: item['type']=='DataPipeline', workspace_items))
+        for pipeline in pipelines:
+            if pipeline['displayName'] == 'Create Lakehouse Tables':
+                
+            connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
+                adls_server_path,
+                adls_path,
+                workspace)
+
+        create_pipeline_request = \
+            ItemDefinitionFactory.get_create_item_request_from_folder(
+                data_pipeline_folder)
+
+        pipeline_redirects = {
+            '{WORKSPACE_ID}': workspace['id'],
+            '{LAKEHOUSE_ID}': lakehouse['id'],
+            '{CONNECTION_ID}': connection['id'],
+            '{CONTAINER_NAME}': adls_container_name,
+            '{CONTAINER_PATH}': adls_container_path,
+            '{NOTEBOOK_ID_BUILD_SILVER}': notebook_ids[0],
+            '{NOTEBOOK_ID_BUILD_GOLD}': notebook_ids[1]
+        }
+
+        create_pipeline_request = \
+            ItemDefinitionFactory.update_part_in_create_request(
+                create_pipeline_request,
+                'pipeline-content.json',
+                pipeline_redirects)
+
+        pipeline = FabricRestApi.create_item(workspace['id'], create_pipeline_request)
+
+        FabricRestApi.run_data_pipeline(workspace['id'], pipeline)
+
+
+
+        sql_endpoints = list(filter(lambda item: item['type']=='SQLEndpoint', workspace_items))
+        for sql_endpoint in sql_endpoints:
+            FabricRestApi.refresh_sql_endpoint_metadata(
+                workspace['id'],
+                sql_endpoint['id'])
+
+        models = list(filter(lambda item: item['type']=='SemanticModel', workspace_items))
+        for model in models:
+
+            # Apply fixes for [Product Sales Imported Model.SemanticModel]
+            if model['displayName'] ==    'Product Sales Imported Model':
+                # fix connection to imported models
+                datasource_path =    \
+                    deployment_job.parameters[deployment_job.web_datasource_path_parameter]
+
+                DeploymentManager.update_imported_semantic_model_source(
+                    workspace,
+                    model['displayName'],
+                    datasource_path)
+
+                FabricRestApi.create_and_bind_semantic_model_connecton(
+                    workspace,
+                    model['id'])
+
+            # Apply fixes for [Product Sales DirectLake Model.SemanticModel]
+            if model['displayName'] ==    'Product Sales DirectLake Model':
+                # fix connection to lakehouse SQL endpoint
+                target_lakehouse_name = 'sales'
+                DeploymentManager.update_directlake_semantic_model_source(
+                    workspace_name, 
+                    model['displayName'],
+                    target_lakehouse_name)
+
+                FabricRestApi.create_and_bind_semantic_model_connecton(
+                    workspace,
+                    model['id'])
+
+
+
 
     @classmethod
     def apply_post_deploy_fixes(cls,

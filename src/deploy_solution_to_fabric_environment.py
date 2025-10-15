@@ -48,7 +48,7 @@ match os.getenv("GIT_INTEGRATION_PROVIDER"):
         FabricRestApi.connect_workspace_to_ado_repo(FEATURE2_WORKSPACE, workspace_name, FEATURE2_NAME)
 
         # apply post sync/deploy fixes to feature2 workspace, but not feature1 workspace
-        DeploymentManager.apply_post_deploy_fixes(
+        DeploymentManager.apply_post_sync_fixes(
             FEATURE2_WORKSPACE_NAME,
             StagingEnvironments.get_dev_environment(),
             True)
@@ -78,7 +78,7 @@ match os.getenv("GIT_INTEGRATION_PROVIDER"):
         FabricRestApi.connect_workspace_to_github_repo(FEATURE2_WORKSPACE, repo_name, FEATURE2_NAME)
 
         # apply post sync/deploy fixes to feature2 workspace, but not feature1 workspace
-        DeploymentManager.apply_post_deploy_fixes(
+        DeploymentManager.apply_post_sync_fixes(
             FEATURE2_WORKSPACE_NAME,
             StagingEnvironments.get_dev_environment(),
             True)
