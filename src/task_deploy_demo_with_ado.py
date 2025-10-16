@@ -4,9 +4,9 @@ from fabric_devops import DeploymentManager, AppLogger, StagingEnvironments, \
                           AdoProjectManager, FabricRestApi
 
 SOLUTION_NAME = 'Custom Power BI Solution'
-WORKSPACE_NAME = 'Solution1'
+WORKSPACE_NAME = 'Contoso Sales'
 
-deploy_job = StagingEnvironments.get_prod_environment()
+deploy_job = StagingEnvironments.get_dev_environment()
 
 workspace = DeploymentManager.deploy_solution_by_name(SOLUTION_NAME, WORKSPACE_NAME, deploy_job)
 

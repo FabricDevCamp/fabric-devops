@@ -61,5 +61,5 @@ else:
   }
   target_workspace.endpoint.invoke(method="POST", url=git_update_url, body=git_update_body)
 
-  print( ' - Workspace synchronzation completed successfully.', flush=True) )
+  print(' - Workspace synchronzation completed successfully.', flush=True)
 

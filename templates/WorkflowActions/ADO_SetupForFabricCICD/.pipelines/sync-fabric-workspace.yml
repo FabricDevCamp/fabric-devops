@@ -1,6 +1,6 @@
 trigger:
   branches:
-  include: ["dev" ]
+    include: ["dev" ]
 
 variables: 
 - group: 'environmental_variables'
@@ -8,29 +8,29 @@ variables:
 jobs:
 - job: sync_fabric_workspace_from_git
   pool:
-  vmImage: ubuntu-latest
+    vmImage: ubuntu-latest
   
   steps:
   - task: UsePythonVersion@0
-  inputs:
-    versionSpec: '3.12'
-    addToPath: true
+    inputs:
+      versionSpec: '3.12'
+      addToPath: true
 
   - script: pip install fabric-cicd
-  displayName: 'Install  fabric-cicd'
+    displayName: 'Install  fabric-cicd'
 
   - task: PythonScript@0  
-  inputs:
-    scriptSource: 'filePath'
-    scriptPath: 'src/sync_fabric_workspace.py' 
-    workingDirectory: '$(Build.SourcesDirectory)/src'
-    failOnStderr: false  
-  env:
-    BRANCH_NAME: $(Build.SourceBranchName)    
-    SOURCES_DIRECTORY: $(Build.SourcesDirectory)
-    FABRIC_CLIENT_ID: $(FABRIC_CLIENT_ID)
-    FABRIC_CLIENT_SECRET: $(FABRIC_CLIENT_SECRET)
-    FABRIC_TENANT_ID: $(FABRIC_TENANT_ID)
-    SERVICE_PRINCIPAL_OBJECT_ID: $(SERVICE_PRINCIPAL_OBJECT_ID)
-    ADMIN_USER_ID: $(ADMIN_USER_ID)
-    FABRIC_CAPACITY_ID: $(FABRIC_CAPACITY_ID)
+    inputs:
+      scriptSource: 'filePath'
+      scriptPath: 'src/sync_fabric_workspace.py' 
+      workingDirectory: '$(Build.SourcesDirectory)/src'
+      failOnStderr: false  
+    env:
+      BRANCH_NAME: $(Build.SourceBranchName)    
+      SOURCES_DIRECTORY: $(Build.SourcesDirectory)
+      FABRIC_CLIENT_ID: $(FABRIC_CLIENT_ID)
+      FABRIC_CLIENT_SECRET: $(FABRIC_CLIENT_SECRET)
+      FABRIC_TENANT_ID: $(FABRIC_TENANT_ID)
+      SERVICE_PRINCIPAL_OBJECT_ID: $(SERVICE_PRINCIPAL_OBJECT_ID)
+      ADMIN_USER_ID: $(ADMIN_USER_ID)
+      FABRIC_CAPACITY_ID: $(FABRIC_CAPACITY_ID)

@@ -1,10 +1,55 @@
-from fabric_devops import FabricRestApi, EntraIdTokenManager, EnvironmentSettings
+"""Publish All Items"""
 
-WORKSPACE_NAME = "Custom Notebook Solution with Variable Library"
-ITEM_NAME = "Create Lakehouse Tables with VarLib"
-workspace = FabricRestApi.get_workspace_by_name(WORKSPACE_NAME)
-item = FabricRestApi.get_item_by_name(workspace['id'], ITEM_NAME, 'Notebook')
+from pathlib import Path
+import os
+import json
 
-response = FabricRestApi.create_notebook_schedule(workspace['id'], item)
+from azure.identity import ClientSecretCredential
 
-print(response)
+from fabric_cicd import FabricWorkspace, publish_all_items, unpublish_all_orphan_items
+
+client_id = os.getenv("FABRIC_CLIENT_ID")
+client_secret = os.getenv("FABRIC_CLIENT_SECRET")
+tenant_id = os.getenv("FABRIC_TENANT_ID")
+token_credential = \
+  ClientSecretCredential(client_id=client_id, client_secret=client_secret, tenant_id=tenant_id)
+
+sources_directory = os.getenv('SOURCES_DIRECTORY')
+branch = os.getenv('BRANCH_NAME')
+
+config_file = sources_directory + '/workspace/workspace.config.json'
+
+print(f'file: {config_file}')
+
+if os.path.exists(config_file) is False:
+  print(f"'{config_file}' does not exists.")
+else:    
+  print(config_file, flush=True)
+
+  with open(config_file, 'r', encoding='utf-8') as file:
+    config = json.load(file)
+    print(config, flush=True)
+
+  workspace_config = config[branch]
+
+  # Sample values for FabricWorkspace parameters
+  workspace_id = 'ff669880-b8d8-47a5-ae5b-78b6916eaa5c'
+  environment = 'TEST'
+  
+  item_type_in_scope = [ "Lakehouse", "Notebook", "SemanticModel", "Report"]
+
+  # Initialize the FabricWorkspace object with the required parameters
+  target_workspace = FabricWorkspace(
+    workspace_id=workspace_id,
+    environment=environment,
+    repository_directory = str(Path(__file__).resolve().parent.parent / "workspace"),
+    item_type_in_scope=item_type_in_scope,
+    token_credential=token_credential,
+  )
+
+  # Publish all items defined in item_type_in_scope
+  publish_all_items(target_workspace)
+
+  # Unpublish all items defined in item_type_in_scope not found in repository
+  # this fails when trying to delete default semantic model for lakehouse
+  # unpublish_all_orphan_items(target_workspace)
