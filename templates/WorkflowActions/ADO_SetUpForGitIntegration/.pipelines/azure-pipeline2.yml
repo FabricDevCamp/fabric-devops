@@ -1,6 +1,6 @@
 trigger:
   branches:
-  include: ["dev", "test", "main"]
+    include: ["dev", "test", "main"]
 
 variables: 
 - group: 'environmental_variables'
@@ -8,28 +8,27 @@ variables:
 jobs:
 - job: Run_CICD_Pipeline_2
   pool:
-  vmImage: ubuntu-latest
-  
+    vmImage: ubuntu-latest
   steps:
   - task: UsePythonVersion@0
-  inputs:
-    versionSpec: '3.12'
-    addToPath: true
+    inputs:
+      versionSpec: '3.12'
+      addToPath: true
 
   - script: pip install msal
-  displayName: 'Install msal'
+    displayName: 'Install msal'
 
   - task: PythonScript@0  
-  inputs:
-    scriptSource: 'filePath'
-    scriptPath: 'src/test2.py' 
-    workingDirectory: '$(Build.SourcesDirectory)/src' # Optional: Specify the working directory for the script
-    failOnStderr: true # Optional: Fail the task if any text is written to the stderr stream  
-  env:
-    FABRIC_CLIENT_ID: $(FABRIC_CLIENT_ID)
-    FABRIC_CLIENT_SECRET: $(FABRIC_CLIENT_SECRET)
-    FABRIC_TENANT_ID: $(FABRIC_TENANT_ID)
-    SERVICE_PRINCIPAL_OBJECT_ID: $(SERVICE_PRINCIPAL_OBJECT_ID)
-    ADMIN_USER_ID: $(ADMIN_USER_ID)
-    FABRIC_CAPACITY_ID: $(FABRIC_CAPACITY_ID)
-  
+    inputs:
+      scriptSource: 'filePath'
+      scriptPath: 'src/test2.py' 
+      workingDirectory: '$(Build.SourcesDirectory)/src' # Optional: Specify the working directory for the script
+      failOnStderr: true # Optional: Fail the task if any text is written to the stderr stream  
+    env:
+      FABRIC_CLIENT_ID: $(FABRIC_CLIENT_ID)
+      FABRIC_CLIENT_SECRET: $(FABRIC_CLIENT_SECRET)
+      FABRIC_TENANT_ID: $(FABRIC_TENANT_ID)
+      SERVICE_PRINCIPAL_OBJECT_ID: $(SERVICE_PRINCIPAL_OBJECT_ID)
+      ADMIN_USER_ID: $(ADMIN_USER_ID)
+      FABRIC_CAPACITY_ID: $(FABRIC_CAPACITY_ID)
+    
