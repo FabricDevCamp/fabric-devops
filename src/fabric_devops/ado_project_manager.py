@@ -399,7 +399,7 @@ class AdoProjectManager:
         cls.set_default_branch(project_name, "dev")
 
     @classmethod
-    def write_file_to_repo(cls, project_name, branch, file_path, file_content, comment = 'Too lazy to enter better comment'):
+    def write_file_to_repo(cls, project_name, branch, file_path, file_content, comment = 'Adding file to repo'):
         """Write Files to Repo"""        
         base64_content = base64.b64encode(file_content.encode('utf-8')).decode('utf-8')
         

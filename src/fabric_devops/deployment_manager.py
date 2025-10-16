@@ -2488,15 +2488,14 @@ class DeploymentManager:
         file_content = 'find_replace:\n\n'
 
         file_content += indent + '# [Workspace Id]\n'
-        file_content += indent + '- "' + dev_workspace['id'] + f'" # [{dev_workspace["displayName"]}]\n'
+        file_content += indent + '"' + dev_workspace['id'] + f'": # [{dev_workspace["displayName"]}]\n'
         file_content += indent + indent + f'TEST: "{test_workspace["id"]}" # [{test_workspace["displayName"]}]\n'
         file_content += indent + indent + f'PROD: "{prod_workspace["id"]}" # [{prod_workspace["displayName"]}]\n\n'
 
         for workspace_item in dev_workspace_items:
             item_name = workspace_item['displayName'] + "." + workspace_item['type']
             file_content += indent + f'# [{item_name}]\n'
-            file_content += indent + '- find_value: "' + workspace_item['id'] + f'" # [{dev_workspace["displayName"]}]\n'
-            file_content += indent + '    replace_value:\n'
+            file_content += indent + '"' + workspace_item['id'] + f'": # [{dev_workspace["displayName"]}]\n'
             if item_name in test_items:
                 file_content += indent + indent + f'TEST: "{test_items[item_name]}" # [{test_workspace["displayName"]}]\n'
             if item_name in prod_items:
@@ -2525,8 +2524,7 @@ class DeploymentManager:
                         test_url = test_datasources[index]['connectionDetails']['url']
                         prod_url = prod_datasources[index]['connectionDetails']['url']
                         file_content += indent + '# [Web Datasource Url]\n'
-                        file_content += indent + '- find_value: "' + dev_url + f'" # [{dev_workspace["displayName"]}]\n'
-                        file_content += indent + '    replace_value:\n'
+                        file_content += indent + '"' + dev_url + f'": # [{dev_workspace["displayName"]}]\n'
                         file_content += indent + indent + f'TEST: "{test_url}" # [{test_workspace["displayName"]}]\n'
                         file_content += indent + indent + f'PROD: "{prod_url}" # [{prod_workspace["displayName"]}]\n\n'
 
@@ -2539,14 +2537,12 @@ class DeploymentManager:
                         prod_sql_database = prod_datasources[index]['connectionDetails']['database']
 
                         file_content += indent + '# [SQL Datasource Server]\n'
-                        file_content += indent + '- find_value: "' + dev_sql_server + f'" # [{dev_workspace["displayName"]}]\n'
-                        file_content += indent + '    replace_value:\n'
+                        file_content += indent + '"' + dev_sql_server + f'": # [{dev_workspace["displayName"]}]\n'
                         file_content += indent + indent + f'TEST: "{test_sql_server}" # [{test_workspace["displayName"]}]\n'
                         file_content += indent + indent + f'PROD: "{prod_sql_server}" # [{prod_workspace["displayName"]}]\n\n'
 
                         file_content += indent + '# [SQL Datasource Database]\n'
-                        file_content += indent + '- find_value: "' + dev_sql_database + f'" # [{dev_workspace["displayName"]}]\n'
-                        file_content += indent + '    replace_value:\n'
+                        file_content += indent + '"' + dev_sql_database + f'": # [{dev_workspace["displayName"]}]\n'
                         file_content += indent + indent + f'TEST: "{test_sql_database}" # [{test_workspace["displayName"]}]\n'
                         file_content += indent + indent + f'PROD: "{prod_sql_database}" # [{prod_workspace["displayName"]}]\n\n'
 
