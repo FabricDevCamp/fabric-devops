@@ -2501,10 +2501,8 @@ class DeploymentManager:
             if item_name in test_items:
                 file_content += indent + indent + f'TEST: "{test_items[item_name]}" # [{test_workspace["displayName"]}]\n'
             if item_name in prod_items:
-                file_content += indent + indent + f'PROD: "{prod_items[item_name]}" # [{prod_workspace["displayName"]}]\n'
-            file_content += indent + f'  item_type: "{workspace_item["type"]}"\n'
-            file_content += indent + f'  item_name: ["{workspace_item["displayName"]}"]\n\n'
-
+                file_content += indent + indent + f'PROD: "{prod_items[item_name]}" # [{prod_workspace["displayName"]}]\n\n'
+       
             if workspace_item['type'] == 'SemanticModel':
 
                 dev_datasources = FabricRestApi.get_datasources_for_semantic_model(
@@ -2523,6 +2521,7 @@ class DeploymentManager:
                 )
 
                 for index, dev_datasource in enumerate(dev_datasources):
+
                     if dev_datasource['datasourceType'] == "Web":
                         dev_url = dev_datasource['connectionDetails']['url']
                         test_url = test_datasources[index]['connectionDetails']['url']
@@ -2531,7 +2530,9 @@ class DeploymentManager:
                         file_content += indent + '- find_value: "' + dev_url + f'": # [{dev_workspace["displayName"]}]\n'
                         file_content += indent + '  replace_value:\n'
                         file_content += indent + indent + f'TEST: "{test_url}" # [{test_workspace["displayName"]}]\n'
-                        file_content += indent + indent + f'PROD: "{prod_url}" # [{prod_workspace["displayName"]}]\n\n'
+                        file_content += indent + indent + f'PROD: "{prod_url}" # [{prod_workspace["displayName"]}]\n'
+                        file_content += indent + f'  item_type: "SemanticModel"\n'
+                        file_content += indent + f'  item_name: ["{workspace_item["displayName"]}"]\n\n'
 
                     if dev_datasource['datasourceType'] == "Sql":
                         dev_sql_server = dev_datasource['connectionDetails']['server']
@@ -2540,18 +2541,21 @@ class DeploymentManager:
                         test_sql_database = test_datasources[index]['connectionDetails']['database']
                         prod_sql_server = prod_datasources[index]['connectionDetails']['server']
                         prod_sql_database = prod_datasources[index]['connectionDetails']['database']
-
                         file_content += indent + '# [SQL Datasource Server]\n'
                         file_content += indent + '- find_value: "' + dev_sql_server + f'": # [{dev_workspace["displayName"]}]\n'
                         file_content += indent + '  replace_value:\n'
                         file_content += indent + indent + f'TEST: "{test_sql_server}" # [{test_workspace["displayName"]}]\n'
-                        file_content += indent + indent + f'PROD: "{prod_sql_server}" # [{prod_workspace["displayName"]}]\n\n'
+                        file_content += indent + indent + f'PROD: "{prod_sql_server}" # [{prod_workspace["displayName"]}]\n'
+                        file_content += indent + f'  item_type: "SemanticModel"\n'
+                        file_content += indent + f'  item_name: ["{workspace_item["displayName"]}"]\n\n'
 
                         file_content += indent + '# [SQL Datasource Database]\n'
                         file_content += indent + '- find_value: "' + dev_sql_database + f'": # [{dev_workspace["displayName"]}]\n'
                         file_content += indent + '  replace_value:\n'
                         file_content += indent + indent + f'TEST: "{test_sql_database}" # [{test_workspace["displayName"]}]\n'
                         file_content += indent + indent + f'PROD: "{prod_sql_database}" # [{prod_workspace["displayName"]}]\n\n'
+                        file_content += indent + f'  item_type: "SemanticModel"\n'
+                        file_content += indent + f'  item_name: ["{workspace_item["displayName"]}"]\n\n'
 
         return file_content
 
