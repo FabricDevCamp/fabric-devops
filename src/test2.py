@@ -6,9 +6,9 @@ from fabric_devops import DeploymentManager, EnvironmentSettings, FabricRestApi
 
 
 params = DeploymentManager.generate_parameter_yml_file(
-    "Charo-dev",
-    "Charo-test",
-    "Charo"
+    "Gabby-dev",
+    "Gabby-test",
+    "Gabby"
 )
 
 folder_path = ".//exports//params/"
