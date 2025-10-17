@@ -1,12 +1,10 @@
-trigger:
-  branches:
-    include: ["dev", "test", "main"]
+trigger: none
 
 variables: 
 - group: 'environmental_variables'
 
 jobs:
-- job: Run_CICD_Pipeline_1
+- job: Display_Fabric_Inventory
   pool:
     vmImage: ubuntu-latest
   
@@ -17,13 +15,13 @@ jobs:
       versionSpec: '3.12'
       addToPath: true
 
-  - script: pip install msal
+  - script: pip install msal -q
     displayName: 'Install msal'
 
   - task: PythonScript@0  
     inputs:
       scriptSource: 'filePath'
-      scriptPath: 'src/test1.py' 
+      scriptPath: 'src/display_fabric_inventory.py' 
       workingDirectory: '$(Build.SourcesDirectory)/src'
       failOnStderr: true  
     env:
@@ -33,4 +31,7 @@ jobs:
       SERVICE_PRINCIPAL_OBJECT_ID: $(SERVICE_PRINCIPAL_OBJECT_ID)
       ADMIN_USER_ID: $(ADMIN_USER_ID)
       FABRIC_CAPACITY_ID: $(FABRIC_CAPACITY_ID)
+      WORKSPACE_ID: 'd7998094-6e80-4660-8015-645c91385a6d'
+
+
     

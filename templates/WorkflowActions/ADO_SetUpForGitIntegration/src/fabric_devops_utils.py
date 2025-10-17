@@ -1,24 +1,172 @@
-"""Module to manage calls to Fabric REST APIs"""
+"""Demo Utility Classes"""
 
+
+import base64
+import shutil
+import re
+
+import os
 import time
-from datetime import date, timedelta
+import datetime
 import json
 from json.decoder import JSONDecodeError
+from typing import List
+
 import requests
-from .app_logger import AppLogger
-from .environment_settings import EnvironmentSettings
-from .entra_id_token_manager import EntraIdTokenManager
+import msal
+
+class EnvironmentSettings:
+    """Environment Settings"""
+
+    FABRIC_CLIENT_ID = os.getenv("FABRIC_CLIENT_ID")
+    FABRIC_CLIENT_SECRET = os.getenv("FABRIC_CLIENT_SECRET")
+    FABRIC_TENANT_ID = os.getenv("FABRIC_TENANT_ID")
+    AUTHORITY = f'https://login.microsoftonline.com/{FABRIC_TENANT_ID}'
+    FABRIC_CAPACITY_ID = os.getenv("FABRIC_CAPACITY_ID")
+
+    WORKSPACE_ID = os.getenv("WORKSPACE_ID")
+
+    FABRIC_REST_API_RESOURCE_ID = 'https://api.fabric.microsoft.com'
+    FABRIC_REST_API_BASE_URL = 'https://api.fabric.microsoft.com/v1/'
+    POWER_BI_REST_API_BASE_URL = 'https://api.powerbi.com/v1.0/myorg/'
+
+    PROD_WEB_DATASOURCE_URL = 'https://fabricdevcamp.blob.core.windows.net/sampledata/ProductSales/prod/'
+    PROD_ADLS_SERVER = 'https://fabricdevcamp.dfs.core.windows.net/'
+    PROD_ADLS_CONTAINER_NAME = 'sampledata'
+    PROD_ADLS_CONTAINER_PATH = '/ProductSales/PROD'
+    PROD_ADLS_SERVER_PATH = PROD_ADLS_CONTAINER_NAME + PROD_ADLS_CONTAINER_PATH
+
+    DEV_WEB_DATASOURCE_URL = 'https://fabricdevcamp.blob.core.windows.net/sampledata/ProductSales/dev'
+    DEV_ADLS_SERVER = 'https://fabricdevcamp.dfs.core.windows.net/'
+    DEV_ADLS_CONTAINER_NAME = 'sampledata'
+    DEV_ADLS_CONTAINER_PATH = '/ProductSales/Dev'
+    DEV_ADLS_SERVER_PATH = DEV_ADLS_CONTAINER_NAME + DEV_ADLS_CONTAINER_PATH
+
+    
+class AppLogger:
+    """Logic to write log output to console and/or logs"""
+
+    @classmethod
+    def clear_console(cls):
+        """Clear Console Window when running locally"""
+        if os.name == 'nt':
+            os.system('cls')
+
+    @classmethod
+    def log_job(cls, message):
+        """start job"""
+        print('', flush=True)
+        print('|' + ('-' * (len(message) + 2)) + '|', flush=True)
+        print(f'| {message} |', flush=True)
+        print('|' + ('-' * (len(message) + 2)) + '|', flush=True)
+
+    @classmethod
+    def log_job_ended(cls, message=''):
+        """log that job has ended"""
+        print(' ', flush=True)
+        print(f'> {message}', flush=True)
+        print(' ', flush=True)
+
+    @classmethod
+    def log_job_complete(cls, workspace_id=None):
+        """log that job has ended"""
+        cls.log_step("Deployment job completed")
+        if workspace_id is not None:
+            workspace_launch_url = (
+                f'https://app.powerbi.com/groups/{workspace_id}/list?experience=fabric-developer'
+            )
+            cls.log_substep(f'Workspace launch URL: {workspace_launch_url}')
+        print(' ', flush=True)
+
+    @classmethod
+    def log_step(cls, message):
+        """log a step"""
+        print(' ', flush=True)
+        print('> ' + message, flush=True)
+
+    @classmethod
+    def log_substep(cls, message):
+        """log a sub step"""
+        print('  - ' + message, flush=True)
+
+    @classmethod
+    def log_step_complete(cls):
+        """add linebreak to log"""
+        print(' ', flush=True)
+
+    TABLE_WIDTH = 120
+
+    @classmethod
+    def log_table_header(cls, table_title):
+        """Log Table Header"""
+        print(' ', flush=True)
+        print(f'> {table_title}', flush=True)
+        print('  ' + ('-' * (cls.TABLE_WIDTH)), flush=True)
+
+    @classmethod
+    def log_table_row(cls, column1_value, column2_value):
+        """Log Table Row"""
+        column1_width = 20
+        column1_value_length = len(column1_value)
+        column1_offset = column1_width - column1_value_length
+        column2_width = cls.TABLE_WIDTH - column1_width
+        column2_value_length = len(column2_value)
+        column2_offset = column2_width - column2_value_length - 5
+        row = f'  | {column1_value}{" " * column1_offset}| {column2_value}{" " * column2_offset}|'
+        print(row, flush=True)
+        print('  ' + ('-' * (cls.TABLE_WIDTH)), flush=True)
+
+    @classmethod
+    def log_raw_text(cls, text):
+        """log raw text"""
+        print(text, flush=True)
+        print('', flush=True)
+
+    @classmethod
+    def log_error(cls, message):
+        """log error"""
+        error_message = "ERROR: " + message
+        print('-' * len(error_message), flush=True)
+        print(error_message, flush=True)
+        print('-' * len(error_message), flush=True)
+        
+        """Module to manage calls to Fabric REST APIs"""
 
 class FabricRestApi:
     """Wrapper class for calling Fabric REST APIs"""
 
     #region 'Low-level details about authentication and HTTP requests and responses'
 
+    # in-memory token cache
+    _token_cache = dict()
+
+    @classmethod
+    def _get_fabric_access_token(cls):
+      scope = EnvironmentSettings.FABRIC_REST_API_RESOURCE_ID + "//.default"
+      if (scope in cls._token_cache) and \
+         (datetime.datetime.now() < cls._token_cache[scope]['access_token_expiration']):
+           return cls._token_cache[scope]['access_token']
+                
+      app = msal.ConfidentialClientApplication(
+            EnvironmentSettings.FABRIC_CLIENT_ID,
+            authority=EnvironmentSettings.AUTHORITY,
+            client_credential=EnvironmentSettings.FABRIC_CLIENT_SECRET)
+
+      authentication_result = app.acquire_token_for_client([scope])
+
+      cls._token_cache[scope] = {
+        'access_token': authentication_result['access_token'],
+        'access_token_expiration': datetime.datetime.now() + \
+                                   datetime.timedelta(0,  int(authentication_result['expires_in']))
+        }
+
+      return authentication_result['access_token']
+
     @classmethod
     def _execute_get_request(cls, endpoint):
         """Execute GET Request on Fabric REST API Endpoint"""
         rest_url = EnvironmentSettings.FABRIC_REST_API_BASE_URL + endpoint
-        access_token = EntraIdTokenManager.get_fabric_access_token()
+        access_token = cls._get_fabric_access_token()
         request_headers = {'Content-Type':'application/json',
                              'Authorization': f'Bearer {access_token}'}
         response = requests.get(url=rest_url, headers=request_headers, timeout=60)
@@ -38,9 +186,9 @@ class FabricRestApi:
     def _execute_post_request(cls, endpoint, post_body=''):
         """Execute POST request with support for Long-running Operations (LRO)"""
         rest_url = EnvironmentSettings.FABRIC_REST_API_BASE_URL + endpoint
-        access_token = EntraIdTokenManager.get_fabric_access_token()
+        access_token = cls._get_fabric_access_token()
         request_headers = {'Content-Type':'application/json',
-                             'Authorization': f'Bearer {access_token}'}
+                           'Authorization': f'Bearer {access_token}'}
 
         response = requests.post(url=rest_url, json=post_body, headers=request_headers, timeout=60)
 
@@ -100,7 +248,7 @@ class FabricRestApi:
     def _execute_post_request_for_capacity_assignment(cls, endpoint, post_body=''):
         """Execute POST request with support without support for Long-running Operations (LRO)"""
         rest_url = EnvironmentSettings.FABRIC_REST_API_BASE_URL + endpoint
-        access_token = EntraIdTokenManager.get_fabric_access_token()
+        access_token = cls._get_fabric_access_token()
         request_headers = {'Content-Type':'application/json',
                              'Authorization': f'Bearer {access_token}'}
 
@@ -129,7 +277,7 @@ class FabricRestApi:
     def _execute_post_request_for_job_scheduler(cls, endpoint, post_body=''):
         """Execute POST request with support for Om-demand Job with Job Scheduler"""
         rest_url = EnvironmentSettings.FABRIC_REST_API_BASE_URL + endpoint
-        access_token = EntraIdTokenManager.get_fabric_access_token()
+        access_token = cls._get_fabric_access_token()
         request_headers = {'Content-Type':'application/json',
                              'Authorization': f'Bearer {access_token}'}
         response = requests.post(url=rest_url, headers=request_headers, json=post_body, timeout=60)
@@ -180,7 +328,7 @@ class FabricRestApi:
     def _execute_patch_request(cls, endpoint, post_body):
         """Execute GET Request on Fabric REST API Endpoint"""
         rest_url = EnvironmentSettings.FABRIC_REST_API_BASE_URL + endpoint
-        access_token = EntraIdTokenManager.get_fabric_access_token()
+        access_token = cls._get_fabric_access_token()
         request_headers = {'Content-Type':'application/json',
                              'Authorization': f'Bearer {access_token}'}
         response = requests.patch(url=rest_url, json=post_body, headers=request_headers, timeout=60)
@@ -200,7 +348,7 @@ class FabricRestApi:
     def _execute_delete_request(cls, endpoint):
         """Execute DELETE Request on Fabric REST API Endpoint"""
         rest_url = EnvironmentSettings.FABRIC_REST_API_BASE_URL + endpoint
-        access_token = EntraIdTokenManager.get_fabric_access_token()
+        access_token = cls._get_fabric_access_token()
         request_headers= {'Content-Type':'application/json',
                             'Authorization': f'Bearer {access_token}'}
         response = requests.delete(url=rest_url, headers=request_headers, timeout=60)
@@ -221,7 +369,7 @@ class FabricRestApi:
         """Execute GET Request on Power BI REST API Endpoint"""
 
         rest_url = EnvironmentSettings.POWER_BI_REST_API_BASE_URL + endpoint
-        access_token = EntraIdTokenManager.get_fabric_access_token()
+        access_token = cls._get_fabric_access_token()
         request_headers = {'Content-Type':'application/json',
                              'Authorization': f'Bearer {access_token}'}
         response = requests.get(url=rest_url, headers=request_headers, timeout=60)
@@ -240,7 +388,7 @@ class FabricRestApi:
     @classmethod
     def _execute_post_request_to_powerbi(cls, endpoint, post_body=''):
         rest_url = EnvironmentSettings.POWER_BI_REST_API_BASE_URL + endpoint
-        access_token = EntraIdTokenManager.get_fabric_access_token()
+        access_token = cls._get_fabric_access_token()
         request_headers = {'Content-Type':'application/json',
                              'Authorization': f'Bearer {access_token}'}
         return requests.post(url=rest_url, headers=request_headers, json=post_body, timeout=60)
@@ -249,7 +397,7 @@ class FabricRestApi:
     def _execute_patch_request_to_powerbi(cls, endpoint, post_body):
         """Execute GET Request on Fabric REST API Endpoint"""
         rest_url = EnvironmentSettings.POWER_BI_REST_API_BASE_URL + endpoint
-        access_token = EntraIdTokenManager.get_fabric_access_token()
+        access_token = cls._get_fabric_access_token()
         request_headers = {'Content-Type':'application/json',
                              'Authorization': f'Bearer {access_token}'}
         response = requests.patch(url=rest_url, json=post_body, headers=request_headers, timeout=60)
@@ -269,11 +417,6 @@ class FabricRestApi:
             return None
 
     #endregion
-
-    @classmethod
-    def authenticate(cls):
-        """authenticate"""
-        EntraIdTokenManager.get_fabric_access_token()
 
     @classmethod
     def list_capacities(cls):
@@ -298,19 +441,19 @@ class FabricRestApi:
         return filter(lambda workspace: workspace['type'] == 'Workspace', all_workspaces)
 
     @classmethod
-    def get_workspace_info(cls, workspace_id):
-        """Get Workspace information by ID"""
-        return cls._execute_get_request(f'workspaces/{workspace_id}')
-
-    @classmethod
     def display_workspaces(cls):
         """Display all workspaces accessible to caller"""
-        AppLogger.log_step('Workspaces:')
         workspaces = cls.list_workspaces()
+        AppLogger.log_step('Workspaces:')
         for workspace in workspaces:
             workspace_item = f"[ id={workspace['id']}, displayName={workspace['displayName']} ]"
             AppLogger.log_substep(workspace_item)
         AppLogger.log_step_complete()
+
+    @classmethod
+    def get_workspace_info(cls, workspace_id):
+        """Get Workspace information by ID"""
+        return cls._execute_get_request(f'workspaces/{workspace_id}')
 
     @classmethod
     def get_workspace_by_name(cls, display_name):
@@ -480,11 +623,10 @@ class FabricRestApi:
     def display_connections(cls):
         """Get all connections accessible to caller"""
         connections = cls.list_connections()
-        AppLogger.log_step('Connections')
+        AppLogger.log_step('Connections:')
         for connection in connections:
             AppLogger.log_substep(
-                f"{connection['id']} - " + \
-                f"{connection['connectionDetails']['type']} - {connection['displayName']}")            
+                f"{connection['id']} - {connection['displayName']}")
 
     @classmethod
     def create_connection(cls, create_connection_request, top_level_step = False):
@@ -1003,7 +1145,6 @@ class FabricRestApi:
 
         return cls.create_item(workspace_id, create_item_request, folder_id)
 
-
     @classmethod
     def list_workspace_items(cls, workspace_id, item_type = None):
         """Get items in workspace"""
@@ -1104,7 +1245,6 @@ class FabricRestApi:
         AppLogger.log_substep("Item schedule created successfully")
         return response
 
-
     @classmethod
     def get_sql_database_properties(cls, workspace_id, sql_database_id):
         """Get SQL database properties"""
@@ -1140,7 +1280,6 @@ class FabricRestApi:
             'server': server,
             'database': database
         }
-
 
     @classmethod
     def get_onelake_path_for_lakehouse(cls, workspace_id, lakehouse):
@@ -1441,427 +1580,1116 @@ class FabricRestApi:
         """Update My GIT Credentials"""
         endpoint = f"workspaces/{workspace_id}/git/myGitCredentials"
         return cls._execute_patch_request(endpoint, update_git_credentials_request)
-        
-    @classmethod
-    def list_deployment_pipelines(cls):
-        """Get all deployment pipelines accessible to caller"""
-        return cls._execute_get_request('deploymentPipelines')['value']
 
-    @classmethod
-    def get_deployment_pipeline_by_name(cls, display_name):
-        """Get Deployment Pipeline item by display name"""
-        pipelines =    cls.list_deployment_pipelines()
-        for pipeline in pipelines:
-            if pipeline['displayName'] == display_name:
-                return pipeline
-        return None
+class Variable:
+    """Variable in Variable Library"""
+    name: str
+    value: str
+    type: str
+    note: str
 
-    @classmethod
-    def list_deployment_pipeline_stages(cls, pipeline_id):
-        """List all deployment pipeline stages"""
-        endpoint = f"deploymentPipelines/{pipeline_id}/stages"
-        return cls._execute_get_request(endpoint)['value']
+    def __init__(self, name: str, value: str, variable_type: str = 'String', note: str = '') -> None:
+        self.name = name
+        self.value = value
+        self.type = variable_type
+        self.note = note
 
-    @classmethod
-    def delete_deployment_pipeline(cls, pipeline_id):
-        """Delete Deployment Pipeline"""
-        endpoint = f"deploymentPipelines/{pipeline_id}"
-        return cls._execute_delete_request(endpoint)
+    def encode(self):
+        """encode support"""
+        return self.__dict__
 
-    @classmethod
-    def display_deployment_pipelines(cls):
-        """Display Deployment Pipeline"""
-        AppLogger.log_step('Deployment Pipelines:')
-        pipelines = cls.list_deployment_pipelines()
-        for pipeline in pipelines:
-            AppLogger.log_substep(f"{pipeline['id']} - {pipeline['displayName']}")
+class VariableOverride:
+    """Variable in Variable Library"""
+    name: str
+    value: str
 
-    @classmethod
-    def create_deployment_pipeline(cls, display_name, stages):
-        """Create Deployment Pipeline"""
-        AppLogger.log_step(f'Creating Deployment Pipeline [{display_name}]')
-        pipeline_stages = []
-        for stage in stages:
-            pipeline_stages.append({
-                'displayName': stage,
-                'description': f'stage for {stage}',
-                'isPublic': False
-            })
-        create_request = {
-            'displayName': display_name,
-            'description': 'great example',
-            'stages': pipeline_stages
-        }
-        endpoint = "deploymentPipelines"
-        pipeline = cls._execute_post_request(endpoint, create_request)
+    def __init__(self, name: str, value: str) -> None:
+        self.name = name
+        self.value = value
 
-        AppLogger.log_substep(f"Pipeline create with id [{pipeline['id']}]")
+    def encode(self):
+        """encode support"""
+        return self.__dict__
 
-        if EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL:
-            AppLogger.log_substep('Adding deployment pipeline role of [Admin] for admin user')
-            cls.add_deployment_pipeline_role_assignment(pipeline['id'],
-                                                        EnvironmentSettings.ADMIN_USER_ID,
-                                                        'User',
-                                                        'Admin')
-        else:
-            AppLogger.log_substep(
-                'Adding deployment pipeline role of [Admin] for service principal')
+class Valueset:
+    """Variable Library"""
+    variableOverrides: List[VariableOverride]
 
-            cls.add_deployment_pipeline_role_assignment(pipeline['id'],
-                                                        EnvironmentSettings.SERVICE_PRINCIPAL_OBJECT_ID,
-                                                        'ServicePrincipal',
-                                                        'Admin')
-        return pipeline
+    def __init__(self, name):
+        self.name = name
+        self.variableOverrides = []
 
-    @classmethod
-    def add_deployment_pipeline_role_assignment(cls, pipeline_id,
-                                                principal_id, principal_type, role):
-        """Add Deployment Pipeline Role Assignment"""
-        endpoint = f"deploymentPipelines/{pipeline_id}/roleAssignments"
-        add_request = {
-            'principal': {
-                'id': principal_id,
-                'type': principal_type
-            },
-            'role': role
-        }
-        return cls._execute_post_request(endpoint, add_request)
-
-    @classmethod
-    def assign_workpace_to_pipeline_stage(cls, workspace_id, pipeline_id, stage_id):
-        """Assign workspace to pipeline stage """
-        endpoint = f"deploymentPipelines/{pipeline_id}/stages/{stage_id}/assignWorkspace"
-        assign_request = { 'workspaceId': workspace_id }
-        cls._execute_post_request(endpoint, assign_request)
-
-    @classmethod
-    def unassign_workpace_from_pipeline_stage(cls, pipeline_id, stage_id):
-        """Assign workspace to pipeline stage"""
-        endpoint = f"deploymentPipelines/{pipeline_id}/stages/{stage_id}/unassignWorkspace"
-        cls._execute_post_request(endpoint)
-
-    @classmethod
-    def deploy_to_pipeline_stage(cls, pipeline_id, source_stage_id, target_stage_id,    note = None):
-        """Deploy to pipeline stage"""
-        endpoint = f'deploymentPipelines/{pipeline_id}/deploy'
-        deploy_request = {
-            'sourceStageId': source_stage_id,
-            'targetStageId': target_stage_id
-        }
-        if note is not None:
-            deploy_request['note'] = note
-        else:
-            deploy_request['note'] = 'A bunch of saves'
-
-
-        cls._execute_post_request(endpoint, deploy_request)
-
-# create workspace connection to GitHub
-
-    @classmethod
-    def _create_github_source_control_connection(cls, url, workspace, top_level_step = False):
-        """Create GitHub connections with Personal Access Token"""
-
-        display_name = f"Workspace[{workspace['id']}]-GitHubSourceControl"
-
-        create_connection_request = {
-            'displayName': display_name,
-            'connectivityType': 'ShareableCloud',
-            'privacyLevel': 'Organizational',
-            'connectionDetails': {
-                'type': 'GitHubSourceControl',
-                'creationMethod': 'GitHubSourceControl.Contents',
-                'parameters': [ 
-                    { 'name': 'url', 'dataType': 'Text', 'value': url }
-                ]
-            },
-            'credentialDetails': {
-                'credentials': {
-                    'key': EnvironmentSettings.PERSONAL_ACCESS_TOKEN_GITHUB,
-                    'credentialType': 'Key'
-                },
-                'singleSignOnType': 'None',
-                'connectionEncryption': 'NotEncrypted',
-                'skipTestConnection': 'false'
-            }
-        }
-
-        return cls.create_connection(create_connection_request, top_level_step=top_level_step)
-
-    @classmethod
-    def _get_github_source_control_connection(cls, repo_name, workspace = None):
-        """Get GitHub Repo Connection"""
-
-        github_repo_url = f'https://github.com/fabricdevcampdemos/{repo_name}'
-
-        connections = FabricRestApi.list_connections()
-
-        for connection in connections:
-            if connection['connectionDetails']['type'] == 'GitHubSourceControl' and \
-                 connection['connectionDetails']['path'] == github_repo_url:
-                return connection
-
-        return cls._create_github_source_control_connection(github_repo_url, workspace)
+    def encode(self):
+        """encode support"""
+        return self.__dict__
     
-    @classmethod
-    def _create_workspace_connection_to_github_repo(cls, workspace_id, repo_name, connection_id, branch = 'main'):
-        """Connect Workspace to GIT Repository"""
-        endpoint = f"workspaces/{workspace_id}/git/connect"
+    def add_variable_override(self, name: str, value: str):
+        """"add variable"""
+        self.variableOverrides.append( VariableOverride(name, value) )
 
-        connect_request = {
-            "gitProviderDetails": {
-                "ownerName": "fabricdevcampdemos",
-                "gitProviderType": "GitHub",
-                "repositoryName": repo_name,
-                "branchName": branch,
-                "directoryName": "/workspace"
-            },
-            "myGitCredentials": {
-                "source": "ConfiguredConnection",
-                "connectionId": connection_id            
-            }
+class VariableLibrary:
+    """Variable Library"""
+    variables: List[Variable]
+    valuesets: List[Valueset]
+
+    def __init__(self, variables = None, valuesets = None):
+        self.variables = variables if variables is not None else []
+        self.valuesets = valuesets if valuesets is not None else []
+
+    def encode(self):
+        """encode support"""
+        return self.__dict__
+
+    def add_variable(self, name: str, value: str, variable_type: str = 'String', note: str = 'some note'):
+        """"add variable"""
+        self.variables.append( Variable(name, value, variable_type, note) )
+
+    def add_valueset(self, valueset: Valueset):
+        """"add valueset"""
+        self.valuesets.append( valueset )
+
+
+    def get_variable_json(self):
+        "Get JSON for variables.json"
+        variable_lib = {
+            '$schema': 'https://developer.microsoft.com/json-schemas/fabric/item/variableLibrary/definition/variables/1.0.0/schema.json',
+            'variables': self.variables
+        }
+        return json.dumps(variable_lib, default=lambda o: o.encode(), indent=4)
+
+    def get_valueset_json(self, valueset_name):
+        """Get JSON for valueset.json"""
+        valueset_list = list(filter(lambda valueset: valueset.name == valueset_name, self.valuesets))
+        valueset: Valueset = valueset_list[0]
+               
+        valueset_export = {
+            '$schema': 'https://developer.microsoft.com/json-schemas/fabric/item/variableLibrary/definition/valueSet/1.0.0/schema.json',
+            'name': valueset.name,
+            'variableOverrides': valueset.variableOverrides
+        }
+        return json.dumps(valueset_export, default=lambda o: o.encode(), indent=4)
+
+class ItemDefinitionFactory:
+    """Logic to to create and update item definitions"""
+
+    @classmethod
+    def _create_inline_base64_part(cls, path, payload):
+        """create item definition part with base64 encoding"""
+        return {
+            'path': path,
+            'payload': base64.b64encode(payload.encode('utf-8')).decode('utf-8'),
+            'payloadType': 'InlineBase64'
         }
 
-        return cls._execute_post_request(endpoint, connect_request)
+    @classmethod
+    def _get_part_path(cls, item_folder_path, file_path):
+        """get path for item definition part"""
+        offset = file_path.find(item_folder_path) + len(item_folder_path) + 1
+        return file_path[offset:].replace('\\', '/')
 
     @classmethod
-    def connect_workspace_to_github_repo(cls, workspace, repo_name, branch = 'main'):
-        """Connect Workspace to GitHub Repository"""
+    def _search_and_replace_in_payload(cls, payload, search_replace_text):
+        payload_bytes = base64.b64decode(payload)
+        payload_content = payload_bytes.decode('utf-8')
+        for entry in search_replace_text.keys():
+            payload_content = payload_content.replace(entry, search_replace_text[entry])
+        return base64.b64encode(payload_content.encode('utf-8')).decode('utf-8')
 
-        AppLogger.log_substep(f"Connecting workspace[{workspace['displayName']}] " + \
-                                f"to branch[{branch}] in GitHub repo[{repo_name}]")
+    @classmethod
+    def _search_and_replace_in_payload_with_regex(cls, payload, search_replace_terms):
+        payload_bytes = base64.b64decode(payload)
+        payload_content = payload_bytes.decode('utf-8')
 
-        connection = cls._get_github_source_control_connection(repo_name, workspace)
-        connection_id = connection['id']
+        for search, replace in search_replace_terms.items():
+            payload_content, count = re.subn(search, replace, payload_content)
 
-        cls._create_workspace_connection_to_github_repo(workspace['id'], repo_name, connection_id, branch)
+        return base64.b64encode(payload_content.encode('utf-8')).decode('utf-8')
 
-        AppLogger.log_substep("Workspace connection created successfully")
+    @classmethod
+    def get_template_file(cls, path):
+        """get contents of a file from templates folder"""
+        file_path = f".//templates//ItemDefinitionTemplateFiles//{path}"
+        file = open(file_path,'r', encoding="utf-8")
+        file_content = file.read()
+        file.close()
+        return file_content
 
+    @classmethod
+    def get_create_item_request_from_folder(cls, item_folder):
+        """generate create item request from folder"""
+        folder_path = f".//templates//ItemDefinitionTemplateFolders//{item_folder}"
+        platform_file_path = f'{folder_path}//.platform'
+        file = open(platform_file_path,'r', encoding="utf-8")
+        file_content = json.loads(file.read())
+        file.close()
+        item_type = file_content['metadata']['type']
+        item_display_name = file_content['metadata']['displayName']
 
-        init_request = {
-            'initializationStrategy': 'PreferWorkspace'
+        item_definition_parts = []
+
+        for root, dirs, files in os.walk(folder_path):
+            for file in files:
+                file_path = os.path.join(root, file)
+                part_path = cls._get_part_path(item_folder, file_path)
+                file = open(file_path,'r', encoding="utf-8")
+                part_content = file.read()
+                item_definition_parts.append(cls._create_inline_base64_part(part_path, part_content))
+
+        return {
+            'displayName': item_display_name,
+            'type': item_type,
+            'definition': {
+                'parts': item_definition_parts
+            }
+
         }
 
-        init_response = cls.initialize_git_connection(workspace['id'], init_request)
-
-        required_action = init_response['requiredAction']
-
-        if required_action == 'CommitToGit':
-            commit_to_git_request = {
-                'mode': 'All',
-                'workspaceHead': init_response['workspaceHead'],
-                'comment': 'Initial commit'
-            }
-            cls.commit_workspace_to_git(workspace['id'], commit_to_git_request)
-
-        if required_action == 'UpdateFromGit':
-            update_from_git_request = {
-                "workspaceHead": init_response['workspaceHead'],
-                "remoteCommitHash": init_response['remoteCommitHash'],
-                "conflictResolution": {
-                    "conflictResolutionType": "Workspace",
-                    "conflictResolutionPolicy": "PreferWorkspace"
-                },
-                "options": {
-                    "allowOverrideItems": True
-                }
-                            
-            }
-            cls.update_workspace_from_git(workspace['id'], update_from_git_request)
-
-        AppLogger.log_substep("Workspace connection successfully created and synchronized")
+    @classmethod
+    def update_item_definition_part(cls, item_definition, part_path, search_replace_text):
+        """Update Item Definition Part"""
+        item_part = next((part for part in item_definition['parts'] if part['path'] == part_path), None)
+        if item_part is not None:
+            item_definition['parts'].remove(item_part)
+            item_part['payload'] = cls._search_and_replace_in_payload(item_part['payload'], search_replace_text)
+            item_definition['parts'].append(item_part)
+        return item_definition
 
     @classmethod
-    def call_user_defined_function(cls, workspace_id, function_id, function_name, parameters):
-        """Call user defined function"""
-        endpoint = f'https://{workspace_id}.userdatafunctions.fabric.microsoft.com/v1/workspaces/{workspace_id}/userDataFunctions/{function_id}/functions/{function_name}/invoke'
-        print(endpoint)
-        return cls._execute_post_request(endpoint, parameters)
+    def update_item_definition_part_with_regex(cls, item_definition, part_path, search_replace_terms):
+        """Update Item Definition Part"""
+        item_part = next((part for part in item_definition['parts'] if part['path'] == part_path), None)
+        if item_part is not None:
+            item_definition['parts'].remove(item_part)
+            item_part['payload'] = cls._search_and_replace_in_payload_with_regex(item_part['payload'], search_replace_terms)
+            item_definition['parts'].append(item_part)
+        return item_definition
 
     # @classmethod
-    # def create_git_connection_to_ado_repo(cls, workspace, project_name, branch = 'main'):
-    #     """Connect Workspace to GIT Repository"""
+    # def get_create_notebook_request_from_folder(cls, item_folder, workspace_id, lakehouse):
+    #     """generate create item request from folder"""
+    #     create_request = cls.get_create_item_request_from_folder(item_folder)
+    #     notebook_redirects = {
+    #         '{WORKSPACE_ID}': workspace_id,
+    #         '{LAKEHOUSE_ID}': lakehouse['id'],
+    #         '{LAKEHOUSE_NAME}': lakehouse['displayName']
+    #     }
+    #     return cls.update_part_in_create_request(create_request,
+    #                                              'notebook-content.py',
+    #                                              notebook_redirects,)
 
-    #     workspace_id = workspace['id']
-    #     endpoint = f"workspaces/{workspace_id}/git/connect"
+    # @classmethod
+    # def get_create_report_request_from_folder(cls, item_folder, model_id):
+    #     """generate create item request from folder"""
+    #     create_request = cls.get_create_item_request_from_folder(item_folder)
+    #     return cls.update_create_report_request_with_semantic_model(create_request,
+    #                                                                 model_id)
 
-    #     workspace_folder = "workspace"
-
-    #     if EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL:     
-
-    #         connection = cls._create_ado_source_control_connection(project_name, workspace)
-    #         connection_id = connection['id']
-    #         connect_request = {
-    #             "gitProviderDetails": {
-    #                 "organizationName": "FabricDevCamp",
-    #                 "projectName": project_name,
-    #                 "gitProviderType": "AzureDevOps",
-    #                 "repositoryName": project_name,
-    #                 "branchName": branch,
-    #                 "directoryName": f"/{workspace_folder}"
-    #             },
-    #             "myGitCredentials": {
-    #                 "source": "ConfiguredConnection",
-    #                 "connectionId": connection_id            
-    #             }
-    #         }
-    #     else:
-    #         connect_request = {
-    #             "gitProviderDetails": {
-    #                 "organizationName": "FabricDevCamp",
-    #                 "projectName": project_name,
-    #                 "gitProviderType": "AzureDevOps",
-    #                 "repositoryName": project_name,
-    #                 "branchName": branch,
-    #                 "directoryName": f"/{workspace_folder}"
-    #             }
-    #         }
-
-    #     return cls._execute_post_request(endpoint, connect_request)
+    # @classmethod
+    # def get_create_report_request_from_pbir_folder(cls, item_folder, model_id):
+    #     """generate create item request from folder"""
+    #     create_request = cls.get_create_item_request_from_folder(item_folder)
+    #     return cls.update_create_pbir_report_request_with_semantic_model(create_request,
+    #                                                                      model_id)
+       
 
     @classmethod
-    def _create_ado_source_control_connection(cls, url, workspace, top_level_step = False):
-        """Create GitHub connections with Personal Access Token"""
-
-        display_name = f"Workspace[{workspace['id']}]-AzureDevOpsSourceControl"
-
-        create_connection_request = {
-            'displayName': display_name,
-            'connectivityType': 'ShareableCloud',
-            'privacyLevel': 'Organizational',
-            'connectionDetails': {
-                'type': 'AzureDevOpsSourceControl',
-                'creationMethod': 'AzureDevOpsSourceControl.Contents',
-                'parameters': [ 
-                    { 'name': 'url', 'dataType': 'Text', 'value': url }
-                ]
-            },
-             'credentialDetails': {
-                'credentials': {
-                    'tenantId': EnvironmentSettings.FABRIC_TENANT_ID,
-                    'servicePrincipalClientId': EnvironmentSettings.FABRIC_CLIENT_ID,
-                    'servicePrincipalSecret': EnvironmentSettings.FABRIC_CLIENT_SECRET,
-                    'credentialType': 'ServicePrincipal'
-                },
-                'singleSignOnType': 'None',
-                'connectionEncryption': 'NotEncrypted',
-                'skipTestConnection': 'false'
-            }
-        }
-
-        return cls.create_connection(create_connection_request, top_level_step=top_level_step)
-    
-    @classmethod
-    def _get_ado_repo_connection(cls, project_name, workspace):
-        """Get Azure DevOps Repo Connection"""
-
-        ado_repo_url = f'https://dev.azure.com/fabricdevcamp/{project_name}/_git/{project_name}/'
-
-        connections = FabricRestApi.list_connections()
-
-        for connection in connections:
-            if connection['connectionDetails']['type'] == 'AzureDevOpsSourceControl' and \
-                 connection['connectionDetails']['path'] == ado_repo_url:
-                return connection
-
-        return FabricRestApi._create_ado_source_control_connection(ado_repo_url, workspace)
-
-    @classmethod
-    def _create_workspace_connection_to_ado_repo_as_user(cls, workspace_id, project_name, branch = 'main'):
+    def update_part_in_create_request(cls, create_item_request, part_path, search_replace_text):
+        """Update Item Definition Part"""
+        item_definition = create_item_request['definition']
+        item_part = next((part for part in item_definition['parts'] if part['path'] == part_path), None)
+        if item_part is not None:
+            item_definition['parts'].remove(item_part)
+            item_part['payload'] = cls._search_and_replace_in_payload(item_part['payload'], search_replace_text)
+            item_definition['parts'].append(item_part)
         
-        """Connect Workspace Connection to Azure DevOps Repository"""
+        return {
+            'displayName': create_item_request['displayName'],
+            'type': create_item_request['type'],
+            'definition': item_definition
+        }
 
-        endpoint = f"workspaces/{workspace_id}/git/connect"
 
-        workspace_folder = "workspace"
+    @classmethod
+    def get_notebook_create_request(cls, workspace_id, lakehouse, display_name, py_file):
+        """Create Item Definition for a Notebook"""
+        py_content = cls.get_template_file(f"Notebooks//{py_file}")
+        py_content = py_content.replace('{WORKSPACE_ID}', workspace_id) \
+                             .replace('{LAKEHOUSE_ID}', lakehouse['id']) \
+                             .replace('{LAKEHOUSE_NAME}', lakehouse['displayName'])
 
-        connect_request = {
-            "gitProviderDetails": {
-                "organizationName": "FabricDevCamp",
-                "projectName": project_name,
-                "gitProviderType": "AzureDevOps",
-                "repositoryName": project_name,
-                "branchName": branch,
-                "directoryName": f"/{workspace_folder}"
+        item_part = cls._create_inline_base64_part('notebook-content.py', py_content)
+        item_definition = {
+            'parts': [ item_part ]
+        }
+
+        return {
+            'displayName': display_name,
+            'type': 'Notebook',
+            'definition': item_definition
+        }
+
+    @classmethod
+    def get_semantic_model_create_request(cls, display_name, bim_file):
+        """Create semantic model create request from BIM file"""
+        pbism_content = cls.get_template_file("SemanticModels//definition.pbism")
+        bim_content  = cls.get_template_file(f'SemanticModels//{bim_file}')
+
+        return {
+            'displayName': display_name,
+            'type': "SemanticModel",
+            'definition': {
+                'parts': [
+                    cls._create_inline_base64_part('definition.pbism', pbism_content),
+                    cls._create_inline_base64_part('model.bim', bim_content)
+                ]
             }
         }
 
-        return cls._execute_post_request(endpoint, connect_request)
+    @classmethod
+    def get_semantic_model_create_request_from_definition(cls, display_name, bim_definition):
+        """Create semantic model create request from BIM file"""
+        pbism_content = cls.get_template_file("SemanticModels//definition.pbism")
+
+        return {
+            'displayName': display_name,
+            'type': "SemanticModel",
+            'definition': {
+                'parts': [
+                    cls._create_inline_base64_part('definition.pbism', pbism_content),
+                    cls._create_inline_base64_part('model.bim', bim_definition)
+                ]
+            }
+        }
 
     @classmethod
-    def _create_workspace_connection_to_ado_as_service_prinicpal(cls, workspace, project_name, branch = 'main'):
-        """Connect Workspace Connection to Azure DevOps Repository"""
+    def get_directlake_model_create_request(cls, display_name, bim_file, server, database):
+        """Get Create Request for DirectLake Semantic Model"""
+
+        pbism_content = cls.get_template_file("SemanticModels//definition.pbism")
+        bim_template  = cls.get_template_file(f'SemanticModels//{bim_file}')
+
+        bim_content = bim_template.replace('{SQL_ENDPOINT_SERVER}', server) \
+                                  .replace('{SQL_ENDPOINT_DATABASE}', database)
+
+        return {
+            'displayName': display_name,
+            'type': "SemanticModel",
+            'definition': {
+                'parts': [
+                    cls._create_inline_base64_part('definition.pbism', pbism_content),
+                    cls._create_inline_base64_part('model.bim', bim_content)
+                ]
+            }
+        }
+
+    @classmethod
+    def get_report_create_request(cls, semantic_model_id, display_name, report_json_file):
+        """Get Create Request for Report using Report.json file"""
+
+        pbir_content = \
+            cls.get_template_file("Reports//definition.pbir").replace('{SEMANTIC_MODEL_ID}',
+                                                                      semantic_model_id)
+
+        report_json_content  = cls.get_template_file(f'Reports//{report_json_file}')
+        theme_file_content = \
+            cls.get_template_file(
+                "Reports//StaticResources//SharedResources//BaseThemes//CY24SU02.json")
+        return {
+            'displayName': display_name,
+            'type': "Report",
+            'definition': {
+                'parts': [
+                    cls._create_inline_base64_part('definition.pbir', pbir_content),
+                    cls._create_inline_base64_part('report.json', report_json_content),
+                    cls._create_inline_base64_part(
+                        'StaticResources/SharedResources/BaseThemes/CY24SU02.json', 
+                        theme_file_content )
+                ]
+            }
+        }
+
+    @classmethod
+    def update_report_definition_with_semantic_model_id(cls, item_definition, target_model_id):
+        """Update Item Definition Part"""
+        item_part = next((part for part in item_definition['parts'] if part['path'] == 'definition.pbir'), None)
+        if item_part is not None:
+            item_definition['parts'].remove(item_part)
+            file_template = cls.get_template_file(r"Reports//definition.pbir")
+            file_content = file_template.replace('{SEMANTIC_MODEL_ID}', target_model_id)
+            item_part = cls._create_inline_base64_part('definition.pbir', file_content)
+            item_definition['parts'].append(item_part)
+
+        return item_definition
+
+    @classmethod
+    def update_create_report_request_with_semantic_model(cls, create_report_request, target_model_id):
+        """Update Item Definition Part"""
+        item_definition = create_report_request['definition']
+        item_part = next((part for part in item_definition['parts'] if part['path'] == 'definition.pbir'), None)
+        if item_part is not None:
+            item_definition['parts'].remove(item_part)
+            file_template = cls.get_template_file(r"Reports//definition.pbir")
+            file_content = file_template.replace('{SEMANTIC_MODEL_ID}', target_model_id)
+            item_part = cls._create_inline_base64_part('definition.pbir', file_content)
+            item_definition['parts'].append(item_part)
+
+        return {
+            'displayName': create_report_request['displayName'],
+            'type': "Report",
+            'definition': item_definition
+        }
+
+    @classmethod
+    def update_create_pbir_report_request_with_semantic_model(cls, create_report_request, target_model_id):
+        """Update Item Definition Part"""
+        item_definition = create_report_request['definition']
+        item_part = next((part for part in item_definition['parts'] if part['path'] == 'definition.pbir'), None)
+        if item_part is not None:
+            item_definition['parts'].remove(item_part)
+            file_template = cls.get_template_file(r"Reports//definition_pbir.pbir")
+            file_content = file_template.replace('{SEMANTIC_MODEL_ID}', target_model_id)
+            item_part = cls._create_inline_base64_part('definition.pbir', file_content)
+            item_definition['parts'].append(item_part)
+
+        return {
+            'displayName': create_report_request['displayName'],
+            'type': "Report",
+            'definition': item_definition
+        }
+
+    @classmethod
+    def get_data_pipeline_create_request(cls, display_name, pipeline_definition):
+        """Get Create Request for Data Pipeline using pipeline-content.json file"""
+        return {
+            'displayName': display_name,
+            'type': "DataPipeline",
+            'definition': {
+                'parts': [
+                    cls._create_inline_base64_part('pipeline-content.json', pipeline_definition),
+                ]
+            }
+        }
+
+    @classmethod
+    def get_eventhouse_create_request(cls, display_name, eventhouse_properties = None):                
+        """Get Eventstream Create Request"""
+        if eventhouse_properties is None:
+            eventhouse_properties = cls.get_template_file(
+                "Eventhouses//EventhouseProperties.json")
+        return {
+            'displayName': display_name,
+            'type': "Eventhouse",
+            'definition': {
+                'parts': [
+                    cls._create_inline_base64_part('EventhouseProperties.json', 
+                                                   eventhouse_properties),
+                ]
+            }
+        }
+
+    @classmethod
+    def get_kql_database_create_request(cls, display_name, eventhouse):
+        """Get KQL Database Create Request"""
+
+        database_schema = cls.get_template_file(
+                "KqlDatabases//DatabaseSchema.kql")
+        database_template = cls.get_template_file(
+                "KqlDatabases//DatabaseProperties.json")
+        database_properties = database_template.replace('{EVENTHOUSE_ID}', eventhouse['id'])
+        
+        return {
+            'displayName': display_name,
+            'type': "KQLDatabase",
+            'definition': {
+                'parts': [
+                    cls._create_inline_base64_part('DatabaseProperties.json', database_properties),
+                    cls._create_inline_base64_part('DatabaseSchema.kql', database_schema),
+                ]
+            }
+        }
+
+    @classmethod
+    def get_eventstream_create_request(cls, display_name, workspace_id, eventhouse_id, kql_database):
+        """Get Eventstream Create Request"""
+        eventstream_properties = cls.get_template_file(
+                "Eventstreams//eventstreamProperties.json")
+
+        eventstream_template = cls.get_template_file(
+                "Eventstreams//eventstream.json")
+        
+        eventstream_json = eventstream_template.replace('{WORKSPACE_ID}', workspace_id)\
+                                               .replace('{KQL_DATABASE_ID}', kql_database['id'])\
+                                               .replace('{KQL_DATABASE_NAME}', kql_database['displayName'])\
+                                               .replace('{EVENTHOUSE_ID}', eventhouse_id)                             
+        return {
+            'displayName': display_name,
+            'type': "Eventstream",
+            'definition': {
+                'parts': [
+                    cls._create_inline_base64_part('eventstreamProperties.json', eventstream_properties),
+                    cls._create_inline_base64_part('eventstream.json', eventstream_json),
+                ]
+            }
+        }
+
+    @classmethod
+    def get_kql_dashboard_create_request(cls, display_name, workspace_id, kql_database, query_service_uri):
+        """Get KQL Dashboard Create Request"""
+        realtime_dashboard_template = cls.get_template_file("KqlDashboards//RealTimeDashboard.json")
+
+        realtime_dashboard_json = realtime_dashboard_template.replace('{WORKSPACE_ID}', workspace_id)\
+                                                             .replace('{KQL_DATABASE_ID}', kql_database['id'])\
+                                                             .replace('{KQL_DATABASE_NAME}', kql_database['displayName'])\
+                                                             .replace('{QUERY_SERVICE_URI}', query_service_uri)
+        
+        return {
+            'displayName': display_name,
+            'type': "KQLDashboard",
+            'definition': {
+                'parts': [
+                    cls._create_inline_base64_part('RealTimeDashboard.json', realtime_dashboard_json),
+                ]
+            }
+        }
+
+    @classmethod
+    def get_kql_queryset_create_request(cls, display_name, kql_database, query_service_uri, queryset_template):
+        """Get KQL Queryset Create Request"""
+        queryset_template = cls.get_template_file(f"KqlQuerysets//{queryset_template}")
+
+        queryset_json = queryset_template.replace('{KQL_DATABASE_ID}', kql_database['id'])\
+                                         .replace('{KQL_DATABASE_NAME}', kql_database['displayName'])\
+                                         .replace('{QUERY_SERVICE_URI}', query_service_uri)
+        
+        return {
+            'displayName': display_name,
+            'type': "KQLQueryset",
+            'definition': {
+                'parts': [
+                    cls._create_inline_base64_part('RealTimeQueryset.json', queryset_json),
+                ]
+            }
+        }
+
+    @classmethod
+    def get_variable_library_create_request(cls, display_name, variable_library: VariableLibrary):
+        """Get Create Request for Variable Library file"""
+
+        variables_json = variable_library.get_variable_json()
+
+        parts = [
+            cls._create_inline_base64_part('variables.json', variables_json)
+        ]
+
+        for valueset in variable_library.valuesets:
+            path = f"valueSets/{valueset.name}.json"
+            content = variable_library.get_valueset_json(valueset.name)
+            parts.append( cls._create_inline_base64_part(path, content ) )
+
+
+        settings_json = cls.get_template_file("VariableLibraries//settings.json")
+        parts.append( cls._create_inline_base64_part('settings.json', settings_json ) )
+
+        return {
+            'displayName': display_name,
+            'type': "VariableLibrary",
+            'definition': {
+                'parts': parts
+            }
+        }
+
+    @classmethod
+    def get_update_variable_library_request(cls, variable_library: VariableLibrary):
+        """Get Create Request for Variable Library file"""
+
+        variables_json = variable_library.get_variable_json()
+
+        parts = [
+            cls._create_inline_base64_part('variables.json', variables_json)
+        ]
+
+        for valueset in variable_library.valuesets:
+            path = f"valueSets/{valueset.name}.json"
+            content = variable_library.get_valueset_json(valueset.name)
+            parts.append( cls._create_inline_base64_part(path, content ) )
+
+
+        settings_json = cls.get_template_file("VariableLibraries//settings.json")
+        parts.append( cls._create_inline_base64_part('settings.json', settings_json ) )
+
+        return {
+            'definition': {
+                'parts': parts
+            }
+        }
+
+    @classmethod
+    def export_item_definitions_from_workspace(cls, workspace_name):
+        """Export Item Definiitons from Workspace"""
+
+        AppLogger.log_step(f"Exporting Workspace Item Definitions from {workspace_name}")
+
+        workspace = FabricRestApi.get_workspace_by_name(workspace_name)
+
+        export_response = FabricRestApi.export_item_definitions(workspace['id'])
+
+        cls._write_exported_workspace_to_exports_folder(workspace_name, 'exports.json', export_response)
+
+    @classmethod
+    def export_item_definitions_from_workspace_oldway(cls, workspace_name, item_type = None):
+        """Export Item Definiitons from Workspace"""
+
+        workspace = FabricRestApi.get_workspace_by_name(workspace_name)
+
+        items = FabricRestApi.list_workspace_items(workspace['id'])
+
+        AppLogger.log_step(f"Exporting Workspace Item Definitions from {workspace_name}")
+        
+        cls._delete_exports_folder_contents(workspace_name)
+        
+        for item in items:
+            
+            items_to_ignore = [ 'SQLEndpoint' ]
+            if item['type'] in items_to_ignore:
+                continue
+
+            if item_type is not None and item['type'] != item_type:
+                continue
+
+            try:
+                AppLogger.log_substep(f"Exporting [{item['displayName']}.{item['type']}]")
+                item_definition = FabricRestApi.get_item_definition(workspace['id'], item)
+                item_folder = f"{item['displayName']}.{item['type']}"
+                for part in item_definition['definition']['parts']:
+                    part_path = part['path']
+                    part_content = part['payload']
+                    cls._write_file_to_exports_folder(workspace_name, item_folder, part_path, part_content)
+            except:
+                AppLogger.log_substep(f"Could not export {item['displayName']}.{item['type']}")
+
+    @classmethod
+    def _delete_exports_folder_contents(cls, workspace_name):
+        """Delete Exports Folder"""
+        folder_path = f".//exports//WorkspaceItemDefinitions//{workspace_name}"
+        
+        if os.path.exists(folder_path):
+            shutil.rmtree(folder_path)
+
+    @classmethod
+    def _write_file_to_exports_folder(cls, workspace_name, item_name, file_path , file_content, convert_from_base64 = True):
+        """Write file to exports folder"""
+        if convert_from_base64:
+            file_content_bytes = base64.b64decode(file_content)
+            file_content = file_content_bytes.decode('utf-8')
+ 
+        #file_path = file_path.replace('/', '\\')
+        folder_path = f".//exports//WorkspaceItemDefinitions//{workspace_name}/{item_name}/"
+        if not os.path.exists(folder_path):
+            os.makedirs(folder_path)
+
+        full_path = folder_path + file_path
+        os.makedirs(os.path.dirname(full_path), exist_ok=True)
+        with open(full_path, 'w', encoding='utf-8') as file:
+            file.write(file_content)
+
+    @classmethod
+    def _write_exported_workspace_to_exports_folder(cls, workspace_name, file_path , file_content):
+        """Write file to exports folder"""
+ 
+        #file_path = file_path.replace('/', '\\')
+        folder_path = f".//exports//ExportFromApi//{workspace_name}/"
+        if not os.path.exists(folder_path):
+            os.makedirs(folder_path)
+
+        full_path = folder_path + file_path
+        os.makedirs(os.path.dirname(full_path), exist_ok=True)
+        with open(full_path, 'w', encoding='utf-8') as file:
+            file.write(json.dumps(file_content))
+
+class DeploymentManager:
+    """Deployment Manager"""
+
+    @classmethod
+    def update_imported_semantic_model_source(cls, workspace,
+                                                semantic_model_name, 
+                                                web_datasource_path):
+        """Update Imported Sementic Model Source"""
+        model = FabricRestApi.get_item_by_name(workspace['id'], semantic_model_name, 'SemanticModel')
+        old_web_datasource_path = FabricRestApi.get_web_url_from_semantic_model(workspace['id'], model['id']) + '/'
+
+        if web_datasource_path == old_web_datasource_path:
+            AppLogger.log_substep(f"Verified web datasource path: [{web_datasource_path}]")
+        else:
+            old_model_definition = FabricRestApi.get_item_definition(workspace['id'], model)
+    
+            search_replace_terms = {
+                old_web_datasource_path: web_datasource_path
+            }
+
+            model_definition = {
+                'definition': ItemDefinitionFactory.update_item_definition_part(
+                    old_model_definition['definition'],
+                    'definition/expressions.tmdl',
+                    search_replace_terms)
+            }
+
+            FabricRestApi.update_item_definition(workspace['id'], model, model_definition)
+
+    @classmethod
+    def update_directlake_semantic_model_source(cls,
+                                                workspace_name,
+                                                semantic_model_name,
+                                                lakehouse_name):
+        """Update DirectLake Sementic Model Source"""
+        workspace = FabricRestApi.get_workspace_by_name(workspace_name)
+        lakehouse = FabricRestApi.get_item_by_name(workspace['id'], lakehouse_name, 'Lakehouse')
+        model = FabricRestApi.get_item_by_name(workspace['id'], semantic_model_name, 'SemanticModel')
+        
+        old_sql_endpoint =    FabricRestApi.get_sql_endpoint_from_semantic_model(
+            workspace['id'],
+            model['id']
+        )
+
+        new_sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(
+            workspace['id'],
+            lakehouse)
+
+        old_model_definition = FabricRestApi.get_item_definition(workspace['id'], model)
+
+        search_replace_terms = {
+            old_sql_endpoint['server']: new_sql_endpoint['server'],
+            old_sql_endpoint['database']: new_sql_endpoint['database']
+        }
+
+        model_definition = {
+            'definition': ItemDefinitionFactory.update_item_definition_part(
+                old_model_definition['definition'],
+                'definition/expressions.tmdl',
+                search_replace_terms)
+        }
+
+        FabricRestApi.update_item_definition(workspace['id'], model, model_definition)
+
+    @classmethod
+    def update_datasource_path_in_notebook(cls,
+                workspace_name,
+                notebook_name,
+                redirects):
+        """Update datasource path in notebook"""
+        workspace = FabricRestApi.get_workspace_by_name(workspace_name)
+        notebook = FabricRestApi.get_item_by_name(workspace['id'], notebook_name, 'Notebook')
+        
+        current_notebook_definition = FabricRestApi.get_item_definition(workspace['id'], notebook)
+
+        notebook_definition = {
+            'definition': ItemDefinitionFactory.update_item_definition_part(
+                current_notebook_definition['definition'],
+                'notebook-content.py',
+                redirects)
+        }
+
+        FabricRestApi.update_item_definition(workspace['id'], notebook, notebook_definition)        
+
+    @classmethod
+    def update_source_lakehouse_in_notebook(cls,
+                workspace_name,
+                notebook_name,
+                lakehouse_name):
+        """Update datasource path in notebook"""
+        workspace = FabricRestApi.get_workspace_by_name(workspace_name)
+        notebook = FabricRestApi.get_item_by_name(workspace['id'], notebook_name, 'Notebook')
+        lakehouse = FabricRestApi.get_item_by_name(workspace['id'], lakehouse_name, "Lakehouse")
 
         workspace_id = workspace['id']
+        lakehouse_id = lakehouse['id']
 
-        endpoint = f"workspaces/{workspace_id}/git/connect"
-        workspace_folder = "workspace"
-
-        connection = cls._get_ado_repo_connection(project_name, workspace)
-        connection_id = connection['id']
-
-        connect_request = {
-            "gitProviderDetails": {
-                "organizationName": "FabricDevCamp",
-                "projectName": project_name,
-                "gitProviderType": "AzureDevOps",
-                "repositoryName": project_name,
-                "branchName": branch,
-                "directoryName": f"/{workspace_folder}"
-            },
-            "myGitCredentials": {
-                "source": "ConfiguredConnection",
-                "connectionId": connection_id            
-            }
+        search_replace_terms = {
+            r'("default_lakehouse"\s*:\s*)".*"': rf'\1"{lakehouse_id}"',
+            r'("default_lakehouse_name"\s*:\s*)".*"': rf'\1"{lakehouse_name}"',
+            r'("default_lakehouse_workspace_id"\s*:\s*)".*"': rf'\1"{workspace_id}"',
+            r'("known_lakehouses"\s*:\s*)\[[\s\S]*?\]': rf'\1[{{"id": "{lakehouse_id}"}}]',
         }
 
-        return cls._execute_post_request(endpoint, connect_request)
+        notebook_definition = FabricRestApi.get_item_definition(workspace['id'], notebook)
+
+        notebook_definition = {
+            'definition': ItemDefinitionFactory.update_item_definition_part_with_regex(
+                notebook_definition['definition'],
+                'notebook-content.py',
+                search_replace_terms)
+        }
+
+        FabricRestApi.update_item_definition(workspace['id'], notebook, notebook_definition)
 
     @classmethod
-    def connect_workspace_to_ado_repo(cls, workspace, project_name, branch = 'main'):
-        """Connect Workspace to Azure Dev Ops Repository"""
+    def apply_post_sync_fixes(cls, workspace_id, run_etl_jobs = False):
 
-        AppLogger.log_substep(f"Connecting workspace[{workspace['displayName']}] " + \
-                                f"to branch[{branch}] in Azure DevOps repo[{project_name}]")
+        """Apply Post Sync Fixes"""
+        workspace = FabricRestApi.get_workspace_info(workspace_id)
+        workspace_name = workspace['displayName']
+        AppLogger.log_step(f"Applying post sync fixes to [{workspace['displayName']}]")
+        
+        workspace_items = FabricRestApi.list_workspace_items(workspace['id'])
 
-        if EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL is True:
-            cls._create_workspace_connection_to_ado_as_service_prinicpal(workspace, project_name, branch)
+        adls_container_name = EnvironmentSettings.PROD_ADLS_CONTAINER_NAME
+        adls_container_path = EnvironmentSettings.PROD_ADLS_CONTAINER_PATH
+        adls_server = EnvironmentSettings.PROD_ADLS_SERVER
+        adls_path = f'/{adls_container_name}{adls_container_path}'
+
+        lakehouses = list(filter(lambda item: item['type']=='Lakehouse', workspace_items))
+        for lakehouse in lakehouses:
+            shortcuts = FabricRestApi.list_shortcuts(workspace['id'], lakehouse['id'])
+            for shortcut in shortcuts:
+                connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
+                                adls_server,
+                                adls_path,
+                                workspace)
+
+                shortcut_name = shortcut['name']
+                shortcut_path = shortcut['path']
+                shortcut_location = adls_server
+                shortcut_subpath = adls_path
+
+                FabricRestApi.create_adls_gen2_shortcut(workspace['id'],
+                                                        lakehouse['id'],
+                                                        shortcut_name,
+                                                        shortcut_path,
+                                                        shortcut_location,
+                                                        shortcut_subpath,
+                                                        connection['id'])
+
+        notebooks = list(filter(lambda item: item['type']=='Notebook', workspace_items))
+        for notebook in notebooks:
+            # Apply fixes for [Create Lakehouse Tables.Notebook]
+            if notebook['displayName'] in ['Create Lakehouse Tables',
+                                           'Build 01 Silver Layer',
+                                           'Build 02 Gold Layer',
+                                           'Create Lakehouse Materialized Views',
+                                           'Create Lakehouse Schemas',
+                                           'Create Lakehouse Tables with VarLib']:
+                # bind notebook to 'sales' lakehouse in same workspace
+                cls.update_source_lakehouse_in_notebook(
+                    workspace_name,
+                    notebook['displayName'],
+                    "sales")
+
+                if notebook['displayName'] == 'Create Lakehouse Tables':
+                    redirects = {
+                        EnvironmentSettings.DEV_WEB_DATASOURCE_URL: EnvironmentSettings.PROD_WEB_DATASOURCE_URL
+                    }
+                    cls.update_datasource_path_in_notebook(
+                        workspace_name,
+                        notebook['displayName'],
+                        redirects)
+
+            if run_etl_jobs and 'Create' in notebook['displayName']:                
+                FabricRestApi.run_notebook(workspace['id'], notebook)
+
+        pipelines = list(filter(lambda item: item['type']=='DataPipeline', workspace_items))
+        for pipeline in pipelines:
+            if pipeline['displayName'] == 'Create Lakehouse Tables':
+                pass
+                # connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
+                # adls_server_path,
+                # adls_path,
+                # workspace)
+
+                # create_pipeline_request = \
+                #     ItemDefinitionFactory.get_create_item_request_from_folder(
+                #         data_pipeline_folder)
+
+                # pipeline_redirects = {
+                #     '{WORKSPACE_ID}': workspace['id'],
+                #     '{LAKEHOUSE_ID}': lakehouse['id'],
+                #     '{CONNECTION_ID}': connection['id'],
+                #     '{CONTAINER_NAME}': adls_container_name,
+                #     '{CONTAINER_PATH}': adls_container_path,
+                #     '{NOTEBOOK_ID_BUILD_SILVER}': notebook_ids[0],
+                #     '{NOTEBOOK_ID_BUILD_GOLD}': notebook_ids[1]
+                # }
+
+                # create_pipeline_request = \
+                #     ItemDefinitionFactory.update_part_in_create_request(
+                #         create_pipeline_request,
+                #         'pipeline-content.json',
+                #         pipeline_redirects)
+
+                # pipeline = FabricRestApi.create_item(workspace['id'], create_pipeline_request)
+
+                # FabricRestApi.run_data_pipeline(workspace['id'], pipeline)
+
+        sql_endpoints = list(filter(lambda item: item['type']=='SQLEndpoint', workspace_items))
+        for sql_endpoint in sql_endpoints:
+            FabricRestApi.refresh_sql_endpoint_metadata(
+                workspace['id'],
+                sql_endpoint['id'])
+
+        models = list(filter(lambda item: item['type']=='SemanticModel', workspace_items))
+        for model in models:
+
+            # Apply fixes for [Product Sales Imported Model.SemanticModel]
+            if model['displayName'] ==    'Product Sales Imported Model':
+                # fix connection to imported models
+                datasource_path =  EnvironmentSettings.PROD_WEB_DATASOURCE_URL
+
+                DeploymentManager.update_imported_semantic_model_source(
+                    workspace,
+                    model['displayName'],
+                    datasource_path)
+
+                # FabricRestApi.create_and_bind_semantic_model_connecton(
+                #     workspace,
+                #     model['id'])
+
+            # Apply fixes for [Product Sales DirectLake Model.SemanticModel]
+            if model['displayName'] ==    'Product Sales DirectLake Model':
+                # fix connection to lakehouse SQL endpoint
+                target_lakehouse_name = 'sales'
+                DeploymentManager.update_directlake_semantic_model_source(
+                    workspace_name, 
+                    model['displayName'],
+                    target_lakehouse_name)
+
+                # FabricRestApi.create_and_bind_semantic_model_connecton(
+                #     workspace,
+                #     model['id'])
+
+
+
+
+    @classmethod
+    def apply_post_deploy_fixes(cls,
+                                workspace_name,
+                                deployment_job,
+                                run_etl_jobs = False):
+        
+        """Apply Post Deploy Fixes"""                    
+        AppLogger.log_step(f"Applying post deploy fixes to [{workspace_name}]")
+        workspace = FabricRestApi.get_workspace_by_name(workspace_name)
+        workspace_items = FabricRestApi.list_workspace_items(workspace['id'])
+
+        adls_container_name = deployment_job.parameters[DeploymentJob.adls_container_name_parameter]
+        adls_container_path = deployment_job.parameters[DeploymentJob.adls_container_path_parameter]
+        adls_server = deployment_job.parameters[DeploymentJob.adls_server_parameter]
+        adls_path = f'/{adls_container_name}{adls_container_path}'
+
+        lakehouses = list(filter(lambda item: item['type']=='Lakehouse', workspace_items))
+        for lakehouse in lakehouses:
+            shortcuts = FabricRestApi.list_shortcuts(workspace['id'], lakehouse['id'])
+            for shortcut in shortcuts:
+                connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
+                                adls_server,
+                                adls_path,
+                                workspace)
+
+                shortcut_name = shortcut['name']
+                shortcut_path = shortcut['path']
+                shortcut_location = adls_server
+                shortcut_subpath = adls_path
+
+                FabricRestApi.create_adls_gen2_shortcut(workspace['id'],
+                                                        lakehouse['id'],
+                                                        shortcut_name,
+                                                        shortcut_path,
+                                                        shortcut_location,
+                                                        shortcut_subpath,
+                                                        connection['id'])
+
+        notebooks = list(filter(lambda item: item['type']=='Notebook', workspace_items))
+        for notebook in notebooks:
+            # Apply fixes for [Create Lakehouse Tables.Notebook]
+            if notebook['displayName'] == 'Create Lakehouse Tables':
+                cls.update_source_lakehouse_in_notebook(
+                    workspace_name,
+                    notebook['displayName'],
+                    "sales")
+
+                cls.update_datasource_path_in_notebook(
+                    workspace_name,
+                    notebook['displayName'],
+                    deployment_job)
+                
+            if run_etl_jobs and 'Create' in notebook['displayName']:                
+                FabricRestApi.run_notebook(workspace['id'], notebook)
+
+        sql_endpoints =    list(filter(lambda item: item['type']=='SQLEndpoint', workspace_items))
+        for sql_endpoint in sql_endpoints:
+            FabricRestApi.refresh_sql_endpoint_metadata(
+                workspace['id'],
+                sql_endpoint['id'])
+
+        models = list(filter(lambda item: item['type']=='SemanticModel', workspace_items))
+        for model in models:
+
+            # Apply fixes for [Product Sales Imported Model.SemanticModel]
+            if model['displayName'] ==    'Product Sales Imported Model':
+                # fix connection to imported models
+                datasource_path =    \
+                    deployment_job.parameters[deployment_job.web_datasource_path_parameter]
+
+                DeploymentManager.update_imported_semantic_model_source(
+                    workspace,
+                    model['displayName'],
+                    datasource_path)
+
+                FabricRestApi.create_and_bind_semantic_model_connecton(
+                    workspace,
+                    model['id'])
+
+            # Apply fixes for [Product Sales DirectLake Model.SemanticModel]
+            if model['displayName'] ==    'Product Sales DirectLake Model':
+                # fix connection to lakehouse SQL endpoint
+                target_lakehouse_name = 'sales'
+                DeploymentManager.update_directlake_semantic_model_source(
+                    workspace_name, 
+                    model['displayName'],
+                    target_lakehouse_name)
+
+                FabricRestApi.create_and_bind_semantic_model_connecton(
+                    workspace,
+                    model['id'])
+
+    @classmethod
+    def create_and_bind_model_connection(cls, workspace_name):
+        """Create and Bind Model Connections"""
+        workspace = FabricRestApi.get_workspace_by_name(workspace_name)
+        model_name = 'Product Sales DirectLake Model'
+        model = FabricRestApi.get_item_by_name(workspace['id'], model_name, 'SemanticModel')
+        FabricRestApi.create_and_bind_semantic_model_connecton(workspace, model['id'])
+
+    @classmethod
+    def deploy_from_test_to_prod(cls, pipeline_name):
+        """Deploy Stage from Dev to Test"""
+        pipeline = FabricRestApi.get_deployment_pipeline_by_name(pipeline_name)
+        stages = FabricRestApi.list_deployment_pipeline_stages(pipeline['id'])
+
+        source_stage_id = stages[1]['id']
+        target_stage_id = stages[2]['id']
+
+        AppLogger.log_step("Deploy from [test] to [prod]")
+        FabricRestApi.deploy_to_pipeline_stage(pipeline['id'], source_stage_id, target_stage_id)
+        AppLogger.log_substep("Deploy operation complete")
+
+    @classmethod
+    def update_variable_library(cls, workspace_name, library_name, deployment_job):
+        """Update Variable Library"""
+
+        workspace = FabricRestApi.get_workspace_by_name(workspace_name)
+        variable_library_item = FabricRestApi.get_item_by_name(workspace['id'],
+                                                        library_name,
+                                                        'VariableLibrary')
+        deployment_parameters = deployment_job.parameters
+
+        variable_library_definition = FabricRestApi.get_item_definition(workspace['id'],
+                                                                        variable_library_item)
+
+        parts = variable_library_definition['definition']['parts']
+
+        variables = None
+
+        for part in parts:
+            if part['path'] == 'variables.json':
+                payload = part['payload']
+                payload_bytes = base64.b64decode(payload)
+                payload_content = payload_bytes.decode('utf-8')
+                variables = json.loads(payload_content)['variables']
+                break
+
+        if variables is not None:
+            variable_library    = VariableLibrary(variables)
+
+            valueset = Valueset(deployment_job.name)
+
+            for variable in variables:
+                if variable['name'] in deployment_parameters:
+                    variable_name = variable['name']
+                    variable_override = deployment_parameters[variable_name]
+                    valueset.add_variable_override(variable_name, variable_override)
+
+            # set additional overrides with workspace-specific ids
+            lakehouse_id_parameter = 'lakehouse_id'
+            notebook_id_build_silver_parameter = 'notebook_id_build_silver'
+            notebook_id_build_gold_parameter    = 'notebook_id_build_gold'
+            adls_connection_id_parameter = 'adls_connection_id'
+
+            lakehouse = FabricRestApi.get_item_by_name(workspace['id'], 'sales', 'Lakehouse')
+            valueset.add_variable_override(lakehouse_id_parameter, lakehouse['id'])
+
+            notebook_build_silver = FabricRestApi.get_item_by_name(
+                workspace['id'],
+                'Build 01 Silver Layer', 
+                'Notebook')
+
+            valueset.add_variable_override(
+                notebook_id_build_silver_parameter,
+                notebook_build_silver['id'])
+
+            notebook_build_gold = FabricRestApi.get_item_by_name(
+                workspace['id'],
+                'Build 02 Gold Layer', 
+                'Notebook')
+
+            valueset.add_variable_override(
+                notebook_id_build_gold_parameter,
+                notebook_build_gold['id'])
+
+            adls_server = deployment_job.parameters[DeploymentJob.adls_server_parameter]
+            adls_container_name = \
+                deployment_job.parameters[DeploymentJob.adls_container_name_parameter]
+            adls_container_path = \
+                deployment_job.parameters[DeploymentJob.adls_container_path_parameter]
+            adls_server_path = adls_container_name + adls_container_path
+
+            connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
+                adls_server,
+                adls_server_path,
+                workspace)
+
+            valueset.add_variable_override(adls_connection_id_parameter, connection['id'])
+
+            variable_library.add_valueset(valueset)
+
+            update_request = \
+                ItemDefinitionFactory.get_update_variable_library_request(variable_library)
+
+            FabricRestApi.update_item_definition(
+                workspace['id'],
+                variable_library_item,
+                update_request)
+
+            FabricRestApi.set_active_valueset_for_variable_library(
+                workspace['id'],
+                variable_library_item,
+                deployment_job.name)
+
+            # run data pipeline
+            data_pipeline_name = 'Create Lakehouse Tables'
+            data_pipeline = FabricRestApi.get_item_by_name(
+                workspace['id'],
+                data_pipeline_name,
+                'DataPipeline')
+            FabricRestApi.run_data_pipeline(workspace['id'], data_pipeline)
+
         else:
-            cls._create_workspace_connection_to_ado_repo_as_user(workspace['id'], project_name, branch)
+            AppLogger.log_error("Error running data pipeline")
 
-        AppLogger.log_substep("Workspace connection created successfully")
+    @classmethod
+    def run_data_pipeline(cls, workspace_name, data_pipeline_name):
+        """Run data pipeline"""
+        workspace = FabricRestApi.get_workspace_by_name(workspace_name)
+        data_pipeline_name = 'Create Lakehouse Tables'
+        data_pipeline = FabricRestApi.get_item_by_name(
+            workspace['id'],
+            data_pipeline_name,
+            'DataPipeline')
 
+        FabricRestApi.run_data_pipeline(workspace['id'], data_pipeline)
 
-        init_request = {
-            'initializationStrategy': 'PreferWorkspace'
-        }
-
-        init_response = cls.initialize_git_connection(workspace['id'], init_request)
-
-        required_action = init_response['requiredAction']
-
-        if required_action == 'CommitToGit':
-            commit_to_git_request = {
-                'mode': 'All',
-                'workspaceHead': init_response['workspaceHead'],
-                'comment': 'Initial commit'
-            }
-            cls.commit_workspace_to_git(workspace['id'], commit_to_git_request)
-
-        if required_action == 'UpdateFromGit':
-            update_from_git_request = {
-                "workspaceHead": init_response['workspaceHead'],
-                "remoteCommitHash": init_response['remoteCommitHash'],
-                "conflictResolution": {
-                    "conflictResolutionType": "Workspace",
-                    "conflictResolutionPolicy": "PreferWorkspace"
-                },
-                "options": {
-                    "allowOverrideItems": True
-                }
-                            
-            }
-            cls.update_workspace_from_git(workspace['id'], update_from_git_request)
-
-        AppLogger.log_substep("Workspace connection successfully created and synchronized")
+    @classmethod
+    def get_sql_endpoint_info_by_name(cls, workspace_name, lakehouse_name):
+        """Get SQL Endpoint"""
+        workspace = FabricRestApi.get_workspace_by_name(workspace_name)
+        lakehouse = FabricRestApi.get_item_by_name(workspace['id'], 
+                                                     lakehouse_name, 'Lakehouse')
+        sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse)
+ 
