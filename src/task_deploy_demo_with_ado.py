@@ -4,36 +4,45 @@ from fabric_devops import DeploymentManager, AppLogger, StagingEnvironments, \
                           AdoProjectManager, FabricRestApi
 
 SOLUTION_NAME = 'Custom Notebook Solution'
-WORKSPACE_NAME = 'Alpha'
+PROJECT_NAME = 'Dogfood'
+DEV_WORKSPACE_NAME = F'{PROJECT_NAME}-dev'
+PROD_WORKSPACE_NAME = F'{PROJECT_NAME}'
 
-deploy_job = StagingEnvironments.get_prod_environment()
+dev_deploy_job = StagingEnvironments.get_dev_environment()
+prod_deploy_job = StagingEnvironments.get_prod_environment()
 
-workspace = DeploymentManager.deploy_solution_by_name(SOLUTION_NAME, WORKSPACE_NAME, deploy_job)
+dev_workspace = DeploymentManager.deploy_solution_by_name(
+    SOLUTION_NAME, 
+    DEV_WORKSPACE_NAME, 
+    dev_deploy_job)
 
-# create ADO project and connect project main repo to workspace
-AdoProjectManager.create_project(WORKSPACE_NAME)
-FabricRestApi.connect_workspace_to_ado_repo(workspace, WORKSPACE_NAME)
+prod_workspace = FabricRestApi.create_workspace(PROD_WORKSPACE_NAME)
 
-AdoProjectManager.copy_files_from_folder_to_repo(
-    WORKSPACE_NAME,
-    'main', 
-    'ADO_SetUpForGitIntegration'
-)
+DeploymentManager.setup_two_stage_ado_repo(
+    dev_workspace,
+    prod_workspace,
+    PROJECT_NAME)
+
+
 
 # create feature1 workspace
 FEATURE1_NAME = 'feature1'
-FEATURE1_WORKSPACE_NAME = F'{WORKSPACE_NAME} - {FEATURE1_NAME}'
+FEATURE1_WORKSPACE_NAME = F'{DEV_WORKSPACE_NAME}-{FEATURE1_NAME}'
 FEATURE1_WORKSPACE = FabricRestApi.create_workspace(FEATURE1_WORKSPACE_NAME)
 
 # create feature1 branch and connect to feature1 workspace
-AdoProjectManager.create_branch(WORKSPACE_NAME, FEATURE1_NAME, 'main')
-FabricRestApi.connect_workspace_to_ado_repo(FEATURE1_WORKSPACE, WORKSPACE_NAME, FEATURE1_NAME)
+AdoProjectManager.create_branch(PROJECT_NAME, FEATURE1_NAME, 'dev')
+FabricRestApi.connect_workspace_to_ado_repo(FEATURE1_WORKSPACE, PROJECT_NAME, FEATURE1_NAME)
 
 # apply post sync/deploy fixes to feature1 workspace
 DeploymentManager.apply_post_sync_fixes(
     FEATURE1_WORKSPACE_NAME,
     StagingEnvironments.get_dev_environment(),
     True)
+
+FabricRestApi.commit_workspace_to_git(
+    FEATURE1_WORKSPACE['id'], 
+    commit_comment = 'Sync updates from feature workspace to repo after applying fixes')
 
 # # create feature2 workspace
 # FEATURE2_NAME = 'feature2'

@@ -476,10 +476,8 @@ class AdoProjectManager:
         cls._execute_post_request(push_endpoint, push_body)
 
     @classmethod
-    def copy_files_from_folder_to_repo(cls, project_name, branch, folder_path):
-        """Copy files to repo"""                    
-        variable_group = AdoProjectManager.create_variable_group("environmental_variables", project_name)
-        variable_group_id = variable_group['id']
+    def copy_files_from_folder_to_repo(cls, project_name, branch, folder_path, variable_group_id):
+        """Copy files to repo and create pipeline when copying YAML files"""                    
 
         folder_path = f".//templates//WorkflowActions//{folder_path}//"
         for root, dirs, files in os.walk(folder_path):
@@ -487,12 +485,75 @@ class AdoProjectManager:
                 file_path = os.path.join(root, file)
                 file = open(file_path,'r', encoding="utf-8")
                 file_content = file.read()
-                relative_file_path = file_path.replace(folder_path, '')\
-                                              .replace('\\', '/')
+
+                relative_file_path = file_path.replace(folder_path, '').replace('\\', '/')
+                                                              
                 cls.write_file_to_repo(project_name, branch, relative_file_path, file_content)
-                if relative_file_path.lower().endswith('.yml') and '.pipelines/' in relative_file_path:
+                
+                is_yml_pipeline_file = relative_file_path.lower().endswith('.yml') and '.pipelines/' in relative_file_path
+                
+                if is_yml_pipeline_file:
                     pipeline_name = relative_file_path.replace('.yml', '').replace('.pipelines/', '')
                     cls.create_pipeline(project_name, pipeline_name, relative_file_path, variable_group_id)
+
+    @classmethod
+    def create_two_stage_variable_group(cls, name, project_name, dev_workspace_id, prod_workspace_id):
+        """Add Variable Group"""
+        AppLogger.log_step(f"Creating variable group [{name}]")
+        project = cls.get_project(project_name)
+        endpoint = 'distributedtask/variablegroups'
+        body = {
+            "name": name,
+            "description": "Variable group added through code",
+            "type": "Vsts",
+            "variables": {
+                "FABRIC_CLIENT_ID": {
+                    "value": EnvironmentSettings.FABRIC_CLIENT_ID,
+                    "isSecret": False,
+                    "isReadOnly": True
+                },
+                "FABRIC_CLIENT_SECRET": {
+                    "value": EnvironmentSettings.FABRIC_CLIENT_SECRET,
+                    "isSecret": True,
+                    "isReadOnly": True
+                },
+                "FABRIC_TENANT_ID": {
+                    "value": EnvironmentSettings.FABRIC_TENANT_ID,
+                    "isSecret": False,
+                    "isReadOnly": True
+                },
+                "FABRIC_CAPACITY_ID": {
+                    "value": EnvironmentSettings.FABRIC_CAPACITY_ID,
+                    "isSecret": False,
+                    "isReadOnly": True
+                },
+                "ADMIN_USER_ID": {
+                    "value": EnvironmentSettings.ADMIN_USER_ID,
+                    "isSecret": False,
+                    "isReadOnly": True
+                },
+                "DEV_WORKSPACE_ID": {
+                    "value": dev_workspace_id,
+                    "isSecret": False,
+                    "isReadOnly": True
+                },
+                "PROD_WORKSPACE_ID": {
+                    "value": prod_workspace_id,
+                    "isSecret": False,
+                    "isReadOnly": True
+                }                    
+            },
+            "variableGroupProjectReferences": [{
+                "name": name,
+                "description": "Variable group added through code",
+                "projectReference": {
+                    "id": project['id'],
+                    "name": project_name
+                }
+            }]
+        }
+
+        return cls._execute_post_request(endpoint, body)
 
     @classmethod
     def create_variable_group(cls, name, project_name):
@@ -534,9 +595,6 @@ class AdoProjectManager:
                     "value": EnvironmentSettings.SERVICE_PRINCIPAL_OBJECT_ID,
                     "isSecret": True,
                     "isReadOnly": True
-                },
-                "FOO": {
-                    "value": 'Bar'
                 }
             },
             "variableGroupProjectReferences": [{

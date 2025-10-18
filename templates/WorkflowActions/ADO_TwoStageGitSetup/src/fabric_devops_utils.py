@@ -1,5 +1,4 @@
-"""Demo Utility Classes"""
-
+"""Fabric DevOps Utility Classes"""
 
 import base64
 import shutil
@@ -24,7 +23,8 @@ class EnvironmentSettings:
     AUTHORITY = f'https://login.microsoftonline.com/{FABRIC_TENANT_ID}'
     FABRIC_CAPACITY_ID = os.getenv("FABRIC_CAPACITY_ID")
 
-    WORKSPACE_ID = os.getenv("WORKSPACE_ID")
+    DEV_WORKSPACE_ID = os.getenv("DEV_WORKSPACE_ID")
+    PROD_WORKSPACE_ID = os.getenv("PROD_WORKSPACE_ID")
 
     FABRIC_REST_API_RESOURCE_ID = 'https://api.fabric.microsoft.com'
     FABRIC_REST_API_BASE_URL = 'https://api.fabric.microsoft.com/v1/'
@@ -1056,11 +1056,8 @@ class FabricRestApi:
     @classmethod
     def update_item_definition(cls, workspace_id, item, update_item_definition_request):
         """Update Item Definition using update-item--definition-request"""
-        AppLogger.log_step(
-            f"Updating [{item['displayName']}.{item['type']}]...")
         endpoint = f"workspaces/{workspace_id}/items/{item['id']}/updateDefinition"
         item = cls._execute_post_request(endpoint, update_item_definition_request)
-        AppLogger.log_substep("Item updated")
         return item
 
     @classmethod
@@ -1563,9 +1560,24 @@ class FabricRestApi:
         return cls._execute_post_request(endpoint, commit_to_git_request)
 
     @classmethod
-    def update_workspace_from_git(cls, workspace_id, update_from_git_request):
+    def update_workspace_from_git(cls, workspace_id, update_from_git_request = None):
         """Update Workspace from GIT Repository"""
-        AppLogger.log_substep("Committing GitHub repsitory content to workspace items")
+        AppLogger.log_substep("Pushing ADO repo content to workspace items")
+        
+        if update_from_git_request is None:            
+            git_status = FabricRestApi.get_git_status(workspace_id)
+
+            update_from_git_request = {
+                "workspaceHead": git_status['workspaceHead'],
+                "remoteCommitHash": git_status['remoteCommitHash'],
+                "conflictResolution": {
+                    "conflictResolutionType": "Workspace",
+                    "conflictResolutionPolicy": "PreferRemote"
+                },
+                "options": { "allowOverrideItems": True }                
+            }
+        
+        
         endpoint = f"workspaces/{workspace_id}/git/updateFromGit"
         return cls._execute_post_request(endpoint, update_from_git_request)
 

@@ -1417,16 +1417,27 @@ class FabricRestApi:
         return cls._execute_post_request(endpoint)
 
     @classmethod
-    def commit_workspace_to_git(cls, workspace_id, commit_to_git_request):
+    def commit_workspace_to_git(cls, workspace_id, commit_to_git_request = None, commit_comment = "commit workspace changes back to repo"):
         """Commit Workspace to GIT Repository"""
+         
         AppLogger.log_substep("Committing Workspace content to GIT repository")
+                
+        if commit_to_git_request is None:
+            currest_status = cls.get_git_status(workspace_id)
+            commit_to_git_request = {
+                    'mode': 'All',
+                    'workspaceHead': currest_status['workspaceHead'],
+                    'remoteCommitHash': currest_status['remoteCommitHash'],
+                    'comment': commit_comment
+            }
+        
         endpoint = f"workspaces/{workspace_id}/git/commitToGit"
         return cls._execute_post_request(endpoint, commit_to_git_request)
 
     @classmethod
     def update_workspace_from_git(cls, workspace_id, update_from_git_request):
         """Update Workspace from GIT Repository"""
-        AppLogger.log_substep("Committing GitHub repsitory content to workspace items")
+        AppLogger.log_substep("Committing GIT repsitory content to workspace items")
         endpoint = f"workspaces/{workspace_id}/git/updateFromGit"
         return cls._execute_post_request(endpoint, update_from_git_request)
 
@@ -1653,7 +1664,10 @@ class FabricRestApi:
                 'workspaceHead': init_response['workspaceHead'],
                 'comment': 'Initial commit'
             }
-            cls.commit_workspace_to_git(workspace['id'], commit_to_git_request)
+            cls.commit_workspace_to_git(
+                workspace['id'], 
+                commit_to_git_request, 
+                'Initial commt from workspace')
 
         if required_action == 'UpdateFromGit':
             update_from_git_request = {
@@ -1845,9 +1859,12 @@ class FabricRestApi:
             commit_to_git_request = {
                 'mode': 'All',
                 'workspaceHead': init_response['workspaceHead'],
-                'comment': 'Initial commit'
+                'comment': 'Initial commit from workspace'
             }
-            cls.commit_workspace_to_git(workspace['id'], commit_to_git_request)
+            cls.commit_workspace_to_git(
+                workspace['id'], 
+                commit_to_git_request,
+                '')
 
         if required_action == 'UpdateFromGit':
             update_from_git_request = {

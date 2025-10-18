@@ -2176,7 +2176,7 @@ class DeploymentManager:
     def apply_post_deploy_fixes(cls,
                                 workspace_name,
                                 deployment_job,
-                                run_etl_jobs = False):
+                                run_etl_jobs = True):
         
         """Apply Post Deploy Fixes"""                    
         AppLogger.log_step(f"Applying post deploy fixes to [{workspace_name}]")
@@ -2454,6 +2454,47 @@ class DeploymentManager:
         FabricRestApi.connect_workspace_to_ado_repo(workspace, project_name, 'dev')
 
         AppLogger.log_job_complete(workspace['id'])
+
+    # two-stage ADO repo setup
+    @classmethod
+    def setup_two_stage_ado_repo(cls, dev_workspace, prod_workspace, project_name = None):
+        """Setup Git Workspace Connecton to ADO repo"""
+        
+        if project_name is None:
+            project_name = prod_workspace['displayName'].replace(" ", "-")
+
+        AppLogger.log_job("Configuring GIT integration in Azure DevOps")
+
+        AdoProjectManager.create_project(project_name)
+        AdoProjectManager.create_branch(project_name, 'dev', 'main')
+        AdoProjectManager.set_default_branch(project_name, 'dev')
+     
+        FabricRestApi.connect_workspace_to_ado_repo(dev_workspace, project_name, 'dev')
+
+        AdoProjectManager.create_and_merge_pull_request(project_name, 'dev','main')
+  
+        FabricRestApi.connect_workspace_to_ado_repo(prod_workspace, project_name, 'main')
+        
+        cls.apply_post_deploy_fixes(
+            prod_workspace['displayName'],
+            StagingEnvironments.get_prod_environment())
+        
+        variable_group = AdoProjectManager.create_two_stage_variable_group(
+            'environmental_variables',
+            project_name, 
+            dev_workspace['id'],
+            prod_workspace['id'])
+        
+        AdoProjectManager.copy_files_from_folder_to_repo(
+            project_name,
+            'dev',
+            'ADO_TwoStageGitSetup',
+            variable_group['id'])
+        
+        AdoProjectManager.create_and_merge_pull_request(project_name, 'dev','main')
+
+        AppLogger.log_job_complete(dev_workspace['id'])
+
 
     # support for fabric_cicd utility
 
