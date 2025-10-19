@@ -1,5 +1,7 @@
 """Synch Workspace with GIT REPO"""
 
+import os
+
 from fabric_devops_utils import EnvironmentSettings, DeploymentManager, FabricRestApi, AppLogger
 
 AppLogger.log_job("Synching workspace after PR completion")
