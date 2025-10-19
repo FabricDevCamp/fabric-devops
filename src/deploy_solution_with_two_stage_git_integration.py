@@ -10,11 +10,8 @@ if os.getenv("RUN_AS_SERVICE_PRINCIPAL") == 'true':
 else:
     EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL = False
 
-solution_name = 
-workspace_name = solution_name
-
 SOLUTION_NAME = os.getenv("SOLUTION_NAME")
-PROJECT_NAME = os.getenv("SOLUTION_NAME")
+PROJECT_NAME = os.getenv("PROJECT_NAME")
 
 DEV_WORKSPACE_NAME = F'{PROJECT_NAME}-dev'
 PROD_WORKSPACE_NAME = F'{PROJECT_NAME}'
