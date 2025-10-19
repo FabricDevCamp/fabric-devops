@@ -1428,16 +1428,15 @@ class FabricRestApi:
             if len(changes) == 0:
                 AppLogger.log_substep("There are no changes to push")
                 return None
-            else:                    
-                commit_to_git_request = {
-                        'mode': 'All',
-                        'workspaceHead': currest_status['workspaceHead'],
-                        'remoteCommitHash': currest_status['remoteCommitHash'],
-                        'comment': commit_comment
-                }
+            commit_to_git_request = {
+                    'mode': 'All',
+                    'workspaceHead': currest_status['workspaceHead'],
+                    'remoteCommitHash': currest_status['remoteCommitHash'],
+                    'comment': commit_comment
+            }
             
-            endpoint = f"workspaces/{workspace_id}/git/commitToGit"
-            return cls._execute_post_request(endpoint, commit_to_git_request)
+        endpoint = f"workspaces/{workspace_id}/git/commitToGit"
+        return cls._execute_post_request(endpoint, commit_to_git_request)
 
     @classmethod
     def update_workspace_from_git(cls, workspace_id, update_from_git_request):
