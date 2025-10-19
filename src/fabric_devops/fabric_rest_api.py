@@ -1436,7 +1436,9 @@ class FabricRestApi:
             }
             
         endpoint = f"workspaces/{workspace_id}/git/commitToGit"
-        return cls._execute_post_request(endpoint, commit_to_git_request)
+        response = cls._execute_post_request(endpoint, commit_to_git_request)
+        AppLogger.log_substep('GIT sync process completed successfully')
+        return response
 
     @classmethod
     def update_workspace_from_git(cls, workspace_id, update_from_git_request):
