@@ -1,12 +1,12 @@
 parameters:
-- name: feature_workspace
+- name: feature_name
   displayName: Feature Name
   type: string
-  default: 'feature1'
-- name: doYouLikeGoodMusic
-  displayName: Do you like good music?
+  default: 'feature2'
+- name: run_post_deploy_fixes
+  displayName: Run post deploy fixes
   type: boolean
-  default: false
+  default: true
 
 trigger: none
 

@@ -1,0 +1,83 @@
+
+name: Deploy Solution with 2 Stage GIT Integration
+run-name: Deploy ${{inputs.solution_name}} to ${{inputs.project_name}}
+
+on:
+    workflow_dispatch:
+        inputs:
+            project_name:
+                description: Project Name
+                required: true
+                default: "Adonis"
+            solution_name:
+                type: choice
+                description: Solution to deploy
+                options: 
+                - Custom Power BI Solution
+                - Custom Notebook Solution
+                - Custom Shortcut Solution
+                - Custom Data Pipeline Solution
+                - Custom User Data Function Solution
+                - Custom Copy Job Solution
+                - Custom Dataflow Gen2 Solution
+                - Custom Warehouse Solution
+                - Custom Medallion Warehouse Solution
+                - Custom Notebook Solution with Variable Library
+                - Custom Shortcut Solution with Variable Library
+                - Custom Data Pipeline Solution with Variable Library
+                - Deploy All Solutions
+                default: Custom Power BI Solution
+            git_integration_provider:
+                type: choice
+                description: Git Integration Provider
+                options: 
+                - None
+                - Azure DevOps
+                - GitHub
+                default: Azure DevOps
+            run_as_service_principal:
+                type: boolean
+                description: Run as service principal
+                default: true
+
+jobs:
+    deployment-job:
+        name: Deploy ${{inputs.solution_name}}
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Check out the code
+              uses: actions/checkout@v4
+
+            - name: Set up Python
+              uses: actions/setup-python@v2
+              with:
+                    python-version: "3.12"
+
+            - name: Install MSAL
+              run: |
+                    pip install msal -q
+
+            - name: Install PyNaCl
+              run: |
+                    pip install PyNaCl -q
+
+            - name: Install pyodbc
+              run: |
+                    pip install pyodbc -q
+
+            - name: Deploy Solution                
+              env:
+                FABRIC_CLIENT_ID: ${{ secrets.FABRIC_CLIENT_ID }}
+                FABRIC_CLIENT_SECRET: ${{ secrets.FABRIC_CLIENT_SECRET }}
+                FABRIC_TENANT_ID: ${{ secrets.FABRIC_TENANT_ID }}                    
+                FABRIC_CAPACITY_ID: ${{ secrets.FABRIC_CAPACITY_ID }}             
+                ADMIN_USER_ID: ${{ secrets.ADMIN_USER_ID }}
+                SERVICE_PRINCIPAL_OBJECT_ID: ${{ secrets.SERVICE_PRINCIPAL_OBJECT_ID }}
+                PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
+                SOLUTION_NAME: ${{inputs.solution_name}}        
+                PROJECT_NAME: ${{inputs.project_name}}
+                GIT_INTEGRATION_PROVIDER: ${{inputs.git_integration_provider}}
+                RUN_AS_SERVICE_PRINCIPAL: ${{inputs.run_as_service_principal}}
+              run: 
+                python src/deploy_solution_with_two_stage_git_integration.py

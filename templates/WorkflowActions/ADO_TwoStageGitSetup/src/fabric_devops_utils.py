@@ -29,19 +29,21 @@ class EnvironmentSettings:
     FABRIC_REST_API_RESOURCE_ID = 'https://api.fabric.microsoft.com'
     FABRIC_REST_API_BASE_URL = 'https://api.fabric.microsoft.com/v1/'
     POWER_BI_REST_API_BASE_URL = 'https://api.powerbi.com/v1.0/myorg/'
-
-    PROD_WEB_DATASOURCE_URL = 'https://fabricdevcamp.blob.core.windows.net/sampledata/ProductSales/prod/'
-    PROD_ADLS_SERVER = 'https://fabricdevcamp.dfs.core.windows.net/'
-    PROD_ADLS_CONTAINER_NAME = 'sampledata'
-    PROD_ADLS_CONTAINER_PATH = '/ProductSales/PROD'
-    PROD_ADLS_SERVER_PATH = PROD_ADLS_CONTAINER_NAME + PROD_ADLS_CONTAINER_PATH
-
-    DEV_WEB_DATASOURCE_URL = 'https://fabricdevcamp.blob.core.windows.net/sampledata/ProductSales/dev'
-    DEV_ADLS_SERVER = 'https://fabricdevcamp.dfs.core.windows.net/'
-    DEV_ADLS_CONTAINER_NAME = 'sampledata'
-    DEV_ADLS_CONTAINER_PATH = '/ProductSales/Dev'
-    DEV_ADLS_SERVER_PATH = DEV_ADLS_CONTAINER_NAME + DEV_ADLS_CONTAINER_PATH
-
+    
+    DEPLOYMENT_JOBS = {
+        'dev': {
+            'web_datasource_path': 'https://fabricdevcamp.blob.core.windows.net/sampledata/ProductSales/dev',
+            'adls_server': 'https://fabricdevcamp.dfs.core.windows.net/',
+            'adls_container_name': 'sampledata', 
+            'adls_container_path': '/ProductSales/Prod',            
+        },
+        "prod": {
+            'web_datasource_path': 'https://fabricdevcamp.blob.core.windows.net/sampledata/ProductSales/prod',
+            'adls_server': 'https://fabricdevcamp.dfs.core.windows.net/',
+            'adls_container_name': 'sampledata',
+            'adls_container_path': '/ProductSales/Prod',
+        }
+    }
     
 class AppLogger:
     """Logic to write log output to console and/or logs"""
@@ -1258,9 +1260,6 @@ class FabricRestApi:
     def get_sql_endpoint_for_lakehouse(cls, workspace_id, lakehouse):
         """Get SQL endpoint properties for lakehouse"""
 
-        AppLogger.log_step(
-            f"Getting SQL Endpoint info for lakehouse [{lakehouse['displayName']}]...")
-
         lakehouse = cls.get_lakehouse(workspace_id, lakehouse['id'])
         while lakehouse['properties']['sqlEndpointProperties']['provisioningStatus'] != 'Success':
             wait_time = 10
@@ -1269,9 +1268,6 @@ class FabricRestApi:
 
         server = lakehouse['properties']['sqlEndpointProperties']['connectionString']
         database = lakehouse['properties']['sqlEndpointProperties']['id']
-
-        AppLogger.log_substep(f"server: {server}")
-        AppLogger.log_substep(f"database: {database}")
 
         return {
             'server': server,
@@ -1562,11 +1558,10 @@ class FabricRestApi:
     @classmethod
     def update_workspace_from_git(cls, workspace_id, update_from_git_request = None):
         """Update Workspace from GIT Repository"""
-        AppLogger.log_substep("Pushing ADO repo content to workspace items")
+        AppLogger.log_step("Pushing item definitions in ADO repo to workspace items")
         
         if update_from_git_request is None:            
             git_status = FabricRestApi.get_git_status(workspace_id)
-
             update_from_git_request = {
                 "workspaceHead": git_status['workspaceHead'],
                 "remoteCommitHash": git_status['remoteCommitHash'],
@@ -1575,11 +1570,12 @@ class FabricRestApi:
                     "conflictResolutionPolicy": "PreferRemote"
                 },
                 "options": { "allowOverrideItems": True }                
-            }
-        
+            }        
         
         endpoint = f"workspaces/{workspace_id}/git/updateFromGit"
-        return cls._execute_post_request(endpoint, update_from_git_request)
+        response = cls._execute_post_request(endpoint, update_from_git_request)
+        AppLogger.log_substep("GIT synchronization process complete")
+        return response
 
     @classmethod
     def get_my_git_credentials(cls, workspace_id):
@@ -2135,89 +2131,6 @@ class ItemDefinitionFactory:
             }
         }
 
-    @classmethod
-    def export_item_definitions_from_workspace(cls, workspace_name):
-        """Export Item Definiitons from Workspace"""
-
-        AppLogger.log_step(f"Exporting Workspace Item Definitions from {workspace_name}")
-
-        workspace = FabricRestApi.get_workspace_by_name(workspace_name)
-
-        export_response = FabricRestApi.export_item_definitions(workspace['id'])
-
-        cls._write_exported_workspace_to_exports_folder(workspace_name, 'exports.json', export_response)
-
-    @classmethod
-    def export_item_definitions_from_workspace_oldway(cls, workspace_name, item_type = None):
-        """Export Item Definiitons from Workspace"""
-
-        workspace = FabricRestApi.get_workspace_by_name(workspace_name)
-
-        items = FabricRestApi.list_workspace_items(workspace['id'])
-
-        AppLogger.log_step(f"Exporting Workspace Item Definitions from {workspace_name}")
-        
-        cls._delete_exports_folder_contents(workspace_name)
-        
-        for item in items:
-            
-            items_to_ignore = [ 'SQLEndpoint' ]
-            if item['type'] in items_to_ignore:
-                continue
-
-            if item_type is not None and item['type'] != item_type:
-                continue
-
-            try:
-                AppLogger.log_substep(f"Exporting [{item['displayName']}.{item['type']}]")
-                item_definition = FabricRestApi.get_item_definition(workspace['id'], item)
-                item_folder = f"{item['displayName']}.{item['type']}"
-                for part in item_definition['definition']['parts']:
-                    part_path = part['path']
-                    part_content = part['payload']
-                    cls._write_file_to_exports_folder(workspace_name, item_folder, part_path, part_content)
-            except:
-                AppLogger.log_substep(f"Could not export {item['displayName']}.{item['type']}")
-
-    @classmethod
-    def _delete_exports_folder_contents(cls, workspace_name):
-        """Delete Exports Folder"""
-        folder_path = f".//exports//WorkspaceItemDefinitions//{workspace_name}"
-        
-        if os.path.exists(folder_path):
-            shutil.rmtree(folder_path)
-
-    @classmethod
-    def _write_file_to_exports_folder(cls, workspace_name, item_name, file_path , file_content, convert_from_base64 = True):
-        """Write file to exports folder"""
-        if convert_from_base64:
-            file_content_bytes = base64.b64decode(file_content)
-            file_content = file_content_bytes.decode('utf-8')
- 
-        #file_path = file_path.replace('/', '\\')
-        folder_path = f".//exports//WorkspaceItemDefinitions//{workspace_name}/{item_name}/"
-        if not os.path.exists(folder_path):
-            os.makedirs(folder_path)
-
-        full_path = folder_path + file_path
-        os.makedirs(os.path.dirname(full_path), exist_ok=True)
-        with open(full_path, 'w', encoding='utf-8') as file:
-            file.write(file_content)
-
-    @classmethod
-    def _write_exported_workspace_to_exports_folder(cls, workspace_name, file_path , file_content):
-        """Write file to exports folder"""
- 
-        #file_path = file_path.replace('/', '\\')
-        folder_path = f".//exports//ExportFromApi//{workspace_name}/"
-        if not os.path.exists(folder_path):
-            os.makedirs(folder_path)
-
-        full_path = folder_path + file_path
-        os.makedirs(os.path.dirname(full_path), exist_ok=True)
-        with open(full_path, 'w', encoding='utf-8') as file:
-            file.write(json.dumps(file_content))
-
 class DeploymentManager:
     """Deployment Manager"""
 
@@ -2334,7 +2247,15 @@ class DeploymentManager:
         FabricRestApi.update_item_definition(workspace['id'], notebook, notebook_definition)
 
     @classmethod
-    def apply_post_sync_fixes(cls, workspace_id, run_etl_jobs = False):
+    def create_and_bind_model_connection(cls, workspace_name):
+        """Create and Bind Model Connections"""
+        workspace = FabricRestApi.get_workspace_by_name(workspace_name)
+        model_name = 'Product Sales DirectLake Model'
+        model = FabricRestApi.get_item_by_name(workspace['id'], model_name, 'SemanticModel')
+        FabricRestApi.create_and_bind_semantic_model_connecton(workspace, model['id'])
+
+    @classmethod
+    def apply_post_sync_fixes(cls, workspace_id, deployment_job, run_etl_jobs = False):
 
         """Apply Post Sync Fixes"""
         workspace = FabricRestApi.get_workspace_info(workspace_id)
@@ -2343,9 +2264,10 @@ class DeploymentManager:
         
         workspace_items = FabricRestApi.list_workspace_items(workspace['id'])
 
-        adls_container_name = EnvironmentSettings.PROD_ADLS_CONTAINER_NAME
-        adls_container_path = EnvironmentSettings.PROD_ADLS_CONTAINER_PATH
-        adls_server = EnvironmentSettings.PROD_ADLS_SERVER
+        web_datasource_path = deployment_job['web_datasource_path']
+        adls_container_name = deployment_job['adls_container_name']
+        adls_container_path = deployment_job['adls_container_path']
+        adls_server = deployment_job['adls_server']
         adls_path = f'/{adls_container_name}{adls_container_path}'
 
         lakehouses = list(filter(lambda item: item['type']=='Lakehouse', workspace_items))
@@ -2361,7 +2283,7 @@ class DeploymentManager:
                 shortcut_path = shortcut['path']
                 shortcut_location = adls_server
                 shortcut_subpath = adls_path
-
+                AppLogger.log_substep(f'Creating shortcut to {shortcut_location}/{shortcut_subpath}')
                 FabricRestApi.create_adls_gen2_shortcut(workspace['id'],
                                                         lakehouse['id'],
                                                         shortcut_name,
@@ -2380,6 +2302,7 @@ class DeploymentManager:
                                            'Create Lakehouse Schemas',
                                            'Create Lakehouse Tables with VarLib']:
                 # bind notebook to 'sales' lakehouse in same workspace
+                AppLogger.log_substep(f"Updating notebook [{notebook['displayName']}]")
                 cls.update_source_lakehouse_in_notebook(
                     workspace_name,
                     notebook['displayName'],
@@ -2387,7 +2310,8 @@ class DeploymentManager:
 
                 if notebook['displayName'] == 'Create Lakehouse Tables':
                     redirects = {
-                        EnvironmentSettings.DEV_WEB_DATASOURCE_URL: EnvironmentSettings.PROD_WEB_DATASOURCE_URL
+                        EnvironmentSettings.DEPLOYMENT_JOBS['dev']['web_datasource_path']: \
+                        web_datasource_path
                     }
                     cls.update_datasource_path_in_notebook(
                         workspace_name,
@@ -2430,19 +2354,19 @@ class DeploymentManager:
 
                 # FabricRestApi.run_data_pipeline(workspace['id'], pipeline)
 
-        sql_endpoints = list(filter(lambda item: item['type']=='SQLEndpoint', workspace_items))
-        for sql_endpoint in sql_endpoints:
-            FabricRestApi.refresh_sql_endpoint_metadata(
-                workspace['id'],
-                sql_endpoint['id'])
+        # sql_endpoints = list(filter(lambda item: item['type']=='SQLEndpoint', workspace_items))
+        # for sql_endpoint in sql_endpoints:
+        #     FabricRestApi.refresh_sql_endpoint_metadata(
+                # workspace['id'],
+                # sql_endpoint['id'])
 
         models = list(filter(lambda item: item['type']=='SemanticModel', workspace_items))
         for model in models:
-
+            AppLogger.log_substep(f"Updating semantic model [{model['displayName']}]")
             # Apply fixes for [Product Sales Imported Model.SemanticModel]
             if model['displayName'] ==    'Product Sales Imported Model':
                 # fix connection to imported models
-                datasource_path =  EnvironmentSettings.PROD_WEB_DATASOURCE_URL
+                datasource_path =  deployment_job['web_datasource_path']
 
                 DeploymentManager.update_imported_semantic_model_source(
                     workspace,
@@ -2466,9 +2390,6 @@ class DeploymentManager:
                 #     workspace,
                 #     model['id'])
 
-
-
-
     @classmethod
     def apply_post_deploy_fixes(cls,
                                 workspace_name,
@@ -2480,9 +2401,10 @@ class DeploymentManager:
         workspace = FabricRestApi.get_workspace_by_name(workspace_name)
         workspace_items = FabricRestApi.list_workspace_items(workspace['id'])
 
-        adls_container_name = deployment_job.parameters[DeploymentJob.adls_container_name_parameter]
-        adls_container_path = deployment_job.parameters[DeploymentJob.adls_container_path_parameter]
-        adls_server = deployment_job.parameters[DeploymentJob.adls_server_parameter]
+        web_datasource_path = deployment_job['web_datasource_path']
+        adls_container_name = deployment_job['adls_container_name']
+        adls_container_path = deployment_job['adls_container_path_parameter']
+        adls_server = deployment_job['adls_server_parameter']
         adls_path = f'/{adls_container_name}{adls_container_path}'
 
         lakehouses = list(filter(lambda item: item['type']=='Lakehouse', workspace_items))
@@ -2562,27 +2484,6 @@ class DeploymentManager:
                     model['id'])
 
     @classmethod
-    def create_and_bind_model_connection(cls, workspace_name):
-        """Create and Bind Model Connections"""
-        workspace = FabricRestApi.get_workspace_by_name(workspace_name)
-        model_name = 'Product Sales DirectLake Model'
-        model = FabricRestApi.get_item_by_name(workspace['id'], model_name, 'SemanticModel')
-        FabricRestApi.create_and_bind_semantic_model_connecton(workspace, model['id'])
-
-    @classmethod
-    def deploy_from_test_to_prod(cls, pipeline_name):
-        """Deploy Stage from Dev to Test"""
-        pipeline = FabricRestApi.get_deployment_pipeline_by_name(pipeline_name)
-        stages = FabricRestApi.list_deployment_pipeline_stages(pipeline['id'])
-
-        source_stage_id = stages[1]['id']
-        target_stage_id = stages[2]['id']
-
-        AppLogger.log_step("Deploy from [test] to [prod]")
-        FabricRestApi.deploy_to_pipeline_stage(pipeline['id'], source_stage_id, target_stage_id)
-        AppLogger.log_substep("Deploy operation complete")
-
-    @classmethod
     def update_variable_library(cls, workspace_name, library_name, deployment_job):
         """Update Variable Library"""
 
@@ -2590,7 +2491,13 @@ class DeploymentManager:
         variable_library_item = FabricRestApi.get_item_by_name(workspace['id'],
                                                         library_name,
                                                         'VariableLibrary')
-        deployment_parameters = deployment_job.parameters
+        
+        web_datasource_path = deployment_job['web_datasource_path']
+        adls_container_name = deployment_job['adls_container_name']
+        adls_container_path = deployment_job['adls_container_path_parameter']
+        adls_server = deployment_job['adls_server_parameter']
+        adls_path = f'/{adls_container_name}{adls_container_path}'
+
 
         variable_library_definition = FabricRestApi.get_item_definition(workspace['id'],
                                                                         variable_library_item)

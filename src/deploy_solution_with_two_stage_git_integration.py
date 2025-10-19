@@ -1,10 +1,21 @@
 """Deploy Demo Solution with ADO GIT Intergation"""
 
-from fabric_devops import DeploymentManager, AppLogger, StagingEnvironments, \
-                          AdoProjectManager, FabricRestApi
+import os
 
-SOLUTION_NAME = 'Custom Notebook Solution'
-PROJECT_NAME = 'Dogfood'
+from fabric_devops import DeploymentManager, EnvironmentSettings, AppLogger, StagingEnvironments,\
+                          AdoProjectManager, FabricRestApi, GitHubRestApi
+
+if os.getenv("RUN_AS_SERVICE_PRINCIPAL") == 'true':
+    EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL = True
+else:
+    EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL = False
+
+solution_name = 
+workspace_name = solution_name
+
+SOLUTION_NAME = os.getenv("SOLUTION_NAME")
+PROJECT_NAME = os.getenv("SOLUTION_NAME")
+
 DEV_WORKSPACE_NAME = F'{PROJECT_NAME}-dev'
 PROD_WORKSPACE_NAME = F'{PROJECT_NAME}'
 
@@ -41,7 +52,7 @@ DeploymentManager.apply_post_sync_fixes(
     True)
 
 FabricRestApi.commit_workspace_to_git(
-    FEATURE1_WORKSPACE['id'], 
+    FEATURE1_WORKSPACE['id'],
     commit_comment = 'Sync updates from feature workspace to repo after applying fixes')
 
 # # create feature2 workspace
