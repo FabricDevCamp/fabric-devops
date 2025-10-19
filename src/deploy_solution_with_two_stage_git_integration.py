@@ -52,6 +52,10 @@ FabricRestApi.commit_workspace_to_git(
     FEATURE1_WORKSPACE['id'],
     commit_comment = 'Sync updates from feature workspace to repo after applying fixes')
 
+AdoProjectManager.create_and_merge_pull_request(PROJECT_NAME, FEATURE1_NAME , 'dev')
+
+   
+
 # # create feature2 workspace
 # FEATURE2_NAME = 'feature2'
 # FEATURE2_WORKSPACE_NAME = F'{WORKSPACE_NAME} - {FEATURE2_NAME}'
