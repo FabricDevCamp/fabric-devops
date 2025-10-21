@@ -1558,7 +1558,7 @@ class FabricRestApi:
     @classmethod
     def update_workspace_from_git(cls, workspace_id, update_from_git_request = None):
         """Update Workspace from GIT Repository"""
-        AppLogger.log_step("Pushing item definitions in ADO repo to workspace items")
+        AppLogger.log_step("Pushing item definitions from GIT reposiitory to workspace items")
         
         if update_from_git_request is None:            
             git_status = FabricRestApi.get_git_status(workspace_id)

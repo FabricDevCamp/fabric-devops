@@ -31,8 +31,6 @@ DeploymentManager.setup_two_stage_ado_repo(
     prod_workspace,
     PROJECT_NAME)
 
-
-
 # create feature1 workspace
 FEATURE1_NAME = 'feature1'
 FEATURE1_WORKSPACE_NAME = F'{DEV_WORKSPACE_NAME}-{FEATURE1_NAME}'
@@ -53,18 +51,17 @@ FabricRestApi.commit_workspace_to_git(
     commit_comment = 'Sync updates from feature workspace to repo after applying fixes')
 
 AdoProjectManager.create_and_merge_pull_request(PROJECT_NAME, FEATURE1_NAME , 'dev')
-
-   
+AdoProjectManager.create_and_merge_pull_request(PROJECT_NAME, 'dev', 'main')
 
 # # create feature2 workspace
-# FEATURE2_NAME = 'feature2'
-# FEATURE2_WORKSPACE_NAME = F'{WORKSPACE_NAME} - {FEATURE2_NAME}'
-# FEATURE2_WORKSPACE = FabricRestApi.create_workspace(FEATURE2_WORKSPACE_NAME)
+FEATURE2_NAME = 'feature2'
+FEATURE2_WORKSPACE_NAME = F'{DEV_WORKSPACE_NAME}-{FEATURE2_NAME}'
+FEATURE2_WORKSPACE = FabricRestApi.create_workspace(FEATURE2_WORKSPACE_NAME)
 
-# # create feature2 branch and connect to feature2 workspace
-# AdoProjectManager.create_branch(WORKSPACE_NAME, FEATURE2_NAME, 'main')
-# FabricRestApi.connect_workspace_to_ado_repo(FEATURE2_WORKSPACE, WORKSPACE_NAME, FEATURE2_NAME)
+# create feature2 branch and connect to feature2 workspace
+AdoProjectManager.create_branch(PROJECT_NAME, FEATURE2_NAME, 'main')
+FabricRestApi.connect_workspace_to_ado_repo(FEATURE2_WORKSPACE, PROJECT_NAME, FEATURE2_NAME)
 
-# # do not apply post sync/deploy fixes to feature2 workspace
+# do not apply post sync/deploy fixes to feature2 workspace
 
-# AppLogger.log_job_complete(workspace['id'])
+AppLogger.log_job_complete()

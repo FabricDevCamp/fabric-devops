@@ -32,7 +32,7 @@ match os.getenv("GIT_INTEGRATION_PROVIDER"):
         AdoProjectManager.copy_files_from_folder_to_repo(
             workspace_name,
             'main', 
-            'ADO_SetUpForGitIntegration'
+            'ADO_SetUpForGitIntegration',
         )
         
 
