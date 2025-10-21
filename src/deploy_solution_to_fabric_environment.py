@@ -9,8 +9,8 @@ if os.getenv("RUN_AS_SERVICE_PRINCIPAL") == 'true':
 else:
     EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL = False
 
+workspace_name = os.getenv("WORKSPACE_NAME")
 solution_name = os.getenv("SOLUTION_NAME")
-workspace_name = solution_name
 
 match os.getenv("TARGET_ENVIRONMENT"):
     case 'Dev':
@@ -28,13 +28,6 @@ match os.getenv("GIT_INTEGRATION_PROVIDER"):
         # create ADO project and connect project main repo to workspace
         AdoProjectManager.create_project(workspace_name)
         FabricRestApi.connect_workspace_to_ado_repo(workspace, workspace_name)
-
-        AdoProjectManager.copy_files_from_folder_to_repo(
-            workspace_name,
-            'main', 
-            'ADO_SetUpForGitIntegration',
-        )
-        
 
         # create feature1 workspace
         FEATURE1_NAME = 'feature1'

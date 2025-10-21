@@ -5,6 +5,10 @@ run-name: Deploy ${{inputs.solution_name}} to ${{inputs.target_environment}} Env
 on:
     workflow_dispatch:
         inputs:
+            workspace_name:
+                description: Workspace Name
+                required: true
+                default: "Product Sales"
             solution_name:
                 type: choice
                 description: Solution to deploy
@@ -79,6 +83,7 @@ jobs:
                 ADMIN_USER_ID: ${{ secrets.ADMIN_USER_ID }}
                 SERVICE_PRINCIPAL_OBJECT_ID: ${{ secrets.SERVICE_PRINCIPAL_OBJECT_ID }}
                 PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
+                WORKSPACE_NAME: ${{inputs.workspace_name}}
                 SOLUTION_NAME: ${{inputs.solution_name}}        
                 TARGET_ENVIRONMENT: ${{inputs.target_environment}}
                 GIT_INTEGRATION_PROVIDER: ${{inputs.git_integration_provider}}
