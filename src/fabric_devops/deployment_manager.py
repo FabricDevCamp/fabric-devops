@@ -1277,7 +1277,7 @@ class DeploymentManager:
 
         create_library_request = \
             ItemDefinitionFactory.get_variable_library_create_request(
-                "SolutionConfig",
+                "environment_settings",
                 variable_library
         )
 
@@ -2168,8 +2168,6 @@ class DeploymentManager:
                 FabricRestApi.create_and_bind_semantic_model_connecton(
                     workspace,
                     model['id'])
-
-
 
 
     @classmethod

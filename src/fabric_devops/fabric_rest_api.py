@@ -1327,15 +1327,15 @@ class FabricRestApi:
                     'propertiesConfiguredByVariables': [
                         {
                              'property': 'target.adlsGen2.connectionId',
-                             'variable': '$(/**/SolutionConfig/target_connection_id)'
+                             'variable': '$(/**/environment_settings/target_connection_id)'
                         },
                         {
                             'property': 'target.adlsGen2.location',
-                            'variable': '$(/**/SolutionConfig/target_location)'
+                            'variable': '$(/**/environment_settings/target_location)'
                         },
                         {
                             'property': 'target.adlsGen2.subpath',
-                            'variable': '$(/**/SolutionConfig/target_subpath)'
+                            'variable': '$(/**/environment_settings/target_subpath)'
                         }
                     ]
                 }

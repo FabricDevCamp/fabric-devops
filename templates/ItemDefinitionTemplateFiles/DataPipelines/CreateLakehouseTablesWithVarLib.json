@@ -167,42 +167,42 @@
       "web_datasource_path": {
         "type": "String",
         "variableName": "web_datasource_path",
-        "libraryName": "SolutionConfig"
+        "libraryName": "environment_settings"
       },
     "adls_server": {
         "type": "String",
         "variableName": "adls_server",
-        "libraryName": "SolutionConfig"
+        "libraryName": "environment_settings"
       },
       "adls_container_name": {
         "type": "String",
         "variableName": "adls_container_name",
-        "libraryName": "SolutionConfig"
+        "libraryName": "environment_settings"
       },
       "adls_container_path": {
         "type": "String",
         "variableName": "adls_container_path",
-        "libraryName": "SolutionConfig"
+        "libraryName": "environment_settings"
       },
       "lakehouse_id": {
         "type": "String",
         "variableName": "lakehouse_id",
-        "libraryName": "SolutionConfig"
+        "libraryName": "environment_settings"
       },
       "adls_connection_id": {
         "type": "String",
         "variableName": "adls_connection_id",
-        "libraryName": "SolutionConfig"
+        "libraryName": "environment_settings"
       },
       "notebook_id_build_silver": {
         "type": "String",
         "variableName": "notebook_id_build_silver",
-        "libraryName": "SolutionConfig"
+        "libraryName": "environment_settings"
       },
       "notebook_id_build_gold": {
         "type": "String",
         "variableName": "notebook_id_build_gold",
-        "libraryName": "SolutionConfig"
+        "libraryName": "environment_settings"
       }
     },
     "lastModifiedByObjectId": "e8805a8f-201d-4f06-9e35-0d0b29faebe6",
