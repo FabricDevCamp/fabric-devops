@@ -39,22 +39,22 @@ match os.getenv("GIT_INTEGRATION_PROVIDER"):
         FabricRestApi.connect_workspace_to_ado_repo(FEATURE1_WORKSPACE, workspace_name, FEATURE1_NAME)
 
        # apply post sync/deploy fixes to feature1 workspace
-        DeploymentManager.apply_post_sync_fixes(
+        DeploymentManager.apply_post_deploy_fixes(
             FEATURE1_WORKSPACE_NAME,
             StagingEnvironments.get_dev_environment(),
             True
         )
 
-        # create feature2 workspace
-        FEATURE2_NAME = 'feature2'
-        FEATURE2_WORKSPACE_NAME = F'{workspace_name} - {FEATURE2_NAME}'
-        FEATURE2_WORKSPACE = FabricRestApi.create_workspace(FEATURE2_WORKSPACE_NAME)
+        # # create feature2 workspace
+        # FEATURE2_NAME = 'feature2'
+        # FEATURE2_WORKSPACE_NAME = F'{workspace_name} - {FEATURE2_NAME}'
+        # FEATURE2_WORKSPACE = FabricRestApi.create_workspace(FEATURE2_WORKSPACE_NAME)
 
-        # create feature2 branch and connect to feature2 workspace
-        AdoProjectManager.create_branch(workspace_name, FEATURE2_NAME, 'main')
-        FabricRestApi.connect_workspace_to_ado_repo(FEATURE2_WORKSPACE, workspace_name, FEATURE2_NAME)
+        # # create feature2 branch and connect to feature2 workspace
+        # AdoProjectManager.create_branch(workspace_name, FEATURE2_NAME, 'main')
+        # FabricRestApi.connect_workspace_to_ado_repo(FEATURE2_WORKSPACE, workspace_name, FEATURE2_NAME)
 
-        # not applying post sync/deploy fixes to feature2 workspace to see what happens
+        # # not applying post sync/deploy fixes to feature2 workspace to see what happens
 
         
         

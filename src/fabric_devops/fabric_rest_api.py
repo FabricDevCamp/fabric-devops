@@ -1253,10 +1253,10 @@ class FabricRestApi:
                 AppLogger.log_substep('Creating SQL connection for semantic model')
                 server = datasource['connectionDetails']['server']
                 database = datasource['connectionDetails']['database']
-                connection = cls.create_sql_connection_with_workspace_identity(server,
-                                                                                database,
-                                                                                workspace,
-                                                                                lakehouse)
+                connection = cls.create_sql_connection_with_service_principal(server,
+                                                                              database,
+                                                                              workspace,
+                                                                              lakehouse)
                 AppLogger.log_substep('Binding semantic model to SQL connection')
                 cls.bind_semantic_model_to_connection(workspace['id'],
                                                         semantic_model_id,
