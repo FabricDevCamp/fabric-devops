@@ -40,10 +40,17 @@ DeploymentManager.apply_post_deploy_fixes(
 
 AppLogger.log_step('Copying pipeline files and registering ADO pipelines')
 
+variable_group = AdoProjectManager.create_two_stage_variable_group(
+    'environmental_variables',
+    PROJECT_NAME, 
+    DEV_WORKSPACE['id'],
+    PROD_WORKSPACE['id'])
+
 AdoProjectManager.copy_files_from_folder_to_repo(
     PROJECT_NAME,
     'dev', 
-    'ADO_SetupForFabricCICD'
+    'ADO_SetupForFabricCICD',
+    variable_group['id']
 )
 
 AdoProjectManager.create_and_merge_pull_request(PROJECT_NAME, 'dev','test')
