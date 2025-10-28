@@ -2231,12 +2231,14 @@ class DeploymentManager:
         notebooks = list(filter(lambda item: item['type']=='Notebook', workspace_items))
         for notebook in notebooks:
             # Apply fixes for [Create Lakehouse Tables.Notebook]
-            if notebook['displayName'] == 'Create Lakehouse Tables':
+            
+            if notebook['displayName'] in ['Create Lakehouse Tables', 'Build 01 Silver Layer', 'Build 02 Gold Layer']:
                 cls.update_source_lakehouse_in_notebook(
                     workspace_name,
                     notebook['displayName'],
                     "sales")
 
+            if notebook['displayName'] == 'Create Lakehouse Tables':
                 cls.update_datasource_path_in_notebook(
                     workspace_name,
                     notebook['displayName'],
