@@ -2248,7 +2248,7 @@ class DeploymentManager:
         pipelines  = list(filter(lambda item: item['type']=='DataPipeline', workspace_items))
         for pipeline in pipelines:
             # run pipelines if required                
-            if run_etl_jobs and 'Create' in pipeline['displayName']:                
+            if run_etl_jobs and 'Create' in pipeline['displayName']:   
                 FabricRestApi.run_data_pipeline(workspace['id'], pipeline)
 
         sql_endpoints =    list(filter(lambda item: item['type']=='SQLEndpoint', workspace_items))
