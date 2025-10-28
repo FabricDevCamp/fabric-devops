@@ -1241,7 +1241,7 @@ class DeploymentManager:
 
         workspace = FabricRestApi.create_workspace(target_workspace)
         
-        data_prep_folder = FabricRestApi.create_folder('data_prep')
+        data_prep_folder = FabricRestApi.create_folder(workspace['id'] ,'data_prep')
 
         lakehouse = FabricRestApi.create_lakehouse(workspace['id'], lakehouse_name)
 
