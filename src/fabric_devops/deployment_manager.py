@@ -1240,6 +1240,8 @@ class DeploymentManager:
         AppLogger.log_job(f"Deploying Custom Variable Library Solution to [{target_workspace}]")
 
         workspace = FabricRestApi.create_workspace(target_workspace)
+        
+        data_prep_folder = FabricRestApi.create_folder('data_prep')
 
         lakehouse = FabricRestApi.create_lakehouse(workspace['id'], lakehouse_name)
 
@@ -1251,10 +1253,9 @@ class DeploymentManager:
                     workspace['id'],
                     lakehouse)
 
-            notebook = FabricRestApi.create_item(workspace['id'], create_notebook_request)
+            notebook = FabricRestApi.create_item(workspace['id'], create_notebook_request, data_prep_folder)
             notebook_ids.append(notebook['id'])
 
-        web_datasource_path = deploy_job.parameters[deploy_job.web_datasource_path_parameter]
         adls_server = deploy_job.parameters[deploy_job.adls_server_parameter]
         adls_container_name = deploy_job.parameters[deploy_job.adls_container_name_parameter]
         adls_container_path = deploy_job.parameters[deploy_job.adls_container_path_parameter]
@@ -1272,8 +1273,8 @@ class DeploymentManager:
         variable_library.add_variable("adls_container_path",    adls_container_path)
         variable_library.add_variable("adls_connection_id",    connection['id'])
         variable_library.add_variable("lakehouse_id",    lakehouse['id'])
-        variable_library.add_variable("notebook_id_build_silver",    notebook_ids[0])
-        variable_library.add_variable("notebook_id_build_gold",    notebook_ids[1])
+        # variable_library.add_variable("notebook_id_build_silver",    notebook_ids[0])
+        # variable_library.add_variable("notebook_id_build_gold",    notebook_ids[1])
 
         create_library_request = \
             ItemDefinitionFactory.get_variable_library_create_request(
@@ -1281,7 +1282,7 @@ class DeploymentManager:
                 variable_library
         )
 
-        FabricRestApi.create_item(workspace['id'], create_library_request)
+        FabricRestApi.create_item(workspace['id'], create_library_request, data_prep_folder)
 
         pipeline_definition = ItemDefinitionFactory.get_template_file(
             'DataPipelines//CreateLakehouseTablesWithVarLib.json')
@@ -1289,8 +1290,20 @@ class DeploymentManager:
         create_pipeline_request = \
             ItemDefinitionFactory.get_data_pipeline_create_request(data_pipeline_name,
                                                                 pipeline_definition)
+            
+        pipeline_redirects = {
+            '{BUILD_SILVER_NOTEBOOK_ID}': notebook_ids[0],
+            '{BUILD_GOLD_NOTEBOOK_ID}': notebook_ids[1]
+        }
+        
+        create_pipeline_request = \
+            ItemDefinitionFactory.update_part_in_create_request(
+                create_pipeline_request,
+                'pipeline-content.json',
+                pipeline_redirects)
 
-        pipeline = FabricRestApi.create_item(workspace['id'], create_pipeline_request)
+        
+        pipeline = FabricRestApi.create_item(workspace['id'], create_pipeline_request, data_prep_folder)
         FabricRestApi.run_data_pipeline(workspace['id'], pipeline)
 
         sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse)

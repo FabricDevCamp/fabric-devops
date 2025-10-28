@@ -124,7 +124,7 @@
         },
         "typeProperties": {
           "notebookId": {
-            "value": "@pipeline().libraryVariables.notebook_id_build_silver",
+            "value": "{BUILD_SILVER_NOTEBOOK_ID}",
             "type": "Expression"
           },
           "workspaceId": {
@@ -153,7 +153,7 @@
         },
         "typeProperties": {
           "notebookId": {
-            "value": "@pipeline().libraryVariables.notebook_id_build_gold",
+            "value": "{BUILD_GOLD_NOTEBOOK_ID}",
             "type": "Expression"
           },
           "workspaceId": {

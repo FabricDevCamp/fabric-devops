@@ -2,12 +2,21 @@ import json
 import os
 from fabric_devops import DeploymentManager, EnvironmentSettings, FabricRestApi, AdoProjectManager, GitHubRestApi
 
-workspace = FabricRestApi.create_workspace("Test3")
 
-warehouse = FabricRestApi.create_warehouse(workspace['id'], "fuzzy")
+PROJECT_NAME = 'Brenda'
 
-# ado_project= AdoProjectManager.create_project('Test3')
+# create first feature workspace
+FEATURE_NAME = 'feature2'
+FEATURE_WORKSPACE_NAME = F'{PROJECT_NAME}-dev-{FEATURE_NAME}'
+FEATURE_WORKSPACE = FabricRestApi.create_workspace(FEATURE_WORKSPACE_NAME)
 
-github_repo = GitHubRestApi.create_repository("Test3")
+AdoProjectManager.create_branch(PROJECT_NAME, FEATURE_NAME, "dev")
+FabricRestApi.connect_workspace_to_ado_repo(FEATURE_WORKSPACE, PROJECT_NAME, FEATURE_NAME)
 
-FabricRestApi.connect_workspace_to_github_repo(workspace, "Test3" )
+DeploymentManager.apply_post_deploy_fixes(
+    FEATURE_WORKSPACE_NAME,
+    StagingEnvironments.get_dev_environment(),
+    True)
+
+FabricRestApi.commit_workspace_to_git(FEATURE_WORKSPACE)
+
