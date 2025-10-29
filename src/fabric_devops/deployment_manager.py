@@ -1390,6 +1390,7 @@ class DeploymentManager:
 
     @classmethod
     def create_adls_variable_library(cls, workspace, data_prep_folder_id):
+        """Create Vairable Library with ADLS settings"""
         
         # use default values for dev environment
         dev_deploy_job = StagingEnvironments.get_dev_environment()
