@@ -1570,8 +1570,9 @@ class FabricRestApi:
                     "conflictResolutionPolicy": "PreferRemote"
                 },
                 "options": { "allowOverrideItems": True }                
-            }        
+            }
         
+        print(update_from_git_request)
         endpoint = f"workspaces/{workspace_id}/git/updateFromGit"
         response = cls._execute_post_request(endpoint, update_from_git_request)
         AppLogger.log_substep("GIT synchronization process complete")

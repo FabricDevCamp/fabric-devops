@@ -777,7 +777,7 @@ class FabricRestApi:
     @classmethod
     def create_azure_storage_connection_with_sas_token(cls, server, path,
                                                          workspace = None,
-                                                         top_level_step = True):
+                                                         top_level_step = False):
         """Create Azure Storage connections"""
 
         display_name = 'ADLS'
@@ -1120,7 +1120,7 @@ class FabricRestApi:
     def get_sql_endpoint_for_lakehouse(cls, workspace_id, lakehouse):
         """Get SQL endpoint properties for lakehouse"""
 
-        AppLogger.log_step(
+        AppLogger.log_substep(
             f"Getting SQL Endpoint info for lakehouse [{lakehouse['displayName']}]...")
 
         lakehouse = cls.get_lakehouse(workspace_id, lakehouse['id'])
@@ -1158,7 +1158,7 @@ class FabricRestApi:
     @classmethod
     def refresh_sql_endpoint_metadata(cls, workspace_id, sql_endpoint_id):
         """Refresh SL Endpoint"""
-        AppLogger.log_step("Updating metadata in SQL Endpoint...")
+        AppLogger.log_substep("Updating metadata in SQL Endpoint...")
         endpoint = \
             f"workspaces/{workspace_id}/sqlEndpoints/{sql_endpoint_id}/refreshMetadata?preview=True"
         cls._execute_post_request(endpoint, {})
