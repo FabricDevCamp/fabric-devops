@@ -914,11 +914,10 @@ class FabricRestApi:
     @classmethod
     def update_item_definition(cls, workspace_id, item, update_item_definition_request):
         """Update Item Definition using update-item--definition-request"""
-        AppLogger.log_step(
+        AppLogger.log_substep(
             f"Updating [{item['displayName']}.{item['type']}]...")
         endpoint = f"workspaces/{workspace_id}/items/{item['id']}/updateDefinition"
         item = cls._execute_post_request(endpoint, update_item_definition_request)
-        AppLogger.log_substep("Item updated")
         return item
 
     @classmethod
@@ -1379,7 +1378,7 @@ class FabricRestApi:
     @classmethod
     def set_active_valueset_for_variable_library(cls, workspace_id, library, valueset):
         """Set active valueset for variable library"""
-        AppLogger.log_step(
+        AppLogger.log_substep(
             "Setting active valueset for variable library " + \
             f"[{library['displayName']}] to [{valueset}]...")
 
@@ -1390,7 +1389,6 @@ class FabricRestApi:
             }
         }
         cls._execute_patch_request(rest_url, post_body)
-        AppLogger.log_substep('Active valueset set successfullly')
         
     @classmethod
     def initialize_git_connection(cls, workspace_id, initialize_connection_request):

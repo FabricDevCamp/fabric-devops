@@ -31,14 +31,14 @@ match os.getenv("GIT_INTEGRATION_PROVIDER"):
 
         # create feature1 workspace
         FEATURE1_NAME = 'feature1'
-        FEATURE1_WORKSPACE_NAME = F'{workspace_name} - {FEATURE1_NAME}'
+        FEATURE1_WORKSPACE_NAME = F'{workspace_name}-{FEATURE1_NAME}'
         FEATURE1_WORKSPACE = FabricRestApi.create_workspace(FEATURE1_WORKSPACE_NAME)
 
         # create feature1 branch and connect to feature1 workspace
         AdoProjectManager.create_branch(workspace_name, FEATURE1_NAME, 'main')
         FabricRestApi.connect_workspace_to_ado_repo(FEATURE1_WORKSPACE, workspace_name, FEATURE1_NAME)
 
-       # apply post sync/deploy fixes to feature1 workspace
+        # apply post sync/deploy fixes to feature1 workspace
         DeploymentManager.apply_post_deploy_fixes(
             FEATURE1_WORKSPACE_NAME,
             StagingEnvironments.get_dev_environment(),

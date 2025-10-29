@@ -128,7 +128,7 @@
             "type": "Expression"
           },
           "workspaceId": {
-            "value": "@pipeline().DataFactory",
+            "value": "{WORKSPACE_ID}",
             "type": "Expression"
           }
         }
@@ -157,18 +157,13 @@
             "type": "Expression"
           },
           "workspaceId": {
-            "value": "@pipeline().DataFactory",
+            "value": "{WORKSPACE_ID}",
             "type": "Expression"
           }
         }
       }
     ],
-    "libraryVariables": { 
-      "web_datasource_path": {
-        "type": "String",
-        "variableName": "web_datasource_path",
-        "libraryName": "environment_settings"
-      },
+    "libraryVariables": {
     "adls_server": {
         "type": "String",
         "variableName": "adls_server",
@@ -193,17 +188,7 @@
         "type": "String",
         "variableName": "adls_connection_id",
         "libraryName": "environment_settings"
-      },
-      "notebook_id_build_silver": {
-        "type": "String",
-        "variableName": "notebook_id_build_silver",
-        "libraryName": "environment_settings"
-      },
-      "notebook_id_build_gold": {
-        "type": "String",
-        "variableName": "notebook_id_build_gold",
-        "libraryName": "environment_settings"
-      }
+      }     
     },
     "lastModifiedByObjectId": "e8805a8f-201d-4f06-9e35-0d0b29faebe6",
     "lastPublishTime": "2025-04-23T18:52:57Z"

@@ -1298,6 +1298,7 @@ class DeploymentManager:
                                                                 pipeline_definition)
             
         pipeline_redirects = {
+            '{WORKSPACE_ID}': workspace['id'],
             '{BUILD_SILVER_NOTEBOOK_ID}': notebook_ids[0],
             '{BUILD_GOLD_NOTEBOOK_ID}': notebook_ids[1]
         }
@@ -2247,10 +2248,19 @@ class DeploymentManager:
             if run_etl_jobs and 'Create' in notebook['displayName']:                
                 FabricRestApi.run_notebook(workspace['id'], notebook)
 
+        variable_libraries = list(filter(lambda item: item['type']=='VariableLibrary', workspace_items))
+        for variable_library in variable_libraries:
+            DeploymentManager.update_variable_library(
+                workspace_name,
+                variable_library['displayName'],
+                deployment_job,
+                workspace_name
+            )
+
         pipelines  = list(filter(lambda item: item['type']=='DataPipeline', workspace_items))
         for pipeline in pipelines:
             # run pipelines if required                
-            if run_etl_jobs and 'Create' in pipeline['displayName']:   
+            if run_etl_jobs and 'Create' in pipeline['displayName']:
                 FabricRestApi.run_data_pipeline(workspace['id'], pipeline)
 
         sql_endpoints =    list(filter(lambda item: item['type']=='SQLEndpoint', workspace_items))
@@ -2408,13 +2418,14 @@ class DeploymentManager:
         AppLogger.log_substep("Deploy operation complete")
 
     @classmethod
-    def update_variable_library(cls, workspace_name, library_name, deployment_job: DeploymentJob):
+    def update_variable_library(cls, workspace_name, library_name, deployment_job: DeploymentJob, valueset_name = None):
         """Update Variable Library"""
 
         workspace = FabricRestApi.get_workspace_by_name(workspace_name)
         variable_library_item = FabricRestApi.get_item_by_name(workspace['id'],
                                                         library_name,
                                                         'VariableLibrary')
+        
         deployment_parameters = deployment_job.parameters
 
         variable_library_definition = FabricRestApi.get_item_definition(workspace['id'],
@@ -2433,9 +2444,12 @@ class DeploymentManager:
                 break
 
         if variables is not None:
-            variable_library    = VariableLibrary(variables)
+            variable_library = VariableLibrary(variables)
+            
+            if valueset_name is None:
+                valueset_name = deployment_job.name
 
-            valueset = Valueset(deployment_job.name)
+            valueset = Valueset(valueset_name)
 
             for variable in variables:
                 if variable['name'] in deployment_parameters:
@@ -2445,30 +2459,13 @@ class DeploymentManager:
 
             # set additional overrides with workspace-specific ids
             lakehouse_id_parameter = 'lakehouse_id'
-            notebook_id_build_silver_parameter = 'notebook_id_build_silver'
-            notebook_id_build_gold_parameter    = 'notebook_id_build_gold'
+            # notebook_id_build_silver_parameter = 'notebook_id_build_silver'
+            # notebook_id_build_gold_parameter    = 'notebook_id_build_gold'
             adls_connection_id_parameter = 'adls_connection_id'
 
             lakehouse = FabricRestApi.get_item_by_name(workspace['id'], 'sales', 'Lakehouse')
             valueset.add_variable_override(lakehouse_id_parameter, lakehouse['id'])
 
-            notebook_build_silver = FabricRestApi.get_item_by_name(
-                workspace['id'],
-                'Build 01 Silver Layer', 
-                'Notebook')
-
-            valueset.add_variable_override(
-                notebook_id_build_silver_parameter,
-                notebook_build_silver['id'])
-
-            notebook_build_gold = FabricRestApi.get_item_by_name(
-                workspace['id'],
-                'Build 02 Gold Layer', 
-                'Notebook')
-
-            valueset.add_variable_override(
-                notebook_id_build_gold_parameter,
-                notebook_build_gold['id'])
 
             adls_server = deployment_job.parameters[DeploymentJob.adls_server_parameter]
             adls_container_name = \
@@ -2497,15 +2494,7 @@ class DeploymentManager:
             FabricRestApi.set_active_valueset_for_variable_library(
                 workspace['id'],
                 variable_library_item,
-                deployment_job.name)
-
-            # run data pipeline
-            data_pipeline_name = 'Create Lakehouse Tables'
-            data_pipeline = FabricRestApi.get_item_by_name(
-                workspace['id'],
-                data_pipeline_name,
-                'DataPipeline')
-            FabricRestApi.run_data_pipeline(workspace['id'], data_pipeline)
+                valueset_name)
 
         else:
             AppLogger.log_error("Error running data pipeline")
