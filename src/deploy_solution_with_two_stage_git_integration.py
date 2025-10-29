@@ -21,7 +21,7 @@ prod_deploy_job = StagingEnvironments.get_prod_environment()
 
 dev_workspace = DeploymentManager.deploy_solution_by_name(
     SOLUTION_NAME, 
-    DEV_WORKSPACE_NAME, 
+    DEV_WORKSPACE_NAME,
     dev_deploy_job)
 
 prod_workspace = FabricRestApi.create_workspace(PROD_WORKSPACE_NAME)

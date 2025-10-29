@@ -1277,7 +1277,6 @@ class DeploymentManager:
         variable_library.add_variable("adls_container_name",    adls_container_name)
         variable_library.add_variable("adls_container_path",    adls_container_path)
         variable_library.add_variable("adls_connection_id",    connection['id'])
-        variable_library.add_variable("lakehouse_id",    lakehouse['id'])
   
         create_library_request = \
             ItemDefinitionFactory.get_variable_library_create_request(
@@ -1299,6 +1298,7 @@ class DeploymentManager:
             
         pipeline_redirects = {
             '{WORKSPACE_ID}': workspace['id'],
+            '{LAKEHOUSE_ID}': lakehouse['id'],
             '{BUILD_SILVER_NOTEBOOK_ID}': notebook_ids[0],
             '{BUILD_GOLD_NOTEBOOK_ID}': notebook_ids[1]
         }
@@ -2458,14 +2458,10 @@ class DeploymentManager:
                     valueset.add_variable_override(variable_name, variable_override)
 
             # set additional overrides with workspace-specific ids
-            lakehouse_id_parameter = 'lakehouse_id'
-            # notebook_id_build_silver_parameter = 'notebook_id_build_silver'
-            # notebook_id_build_gold_parameter    = 'notebook_id_build_gold'
             adls_connection_id_parameter = 'adls_connection_id'
 
             lakehouse = FabricRestApi.get_item_by_name(workspace['id'], 'sales', 'Lakehouse')
-            valueset.add_variable_override(lakehouse_id_parameter, lakehouse['id'])
-
+       
 
             adls_server = deployment_job.parameters[DeploymentJob.adls_server_parameter]
             adls_container_name = \

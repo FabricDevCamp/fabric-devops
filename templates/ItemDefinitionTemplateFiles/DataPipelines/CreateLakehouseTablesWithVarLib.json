@@ -69,8 +69,8 @@
                   "annotations": [],
                   "type": "Lakehouse",
                   "typeProperties": {
-                    "workspaceId": "@pipeline().DataFactory",
-                    "artifactId": "@pipeline().libraryVariables.lakehouse_id",
+                    "workspaceId": "{WORKSPACE_ID}",
+                    "artifactId": "{LAKEHOUSE_ID}",
                     "rootFolder": "Files"
                   }
                 }
@@ -165,11 +165,6 @@
       "adls_container_path": {
         "type": "String",
         "variableName": "adls_container_path",
-        "libraryName": "environment_settings"
-      },
-      "lakehouse_id": {
-        "type": "String",
-        "variableName": "lakehouse_id",
         "libraryName": "environment_settings"
       },
       "adls_connection_id": {
