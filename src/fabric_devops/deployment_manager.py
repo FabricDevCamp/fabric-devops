@@ -1277,25 +1277,6 @@ class DeploymentManager:
         variable_library.add_variable("adls_container_name", adls_container_name)
         variable_library.add_variable("adls_container_path", adls_container_path)
         variable_library.add_variable("adls_connection_id", connection['id'])
-
-        # test
-        test_deploy_job = StagingEnvironments.get_test_environment()        
-        test_adls_server = test_deploy_job.parameters[DeploymentJob.adls_server_parameter]
-        test_adls_container_name = test_deploy_job.parameters[DeploymentJob.adls_container_name_parameter]
-        test_adls_container_path = test_deploy_job.parameters[DeploymentJob.adls_container_path_parameter]
-        test_adls_path = test_adls_container_name + test_adls_container_path
-        
-        test_connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
-            test_adls_server,
-            test_adls_path)
-
-        test_value_set = Valueset('test')
-        test_value_set.add_variable_override('adls_server', test_adls_server)
-        test_value_set.add_variable_override('adls_container_name', test_adls_container_name)
-        test_value_set.add_variable_override('adls_container_path', test_adls_container_path)
-        test_value_set.add_variable_override('adls_connection_id', test_connection['id'])
-    
-        variable_library.add_valueset(test_value_set)
   
         # prod
         prod_deploy_job = StagingEnvironments.get_prod_environment()        
@@ -1316,6 +1297,24 @@ class DeploymentManager:
     
         variable_library.add_valueset(prod_value_set)
   
+          # test
+        test_deploy_job = StagingEnvironments.get_test_environment()        
+        test_adls_server = test_deploy_job.parameters[DeploymentJob.adls_server_parameter]
+        test_adls_container_name = test_deploy_job.parameters[DeploymentJob.adls_container_name_parameter]
+        test_adls_container_path = test_deploy_job.parameters[DeploymentJob.adls_container_path_parameter]
+        test_adls_path = test_adls_container_name + test_adls_container_path
+        
+        test_connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
+            test_adls_server,
+            test_adls_path)
+
+        test_value_set = Valueset('test')
+        test_value_set.add_variable_override('adls_server', test_adls_server)
+        test_value_set.add_variable_override('adls_container_name', test_adls_container_name)
+        test_value_set.add_variable_override('adls_container_path', test_adls_container_path)
+        test_value_set.add_variable_override('adls_connection_id', test_connection['id'])
+    
+        variable_library.add_valueset(test_value_set)
   
         create_library_request = \
             ItemDefinitionFactory.get_variable_library_create_request(
