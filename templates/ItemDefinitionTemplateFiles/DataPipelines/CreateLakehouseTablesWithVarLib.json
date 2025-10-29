@@ -123,13 +123,8 @@
           "secureInput": false
         },
         "typeProperties": {
-          "notebookId": {
-            "value": "{BUILD_SILVER_NOTEBOOK_ID}",
-            "type": "Expression"
-          },
-          "workspaceId": {
-            "value": "{WORKSPACE_ID}",
-            "type": "Expression"
+          "notebookId": "{BUILD_SILVER_NOTEBOOK_ID}",
+          "workspaceId": "{WORKSPACE_ID}"
           }
         }
       },
@@ -152,14 +147,8 @@
           "secureInput": false
         },
         "typeProperties": {
-          "notebookId": {
-            "value": "{BUILD_GOLD_NOTEBOOK_ID}",
-            "type": "Expression"
-          },
-          "workspaceId": {
-            "value": "{WORKSPACE_ID}",
-            "type": "Expression"
-          }
+          "notebookId": "{BUILD_GOLD_NOTEBOOK_ID}",
+          "workspaceId": "{WORKSPACE_ID}"          
         }
       }
     ],
