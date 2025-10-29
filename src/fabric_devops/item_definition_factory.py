@@ -427,7 +427,6 @@ class ItemDefinitionFactory:
             content = variable_library.get_valueset_json(valueset.name)
             parts.append( cls._create_inline_base64_part(path, content ) )
 
-
         settings_json = cls.get_template_file("VariableLibraries//settings.json")
         
         if len(variable_library.valueSetsOrder) > 0:
@@ -435,6 +434,8 @@ class ItemDefinitionFactory:
             sets = json.dumps(variable_library.valueSetsOrder)
             replace = f'"valueSetsOrder": {sets}'
             settings_json.replace(search, replace)
+        
+        print(settings_json)
         
         parts.append( cls._create_inline_base64_part('settings.json', settings_json ) )
 
