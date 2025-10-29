@@ -125,7 +125,6 @@
         "typeProperties": {
           "notebookId": "{BUILD_SILVER_NOTEBOOK_ID}",
           "workspaceId": "{WORKSPACE_ID}"
-          }
         }
       },
       {
@@ -148,12 +147,12 @@
         },
         "typeProperties": {
           "notebookId": "{BUILD_GOLD_NOTEBOOK_ID}",
-          "workspaceId": "{WORKSPACE_ID}"          
+          "workspaceId": "{WORKSPACE_ID}"
         }
       }
     ],
     "libraryVariables": {
-    "adls_server": {
+      "adls_server": {
         "type": "String",
         "variableName": "adls_server",
         "libraryName": "environment_settings"
@@ -177,7 +176,7 @@
         "type": "String",
         "variableName": "adls_connection_id",
         "libraryName": "environment_settings"
-      }     
+      }
     },
     "lastModifiedByObjectId": "e8805a8f-201d-4f06-9e35-0d0b29faebe6",
     "lastPublishTime": "2025-04-23T18:52:57Z"
