@@ -433,7 +433,7 @@ class ItemDefinitionFactory:
             search = '"valueSetsOrder": []'
             sets = json.dumps(variable_library.valueSetsOrder)
             replace = f'"valueSetsOrder": {sets}'
-            settings_json.replace(search, replace)
+            settings_json = settings_json.replace(search, replace)
         
         print(replace)
         print(settings_json)
