@@ -1289,8 +1289,7 @@ class DeploymentManager:
             test_adls_server,
             test_adls_path)
 
-        test_value_set  = Valueset()
-        test_value_set.name = "test"
+        test_value_set = Valueset('test')
         test_value_set.add_variable_override('adls_server', test_adls_server)
         test_value_set.add_variable_override('adls_container_name', test_adls_container_name)
         test_value_set.add_variable_override('adls_container_path', test_adls_container_path)
