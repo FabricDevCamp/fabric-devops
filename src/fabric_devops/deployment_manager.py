@@ -1297,6 +1297,26 @@ class DeploymentManager:
     
         variable_library.add_valueset(test_value_set)
   
+        # prod
+        prod_deploy_job = StagingEnvironments.get_prod_environment()        
+        prod_adls_server = prod_deploy_job.parameters[DeploymentJob.adls_server_parameter]
+        prod_adls_container_name = prod_deploy_job.parameters[DeploymentJob.adls_container_name_parameter]
+        prod_adls_container_path = prod_deploy_job.parameters[DeploymentJob.adls_container_path_parameter]
+        prod_adls_path = prod_adls_container_name + prod_adls_container_path
+        
+        prod_connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
+            prod_adls_server,
+            prod_adls_path)
+
+        prod_value_set = Valueset('prod')
+        prod_value_set.add_variable_override('adls_server', prod_adls_server)
+        prod_value_set.add_variable_override('adls_container_name', prod_adls_container_name)
+        prod_value_set.add_variable_override('adls_container_path', prod_adls_container_path)
+        prod_value_set.add_variable_override('adls_connection_id', prod_connection['id'])
+    
+        variable_library.add_valueset(prod_value_set)
+  
+  
         create_library_request = \
             ItemDefinitionFactory.get_variable_library_create_request(
                 "environment_settings",

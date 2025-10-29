@@ -780,9 +780,11 @@ class FabricRestApi:
                                                          top_level_step = False):
         """Create Azure Storage connections"""
 
-        display_name = 'ADLS'
+        if workspace is None:
+            display_name = f"ADLS-SAS-[{server}{path}]"
+            
         if workspace is not None:
-            display_name = f"Workspace[{workspace['id']}]-" + display_name
+            display_name = f"Workspace[{workspace['id']}]-ADLS-SAS"
 
         create_connection_request = {
             'displayName': display_name,
