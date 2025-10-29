@@ -1291,10 +1291,9 @@ class FabricRestApi:
     @classmethod
     def refresh_sql_endpoint_metadata(cls, workspace_id, sql_endpoint_id):
         """Refresh SL Endpoint"""
-        AppLogger.log_step("Updating metadata in SQL Endpoint...")
+        AppLogger.log_step("Updating SQL Endpoint metadata...")
         endpoint = \
             f"workspaces/{workspace_id}/sqlEndpoints/{sql_endpoint_id}/refreshMetadata?preview=True"
-        cls._execute_post_request(endpoint, {})
         AppLogger.log_substep("SQL Endpoint metadata update complete")
 
     @classmethod
@@ -1537,7 +1536,7 @@ class FabricRestApi:
         return cls._execute_get_request(endpoint)
 
     @classmethod
-    def get__git_connection(cls, workspace_id):
+    def get_git_connection(cls, workspace_id):
         """Get GIT Connection"""
         endpoint = f"workspaces/{workspace_id}/git/connection"
         return cls._execute_get_request(endpoint)

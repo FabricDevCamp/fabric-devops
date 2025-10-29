@@ -44,6 +44,13 @@ match os.getenv("GIT_INTEGRATION_PROVIDER"):
             StagingEnvironments.get_dev_environment(),
             True
         )
+        
+        FabricRestApi.commit_workspace_to_git(
+            FEATURE1_WORKSPACE['id'],
+            commit_comment = 'Sync updates from feature workspace to repo after applying fixes')
+
+        AdoProjectManager.create_and_merge_pull_request(workspace_name, FEATURE1_NAME , 'main')
+
 
         # # create feature2 workspace
         # FEATURE2_NAME = 'feature2'

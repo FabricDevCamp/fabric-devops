@@ -1123,7 +1123,7 @@ class FabricRestApi:
         """Get SQL endpoint properties for lakehouse"""
 
         AppLogger.log_substep(
-            f"Getting SQL Endpoint info for lakehouse [{lakehouse['displayName']}]...")
+            f"Getting SQL Endpoint connection info for lakehouse[{lakehouse['displayName']}]...")
 
         lakehouse = cls.get_lakehouse(workspace_id, lakehouse['id'])
         while lakehouse['properties']['sqlEndpointProperties']['provisioningStatus'] != 'Success':
@@ -1160,11 +1160,10 @@ class FabricRestApi:
     @classmethod
     def refresh_sql_endpoint_metadata(cls, workspace_id, sql_endpoint_id):
         """Refresh SL Endpoint"""
-        AppLogger.log_substep("Updating metadata in SQL Endpoint...")
+        AppLogger.log_substep("Updating SQL Endpoint metadata...")
         endpoint = \
             f"workspaces/{workspace_id}/sqlEndpoints/{sql_endpoint_id}/refreshMetadata?preview=True"
         cls._execute_post_request(endpoint, {})
-        AppLogger.log_substep("SQL Endpoint metadata update complete")
 
     @classmethod
     def get_warehouse(cls, workspace_id, warehouse_id):
@@ -1408,7 +1407,7 @@ class FabricRestApi:
         return cls._execute_get_request(endpoint)
 
     @classmethod
-    def get__git_connection(cls, workspace_id):
+    def get_git_connection(cls, workspace_id):
         """Get GIT Connection"""
         endpoint = f"workspaces/{workspace_id}/git/connection"
         return cls._execute_get_request(endpoint)
