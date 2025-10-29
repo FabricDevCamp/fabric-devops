@@ -56,6 +56,7 @@ class VariableLibrary:
     def __init__(self, variables = None, valuesets = None):
         self.variables = variables if variables is not None else []
         self.valuesets = valuesets if valuesets is not None else []
+        self.valueSetsOrder = []
 
     def encode(self):
         """encode support"""
@@ -68,7 +69,7 @@ class VariableLibrary:
     def add_valueset(self, valueset: Valueset):
         """"add valueset"""
         self.valuesets.append( valueset )
-
+        self.valueSetsOrder.append(valueset.name)
 
     def get_variable_json(self):
         "Get JSON for variables.json"
