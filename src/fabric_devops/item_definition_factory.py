@@ -434,10 +434,7 @@ class ItemDefinitionFactory:
             sets = json.dumps(variable_library.valueSetsOrder)
             replace = f'"valueSetsOrder": {sets}'
             settings_json = settings_json.replace(search, replace)
-        
-        print(replace)
-        print(settings_json)
-        
+               
         parts.append( cls._create_inline_base64_part('settings.json', settings_json ) )
 
         return {
