@@ -1324,7 +1324,7 @@ class DeploymentManager:
         
         if deploy_job.deployment_type == DeploymentJobType.CUSTOMER_TENANT:
             # use customer-specific values for tenant workspace parameterization
-            AppLogger.log_substep(f'Creating variable library for customer[{deploy_job.name}]')
+            AppLogger.log_step(f'Creating ADLS Gen2 connection for customer[{deploy_job.name}]')
             adls_server = deploy_job.parameters[DeploymentJob.adls_server_parameter]
             adls_container_name = deploy_job.parameters[DeploymentJob.adls_container_name_parameter]
             adls_container_path = deploy_job.parameters[DeploymentJob.adls_container_path_parameter]
@@ -1352,7 +1352,7 @@ class DeploymentManager:
             
         if deploy_job.deployment_type == DeploymentJobType.STAGED_DEPLOYMENT:
             # create variable library default values for dev and value sets for test and prod
-            AppLogger.log_substep('Creating variable library for staged deployment')
+            AppLogger.log_step('Creating ADLS connections for staged deployment')
 
             # use default values for dev environment
             dev_deploy_job = StagingEnvironments.get_dev_environment()

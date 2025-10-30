@@ -131,7 +131,7 @@
         "type": "TridentNotebook",
         "dependsOn": [
           {
-            "activity": "Run notebook Build Gold Layer",
+            "activity": "Run notebook Build Silver Layer",
             "dependencyConditions": [
               "Succeeded"
             ]

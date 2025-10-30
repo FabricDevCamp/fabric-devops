@@ -501,7 +501,6 @@ class FabricRestApi:
         for connection in existing_connections:
             if 'displayName' in connection and \
                 connection['displayName'] == create_connection_request['displayName']:
-                AppLogger.log_substep("Reusing exisitng connection with matching display name")
                 return connection
 
         connection = cls._execute_post_request('connections', create_connection_request)
