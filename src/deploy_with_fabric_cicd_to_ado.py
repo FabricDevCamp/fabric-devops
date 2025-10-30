@@ -107,3 +107,5 @@ DeploymentManager.apply_post_deploy_fixes(
 FabricRestApi.commit_workspace_to_git(
     FEATURE_WORKSPACE['id'],
     commit_comment = 'Sync updates from feature workspace to repo after applying fixes')
+
+AdoProjectManager.create_and_merge_pull_request(PROJECT_NAME, FEATURE_NAME,'dev')
