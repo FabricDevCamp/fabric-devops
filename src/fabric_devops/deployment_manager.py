@@ -1358,7 +1358,7 @@ class DeploymentManager:
             
         if deploy_job.deployment_type == DeploymentJobType.STAGED_DEPLOYMENT:
             # create variable library default values for dev and value sets for test and prod
-            AppLogger.log_substep(f'Creating variable library for staged deployment')
+            AppLogger.log_substep('Creating variable library for staged deployment')
 
             # use default values for dev environment
             dev_deploy_job = StagingEnvironments.get_dev_environment()
@@ -1428,7 +1428,7 @@ class DeploymentManager:
             
             FabricRestApi.set_active_valueset_for_variable_library(
                 workspace['id'],
-                variable_library['id'],
+                variable_library,
                 deploy_job.name
             )
             
