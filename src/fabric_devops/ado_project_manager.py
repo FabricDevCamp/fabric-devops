@@ -2,7 +2,6 @@
 import base64
 import os
 import time
-import json
 from json.decoder import JSONDecodeError
 
 import requests
@@ -10,6 +9,7 @@ import requests
 from .app_logger import AppLogger
 from .environment_settings import EnvironmentSettings
 from .entra_id_token_manager import EntraIdTokenManager
+from .item_definition_factory import ItemDefinitionFactory
 
 class AdoProjectManager:
     """Wrapper class for calling Azure REST APIs for Azure Dev Ops"""
@@ -268,7 +268,7 @@ class AdoProjectManager:
         return None
 
     @classmethod
-    def create_project(cls, project_name):
+    def create_project(cls, project_name, workspace = None):
         """Create Project"""
         AppLogger.log_step(f'Creating new ADO project [{project_name}]')
         existing_projects = cls.get_projects()
@@ -279,10 +279,17 @@ class AdoProjectManager:
                 break
 
         AppLogger.log_substep("Calling Create Project API")
+        
+        workspace_description = 'This is a Azure DevOps project created to demonstrate GIT integration with Fabric workspace.' 
+        
+        if workspace is not None:
+            workspace_description += \
+                f' This repository is connected to a Fabrc workspace named [{workspace["displayName"]}] with an id of [{workspace["id"]}]'            
+        
         endpoint = "projects"
         body = {
             "name": project_name,
-            "description": "This is a sample project created to demonstrate GIT integration with Fabric.",
+            "description": workspace_description,
             "state": "unchanged",
             "capabilities": {
                 "versioncontrol": { "sourceControlType": "Git" },
@@ -297,6 +304,21 @@ class AdoProjectManager:
         AppLogger.log_substep(f"New ADO project created with Id [{new_project['id']}]")
 
         repository = cls.get_project_repository(project_name)
+        
+        if workspace is None:
+            root_folder_readme_content = ItemDefinitionFactory.get_template_file(
+                'AdoProjectTemplates/AdoReadMe.md')
+        else:
+            root_folder_readme_content = ItemDefinitionFactory.get_template_file(
+                'AdoProjectTemplates/AdoReadMeWithWorkspace.md')
+            
+            root_folder_readme_content = root_folder_readme_content.replace(
+                '{WORKSPACE_ID}', 
+                workspace['id'])
+
+            root_folder_readme_content = root_folder_readme_content.replace(
+                '{WORKSPACE_NAME}', 
+                workspace['displayName'])
 
         push_endpoint = f"git/repositories/{repository['id']}/pushes"
         push_body = {
@@ -305,10 +327,10 @@ class AdoProjectManager:
                     "comment":"Commit initial ReadMe.md",
                     "changes":[
                         {
-                            "item":{ "path":"/README.md"},
+                            "item":{ "path":"/ReadMe.md"},
                             "changeType":"add",
                             "newContent":{
-                                "content":"# ADO Project used for GIT Integration with Fabric Workspace\r\n\r\nThis is a demo readme file."
+                                "content": root_folder_readme_content
                             }
                          }
                         ]
@@ -322,7 +344,10 @@ class AdoProjectManager:
                 }
         cls._execute_post_request(push_endpoint, push_body)
 
-        cls.write_file_to_repo(project_name, 'main', 'workspace/readme.md', f'ReadMe for {project_name}')
+        workspace_folder_readme_content = ItemDefinitionFactory.get_template_file(
+            'AdoProjectTemplates/AdoReadMeForWorkspaceFolder.md')
+
+        cls.write_file_to_repo(project_name, 'main', 'workspace/ReadMe.md', workspace_folder_readme_content)
         
         return new_project
       

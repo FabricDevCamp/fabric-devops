@@ -26,7 +26,7 @@ match os.getenv("GIT_INTEGRATION_PROVIDER"):
 
     case 'Azure DevOps':
         # create ADO project and connect project main repo to workspace
-        AdoProjectManager.create_project(workspace_name)
+        AdoProjectManager.create_project(workspace_name,workspace)
         FabricRestApi.connect_workspace_to_ado_repo(workspace, workspace_name)
         
     case 'GitHub':

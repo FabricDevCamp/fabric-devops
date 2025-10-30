@@ -1,3 +1,3 @@
-﻿# ADO Project used to demonstrate workspace export/import with Fabric REST API 
+﻿# ADO repository used to demonstrate GIT integration with Fabric workspapces 
 
-This is a demo readme file.
+This is a demo readme file generated with code.
