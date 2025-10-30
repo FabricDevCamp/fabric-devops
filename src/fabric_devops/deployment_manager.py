@@ -1326,7 +1326,7 @@ class DeploymentManager:
 
         return workspace
 
-     @classmethod
+    @classmethod
     def create_adls_variable_library(cls, workspace, data_prep_folder_id):
         """Create Vairable Library with ADLS settings"""
         
