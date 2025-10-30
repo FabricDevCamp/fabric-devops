@@ -10,7 +10,7 @@ class StagingEnvironments:
     def get_dev_environment(cls) -> DeploymentJob:
         """Getter for dev environment"""
         deployment = DeploymentJob("dev", "dev",
-                                    DeploymentJobType.CUSTOMER_TENANT)
+                                    DeploymentJobType.STAGED_DEPLOYMENT)
         deployment.description = "dev environment"
 
         # setup Web datasource path
@@ -28,7 +28,7 @@ class StagingEnvironments:
     def get_test_environment(cls) -> DeploymentJob:
         """Getter for test environment"""
         deployment = DeploymentJob("test", "test",
-                                    DeploymentJobType.CUSTOMER_TENANT)
+                                    DeploymentJobType.STAGED_DEPLOYMENT)
         deployment.description = "test environment"
 
         # setup Web datasource path
@@ -46,7 +46,7 @@ class StagingEnvironments:
     def get_prod_environment(cls) -> DeploymentJob:
         """Getter for prod environment"""
         deployment = DeploymentJob("prod", "prod",
-                                    DeploymentJobType.CUSTOMER_TENANT)
+                                    DeploymentJobType.STAGED_DEPLOYMENT)
         deployment.description = "prod environment"
 
         # setup Web datasource path
