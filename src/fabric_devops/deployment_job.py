@@ -12,6 +12,8 @@ class DeploymentJobType(Enum):
 class DeploymentJob:
     """Deployment Plan Class"""
 
+    deployment_type: DeploymentJobType
+    
     web_datasource_path_parameter = "web_datasource_path"
     adls_server_parameter = "adls_server"
     adls_container_name_parameter = "adls_container_name"
@@ -19,7 +21,7 @@ class DeploymentJob:
     adls_account_key_parameter = "adls_account_key"
 
     def __init__(self, deployment_id, deployment_name,
-                 deployment_type = DeploymentJobType.CUSTOMER_TENANT):
+                 deployment_type: DeploymentJobType = DeploymentJobType.CUSTOMER_TENANT):
         self.deployment_type = deployment_type
         self.id = deployment_id
         self.name = deployment_name
