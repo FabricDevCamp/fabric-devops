@@ -55,8 +55,6 @@ class DeploymentManager:
                 workspace = cls.deploy_notebook_solution_with_varlib(target_workspace, deploy_job)
             case "Custom Shortcut Solution with Variable Library":
                 workspace = cls.deploy_shortcut_solution_with_varlib(target_workspace, deploy_job)
-            case 'Custom Data Pipeline Solution with Variable Library':
-                workspace = cls.deploy_data_pipeline_solution_with_varlib(target_workspace, deploy_job)
             # specialty solutions without deployment job parameters
             case 'Custom Realtime Solution':
                 workspace = cls.deploy_realtime_solution(target_workspace)
@@ -261,6 +259,7 @@ class DeploymentManager:
         return workspace
 
 
+
     @classmethod
     def deploy_shortcut_solution(cls,
                                  target_workspace,
@@ -354,7 +353,7 @@ class DeploymentManager:
         return workspace
 
     @classmethod
-    def deploy_data_pipeline_solution(cls,
+    def deploy_data_pipeline_solution_hardcoded(cls,
                                         target_workspace,
                                         deploy_job = StagingEnvironments.get_dev_environment()):
         """Deploy Data Pipeline Solution"""
@@ -459,6 +458,115 @@ class DeploymentManager:
             FabricRestApi.create_item(workspace['id'], create_report_request)
  
         return workspace
+
+    @classmethod
+    def deploy_data_pipeline_solution(cls, 
+                                         target_workspace, 
+                                         deploy_job = StagingEnvironments.get_dev_environment()):
+        """Deploy Data Pipeline Solution Parameterized with Variable Library"""
+
+        lakehouse_name = "sales"
+        notebook_folders = [
+            'Build 01 Silver Layer.Notebook',
+            'Build 02 Gold Layer.Notebook'
+        ]
+        data_pipeline_name = 'Create Lakehouse Tables'
+        semantic_model_folder = 'Product Sales DirectLake Model.SemanticModel'
+        report_folders = [
+            'Product Sales Summary.Report',
+            'Product Sales Time Intelligence.Report',
+            'Product Sales Top 10 Cities.Report'
+        ]
+
+        AppLogger.log_job(f"Deploying Custom Variable Library Solution to [{target_workspace}]")
+
+        workspace = FabricRestApi.create_workspace(target_workspace)
+        
+        data_prep_folder = FabricRestApi.create_folder(workspace['id'] ,'data_prep')
+        data_prep_folder_id = data_prep_folder['id']
+        
+        variable_library = cls.create_adls_variable_library(workspace, data_prep_folder_id)
+        
+        FabricRestApi.set_active_valueset_for_variable_library(workspace['id'], variable_library, deploy_job.name)
+        
+        lakehouse = FabricRestApi.create_lakehouse(workspace['id'], lakehouse_name)
+
+        notebook_ids = []
+        for notebook_folder in notebook_folders:
+            create_notebook_request = \
+                ItemDefinitionFactory.get_create_notebook_request_from_folder(
+                    notebook_folder,
+                    workspace['id'],
+                    lakehouse)
+
+            notebook = FabricRestApi.create_item(
+                workspace['id'], 
+                create_notebook_request, 
+                data_prep_folder_id)
+            
+            notebook_ids.append(notebook['id'])
+
+        pipeline_definition = ItemDefinitionFactory.get_template_file(
+            'DataPipelines//CreateLakehouseTablesWithVarLib.json')
+
+        create_pipeline_request = \
+            ItemDefinitionFactory.get_data_pipeline_create_request(data_pipeline_name,
+                                                                pipeline_definition)
+            
+        pipeline_redirects = {
+            '{WORKSPACE_ID}': workspace['id'],
+            '{LAKEHOUSE_ID}': lakehouse['id'],
+            '{BUILD_SILVER_NOTEBOOK_ID}': notebook_ids[0],
+            '{BUILD_GOLD_NOTEBOOK_ID}': notebook_ids[1]
+        }
+        
+        create_pipeline_request = \
+            ItemDefinitionFactory.update_part_in_create_request(
+                create_pipeline_request,
+                'pipeline-content.json',
+                pipeline_redirects)
+        
+        pipeline = FabricRestApi.create_item(
+            workspace['id'], 
+            create_pipeline_request, 
+            data_prep_folder_id)
+        
+        FabricRestApi.run_data_pipeline(workspace['id'], pipeline)
+
+        sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse)
+
+        FabricRestApi.refresh_sql_endpoint_metadata(workspace['id'], sql_endpoint['database'])
+
+        create_model_request = \
+            ItemDefinitionFactory.get_create_item_request_from_folder(
+                semantic_model_folder)
+
+        model_redirects = {
+            '{SQL_ENDPOINT_SERVER}': sql_endpoint['server'],
+            '{SQL_ENDPOINT_DATABASE}': sql_endpoint['database']
+        }
+
+        create_model_request = \
+            ItemDefinitionFactory.update_part_in_create_request(
+                create_model_request,
+                'definition/expressions.tmdl',
+                model_redirects)
+
+        model = FabricRestApi.create_item(workspace['id'], create_model_request)
+
+        FabricRestApi.create_and_bind_semantic_model_connecton(workspace, model['id'], lakehouse)
+
+        for report_folder in report_folders:
+            create_report_request = \
+                ItemDefinitionFactory.get_create_report_request_from_folder(
+                    report_folder,
+                    model['id'])
+
+            FabricRestApi.create_item(workspace['id'], create_report_request)
+
+        return workspace
+
+
 
     @classmethod
     def deploy_copyjob_solution(cls,
@@ -1218,114 +1326,7 @@ class DeploymentManager:
 
         return workspace
 
-    @classmethod
-    def deploy_data_pipeline_solution_with_varlib(cls, 
-                                         target_workspace, 
-                                         deploy_job = StagingEnvironments.get_dev_environment()):
-        """Deploy Data Pipeline Solution with Variable Library"""
-
-        lakehouse_name = "sales"
-        notebook_folders = [
-            'Build 01 Silver Layer.Notebook',
-            'Build 02 Gold Layer.Notebook'
-        ]
-        data_pipeline_name = 'Create Lakehouse Tables'
-        semantic_model_folder = 'Product Sales DirectLake Model.SemanticModel'
-        report_folders = [
-            'Product Sales Summary.Report',
-            'Product Sales Time Intelligence.Report',
-            'Product Sales Top 10 Cities.Report'
-        ]
-
-        AppLogger.log_job(f"Deploying Custom Variable Library Solution to [{target_workspace}]")
-
-        workspace = FabricRestApi.create_workspace(target_workspace)
-        
-        data_prep_folder = FabricRestApi.create_folder(workspace['id'] ,'data_prep')
-        data_prep_folder_id = data_prep_folder['id']
-        
-        variable_library = cls.create_adls_variable_library(workspace, data_prep_folder_id)
-        
-        FabricRestApi.set_active_valueset_for_variable_library(workspace['id'], variable_library, deploy_job.name)
-        
-        lakehouse = FabricRestApi.create_lakehouse(workspace['id'], lakehouse_name)
-
-        notebook_ids = []
-        for notebook_folder in notebook_folders:
-            create_notebook_request = \
-                ItemDefinitionFactory.get_create_notebook_request_from_folder(
-                    notebook_folder,
-                    workspace['id'],
-                    lakehouse)
-
-            notebook = FabricRestApi.create_item(
-                workspace['id'], 
-                create_notebook_request, 
-                data_prep_folder_id)
-            
-            notebook_ids.append(notebook['id'])
-
-        pipeline_definition = ItemDefinitionFactory.get_template_file(
-            'DataPipelines//CreateLakehouseTablesWithVarLib.json')
-
-        create_pipeline_request = \
-            ItemDefinitionFactory.get_data_pipeline_create_request(data_pipeline_name,
-                                                                pipeline_definition)
-            
-        pipeline_redirects = {
-            '{WORKSPACE_ID}': workspace['id'],
-            '{LAKEHOUSE_ID}': lakehouse['id'],
-            '{BUILD_SILVER_NOTEBOOK_ID}': notebook_ids[0],
-            '{BUILD_GOLD_NOTEBOOK_ID}': notebook_ids[1]
-        }
-        
-        create_pipeline_request = \
-            ItemDefinitionFactory.update_part_in_create_request(
-                create_pipeline_request,
-                'pipeline-content.json',
-                pipeline_redirects)
-        
-        pipeline = FabricRestApi.create_item(
-            workspace['id'], 
-            create_pipeline_request, 
-            data_prep_folder_id)
-        
-        FabricRestApi.run_data_pipeline(workspace['id'], pipeline)
-
-        sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse)
-
-        FabricRestApi.refresh_sql_endpoint_metadata(workspace['id'], sql_endpoint['database'])
-
-        create_model_request = \
-            ItemDefinitionFactory.get_create_item_request_from_folder(
-                semantic_model_folder)
-
-        model_redirects = {
-            '{SQL_ENDPOINT_SERVER}': sql_endpoint['server'],
-            '{SQL_ENDPOINT_DATABASE}': sql_endpoint['database']
-        }
-
-        create_model_request = \
-            ItemDefinitionFactory.update_part_in_create_request(
-                create_model_request,
-                'definition/expressions.tmdl',
-                model_redirects)
-
-        model = FabricRestApi.create_item(workspace['id'], create_model_request)
-
-        FabricRestApi.create_and_bind_semantic_model_connecton(workspace, model['id'], lakehouse)
-
-        for report_folder in report_folders:
-            create_report_request = \
-                ItemDefinitionFactory.get_create_report_request_from_folder(
-                    report_folder,
-                    model['id'])
-
-            FabricRestApi.create_item(workspace['id'], create_report_request)
-
-        return workspace
-
-    @classmethod
+     @classmethod
     def create_adls_variable_library(cls, workspace, data_prep_folder_id):
         """Create Vairable Library with ADLS settings"""
         

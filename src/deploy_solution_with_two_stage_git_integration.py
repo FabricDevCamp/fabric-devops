@@ -3,7 +3,7 @@
 import os
 
 from fabric_devops import DeploymentManager, EnvironmentSettings, StagingEnvironments,\
-                          AdoProjectManager, FabricRestApi, GitHubRestApi
+                          AdoProjectManager, FabricRestApi, GitHubRestApi, AppLogger
 
 if os.getenv("RUN_AS_SERVICE_PRINCIPAL") == 'true':
     EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL = True
@@ -52,3 +52,7 @@ FabricRestApi.commit_workspace_to_git(
 
 AdoProjectManager.create_and_merge_pull_request(PROJECT_NAME, FEATURE1_NAME , 'dev')
 AdoProjectManager.create_and_merge_pull_request(PROJECT_NAME, 'dev', 'main')
+
+AppLogger.log_job_complete(FEATURE1_WORKSPACE['id'])
+
+
