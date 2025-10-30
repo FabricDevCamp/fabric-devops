@@ -460,23 +460,10 @@ class DeploymentManager:
         return workspace
 
     @classmethod
-    def deploy_data_pipeline_solution(cls, 
-                                         target_workspace, 
-                                         deploy_job = StagingEnvironments.get_dev_environment()):
+    def deploy_data_pipeline_solution(cls,
+                                       target_workspace, 
+                                       deploy_job = StagingEnvironments.get_dev_environment()):
         """Deploy Data Pipeline Solution Parameterized with Variable Library"""
-
-        lakehouse_name = "sales"
-        notebook_folders = [
-            'Build 01 Silver Layer.Notebook',
-            'Build 02 Gold Layer.Notebook'
-        ]
-        data_pipeline_name = 'Create Lakehouse Tables'
-        semantic_model_folder = 'Product Sales DirectLake Model.SemanticModel'
-        report_folders = [
-            'Product Sales Summary.Report',
-            'Product Sales Time Intelligence.Report',
-            'Product Sales Top 10 Cities.Report'
-        ]
 
         AppLogger.log_job(f"Deploying Custom Data Pipeline Solution to [{target_workspace}]")
 
@@ -485,9 +472,15 @@ class DeploymentManager:
         data_prep_folder = FabricRestApi.create_folder(workspace['id'] ,'data_prep')
         data_prep_folder_id = data_prep_folder['id']
         
-        variable_library = cls.create_adls_variable_library(workspace, data_prep_folder_id, deploy_job)
-            
+        cls.create_adls_variable_library(workspace, data_prep_folder_id, deploy_job)
+
+        lakehouse_name = "sales"            
         lakehouse = FabricRestApi.create_lakehouse(workspace['id'], lakehouse_name)
+
+        notebook_folders = [
+            'Build 01 Silver Layer.Notebook',
+            'Build 02 Gold Layer.Notebook'
+        ]
 
         notebook_ids = []
         for notebook_folder in notebook_folders:
@@ -504,13 +497,9 @@ class DeploymentManager:
             
             notebook_ids.append(notebook['id'])
 
-        pipeline_definition = ItemDefinitionFactory.get_template_file(
-            'DataPipelines//CreateLakehouseTablesWithVarLib.json')
+        create_pipeline_request = ItemDefinitionFactory.get_create_item_request_from_folder(''
+            'Create Lakehouse Tables.DataPipeline')
 
-        create_pipeline_request = \
-            ItemDefinitionFactory.get_data_pipeline_create_request(data_pipeline_name,
-                                                                pipeline_definition)
-            
         pipeline_redirects = {
             '{WORKSPACE_ID}': workspace['id'],
             '{LAKEHOUSE_ID}': lakehouse['id'],
@@ -535,6 +524,7 @@ class DeploymentManager:
 
         FabricRestApi.refresh_sql_endpoint_metadata(workspace['id'], sql_endpoint['database'])
 
+        semantic_model_folder = 'Product Sales DirectLake Model.SemanticModel'
         create_model_request = \
             ItemDefinitionFactory.get_create_item_request_from_folder(
                 semantic_model_folder)
@@ -554,6 +544,10 @@ class DeploymentManager:
 
         FabricRestApi.create_and_bind_semantic_model_connecton(workspace, model['id'], lakehouse)
 
+        report_folders = [
+            'Product Sales Summary.Report',
+            'Product Sales Time Intelligence.Report'
+        ]
         for report_folder in report_folders:
             create_report_request = \
                 ItemDefinitionFactory.get_create_report_request_from_folder(

@@ -68,8 +68,8 @@
                   "annotations": [],
                   "type": "Lakehouse",
                   "typeProperties": {
-                    "workspaceId": "b1609105-0b74-44fd-9148-d9c9ca33b691",
-                    "artifactId": "a607213a-5e9f-4707-aa89-9d8a6a32de0d",
+                    "workspaceId": "{WORKSPACE_ID}",
+                    "artifactId": "{LAKEHOUSE_ID}",
                     "rootFolder": "Files"
                   }
                 }
@@ -122,8 +122,8 @@
           "secureInput": false
         },
         "typeProperties": {
-          "notebookId": "aee8e52f-b325-49e0-95f6-2e065fe87fed",
-          "workspaceId": "b1609105-0b74-44fd-9148-d9c9ca33b691"
+          "notebookId": "{BUILD_SILVER_NOTEBOOK_ID}",
+          "workspaceId": "{WORKSPACE_ID}"
         }
       },
       {
@@ -131,7 +131,7 @@
         "type": "TridentNotebook",
         "dependsOn": [
           {
-            "activity": "Run notebook Build Silver Layer",
+            "activity": "Run notebook Build Gold Layer",
             "dependencyConditions": [
               "Succeeded"
             ]
@@ -145,8 +145,8 @@
           "secureInput": false
         },
         "typeProperties": {
-          "notebookId": "7cf63107-b9c3-40de-b1be-8390b1fb6cfb",
-          "workspaceId": "b1609105-0b74-44fd-9148-d9c9ca33b691"
+          "notebookId": "{BUILD_GOLD_NOTEBOOK_ID}",
+          "workspaceId": "{WORKSPACE_ID}"
         }
       }
     ],
