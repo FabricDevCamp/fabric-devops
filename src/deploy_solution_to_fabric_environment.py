@@ -51,19 +51,6 @@ match os.getenv("GIT_INTEGRATION_PROVIDER"):
 
         AdoProjectManager.create_and_merge_pull_request(workspace_name, FEATURE1_NAME , 'main')
 
-
-        # # create feature2 workspace
-        # FEATURE2_NAME = 'feature2'
-        # FEATURE2_WORKSPACE_NAME = F'{workspace_name} - {FEATURE2_NAME}'
-        # FEATURE2_WORKSPACE = FabricRestApi.create_workspace(FEATURE2_WORKSPACE_NAME)
-
-        # # create feature2 branch and connect to feature2 workspace
-        # AdoProjectManager.create_branch(workspace_name, FEATURE2_NAME, 'main')
-        # FabricRestApi.connect_workspace_to_ado_repo(FEATURE2_WORKSPACE, workspace_name, FEATURE2_NAME)
-
-        # # not applying post sync/deploy fixes to feature2 workspace to see what happens
-
-        
         
     case 'GitHub':
         # create GitHub repo and connect to workspace
