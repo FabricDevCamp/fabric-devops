@@ -1,112 +1,116 @@
 {
-    "name": "Create Lakehouse Tables",
-    "objectId": "edbfaf76-12c7-40f8-85a2-c32f006724bf",
-    "properties": {
-        "activities": [
-            {
-                "name": "Copy sales data files to lakehouse",
-                "type": "Copy",
-                "dependsOn": [],
-                "policy": {
-                    "timeout": "0.12:00:00",
-                    "retry": 0,
-                    "retryIntervalInSeconds": 30,
-                    "secureOutput": false,
-                    "secureInput": false
-                },
-                "typeProperties": {
-                    "source": {
-                        "type": "DelimitedTextSource",
-                        "storeSettings": {
-                            "type": "AzureBlobFSReadSettings",
-                            "recursive": true,
-                            "wildcardFolderPath": "{CONTAINER_PATH}",
-                            "wildcardFileName": "*.csv",
-                            "enablePartitionDiscovery": false
-                        },
-                        "formatSettings": {
-                            "type": "DelimitedTextReadSettings"
-                        },
-                        "datasetSettings": {
-                            "annotations": [],
-                            "type": "DelimitedText",
-                            "typeProperties": {
-                                "location": {
-                                    "type": "AzureBlobFSLocation",
-                                    "fileSystem": "{CONTAINER_NAME}"
-                                },
-                                "columnDelimiter": ",",
-                                "escapeChar": "\\",
-                                "firstRowAsHeader": true,
-                                "quoteChar": "\""
-                            },
-                            "schema": [],
-                            "externalReferences": {
-                                "connection": "{CONNECTION_ID}"
-                            }
-                        }
-                    },
-                    "sink": {
-                        "type": "DelimitedTextSink",
-                        "storeSettings": {
-                            "type": "LakehouseWriteSettings"
-                        },
-                        "formatSettings": {
-                            "type": "DelimitedTextWriteSettings",
-                            "quoteAllText": true,
-                            "fileExtension": ".txt"
-                        },
-                        "datasetSettings": {
-                            "annotations": [],
-                            "linkedService": {
-                                "name": "sales",
-                                "properties": {
-                                    "annotations": [],
-                                    "type": "Lakehouse",
-                                    "typeProperties": {
-                                        "workspaceId": "{WORKSPACE_ID}",
-                                        "artifactId": "{LAKEHOUSE_ID}",
-                                        "rootFolder": "Files"
-                                    }
-                                }
-                            },
-                            "type": "DelimitedText",
-                            "typeProperties": {
-                                "location": {
-                                    "type": "LakehouseLocation",
-                                    "fileName": {
-                                        "value": "@pipeline()?.TriggerEvent?.FileName",
-                                        "type": "Expression"
-                                    },
-                                    "folderPath": "sales-data"
-                                },
-                                "columnDelimiter": ",",
-                                "escapeChar": "\\",
-                                "firstRowAsHeader": true,
-                                "quoteChar": "\""
-                            },
-                            "schema": []
-                        }
-                    },
-                    "enableStaging": false,
-                    "translator": {
-                        "type": "TabularTranslator",
-                        "typeConversion": true,
-                        "typeConversionSettings": {
-                            "allowDataTruncation": true,
-                            "treatBooleanAsNumber": false
-                        }
-                    }
-                }
+  "properties": {
+    "activities": [
+      {
+        "name": "Copy sales data files to lakehouse",
+        "type": "Copy",
+        "dependsOn": [],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "typeProperties": {
+          "source": {
+            "type": "DelimitedTextSource",
+            "storeSettings": {
+              "type": "AzureBlobFSReadSettings",
+              "recursive": true,
+              "wildcardFolderPath": {
+                "value": "@pipeline().libraryVariables.adls_container_path",
+                "type": "Expression"
+              },
+              "wildcardFileName": "*.csv",
+              "enablePartitionDiscovery": false
             },
-            {
-                "name": "Run notebook Build Silver Layer",
-                "type": "TridentNotebook",
-                "dependsOn": [
-                    {
-                        "activity": "Copy sales data files to lakehouse",
-                        "dependencyConditions": [
-                            "Succeeded"
+            "formatSettings": {
+              "type": "DelimitedTextReadSettings"
+            },
+            "datasetSettings": {
+              "annotations": [],
+              "type": "DelimitedText",
+              "typeProperties": {
+                "location": {
+                  "type": "AzureBlobFSLocation",
+                  "fileSystem": {
+                    "value": "@pipeline().libraryVariables.adls_container_name",
+                    "type": "Expression"
+                  }
+                },
+                "columnDelimiter": ",",
+                "escapeChar": "\\",
+                "firstRowAsHeader": true,
+                "quoteChar": "\""
+              },
+              "schema": [],
+              "externalReferences": {
+                "connection": "@pipeline().libraryVariables.adls_connection_id"
+              }
+            }
+          },
+          "sink": {
+            "type": "DelimitedTextSink",
+            "storeSettings": {
+              "type": "LakehouseWriteSettings"
+            },
+            "formatSettings": {
+              "type": "DelimitedTextWriteSettings",
+              "quoteAllText": true,
+              "fileExtension": ".txt"
+            },
+            "datasetSettings": {
+              "annotations": [],
+              "linkedService": {
+                "name": "0e4f74d6_6ed5_4cb2_a8fc_526d22b6f679",
+                "properties": {
+                  "annotations": [],
+                  "type": "Lakehouse",
+                  "typeProperties": {
+                    "workspaceId": "b1609105-0b74-44fd-9148-d9c9ca33b691",
+                    "artifactId": "a607213a-5e9f-4707-aa89-9d8a6a32de0d",
+                    "rootFolder": "Files"
+                  }
+                }
+              },
+              "type": "DelimitedText",
+              "typeProperties": {
+                "location": {
+                  "type": "LakehouseLocation",
+                  "fileName": {
+                    "value": "@pipeline()?.TriggerEvent?.FileName",
+                    "type": "Expression"
+                  },
+                  "folderPath": "sales-data"
+                },
+                "columnDelimiter": ",",
+                "escapeChar": "\\",
+                "firstRowAsHeader": true,
+                "quoteChar": "\""
+              },
+              "schema": []
+            }
+          },
+          "enableStaging": false,
+          "translator": {
+            "type": "TabularTranslator",
+            "typeConversion": true,
+            "typeConversionSettings": {
+              "allowDataTruncation": true,
+              "treatBooleanAsNumber": false
+            }
+          }
+        }
+      },
+      {
+        "name": "Run notebook Build Silver Layer",
+        "type": "TridentNotebook",
+        "dependsOn": [
+          {
+            "activity": "Copy sales data files to lakehouse",
+            "dependencyConditions": [
+              "Succeeded"
             ]
           }
         ],
@@ -118,8 +122,8 @@
           "secureInput": false
         },
         "typeProperties": {
-          "notebookId": "{NOTEBOOK_ID_BUILD_SILVER}",
-          "workspaceId": "{WORKSPACE_ID}"
+          "notebookId": "aee8e52f-b325-49e0-95f6-2e065fe87fed",
+          "workspaceId": "b1609105-0b74-44fd-9148-d9c9ca33b691"
         }
       },
       {
@@ -141,10 +145,32 @@
           "secureInput": false
         },
         "typeProperties": {
-          "notebookId": "{NOTEBOOK_ID_BUILD_GOLD}",
-          "workspaceId": "{WORKSPACE_ID}"
+          "notebookId": "7cf63107-b9c3-40de-b1be-8390b1fb6cfb",
+          "workspaceId": "b1609105-0b74-44fd-9148-d9c9ca33b691"
         }
       }
-    ]
+    ],
+    "libraryVariables": {
+      "adls_server": {
+        "type": "String",
+        "variableName": "adls_server",
+        "libraryName": "environment_settings"
+      },
+      "adls_container_name": {
+        "type": "String",
+        "variableName": "adls_container_name",
+        "libraryName": "environment_settings"
+      },
+      "adls_container_path": {
+        "type": "String",
+        "variableName": "adls_container_path",
+        "libraryName": "environment_settings"
+      },
+      "adls_connection_id": {
+        "type": "String",
+        "variableName": "adls_connection_id",
+        "libraryName": "environment_settings"
+      }
+    }
   }
 }

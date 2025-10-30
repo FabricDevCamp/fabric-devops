@@ -486,9 +486,7 @@ class DeploymentManager:
         data_prep_folder_id = data_prep_folder['id']
         
         variable_library = cls.create_adls_variable_library(workspace, data_prep_folder_id, deploy_job)
-        
-        FabricRestApi.set_active_valueset_for_variable_library(workspace['id'], variable_library, deploy_job.name)
-        
+            
         lakehouse = FabricRestApi.create_lakehouse(workspace['id'], lakehouse_name)
 
         notebook_ids = []
@@ -1330,8 +1328,9 @@ class DeploymentManager:
     def create_adls_variable_library(cls, workspace, data_prep_folder_id, deploy_job: DeploymentJob):
         """Create Vairable Library with ADLS settings"""
         
-        if deploy_job.deployment_type == DeploymentJobType.CUSTOMER_TENANT:            
+        if deploy_job.deployment_type == DeploymentJobType.CUSTOMER_TENANT:
             # use customer-specific values for tenant workspace parameterization
+            AppLogger.log_substep(f'Creating variable library for customer[{deploy_job.name}]')
             adls_server = deploy_job.parameters[DeploymentJob.adls_server_parameter]
             adls_container_name = deploy_job.parameters[DeploymentJob.adls_container_name_parameter]
             adls_container_path = deploy_job.parameters[DeploymentJob.adls_container_path_parameter]
@@ -1339,7 +1338,8 @@ class DeploymentManager:
             
             connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
                 adls_server,
-                adls_path)
+                adls_path, 
+                workspace)
 
             variable_library = VariableLibrary()
             variable_library.add_variable("adls_server", adls_server)
@@ -1357,8 +1357,9 @@ class DeploymentManager:
                     data_prep_folder_id)
             
         if deploy_job.deployment_type == DeploymentJobType.STAGED_DEPLOYMENT:
-            # create variable library with values sets fo dev, test and prod
-                        
+            # create variable library default values for dev and value sets for test and prod
+            AppLogger.log_substep(f'Creating variable library for staged deployment')
+
             # use default values for dev environment
             dev_deploy_job = StagingEnvironments.get_dev_environment()
             dev_adls_server = dev_deploy_job.parameters[DeploymentJob.adls_server_parameter]
@@ -1430,6 +1431,8 @@ class DeploymentManager:
                 variable_library['id'],
                 deploy_job.name
             )
+            
+            return variable_library
     
     # specialty solutions which do not support parameterization with deploy job
 

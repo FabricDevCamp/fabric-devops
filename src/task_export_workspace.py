@@ -5,7 +5,7 @@ from fabric_devops import DeploymentManager, EnvironmentSettings, ItemDefinition
 
 EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL = False
 
-WORKSPACE_NAME = "Shmacme"
+WORKSPACE_NAME = "Biggles"
 ITEM_TYPE = "DataAgent"
 
 ItemDefinitionFactory.export_item_definitions_from_workspace_oldway(WORKSPACE_NAME)
