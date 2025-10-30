@@ -104,4 +104,6 @@ DeploymentManager.apply_post_deploy_fixes(
     StagingEnvironments.get_dev_environment(),
     True)
 
-FabricRestApi.commit_workspace_to_git(FEATURE_WORKSPACE['id'])
+FabricRestApi.commit_workspace_to_git(
+    FEATURE_WORKSPACE['id'],
+    commit_comment = 'Sync updates from feature workspace to repo after applying fixes')
