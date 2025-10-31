@@ -12,84 +12,20 @@ DEV_WORKSPACE_NAME = f"{PROJECT_NAME}-dev"
 TEST_WORKSPACE_NAME = f"{PROJECT_NAME}-test"
 PROD_WORKSPACE_NAME = f"{PROJECT_NAME}"
 
+dev_deploy_job = StagingEnvironments.get_dev_environment()
+test_deploy_job = StagingEnvironments.get_test_environment()
+prod_deploy_job = StagingEnvironments.get_prod_environment()
+
 DEV_WORKSPACE = DeploymentManager.deploy_solution_by_name(SOLUTION_NAME, DEV_WORKSPACE_NAME)
-
-DeploymentManager.sync_workspace_to_ado_repo(DEV_WORKSPACE, PROJECT_NAME)
-
-AdoProjectManager.create_and_merge_pull_request(PROJECT_NAME, 'dev','test')
-
 TEST_WORKSPACE = FabricRestApi.create_workspace(TEST_WORKSPACE_NAME)
-FabricRestApi.connect_workspace_to_ado_repo(TEST_WORKSPACE, PROJECT_NAME, 'test')
-FabricRestApi.disconnect_workspace_from_git(TEST_WORKSPACE['id'])
-
-DeploymentManager.apply_post_deploy_fixes(
-    TEST_WORKSPACE_NAME,
-    StagingEnvironments.get_test_environment(),
-    True)
-
-AdoProjectManager.create_and_merge_pull_request(PROJECT_NAME, 'test','main')
-
 PROD_WORKSPACE = FabricRestApi.create_workspace(PROD_WORKSPACE_NAME)
-FabricRestApi.connect_workspace_to_ado_repo(PROD_WORKSPACE, PROJECT_NAME, 'main')
-FabricRestApi.disconnect_workspace_from_git(PROD_WORKSPACE['id'])
 
-DeploymentManager.apply_post_deploy_fixes(
-    PROD_WORKSPACE_NAME,
-    StagingEnvironments.get_prod_environment(),
-    True)
-
-AppLogger.log_step('Copying pipeline files and registering ADO pipelines')
-
-variable_group = AdoProjectManager.create_two_stage_variable_group(
-    'environmental_variables',
-    PROJECT_NAME, 
-    DEV_WORKSPACE['id'],
-    PROD_WORKSPACE['id'])
-
-AdoProjectManager.copy_files_from_folder_to_repo(
-    PROJECT_NAME,
-    'dev', 
-    'ADO_SetupForFabricCICD',
-    variable_group['id']
+DeploymentManager.setup_ado_repo_for_fabric_cicd(
+    DEV_WORKSPACE,
+    TEST_WORKSPACE,
+    PROD_WORKSPACE,
+    PROJECT_NAME
 )
-
-AdoProjectManager.create_and_merge_pull_request(PROJECT_NAME, 'dev','test')
-AdoProjectManager.create_and_merge_pull_request(PROJECT_NAME, 'test','main')
-
-AppLogger.log_step("Generating parameter.yml used by fabric-cicd")
-
-parameter_file_content = DeploymentManager.generate_parameter_yml_file(
-    DEV_WORKSPACE_NAME,
-    TEST_WORKSPACE_NAME,
-    PROD_WORKSPACE_NAME
-)
-
-AdoProjectManager.write_file_to_repo(
-    PROJECT_NAME,
-    "dev",
-    "workspace/parameter.yml",
-    parameter_file_content,
-    "Adding parameter.yml used by fabric-cicd"
-)
-
-AppLogger.log_step("Generating workspace.config.json file")
-
-workspace_config = DeploymentManager.generate_workspace_config_file(
-    DEV_WORKSPACE_NAME,
-    TEST_WORKSPACE_NAME,
-    PROD_WORKSPACE_NAME
-)
-
-AdoProjectManager.write_file_to_repo(
-    PROJECT_NAME,
-    "dev",
-    "workspace/workspace.config.json",
-    workspace_config,
-    "Adding workspace.config.json"
-)
-
-AdoProjectManager.create_and_merge_pull_request(PROJECT_NAME, 'dev','test')
-AdoProjectManager.create_and_merge_pull_request(PROJECT_NAME, 'test','main')
 
 # create first feature workspace
 FEATURE_NAME = 'feature1'

@@ -2655,31 +2655,92 @@ class DeploymentManager:
 
         AppLogger.log_job_complete(dev_workspace['id'])
 
-
     # support for fabric_cicd utility
+    
+    @classmethod
+    def setup_ado_repo_for_fabric_cicd(cls, 
+                                       dev_workspace, 
+                                       test_workspace, 
+                                       prod_workspace, 
+                                       project_name = None):
+        """Setup ADO repo for fabric_cicd"""
+        
+        if project_name is None:
+            project_name = prod_workspace['displayName']
+
+        AppLogger.log_job("Configuring GIT integration in Azure DevOps for fabric_cicd")
+
+        AdoProjectManager.create_project(project_name)
+        AdoProjectManager.create_branch(project_name, 'test', 'main')
+        AdoProjectManager.create_branch(project_name, 'dev', 'test')
+        AdoProjectManager.set_default_branch(project_name, 'dev')
+     
+        FabricRestApi.connect_workspace_to_ado_repo(dev_workspace, project_name, 'dev')
+
+        AdoProjectManager.create_and_merge_pull_request(project_name, 'dev','test')
+          
+        FabricRestApi.connect_workspace_to_ado_repo(test_workspace, project_name, 'test')
+        FabricRestApi.disconnect_workspace_from_git(test_workspace['id'])   
+        cls.apply_post_deploy_fixes(
+            test_workspace['displayName'],
+            StagingEnvironments.get_test_environment())
+
+        AdoProjectManager.create_and_merge_pull_request(project_name, 'test', 'main')
+        FabricRestApi.connect_workspace_to_ado_repo(prod_workspace, project_name, 'main')
+        FabricRestApi.disconnect_workspace_from_git(prod_workspace['id'])        
+        cls.apply_post_deploy_fixes(
+            prod_workspace['displayName'],
+            StagingEnvironments.get_prod_environment())
+        
+        variable_group = AdoProjectManager.create_variable_group_for_fabric_cicd(
+            'environmental_variables',
+            project_name, 
+            dev_workspace['id'],
+            test_workspace['id'],
+            prod_workspace['id'])
+        
+        AdoProjectManager.copy_files_from_folder_to_repo(
+            project_name,
+            'dev',
+            'ADO_SetupForFabricCICD',
+            variable_group['id'])
+        
+        AdoProjectManager.create_and_merge_pull_request(project_name, 'dev', 'test')
+        AdoProjectManager.create_and_merge_pull_request(project_name, 'test', 'main')
+        
+        AppLogger.log_step("Generating parameter.yml used by fabric-cicd")
+
+        parameter_file_content = cls.generate_parameter_yml_file(
+            dev_workspace,
+            test_workspace,
+            prod_workspace
+        )
+
+        AdoProjectManager.write_file_to_repo(
+            project_name,
+            "dev",
+            "workspace/parameter.yml",
+            parameter_file_content,
+            "Adding parameter.yml used by fabric_cicd"
+        )
 
     @classmethod
     def generate_parameter_yml_file(
         cls,
-        dev_workspace_name,
-        test_workspace_name,
-        prod_workspace_name):
+        dev_workspace,
+        test_workspace,
+        prod_workspace):
         """Generate parameter.yml file"""
 
-        dev_workspace = FabricRestApi.get_workspace_by_name(dev_workspace_name)
-        dev_workspace_items = FabricRestApi.list_workspace_items(dev_workspace['id'])
-        
-        test_workspace = FabricRestApi.get_workspace_by_name(test_workspace_name)
-        test_workspace_items    = FabricRestApi.list_workspace_items(test_workspace['id'])
+        dev_workspace_items = FabricRestApi.list_workspace_items(dev_workspace['id'])        
+        test_workspace_items = FabricRestApi.list_workspace_items(test_workspace['id'])
+        prod_workspace_items = FabricRestApi.list_workspace_items(prod_workspace['id'])
 
         test_items = {}
         for test_item in test_workspace_items:
             item_name = test_item['displayName'] + "." + test_item['type']
             test_items[item_name] = test_item['id']
     
-        prod_workspace = FabricRestApi.get_workspace_by_name(prod_workspace_name)
-        prod_workspace_items    = FabricRestApi.list_workspace_items(prod_workspace['id'])
-
         prod_items = {}
         for prod_item in prod_workspace_items:
             item_name = prod_item['displayName'] + "." + prod_item['type']

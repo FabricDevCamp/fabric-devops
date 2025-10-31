@@ -581,6 +581,76 @@ class AdoProjectManager:
         return cls._execute_post_request(endpoint, body)
 
     @classmethod
+    def create_variable_group_for_fabric_cicd(
+        cls, 
+        name, 
+        project_name, 
+        dev_workspace_id, 
+        test_workspace_id,
+        prod_workspace_id):
+        """Add Variable Group"""
+        AppLogger.log_step(f"Creating variable group [{name}]")
+        project = cls.get_project(project_name)
+        endpoint = 'distributedtask/variablegroups'
+        body = {
+            "name": name,
+            "description": "Variable group added through code",
+            "type": "Vsts",
+            "variables": {
+                "FABRIC_CLIENT_ID": {
+                    "value": EnvironmentSettings.FABRIC_CLIENT_ID,
+                    "isSecret": False,
+                    "isReadOnly": True
+                },
+                "FABRIC_CLIENT_SECRET": {
+                    "value": EnvironmentSettings.FABRIC_CLIENT_SECRET,
+                    "isSecret": True,
+                    "isReadOnly": True
+                },
+                "FABRIC_TENANT_ID": {
+                    "value": EnvironmentSettings.FABRIC_TENANT_ID,
+                    "isSecret": False,
+                    "isReadOnly": True
+                },
+                "FABRIC_CAPACITY_ID": {
+                    "value": EnvironmentSettings.FABRIC_CAPACITY_ID,
+                    "isSecret": False,
+                    "isReadOnly": True
+                },
+                "ADMIN_USER_ID": {
+                    "value": EnvironmentSettings.ADMIN_USER_ID,
+                    "isSecret": False,
+                    "isReadOnly": True
+                },
+                "DEV_WORKSPACE_ID": {
+                    "value": dev_workspace_id,
+                    "isSecret": False,
+                    "isReadOnly": True
+                },
+                "TEST_WORKSPACE_ID": {
+                    "value": test_workspace_id,
+                    "isSecret": False,
+                    "isReadOnly": True
+                },                
+                "PROD_WORKSPACE_ID": {
+                    "value": prod_workspace_id,
+                    "isSecret": False,
+                    "isReadOnly": True
+                }                    
+            },
+            "variableGroupProjectReferences": [{
+                "name": name,
+                "description": "Variable group added through code",
+                "projectReference": {
+                    "id": project['id'],
+                    "name": project_name
+                }
+            }]
+        }
+
+        return cls._execute_post_request(endpoint, body)
+
+    @classmethod
     def create_variable_group(cls, name, project_name):
         """Add Variable Group"""
         AppLogger.log_step(f"Creating variable group [{name}]")
@@ -744,7 +814,7 @@ class AdoProjectManager:
             },
             "completionOptions": {
                 "mergeStrategy": "NoFastForward",
-                "mergeCommitMessage": "Custom merge message",
+                "mergeCommitMessage": f'Automating merge of PR {pull_request_id}',
                 "bypassPolicy": True,
                 "deleteSourceBranch": False,
                 "bypassReason": "policy-watcher-automation"

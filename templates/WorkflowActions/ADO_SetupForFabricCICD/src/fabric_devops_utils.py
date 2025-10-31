@@ -24,6 +24,7 @@ class EnvironmentSettings:
     FABRIC_CAPACITY_ID = os.getenv("FABRIC_CAPACITY_ID")
 
     DEV_WORKSPACE_ID = os.getenv("DEV_WORKSPACE_ID")
+    TEST_WORKSPACE_ID = os.getenv("TEST_WORKSPACE_ID")
     PROD_WORKSPACE_ID = os.getenv("PROD_WORKSPACE_ID")
 
     FABRIC_REST_API_RESOURCE_ID = 'https://api.fabric.microsoft.com'
@@ -36,7 +37,13 @@ class EnvironmentSettings:
             'adls_server': 'https://fabricdevcamp.dfs.core.windows.net/',
             'adls_container_name': 'sampledata', 
             'adls_container_path': '/ProductSales/Prod',            
-        },  
+        },
+        'test': {
+            'web_datasource_path': 'https://fabricdevcamp.blob.core.windows.net/sampledata/ProductSales/test',
+            'adls_server': 'https://fabricdevcamp.dfs.core.windows.net/',
+            'adls_container_name': 'sampledata', 
+            'adls_container_path': '/ProductSales/Test',
+        },
         "prod": {
             'web_datasource_path': 'https://fabricdevcamp.blob.core.windows.net/sampledata/ProductSales/prod',
             'adls_server': 'https://fabricdevcamp.dfs.core.windows.net/',
