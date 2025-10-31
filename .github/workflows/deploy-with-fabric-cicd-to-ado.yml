@@ -8,7 +8,7 @@ on:
             project_name:
                 description: Project Name
                 required: true
-                default: "Adonis"
+                default: "Product Sales"
             solution_name:
                 type: choice
                 description: Solution to deploy
@@ -17,11 +17,7 @@ on:
                 - Custom Notebook Solution
                 - Custom Shortcut Solution
                 - Custom Data Pipeline Solution
-                - Custom Warehouse Solution
-                - Custom Medallion Warehouse Solution
-                - Custom Notebook Solution with Variable Library
-                - Custom Shortcut Solution with Variable Library
-                - Custom Data Pipeline Solution with Variable Library
+                default: Custom Data Pipeline Solution
 
 jobs:
     deployment-job:        

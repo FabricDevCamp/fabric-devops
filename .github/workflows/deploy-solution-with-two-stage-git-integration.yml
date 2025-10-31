@@ -17,16 +17,7 @@ on:
                 - Custom Notebook Solution
                 - Custom Shortcut Solution
                 - Custom Data Pipeline Solution
-                - Custom User Data Function Solution
-                - Custom Copy Job Solution
-                - Custom Dataflow Gen2 Solution
-                - Custom Warehouse Solution
-                - Custom Medallion Warehouse Solution
-                - Custom Notebook Solution with Variable Library
-                - Custom Shortcut Solution with Variable Library
-                - Custom Data Pipeline Solution with Variable Library
-                - Deploy All Solutions
-                default: Custom Power BI Solution
+                default: Custom Data Pipeline Solution
             git_integration_provider:
                 type: choice
                 description: Git Integration Provider
