@@ -36,7 +36,7 @@ class EnvironmentSettings:
             'adls_server': 'https://fabricdevcamp.dfs.core.windows.net/',
             'adls_container_name': 'sampledata', 
             'adls_container_path': '/ProductSales/Prod',            
-        },  
+        },
         "prod": {
             'web_datasource_path': 'https://fabricdevcamp.blob.core.windows.net/sampledata/ProductSales/prod',
             'adls_server': 'https://fabricdevcamp.dfs.core.windows.net/',

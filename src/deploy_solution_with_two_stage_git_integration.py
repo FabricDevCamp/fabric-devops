@@ -62,5 +62,43 @@ match os.getenv("GIT_INTEGRATION_PROVIDER"):
     case 'GitHub':
         # create GitHub repo and connect to workspace
         repo_name = PROJECT_NAME.replace(" ", "-")
-        GitHubRestApi.create_repository(repo_name)
-        FabricRestApi.connect_workspace_to_github_repo(workspace, repo_name)
+        
+        DeploymentManager.setup_two_stage_github_repo(
+            dev_workspace,
+            prod_workspace,
+            repo_name)
+
+        # create feature1 workspace
+        FEATURE1_NAME = 'feature1'
+        FEATURE1_WORKSPACE_NAME = F'{DEV_WORKSPACE_NAME}-{FEATURE1_NAME}'
+        FEATURE1_WORKSPACE = FabricRestApi.create_workspace(FEATURE1_WORKSPACE_NAME)
+
+        # create feature1 branch and connect to feature1 workspace
+        GitHubRestApi.create_branch(repo_name,  FEATURE1_NAME)
+        FabricRestApi.connect_workspace_to_github_repo(FEATURE1_WORKSPACE, repo_name, FEATURE1_NAME)
+
+        # apply post sync/deploy fixes to feature1 workspace
+        DeploymentManager.apply_post_deploy_fixes(
+            FEATURE1_WORKSPACE_NAME,
+            StagingEnvironments.get_dev_environment(),
+            True)
+
+        FabricRestApi.commit_workspace_to_git(
+            FEATURE1_WORKSPACE['id'],
+            commit_comment = 'Sync updates from feature workspace to repo after applying fixes')
+
+        GitHubRestApi.create_and_merge_pull_request(
+            repo_name, 
+            FEATURE1_NAME,
+            'dev',
+            'Push feature 1 changes', 
+            'Push feature 1 changes')
+        
+        GitHubRestApi.create_and_merge_pull_request(
+            repo_name, 
+            'dev', 
+            'main', 
+            'Push feature 1 changes to prod', 
+            'Push feature 1 changes to prod')
+
+        AppLogger.log_job_complete(FEATURE1_WORKSPACE['id'])
