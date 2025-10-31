@@ -22,19 +22,20 @@ AppLogger.log_substep(f'Pipeline triggered by PR completing on branch [{branch_n
 match branch_name: 
     case 'test':
       workspace_id = EnvironmentSettings.TEST_WORKSPACE_ID
-      environment = 'test'
+      ENVIRONMENT = 'TEST'
     case 'main':
       workspace_id = EnvironmentSettings.PROD_WORKSPACE_ID
-      environment = 'prod'
+      ENVIRONMENT = 'PROD'
 
-AppLogger.log_substep(f'Updating workspace with id [{workspace_id}] in environment {environment}')
+AppLogger.log_substep(f'Updating workspace with id [{workspace_id}] in environment {ENVIRONMENT}')
 
-item_type_in_scope = [ "Lakehouse", "Notebook", "SemanticModel", "Report", "DataPipeline"]
+item_type_in_scope = [ "Lakehouse", "Notebook", "SemanticModel", "Report", "DataPipeline", 
+                       "Environment", "CopyJob", "Dataflow", "Warehouse" ]
 
 # Initialize the FabricWorkspace object with the required parameters
 target_workspace = FabricWorkspace(
   workspace_id=workspace_id,
-  environment=environment,
+  environment=ENVIRONMENT,
   repository_directory = str(Path(__file__).resolve().parent.parent / "workspace"),
   item_type_in_scope=item_type_in_scope,
   token_credential=token_credential,
