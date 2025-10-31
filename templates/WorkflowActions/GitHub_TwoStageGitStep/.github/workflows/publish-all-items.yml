@@ -1,0 +1,41 @@
+name: Publish All Items
+run-name: Publish All Items
+
+on:
+    workflow_dispatch:
+    push:
+    branches: [ 'test', 'main']
+
+
+jobs:
+    deployment-job:
+    name: Publish Items
+    runs-on: ubuntu-latest
+
+    steps:
+        - name: Check out the code
+          uses: actions/checkout@v4
+
+        - name: Set up Python
+          uses: actions/setup-python@v2
+          with:
+            python-version: "3.12"
+
+        - name: Install fabric-cicd
+          run: |
+            pip install fabric-cicd
+
+        - name: Run Demo
+          env:
+            BRANCH_NAME: ${{    github.ref_name }}
+            GITHUB_WORKSPACE : $GITHUB_WORKSPACE
+            FABRIC_CLIENT_ID: ${{ secrets.FABRIC_CLIENT_ID }}
+            FABRIC_CLIENT_SECRET: ${{ secrets.FABRIC_CLIENT_SECRET }}
+            FABRIC_TENANT_ID: ${{ secrets.FABRIC_TENANT_ID }}            
+            FABRIC_CAPACITY_ID: ${{ secrets.FABRIC_CAPACITY_ID }}         
+            ADMIN_USER_ID: ${{ secrets.ADMIN_USER_ID }}
+            SERVICE_PRINCIPAL_OBJECT_ID: ${{ secrets.SERVICE_PRINCIPAL_OBJECT_ID }}
+        run: 
+            python 'src/publish_all_items.py'
+
+            

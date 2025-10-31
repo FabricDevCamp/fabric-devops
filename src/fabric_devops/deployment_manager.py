@@ -258,8 +258,6 @@ class DeploymentManager:
 
         return workspace
 
-
-
     @classmethod
     def deploy_shortcut_solution(cls,
                                  target_workspace,
@@ -2653,6 +2651,63 @@ class DeploymentManager:
 
         AppLogger.log_job_complete(dev_workspace['id'])
 
+    # two-stage ADO repo setup
+    @classmethod
+    def setup_two_stage_github_repo(cls, dev_workspace, prod_workspace, project_name = None):
+        """Setup Git Workspace Connecton to GitHub repo"""
+
+        AppLogger.log_step("Configuring GIT integration support with GitHub repository")
+        
+        
+        if project_name is None:
+            project_name = prod_workspace['displayName']
+            
+        repo_name = project_name.replace(" ", "-")
+
+        AppLogger.log_substep("Configuring GIT integration support with GitHub repository")
+
+        GitHubRestApi.create_repository(repo_name)
+        GitHubRestApi.create_branch(repo_name, 'test')
+        GitHubRestApi.create_branch(repo_name, 'dev')
+        GitHubRestApi.set_default_branch(repo_name, 'dev')
+        FabricRestApi.connect_workspace_to_github_repo(dev_workspace, repo_name, 'dev')
+        
+        GitHubRestApi.create_and_merge_pull_request(
+            repo_name, 
+            'dev',
+            'main',
+            'Merging all workspace items from dev to main',
+            'Pushing initial workspace sync from dev to main')
+  
+        FabricRestApi.connect_workspace_to_github_repo(prod_workspace, project_name, 'main')
+        
+        cls.apply_post_deploy_fixes(
+            prod_workspace['displayName'],
+            StagingEnvironments.get_prod_environment())
+        
+        GitHubRestApi.create_repository_secret(repo_name, 'FABRIC_CLIENT_ID', EnvironmentSettings.FABRIC_CLIENT_ID)
+        GitHubRestApi.create_repository_secret(repo_name, 'FABRIC_CLIENT_SECRET', EnvironmentSettings.FABRIC_CLIENT_SECRET)
+        GitHubRestApi.create_repository_secret(repo_name, 'FABRIC_TENANT_ID', EnvironmentSettings.FABRIC_TENANT_ID)
+        GitHubRestApi.create_repository_secret(repo_name, 'PERSONAL_ACCESS_TOKEN_GITHUB', EnvironmentSettings.PERSONAL_ACCESS_TOKEN_GITHUB)
+
+        GitHubRestApi.create_repository_variable(repo_name, 'ADMIN_USER_ID', EnvironmentSettings.ADMIN_USER_ID)
+        GitHubRestApi.create_repository_variable(repo_name, 'FABRIC_CAPACITY_ID', EnvironmentSettings.FABRIC_CAPACITY_ID)
+        GitHubRestApi.create_repository_variable(repo_name, 'DEV_WORKSPACE_ID', dev_workspace['id'])
+        GitHubRestApi.create_repository_variable(repo_name, 'PROD_WORKSPACE_ID', prod_workspace['id'])
+        
+        AppLogger.log_step('Add Workflow Files')
+        GitHubRestApi.copy_files_from_folder_to_repo(repo_name, 'dev', 'GitHub_SetupForFabricCICD')
+        GitHubRestApi.create_and_merge_pull_request(
+            repo_name, 
+            'dev',
+            'main',
+            'Merging CI/CD workflow files',
+            'Merging CI/CD workflow files to repository')
+
+        AppLogger.log_job_complete(dev_workspace['id'])
+
+
+
     # support for fabric_cicd utility
     
     @classmethod
@@ -2822,114 +2877,3 @@ class DeploymentManager:
 
         return file_content
 
-    @classmethod
-    def generate_parameter_yml_file_old(
-        cls,
-        dev_workspace_name,
-        test_workspace_name,
-        prod_workspace_name):
-        """Generate parameter.yml file"""
-
-        dev_workspace = FabricRestApi.get_workspace_by_name(dev_workspace_name)
-        dev_workspace_items = FabricRestApi.list_workspace_items(dev_workspace['id'])
-        
-        test_workspace = FabricRestApi.get_workspace_by_name(test_workspace_name)
-        test_workspace_items    = FabricRestApi.list_workspace_items(test_workspace['id'])
-
-        test_items = {}
-        for test_item in test_workspace_items:
-            item_name = test_item['displayName'] + "." + test_item['type']
-            test_items[item_name] = test_item['id']
-    
-        prod_workspace = FabricRestApi.get_workspace_by_name(prod_workspace_name)
-        prod_workspace_items    = FabricRestApi.list_workspace_items(prod_workspace['id'])
-
-        prod_items = {}
-        for prod_item in prod_workspace_items:
-            item_name = prod_item['displayName'] + "." + prod_item['type']
-            prod_items[item_name] = prod_item['id']
-    
-        indent = (' ' * 4)
-        file_content = 'find_replace:\n'
-
-        file_content += indent + '# [Workspace Id]\n'
-        file_content += indent + '- find_value: "' + dev_workspace['id'] + f'" # [{dev_workspace["displayName"]}]\n'
-        file_content += indent + '  replace_value:\n'
-        file_content += indent + indent + f'TEST: "{test_workspace["id"]}" # [{test_workspace["displayName"]}]\n'
-        file_content += indent + indent + f'PROD: "{prod_workspace["id"]}" # [{prod_workspace["displayName"]}]\n'
-
-        for workspace_item in dev_workspace_items:
-            item_name = workspace_item['displayName'] + "." + workspace_item['type']
-            file_content += indent + f'# [{item_name}]\n'
-            file_content += indent + '- find_value: "' + workspace_item['id'] + f'" # [{dev_workspace["displayName"]}]\n'
-            file_content += indent + '  replace_value:\n'
-            if item_name in test_items:
-                file_content += indent + indent + f'TEST: "{test_items[item_name]}" # [{test_workspace["displayName"]}]\n'
-
-            if workspace_item['type'] == 'SemanticModel':
-                dev_datasource_path = FabricRestApi.get_web_url_from_semantic_model(
-                    dev_workspace['id'],
-                    workspace_item['id']
-                )
-                test_datasource_path = FabricRestApi.get_web_url_from_semantic_model(
-                    test_workspace['id'],
-                    test_items[item_name]
-                )
-                file_content += indent + '- find_value: "' + dev_datasource_path + f'" # [{dev_workspace["displayName"]}]\n'
-                file_content += indent + '  replace_value:\n'
-                file_content += indent + indent + f'TEST: "{test_datasource_path}" # [{test_workspace["displayName"]}]\n'
-
-        for workspace_item in test_workspace_items:
-            item_name = workspace_item['displayName'] + "." + workspace_item['type']
-            file_content += indent + f'# [{item_name}]\n'
-            file_content += indent + '- find_value: "' + workspace_item['id'] + f'" # [{test_workspace["displayName"]}]\n'
-            file_content += indent + '  replace_value:\n'
-            if item_name in prod_items:
-                file_content += indent + indent + f'PROD: "{test_items[item_name]}" # [{prod_workspace["displayName"]}]\n'
-
-            if workspace_item['type'] == 'SemanticModel':
-                test_datasource_path = FabricRestApi.get_web_url_from_semantic_model(
-                    test_workspace['id'],
-                    workspace_item['id']
-                )
-                prod_datasource_path = FabricRestApi.get_web_url_from_semantic_model(
-                    prod_workspace['id'],
-                    prod_items[item_name]
-                )
-                file_content += indent + '- find_value: "' + test_datasource_path + f'" # [{test_workspace["displayName"]}]\n'
-                file_content += indent + '  replace_value:\n'
-                file_content += indent + indent + f'PROD: "{prod_datasource_path}" # [{prod_workspace["displayName"]}]\n'
-
-
-        return file_content
-
-    @classmethod
-    def generate_workspace_config_file(
-        cls,
-        dev_workspace_name,
-        test_workspace_name,
-        prod_workspace_name):
-        """Generate workspace config"""
-
-        dev_workspace = FabricRestApi.get_workspace_by_name(dev_workspace_name)
-        test_workspace = FabricRestApi.get_workspace_by_name(test_workspace_name)
-        prod_workspace = FabricRestApi.get_workspace_by_name(prod_workspace_name)
-
-                
-        config    = {
-            'dev': {
-                'workspace_id': dev_workspace['id'],
-                'environment': 'DEV'
-            },
-            'test': {
-                'workspace_id': test_workspace['id'],
-                'environment': 'TEST'
-            },
-            'main': {
-                'workspace_id': prod_workspace['id'],
-                'environment': 'PROD'
-
-            }
-        }
-
-        return json.dumps(config, indent=4)

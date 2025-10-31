@@ -202,7 +202,7 @@ class GitHubRestApi:
         return None
 
     @classmethod
-    def create_repository(cls, repo_name, branches = None, private = False, add_secrets = False):
+    def create_repository(cls, repo_name, branches = None, private = False):
         """Create GitHub Repository"""
         AppLogger.log_step(f"Creating new GitHub repo [{repo_name}]")
         repo = cls.get_github_repository_by_name(repo_name)
@@ -224,9 +224,6 @@ class GitHubRestApi:
         if branches is not None:
             for branch in branches:
                 cls.create_branch(repo_name, branch)
-
-        if add_secrets:
-            cls.add_repository_secrets(repo_name)
 
         return repo
 
@@ -458,12 +455,17 @@ class GitHubRestApi:
         cls._execute_put_request(endpoint, body, 'application/vnd.github+json')
 
     @classmethod
-    def add_repository_secrets(cls, repo_name):
-        """Add respository secrets"""
-        cls.create_repository_secret(repo_name, 'FABRIC_CLIENT_ID', EnvironmentSettings.FABRIC_CLIENT_ID)
-        cls.create_repository_secret(repo_name, 'FABRIC_CLIENT_SECRET', EnvironmentSettings.FABRIC_CLIENT_SECRET)
-        cls.create_repository_secret(repo_name, 'FABRIC_TENANT_ID', EnvironmentSettings.FABRIC_TENANT_ID)
-        cls.create_repository_secret(repo_name, 'ADMIN_USER_ID', EnvironmentSettings.ADMIN_USER_ID)
-        cls.create_repository_secret(repo_name, 'FABRIC_CAPACITY_ID', EnvironmentSettings.FABRIC_CAPACITY_ID)
-        cls.create_repository_secret(repo_name, 'PERSONAL_ACCESS_TOKEN_GITHUB', EnvironmentSettings.PERSONAL_ACCESS_TOKEN_GITHUB)
-        cls.create_repository_secret(repo_name, 'SERVICE_PRINCIPAL_OBJECT_ID', EnvironmentSettings.SERVICE_PRINCIPAL_OBJECT_ID)
+    def create_repository_variable(cls, repo_name, variable_name, variable_value):
+        """Create repository variable"""
+
+        endpoint = f"/repos/{cls.GITHUB_ORGANIZATION}/{repo_name}/actions/variables"
+        body = {
+            'owner': cls.GITHUB_ORGANIZATION,
+            'repo': repo_name,
+            'name': variable_name,
+            'value': variable_value,
+        }
+
+        cls._execute_post_request(endpoint, body, 'application/vnd.github+json')
+
+
