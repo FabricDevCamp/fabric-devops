@@ -327,12 +327,15 @@ class GitHubRestApi:
         AppLogger.log_step(f"Creating and merging pull request for branch [{source_branch_name}]")
 
         pull_request = cls.create_pull_request(
-            repo_name, 
+            repo_name,
             source_branch_name,
             target_branch_name,
             commit_title,
             commit_comment
         )
+        
+        print('pull_request')
+        print(pull_request)
         
         pull_request_number = pull_request['number']
         cls.merge_pull_request(repo_name, pull_request_number, commit_title, commit_comment)
