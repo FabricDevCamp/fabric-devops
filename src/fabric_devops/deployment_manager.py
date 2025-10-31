@@ -2755,8 +2755,9 @@ class DeploymentManager:
 
         for workspace_item in dev_workspace_items:
             
+            item_name = workspace_item['displayName'] + "." + workspace_item['type']
+            
             if workspace_item['type'] in ['Lakehouse']:                
-                item_name = workspace_item['displayName'] + "." + workspace_item['type']
                 file_content += indent + f'# [{item_name}]\n'
                 file_content += indent + '- find_value: "' + workspace_item['id'] + f'" # [{dev_workspace["displayName"]}]\n'
                 file_content += indent + '  replace_value:\n'
