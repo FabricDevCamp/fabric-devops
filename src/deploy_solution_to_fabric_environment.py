@@ -35,28 +35,4 @@ match os.getenv("GIT_INTEGRATION_PROVIDER"):
         GitHubRestApi.create_repository(repo_name)
         FabricRestApi.connect_workspace_to_github_repo(workspace, repo_name)
 
-        # # create workspace for feature1
-        # FEATURE1_NAME = 'feature1'
-        # FEATURE1_WORKSPACE_NAME = F'{workspace_name} - {FEATURE1_NAME}'
-        # FEATURE1_WORKSPACE = FabricRestApi.create_workspace(FEATURE1_WORKSPACE_NAME)
-
-        # # create feature branch and connect to feature workspace
-        # GitHubRestApi.create_branch(repo_name, FEATURE1_NAME)
-        # FabricRestApi.connect_workspace_to_github_repo(FEATURE1_WORKSPACE, repo_name, FEATURE1_NAME)
-
-        # # create workspace for feature2
-        # FEATURE2_NAME = 'feature2'
-        # FEATURE2_WORKSPACE_NAME = F'{workspace_name} - {FEATURE2_NAME}'
-        # FEATURE2_WORKSPACE = FabricRestApi.create_workspace(FEATURE2_WORKSPACE_NAME)
-
-        # # create feature branch and connect to feature workspace
-        # GitHubRestApi.create_branch(repo_name, FEATURE2_NAME)
-        # FabricRestApi.connect_workspace_to_github_repo(FEATURE2_WORKSPACE, repo_name, FEATURE2_NAME)
-
-        # # apply post sync/deploy fixes to feature2 workspace, but not feature1 workspace
-        # DeploymentManager.apply_post_sync_fixes(
-        #     FEATURE2_WORKSPACE_NAME,
-        #     StagingEnvironments.get_dev_environment(),
-        #     True)
-
 AppLogger.log_job_complete(workspace['id'])

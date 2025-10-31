@@ -2447,8 +2447,6 @@ class DeploymentManager:
                     model['id'])
 
 
-
-
     @classmethod
     def create_and_bind_model_connection(cls, workspace_name):
         """Create and Bind Model Connections"""
