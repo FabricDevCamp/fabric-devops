@@ -3,6 +3,7 @@
 import time
 import base64
 import os
+import json
 from json.decoder import JSONDecodeError
 
 from nacl import encoding, public
@@ -257,6 +258,31 @@ class GitHubRestApi:
         }
 
         return cls._execute_post_request(endpoint_refs, body)
+
+    @classmethod
+    def create_feature_branch(cls, repo_name, branch_name):
+        """Create GitHub Repository Branch"""
+        AppLogger.log_substep(f"Creating branch [{branch_name}]")
+
+        endpoint_branchces = f"repos/{cls.GITHUB_ORGANIZATION}/{repo_name}/git/refs/heads"
+        branches = cls._execute_get_request(endpoint_branchces)
+        
+        print( json.dumps(branches, indent=4))
+        return
+    
+        sha = branches[-1]['object']['sha']
+
+        endpoint_refs = f"repos/{cls.GITHUB_ORGANIZATION}/{repo_name}/git/refs"
+
+        body = {
+            'ref': f'refs/heads/{branch_name}',
+            "sha": sha
+        }
+
+        return cls._execute_post_request(endpoint_refs, body)
+
+
+
 
     @classmethod
     def create_pull_request(

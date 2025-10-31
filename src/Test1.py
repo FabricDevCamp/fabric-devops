@@ -3,6 +3,6 @@
 from fabric_devops import DeploymentManager, AppLogger, StagingEnvironments, \
                           AdoProjectManager, FabricRestApi, GitHubRestApi
 
-repo_name = 'Product-Sales'
+repo_name = 'Bixby'
 
-GitHubRestApi.create_repository_variable(repo_name, 'web_data_url', 'bar')
+GitHubRestApi.create_feature_branch(repo_name, 'feature2')
