@@ -2696,9 +2696,9 @@ class DeploymentManager:
         GitHubRestApi.create_repository_variable(repo_name, 'PROD_WORKSPACE_ID', prod_workspace['id'])
         
         AppLogger.log_step('Add Workflow Files')
-        GitHubRestApi.copy_files_from_folder_to_repo(repo_name, 'dev', 'GitHub_SetupForFabricCICD')
+        GitHubRestApi.copy_files_from_folder_to_repo(repo_name, 'dev', 'GitHub_TwoStageGitStep')
         GitHubRestApi.create_and_merge_pull_request(
-            repo_name, 
+            repo_name,
             'dev',
             'main',
             'Merging CI/CD workflow files',
