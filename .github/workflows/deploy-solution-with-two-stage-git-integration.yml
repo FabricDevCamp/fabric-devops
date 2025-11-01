@@ -22,7 +22,6 @@ on:
                 type: choice
                 description: Git Integration Provider
                 options: 
-                - None
                 - Azure DevOps
                 - GitHub
                 default: Azure DevOps

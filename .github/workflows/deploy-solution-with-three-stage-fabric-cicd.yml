@@ -1,6 +1,6 @@
 
 name: Deploy Solution with 3-Stage fabric-cicd
-run-name: Deploy ${{inputs.solution_name}} to ${{inputs.project_name}}
+run-name: Deploy ${{inputs.solution_name}} to 3-Stage project ${{inputs.project_name}} using $${{inputs.git_integration_provider}}
 
 on:
     workflow_dispatch:
@@ -21,8 +21,7 @@ on:
             git_integration_provider:
                 type: choice
                 description: Git Integration Provider
-                options: 
-                - None
+                options:
                 - Azure DevOps
                 - GitHub
                 default: Azure DevOps
@@ -71,4 +70,4 @@ jobs:
                 GIT_INTEGRATION_PROVIDER: ${{inputs.git_integration_provider}}
                 RUN_AS_SERVICE_PRINCIPAL: ${{inputs.run_as_service_principal}}
               run: 
-                python src/deploy_solution_with_two_stage_git_integration.py
+                python src/deploy_solution_with_three_stage_fabric_cicd.py
