@@ -360,9 +360,6 @@ class GitHubRestApi:
             commit_comment
         )
         
-        print('pull_request')
-        print(pull_request)
-        
         pull_request_number = pull_request['number']
         cls.merge_pull_request(repo_name, pull_request_number, commit_title, commit_comment)
 
