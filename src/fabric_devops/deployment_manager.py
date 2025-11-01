@@ -2937,7 +2937,7 @@ class DeploymentManager:
             prod_workspace
         )
 
-        AdoProjectManager.write_file_to_repo(
+        GitHubRestApi.write_file_to_repo(
             repo_name,
             "dev",
             "workspace/parameter.yml",
