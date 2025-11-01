@@ -242,6 +242,14 @@ class GitHubRestApi:
         return repos
 
     @classmethod
+    def compare_branches(cls, repo_name, source_branch, target_branch):
+        """Create GitHub Repository Branch"""
+        endpoint = f"repos/{cls.GITHUB_ORGANIZATION}/{repo_name}/compare/{target_branch}...{source_branch}"
+        result = cls._execute_get_request(endpoint)
+        return result
+
+
+    @classmethod
     def create_branch(cls, repo_name, branch_name):
         """Create GitHub Repository Branch"""
         AppLogger.log_substep(f"Creating branch [{branch_name}]")
@@ -259,41 +267,17 @@ class GitHubRestApi:
 
         return cls._execute_post_request(endpoint_refs, body)
 
-    @classmethod
-    def create_feature_branch(cls, repo_name, branch_name):
-        """Create GitHub Repository Branch"""
-        AppLogger.log_substep(f"Creating branch [{branch_name}]")
-
-        endpoint_branchces = f"repos/{cls.GITHUB_ORGANIZATION}/{repo_name}/git/refs/heads"
-        branches = cls._execute_get_request(endpoint_branchces)
-        
-        print( json.dumps(branches, indent=4))
-        return
-    
-        sha = branches[-1]['object']['sha']
-
-        endpoint_refs = f"repos/{cls.GITHUB_ORGANIZATION}/{repo_name}/git/refs"
-
-        body = {
-            'ref': f'refs/heads/{branch_name}',
-            "sha": sha
-        }
-
-        return cls._execute_post_request(endpoint_refs, body)
-
-
-
 
     @classmethod
     def create_pull_request(
         cls, 
         repo_name, 
-        source_branch_name, 
-        target_branch_name, 
+        source_branch, 
+        target_branch, 
         commit_title, 
         commit_comment):
         """Create GitHub Repository Branch"""
-        AppLogger.log_substep(f"Creating pull request for branch [{source_branch_name}]")
+        AppLogger.log_substep(f"Creating pull request for branch [{source_branch}]")
 
         endpoint_pull_requests = f"repos/{cls.GITHUB_ORGANIZATION}/{repo_name}/pulls"
 
@@ -302,8 +286,8 @@ class GitHubRestApi:
             'repo': repo_name,
             'title': commit_title,
             'body': commit_comment,
-            'head': (cls.GITHUB_ORGANIZATION + ":" + source_branch_name),
-            'base': target_branch_name
+            'head': (cls.GITHUB_ORGANIZATION + ":" + source_branch),
+            'base': target_branch
         }
 
         return cls._execute_post_request(
@@ -345,17 +329,25 @@ class GitHubRestApi:
     def create_and_merge_pull_request(
         cls,
         repo_name,
-        source_branch_name,
-        target_branch_name,
+        source_branch,
+        target_branch,
         commit_title,
         commit_comment):
         """Create and Merge Pull Request"""
-        AppLogger.log_step(f"Creating and merging pull request for branch [{source_branch_name}]")
+        AppLogger.log_step(f"Merging changes from [{source_branch}] to [{target_branch}]")
 
+        comparison = GitHubRestApi.compare_branches(repo_name, source_branch, target_branch)
+
+        comparison_has_no_commits = len(comparison['commits']) == 0
+        
+        if comparison_has_no_commits:
+            AppLogger.log_substep("No need to create pull request because the two branches are already in sync")
+            return
+              
         pull_request = cls.create_pull_request(
             repo_name,
-            source_branch_name,
-            target_branch_name,
+            source_branch,
+            target_branch,
             commit_title,
             commit_comment
         )
