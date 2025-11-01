@@ -16,7 +16,8 @@ token_credential = \
   ClientSecretCredential(client_id=client_id, client_secret=client_secret, tenant_id=tenant_id)
 
 # determine target branch between test and main
-branch_name = os.environ.get('BUILD_SOURCEBRANCH').replace('refs/heads/', '')
+branch_name = os.environ.get('BRANCH_NAME')
+
 AppLogger.log_substep(f'Pipeline triggered by PR completing on branch [{branch_name}]')
 
 match branch_name: 
