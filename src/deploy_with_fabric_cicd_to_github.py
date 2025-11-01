@@ -52,16 +52,16 @@ GitHubRestApi.create_and_merge_pull_request(
     'Push feature workspace changes to dev')
 
 GitHubRestApi.create_and_merge_pull_request(
-    repo_name, 
+    repo_name,
     'dev', 
     'test', 
     'Push dev changes to test', 
     'Push dev changes to test')
 
 GitHubRestApi.create_and_merge_pull_request(
-    repo_name, 
+    repo_name,
     'test', 
-    'prod', 
+    'main', 
     'Push test changes to prod', 
     'Push test changes to prod')
 
