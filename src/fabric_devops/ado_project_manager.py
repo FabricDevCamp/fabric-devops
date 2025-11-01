@@ -776,7 +776,7 @@ class AdoProjectManager:
     @classmethod
     def merge_pull_request(cls, project_name, pull_request):
         """Merge Pull Request"""
-        AppLogger.log_substep("Appoving and completing pull request")
+        AppLogger.log_substep("Approving and completing pull request")
         pull_request_id = pull_request['pullRequestId']
         repository = cls.get_project_repository(project_name)
         endpoint = f"git/repositories/{repository['id']}/pullrequests/{pull_request_id}"
