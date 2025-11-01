@@ -372,15 +372,18 @@ class GitHubRestApi:
         endpoint = f"repos/{cls.GITHUB_ORGANIZATION}/{repo_name}/contents/workspace/readme.md"
 
         body = {
-            "message":"default message",
+            "message":"Adding ReadMe.md file",
             "content": base64_content
         }
         
         cls._execute_put_request(endpoint, body)
 
     @classmethod
-    def write_file_to_repo(cls, repo_name, branch, file_path, file_content, comment = 'default message'):
+    def write_file_to_repo(cls, repo_name, branch, file_path, file_content, comment = None):
         """Create Content"""        
+        if comment is None:
+            comment = f'Writing file {file_path}'
+        
         base64_content = base64.b64encode(file_content.encode('utf-8')).decode('utf-8')
         endpoint = f"repos/{cls.GITHUB_ORGANIZATION}/{repo_name}/contents/{file_path}"
         body = {
