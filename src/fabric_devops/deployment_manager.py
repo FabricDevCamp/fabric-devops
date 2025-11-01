@@ -2883,7 +2883,7 @@ class DeploymentManager:
             
         repo_name = project_name.replace(" ", "-")
 
-        AppLogger.log_substep("Configuring GIT integration support with GitHub repository")
+        AppLogger.log_job("Configuring GIT integration support with GitHub repository")
 
         GitHubRestApi.create_repository(repo_name)
         GitHubRestApi.create_branch(repo_name, 'test')
@@ -2938,7 +2938,7 @@ class DeploymentManager:
         )
 
         AdoProjectManager.write_file_to_repo(
-            project_name,
+            repo_name,
             "dev",
             "workspace/parameter.yml",
             parameter_file_content,
