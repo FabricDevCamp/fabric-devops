@@ -1,55 +1,49 @@
 """Publish All Items"""
 
+from pathlib import Path
 import os
-import json
-
 from azure.identity import ClientSecretCredential
-
 from fabric_cicd import FabricWorkspace, publish_all_items, unpublish_all_orphan_items
+from fabric_devops_utils import EnvironmentSettings, AppLogger
 
-client_id = os.getenv("FABRIC_CLIENT_ID")
-client_secret = os.getenv("FABRIC_CLIENT_SECRET")
-tenant_id = os.getenv("FABRIC_TENANT_ID")
+AppLogger.log_job("Publihing all items with fabric_cicd after PR completion")
+
+# authenticate
+client_id = EnvironmentSettings.FABRIC_CLIENT_ID
+client_secret = EnvironmentSettings.FABRIC_CLIENT_SECRET
+tenant_id = EnvironmentSettings.FABRIC_TENANT_ID
 token_credential = \
-    ClientSecretCredential(client_id=client_id, client_secret=client_secret, tenant_id=tenant_id)
+  ClientSecretCredential(client_id=client_id, client_secret=client_secret, tenant_id=tenant_id)
 
-github_workpace = os.getenv('GITHUB_WORKSPACE')
-branch = os.getenv('BRANCH_NAME')
-print(github_workpace, flush=True)
+# determine target branch between test and main
+branch_name = os.environ.get('BRANCH_NAME')
 
-config_file = github_workpace +    '/workspace/workspace.config.json'
+AppLogger.log_substep(f'Pipeline triggered by PR completing on branch [{branch_name}]')
 
+match branch_name: 
+    case 'test':
+      workspace_id = EnvironmentSettings.TEST_WORKSPACE_ID
+      ENVIRONMENT = 'TEST'
+    case 'main':
+      workspace_id = EnvironmentSettings.PROD_WORKSPACE_ID
+      ENVIRONMENT = 'PROD'
 
-if os.path.exists(config_file) is False:
-    print(f"'{config_file}' does not exists.")
-else:        
-    print(config_file, flush=True)
+AppLogger.log_substep(f'Updating workspace with id [{workspace_id}] in environment {ENVIRONMENT}')
 
-    with open(config_file, 'r', encoding='utf-8') as file:
-        config = json.load(file)
-        print(config, flush=True)
+item_type_in_scope = [ "Lakehouse", "Notebook", "SemanticModel", "Report", "DataPipeline", 
+                       "Environment", "CopyJob", "Dataflow", "Warehouse" ]
 
-    workspace_config = config[branch] 
+# Initialize the FabricWorkspace object with the required parameters
+target_workspace = FabricWorkspace(
+  workspace_id=workspace_id,
+  environment=ENVIRONMENT,
+  repository_directory = str(Path(__file__).resolve().parent.parent / "workspace"),
+  item_type_in_scope=item_type_in_scope,
+  token_credential=token_credential,
+)
 
-    # Sample values for FabricWorkspace parameters
-    workspace_id = workspace_config['workspace_id']
-    environment = workspace_config['environment']
-    
-    repository_directory = "workspace"
-    item_type_in_scope = [ "Lakehouse", "Notebook", "SemanticModel", "Report"]
+# Publish all items defined in item_type_in_scope
+publish_all_items(target_workspace)
 
-    # Initialize the FabricWorkspace object with the required parameters
-    target_workspace = FabricWorkspace(
-        workspace_id=workspace_id,
-        environment=environment,
-        repository_directory=repository_directory,
-        item_type_in_scope=item_type_in_scope,
-        token_credential=token_credential,
-    )
-
-    # Publish all items defined in item_type_in_scope
-    publish_all_items(target_workspace)
-
-    # Unpublish all items defined in item_type_in_scope not found in repository
-    # this fails when trying to delete default semantic model for lakehouse
-    # unpublish_all_orphan_items(target_workspace)
+# Unpublish all items defined in item_type_in_scope not found in repository
+unpublish_all_orphan_items(target_workspace)

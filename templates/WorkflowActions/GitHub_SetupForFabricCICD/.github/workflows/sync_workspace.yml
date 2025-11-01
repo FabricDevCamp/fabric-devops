@@ -1,16 +1,15 @@
-name: Publish All Items
-run-name: Publish all items from branch ${{ github.ref_name }} 
+name: Sync Workspace
+run-name: Sync workspace from branch ${{ github.ref_name }} 
 
 on:
     workflow_dispatch:
     push:
       branches:
-        - test
-        - main
+        - dev
 
 jobs:
     deployment-job:
-      name: Publish Items
+      name: Sync Items
       runs-on: ubuntu-latest
 
       steps:
@@ -22,13 +21,9 @@ jobs:
           with:
             python-version: "3.12"
 
-        - name: Install fabric-cicd
+        - name: Install msal
           run: |
-              pip install fabric-cicd
-        
-              - name: Install fabric-cicd
-          run: |
-              pip install fabric-cicd
+              pip install msal
 
         - name: Run Demo
           env:
@@ -44,4 +39,4 @@ jobs:
               TEST_WORKSPACE_ID: ${{ vars.TEST_WORKSPACE_ID }}
               PROD_WORKSPACE_ID: ${{ vars.PROD_WORKSPACE_ID }}
           run: 
-              python 'src/publish_all_items.py'
+              python 'src/sync_workspace.py'

@@ -22,9 +22,9 @@ jobs:
           with:
             python-version: "3.12"
 
-        - name: Install fabric-cicd
+        - name: Install msal
           run: |
-              pip install fabric-cicd
+              pip install msal
 
         - name: Run Demo
           env:

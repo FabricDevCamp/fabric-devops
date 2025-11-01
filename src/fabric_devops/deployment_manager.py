@@ -2586,7 +2586,7 @@ class DeploymentManager:
         
         AppLogger.log_job(f"Configuring GIT integration in GitHub for workspace [{workspace['displayName']}]")
 
-        GitHubRestApi.create_repository(repo_name, add_secrets=True)
+        GitHubRestApi.create_repository(repo_name)
         GitHubRestApi.create_branch(repo_name, 'test')
         GitHubRestApi.create_branch(repo_name, 'dev')
         GitHubRestApi.set_default_branch(repo_name, 'dev')
@@ -2611,7 +2611,8 @@ class DeploymentManager:
 
         AppLogger.log_job_complete(workspace['id'])
 
-    # two-stage ADO repo setup
+    # setup for two-stage repo setup
+    
     @classmethod
     def setup_two_stage_ado_repo(cls, dev_workspace, prod_workspace, project_name = None):
         """Setup Git Workspace Connecton to ADO repo"""
@@ -2651,14 +2652,12 @@ class DeploymentManager:
 
         AppLogger.log_job_complete(dev_workspace['id'])
 
-    # two-stage ADO repo setup
     @classmethod
     def setup_two_stage_github_repo(cls, dev_workspace, prod_workspace, project_name = None):
         """Setup Git Workspace Connecton to GitHub repo"""
 
         AppLogger.log_step("Configuring GIT integration support with GitHub repository")
-        
-        
+          
         if project_name is None:
             project_name = prod_workspace['displayName']
             
@@ -2705,76 +2704,7 @@ class DeploymentManager:
 
         AppLogger.log_job_complete(dev_workspace['id'])
 
-
-
     # support for fabric_cicd utility
-    
-    @classmethod
-    def setup_ado_repo_for_fabric_cicd(cls, 
-                                       dev_workspace, 
-                                       test_workspace, 
-                                       prod_workspace, 
-                                       project_name = None):
-        """Setup ADO repo for fabric_cicd"""
-        
-        if project_name is None:
-            project_name = prod_workspace['displayName']
-
-        AppLogger.log_job("Configuring GIT integration in Azure DevOps for fabric_cicd")
-
-        AdoProjectManager.create_project(project_name)
-        AdoProjectManager.create_branch(project_name, 'test', 'main')
-        AdoProjectManager.create_branch(project_name, 'dev', 'test')
-        AdoProjectManager.set_default_branch(project_name, 'dev')
-     
-        FabricRestApi.connect_workspace_to_ado_repo(dev_workspace, project_name, 'dev')
-
-        AdoProjectManager.create_and_merge_pull_request(project_name, 'dev','test')
-          
-        FabricRestApi.connect_workspace_to_ado_repo(test_workspace, project_name, 'test')
-        FabricRestApi.disconnect_workspace_from_git(test_workspace['id'])   
-        cls.apply_post_deploy_fixes(
-            test_workspace['displayName'],
-            StagingEnvironments.get_test_environment())
-
-        AdoProjectManager.create_and_merge_pull_request(project_name, 'test', 'main')
-        FabricRestApi.connect_workspace_to_ado_repo(prod_workspace, project_name, 'main')
-        FabricRestApi.disconnect_workspace_from_git(prod_workspace['id'])        
-        cls.apply_post_deploy_fixes(
-            prod_workspace['displayName'],
-            StagingEnvironments.get_prod_environment())
-        
-        variable_group = AdoProjectManager.create_variable_group_for_fabric_cicd(
-            'environmental_variables',
-            project_name, 
-            dev_workspace['id'],
-            test_workspace['id'],
-            prod_workspace['id'])
-        
-        AdoProjectManager.copy_files_from_folder_to_repo(
-            project_name,
-            'dev',
-            'ADO_SetupForFabricCICD',
-            variable_group['id'])
-        
-        AdoProjectManager.create_and_merge_pull_request(project_name, 'dev', 'test')
-        AdoProjectManager.create_and_merge_pull_request(project_name, 'test', 'main')
-        
-        AppLogger.log_step("Generating parameter.yml used by fabric-cicd")
-
-        parameter_file_content = cls.generate_parameter_yml_file(
-            dev_workspace,
-            test_workspace,
-            prod_workspace
-        )
-
-        AdoProjectManager.write_file_to_repo(
-            project_name,
-            "dev",
-            "workspace/parameter.yml",
-            parameter_file_content,
-            "Adding parameter.yml used by fabric_cicd"
-        )
 
     @classmethod
     def generate_parameter_yml_file(
@@ -2875,4 +2805,166 @@ class DeploymentManager:
                             file_content += indent + f'  item_name: ["{workspace_item["displayName"]}"]\n\n'
 
         return file_content
+
+
+    
+    @classmethod
+    def setup_ado_repo_for_fabric_cicd(cls, 
+                                       dev_workspace, 
+                                       test_workspace, 
+                                       prod_workspace, 
+                                       project_name = None):
+        """Setup ADO repo for fabric_cicd"""
+        
+        if project_name is None:
+            project_name = prod_workspace['displayName']
+
+        AppLogger.log_job("Configuring GIT integration in Azure DevOps for fabric_cicd")
+
+        AdoProjectManager.create_project(project_name)
+        AdoProjectManager.create_branch(project_name, 'test', 'main')
+        AdoProjectManager.create_branch(project_name, 'dev', 'test')
+        AdoProjectManager.set_default_branch(project_name, 'dev')
+     
+        FabricRestApi.connect_workspace_to_ado_repo(dev_workspace, project_name, 'dev')
+
+        AdoProjectManager.create_and_merge_pull_request(project_name, 'dev','test')
+          
+        FabricRestApi.connect_workspace_to_ado_repo(test_workspace, project_name, 'test')
+        FabricRestApi.disconnect_workspace_from_git(test_workspace['id'])   
+        cls.apply_post_deploy_fixes(
+            test_workspace['displayName'],
+            StagingEnvironments.get_test_environment())
+
+        AdoProjectManager.create_and_merge_pull_request(project_name, 'test', 'main')
+        FabricRestApi.connect_workspace_to_ado_repo(prod_workspace, project_name, 'main')
+        FabricRestApi.disconnect_workspace_from_git(prod_workspace['id'])        
+        cls.apply_post_deploy_fixes(
+            prod_workspace['displayName'],
+            StagingEnvironments.get_prod_environment())
+        
+        variable_group = AdoProjectManager.create_variable_group_for_fabric_cicd(
+            'environmental_variables',
+            project_name, 
+            dev_workspace['id'],
+            test_workspace['id'],
+            prod_workspace['id'])
+        
+        AdoProjectManager.copy_files_from_folder_to_repo(
+            project_name,
+            'dev',
+            'ADO_SetupForFabricCICD',
+            variable_group['id'])
+        
+        AdoProjectManager.create_and_merge_pull_request(project_name, 'dev', 'test')
+        AdoProjectManager.create_and_merge_pull_request(project_name, 'test', 'main')
+        
+        AppLogger.log_step("Generating parameter.yml used by fabric-cicd")
+
+        parameter_file_content = cls.generate_parameter_yml_file(
+            dev_workspace,
+            test_workspace,
+            prod_workspace
+        )
+
+        AdoProjectManager.write_file_to_repo(
+            project_name,
+            "dev",
+            "workspace/parameter.yml",
+            parameter_file_content,
+            "Adding parameter.yml used by fabric_cicd"
+        )
+  
+    @classmethod
+    def setup_github_repo_for_fabric_cicd(cls, 
+                                       dev_workspace, 
+                                       test_workspace, 
+                                       prod_workspace, 
+                                       project_name = None):
+        """Setup GitHub repo for fabric_cicd"""
+        
+        if project_name is None:
+            project_name = prod_workspace['displayName']
+            
+        repo_name = project_name.replace(" ", "-")
+
+        AppLogger.log_substep("Configuring GIT integration support with GitHub repository")
+
+        GitHubRestApi.create_repository(repo_name)
+        GitHubRestApi.create_branch(repo_name, 'test')
+        GitHubRestApi.create_branch(repo_name, 'dev')
+        GitHubRestApi.set_default_branch(repo_name, 'dev')
+        
+        FabricRestApi.connect_workspace_to_github_repo(dev_workspace, repo_name, 'dev')        
+        
+        GitHubRestApi.create_and_merge_pull_request(
+            repo_name,
+            'dev',
+            'test',
+            'Merging all workspace items from dev to test',
+            'Pushing initial workspace sync from dev to test')
+  
+        FabricRestApi.connect_workspace_to_github_repo(test_workspace, project_name, 'test')
+        
+        cls.apply_post_deploy_fixes(
+            test_workspace['displayName'],
+            StagingEnvironments.get_test_environment())        
+
+        GitHubRestApi.create_and_merge_pull_request(
+            repo_name,
+            'test',
+            'main',
+            'Merging all workspace items from test to main',
+            'Pushing initial workspace sync from test to main')
+  
+        FabricRestApi.connect_workspace_to_github_repo(prod_workspace, project_name, 'main')
+        
+        cls.apply_post_deploy_fixes(
+            prod_workspace['displayName'],
+            StagingEnvironments.get_prod_environment())
+        
+        GitHubRestApi.create_repository_secret(repo_name, 'FABRIC_CLIENT_ID', EnvironmentSettings.FABRIC_CLIENT_ID)
+        GitHubRestApi.create_repository_secret(repo_name, 'FABRIC_CLIENT_SECRET', EnvironmentSettings.FABRIC_CLIENT_SECRET)
+        GitHubRestApi.create_repository_secret(repo_name, 'FABRIC_TENANT_ID', EnvironmentSettings.FABRIC_TENANT_ID)
+        GitHubRestApi.create_repository_secret(repo_name, 'PERSONAL_ACCESS_TOKEN_GITHUB', EnvironmentSettings.PERSONAL_ACCESS_TOKEN_GITHUB)
+
+        GitHubRestApi.create_repository_variable(repo_name, 'ADMIN_USER_ID', EnvironmentSettings.ADMIN_USER_ID)
+        GitHubRestApi.create_repository_variable(repo_name, 'FABRIC_CAPACITY_ID', EnvironmentSettings.FABRIC_CAPACITY_ID)
+        GitHubRestApi.create_repository_variable(repo_name, 'DEV_WORKSPACE_ID', dev_workspace['id'])
+        GitHubRestApi.create_repository_variable(repo_name, 'TEST_WORKSPACE_ID', test_workspace['id'])
+        GitHubRestApi.create_repository_variable(repo_name, 'PROD_WORKSPACE_ID', prod_workspace['id'])
+
+        AppLogger.log_step("Generating parameter.yml used by fabric-cicd")
+
+        parameter_file_content = cls.generate_parameter_yml_file(
+            dev_workspace,
+            test_workspace,
+            prod_workspace
+        )
+
+        AdoProjectManager.write_file_to_repo(
+            project_name,
+            "dev",
+            "workspace/parameter.yml",
+            parameter_file_content,
+            "Adding parameter.yml used by fabric_cicd"
+        )
+        
+        AppLogger.log_step('Add Workflow Files')
+        GitHubRestApi.copy_files_from_folder_to_repo(repo_name, 'dev', 'GitHub_SetupForFabricCICD')        
+        
+        GitHubRestApi.create_and_merge_pull_request(
+            repo_name,
+            'dev',
+            'test',
+            'Merging CI/CD workflow files',
+            'Merging CI/CD workflow files to test branch')
+        
+        GitHubRestApi.create_and_merge_pull_request(
+            repo_name,
+            'test',
+            'dev',
+            'Merging CI/CD workflow files',
+            'Merging CI/CD workflow files to dev branch')
+        
 
