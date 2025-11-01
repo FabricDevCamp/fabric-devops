@@ -2132,7 +2132,6 @@ class DeploymentManager:
 
         FabricRestApi.update_item_definition(workspace['id'], notebook, notebook_definition)
 
-
     @classmethod
     def apply_post_sync_fixes(cls,
                     workspace_name,
@@ -2351,7 +2350,6 @@ class DeploymentManager:
                     workspace,
                     model['id'])
 
-
     @classmethod
     def apply_post_deploy_fixes_backup(cls,
                                 workspace_name,
@@ -2443,7 +2441,6 @@ class DeploymentManager:
                 FabricRestApi.create_and_bind_semantic_model_connecton(
                     workspace,
                     model['id'])
-
 
     @classmethod
     def create_and_bind_model_connection(cls, workspace_name):
@@ -2805,8 +2802,6 @@ class DeploymentManager:
                             file_content += indent + f'  item_name: ["{workspace_item["displayName"]}"]\n\n'
 
         return file_content
-
-
     
     @classmethod
     def setup_ado_repo_for_fabric_cicd(cls, 
