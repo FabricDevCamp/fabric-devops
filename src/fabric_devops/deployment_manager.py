@@ -2900,6 +2900,7 @@ class DeploymentManager:
             'Pushing initial workspace sync from dev to test')
   
         FabricRestApi.connect_workspace_to_github_repo(test_workspace, project_name, 'test')
+        FabricRestApi.disconnect_workspace_from_git(test_workspace['id'])
         
         cls.apply_post_deploy_fixes(
             test_workspace['displayName'],
@@ -2913,6 +2914,7 @@ class DeploymentManager:
             'Pushing initial workspace sync from test to main')
   
         FabricRestApi.connect_workspace_to_github_repo(prod_workspace, project_name, 'main')
+        FabricRestApi.disconnect_workspace_from_git(prod_workspace['id'])
         
         cls.apply_post_deploy_fixes(
             prod_workspace['displayName'],
