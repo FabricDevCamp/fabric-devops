@@ -1,6 +1,6 @@
 
 name: Deploy Solution with 3-Stage fabric-cicd
-run-name: Deploy ${{inputs.solution_name}} to ${{inputs.project_name}} using fabric-cicd and $${{inputs.git_integration_provider}}
+run-name: Depoy [${{inputs.solution_name}}] to [${{inputs.project_name}}] using fabric-cicd and $${{inputs.git_integration_provider}}
 
 on:
     workflow_dispatch:
