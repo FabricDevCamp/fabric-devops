@@ -1,5 +1,5 @@
 
-name: Deploy Solution to Fabric Environment
+name: Deploy Project to Fabric Environment
 run-name: Deploy ${{inputs.solution_name}} to ${{inputs.target_environment}} Environment
 
 on:
