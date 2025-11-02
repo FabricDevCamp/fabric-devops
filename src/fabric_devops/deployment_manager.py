@@ -2341,6 +2341,93 @@ class DeploymentManager:
                     workspace,
                     model['id'])
 
+
+    @classmethod
+    def apply_post_pipeline_deploy_fixes(cls,
+                                         workspace_name,
+                                         deployment_job: DeploymentJob,
+                                         run_etl_jobs = True):
+        
+        """Apply Post Deploy Fixes"""                    
+        AppLogger.log_step(f"Applying post pipeline deploy fixes to [{workspace_name}]")
+        workspace = FabricRestApi.get_workspace_by_name(workspace_name)
+        workspace_items = FabricRestApi.list_workspace_items(workspace['id'])
+        
+        variable_libraries = list(filter(lambda item: item['type']=='VariableLibrary', workspace_items))
+        for variable_library in variable_libraries:
+            FabricRestApi.set_active_valueset_for_variable_library(
+                workspace['id'],
+                variable_library,
+                deployment_job.name
+            )
+
+        lakehouses = list(filter(lambda item: item['type']=='Lakehouse', workspace_items))
+        for lakehouse in lakehouses:
+            pass
+
+        notebooks = list(filter(lambda item: item['type']=='Notebook', workspace_items))
+        for notebook in notebooks:
+            # Apply fixes for [Create Lakehouse Tables.Notebook]
+            
+            # if notebook['displayName'] in ['Create Lakehouse Tables', 'Build 01 Silver Layer', 'Build 02 Gold Layer']:
+            #     cls.update_source_lakehouse_in_notebook(
+            #         workspace_name,
+            #         notebook['displayName'],
+            #         "sales")
+
+            # if notebook['displayName'] == 'Create Lakehouse Tables':
+            #     cls.update_datasource_path_in_notebook(
+            #         workspace_name,
+            #         notebook['displayName'],
+            #         deployment_job)
+                
+            if run_etl_jobs and 'Create' in notebook['displayName']:                
+                FabricRestApi.run_notebook(workspace['id'], notebook)
+
+        pipelines  = list(filter(lambda item: item['type']=='DataPipeline', workspace_items))
+        for pipeline in pipelines:
+            # run pipelines if required                
+            if run_etl_jobs and 'Create' in pipeline['displayName']:
+                FabricRestApi.run_data_pipeline(workspace['id'], pipeline)
+
+        sql_endpoints =    list(filter(lambda item: item['type']=='SQLEndpoint', workspace_items))
+        for sql_endpoint in sql_endpoints:
+            FabricRestApi.refresh_sql_endpoint_metadata(
+                workspace['id'],
+                sql_endpoint['id'])
+
+        models = list(filter(lambda item: item['type']=='SemanticModel', workspace_items))
+        for model in models:
+
+            # Apply fixes for [Product Sales Imported Model.SemanticModel]
+            if model['displayName'] ==    'Product Sales Imported Model':
+                # fix connection to imported models
+                datasource_path =    \
+                    deployment_job.parameters[deployment_job.web_datasource_path_parameter]
+
+                DeploymentManager.update_imported_semantic_model_source(
+                    workspace,
+                    model['displayName'],
+                    datasource_path)
+
+                FabricRestApi.create_and_bind_semantic_model_connecton(
+                    workspace,
+                    model['id'])
+
+            # Apply fixes for [Product Sales DirectLake Model.SemanticModel]
+            if model['displayName'] ==    'Product Sales DirectLake Model':
+                # fix connection to lakehouse SQL endpoint
+                target_lakehouse_name = 'sales'
+                DeploymentManager.update_directlake_semantic_model_source(
+                    workspace_name, 
+                    model['displayName'],
+                    target_lakehouse_name)
+
+                FabricRestApi.create_and_bind_semantic_model_connecton(
+                    workspace,
+                    model['id'])
+
+
     @classmethod
     def apply_post_deploy_fixes_backup(cls,
                                 workspace_name,
