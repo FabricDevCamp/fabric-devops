@@ -432,7 +432,7 @@ class DeploymentManager:
             variable_library.add_variable("adls_server", dev_adls_server)
             variable_library.add_variable("adls_container_name", dev_adls_container_name)
             variable_library.add_variable("adls_container_path", dev_adls_container_path)
-            variable_library.add_variable("adls_shortcut_subpath", adls_container_name + adls_container_path)
+            variable_library.add_variable("adls_shortcut_subpath", dev_adls_container_name + dev_adls_container_path)
             variable_library.add_variable("adls_connection_id", dev_connection['id'])
         
             # add value set for test environment
