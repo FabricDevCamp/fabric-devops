@@ -190,6 +190,312 @@ class DeploymentManager:
         return workspace
 
     @classmethod
+    def deploy_data_pipeline_solution(cls,
+                                       target_workspace, 
+                                       deploy_job = StagingEnvironments.get_dev_environment()):
+        """Deploy Data Pipeline Solution Parameterized with Variable Library"""
+
+        AppLogger.log_job(f"Deploying Custom Data Pipeline Solution to [{target_workspace}]")
+
+        workspace = FabricRestApi.create_workspace(target_workspace)
+        FabricRestApi.update_workspace_description('Custom Data Pipeline Solution')
+        
+        data_prep_folder = FabricRestApi.create_folder(workspace['id'] ,'data_prep')
+        data_prep_folder_id = data_prep_folder['id']
+        
+        cls.create_adls_variable_library(workspace, data_prep_folder_id, deploy_job)
+
+        lakehouse_name = "sales"            
+        lakehouse = FabricRestApi.create_lakehouse(workspace['id'], lakehouse_name)
+
+        notebook_folders = [
+            'Build 01 Silver Layer.Notebook',
+            'Build 02 Gold Layer.Notebook'
+        ]
+
+        notebook_ids = []
+        for notebook_folder in notebook_folders:
+            create_notebook_request = \
+                ItemDefinitionFactory.get_create_notebook_request_from_folder(
+                    notebook_folder,
+                    workspace['id'],
+                    lakehouse)
+
+            notebook = FabricRestApi.create_item(
+                workspace['id'], 
+                create_notebook_request, 
+                data_prep_folder_id)
+            
+            notebook_ids.append(notebook['id'])
+
+        create_pipeline_request = ItemDefinitionFactory.get_create_item_request_from_folder(''
+            'Create Lakehouse Tables.DataPipeline')
+
+        pipeline_redirects = {
+            '{WORKSPACE_ID}': workspace['id'],
+            '{LAKEHOUSE_ID}': lakehouse['id'],
+            '{BUILD_SILVER_NOTEBOOK_ID}': notebook_ids[0],
+            '{BUILD_GOLD_NOTEBOOK_ID}': notebook_ids[1]
+        }
+        
+        create_pipeline_request = \
+            ItemDefinitionFactory.update_part_in_create_request(
+                create_pipeline_request,
+                'pipeline-content.json',
+                pipeline_redirects)
+        
+        pipeline = FabricRestApi.create_item(
+            workspace['id'], 
+            create_pipeline_request, 
+            data_prep_folder_id)
+        
+        FabricRestApi.run_data_pipeline(workspace['id'], pipeline)
+
+        sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse)
+
+        FabricRestApi.refresh_sql_endpoint_metadata(workspace['id'], sql_endpoint['database'])
+
+        semantic_model_folder = 'Product Sales DirectLake Model.SemanticModel'
+        create_model_request = \
+            ItemDefinitionFactory.get_create_item_request_from_folder(
+                semantic_model_folder)
+
+        model_redirects = {
+            '{SQL_ENDPOINT_SERVER}': sql_endpoint['server'],
+            '{SQL_ENDPOINT_DATABASE}': sql_endpoint['database']
+        }
+
+        create_model_request = \
+            ItemDefinitionFactory.update_part_in_create_request(
+                create_model_request,
+                'definition/expressions.tmdl',
+                model_redirects)
+
+        model = FabricRestApi.create_item(workspace['id'], create_model_request)
+
+        FabricRestApi.create_and_bind_semantic_model_connecton(workspace, model['id'], lakehouse)
+
+        report_folders = [
+            'Product Sales Summary.Report',
+            'Product Sales Time Intelligence.Report'
+        ]
+        for report_folder in report_folders:
+            create_report_request = \
+                ItemDefinitionFactory.get_create_report_request_from_folder(
+                    report_folder,
+                    model['id'])
+
+            FabricRestApi.create_item(workspace['id'], create_report_request)
+
+        return workspace
+
+    @classmethod
+    def deploy_shortcut_solution(cls,
+                                 target_workspace,
+                                 deploy_job = StagingEnvironments.get_dev_environment()):
+        """Deploy Shortcut Solution with VarLib"""
+
+        lakehouse_name = "sales"
+        notebook_folders = [
+            'Create 01 Silver Layer.Notebook',
+            'Create 02 Gold Layer.Notebook'
+        ]
+        semantic_model_folder = 'Product Sales DirectLake Model.SemanticModel'
+        report_folders = [
+            'Product Sales Summary.Report',
+            'Product Sales Time Intelligence.Report'
+        ]
+
+        AppLogger.log_job(f"Deploying Custom Shortcut Solution to [{target_workspace}]")
+        
+        workspace = FabricRestApi.create_workspace(target_workspace)
+        FabricRestApi.update_workspace_description('Custom Shortcut Solution')
+        
+        data_prep_folder = FabricRestApi.create_folder(workspace['id'] ,'data_prep')
+        data_prep_folder_id = data_prep_folder['id']
+        
+        cls.create_adls_variable_library(workspace, data_prep_folder_id, deploy_job)
+
+        lakehouse = FabricRestApi.create_lakehouse(workspace['id'], lakehouse_name)
+
+        adls_container_name = deploy_job.parameters[DeploymentJob.adls_container_name_parameter]
+        adls_container_path = deploy_job.parameters[DeploymentJob.adls_container_path_parameter]
+        adls_server = deploy_job.parameters[DeploymentJob.adls_server_parameter]
+        adls_path = f'/{adls_container_name}{adls_container_path}'
+
+        shortcut_name = "sales-data"
+        shortcut_path = "Files"
+     
+        adls_shortcut_location_variable = "$(/**/environment_settings/adls_server)"
+        adls_shortcut_subpath_variable = "$(/**/environment_settings/adls_shortcut_subpath)"
+        adls_connection_id_variable = "$(/**/environment_settings/adls_connection_id)"
+
+        FabricRestApi.create_adls_gen2_shortcut(workspace['id'],
+                                                lakehouse['id'],
+                                                shortcut_name,
+                                                shortcut_path,
+                                                adls_shortcut_location_variable,
+                                                adls_shortcut_subpath_variable,
+                                                adls_connection_id_variable)
+
+        for notebook_folder in notebook_folders:
+            create_notebook_request = \
+                ItemDefinitionFactory.get_create_notebook_request_from_folder(
+                    notebook_folder,
+                    workspace['id'],
+                    lakehouse)
+
+            notebook = FabricRestApi.create_item(workspace['id'], create_notebook_request)
+            FabricRestApi.run_notebook(workspace['id'], notebook)
+
+        sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse)
+
+        FabricRestApi.refresh_sql_endpoint_metadata(workspace['id'], sql_endpoint['database'])
+
+        create_model_request = \
+            ItemDefinitionFactory.get_create_item_request_from_folder(
+                semantic_model_folder)
+
+        model_redirects = {
+            '{SQL_ENDPOINT_SERVER}': sql_endpoint['server'],
+            '{SQL_ENDPOINT_DATABASE}': sql_endpoint['database']
+        }
+
+        create_model_request = \
+            ItemDefinitionFactory.update_part_in_create_request(create_model_request,
+                                                                'definition/expressions.tmdl',
+                                                                model_redirects)
+
+        model = FabricRestApi.create_item(workspace['id'], create_model_request)
+
+        FabricRestApi.create_and_bind_semantic_model_connecton(workspace, model['id'], lakehouse)
+
+        for report_folder in report_folders:
+            create_report_request = \
+                ItemDefinitionFactory.get_create_report_request_from_folder(
+                    report_folder,
+                    model['id'])
+
+            FabricRestApi.create_item(workspace['id'], create_report_request)
+
+        return workspace
+
+    @classmethod
+    def create_adls_variable_library(cls, workspace, data_prep_folder_id, deploy_job: DeploymentJob):
+        """Create Vairable Library with ADLS settings"""
+        
+        if deploy_job.deployment_type == DeploymentJobType.CUSTOMER_TENANT:
+            # use customer-specific values for tenant workspace parameterization
+            AppLogger.log_step(f'Creating ADLS Gen2 connection for customer[{deploy_job.name}]')
+            adls_server = deploy_job.parameters[DeploymentJob.adls_server_parameter]
+            adls_container_name = deploy_job.parameters[DeploymentJob.adls_container_name_parameter]
+            adls_container_path = deploy_job.parameters[DeploymentJob.adls_container_path_parameter]
+            adls_path = adls_container_name + adls_container_path
+            
+            connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
+                adls_server,
+                adls_path, 
+                workspace)
+
+            variable_library = VariableLibrary()
+            variable_library.add_variable("adls_server", adls_server)
+            variable_library.add_variable("adls_container_name", adls_container_name)
+            variable_library.add_variable("adls_container_path", adls_container_path)
+            variable_library.add_variable("adls_shortcut_subpath", adls_container_name + adls_container_path)
+            variable_library.add_variable("adls_connection_id", connection['id'])
+            
+            create_library_request = ItemDefinitionFactory.get_variable_library_create_request(
+                "environment_settings",
+                variable_library)
+
+            return FabricRestApi.create_item(
+                    workspace['id'],
+                    create_library_request,
+                    data_prep_folder_id)
+            
+        if deploy_job.deployment_type == DeploymentJobType.STAGED_DEPLOYMENT:
+            # create variable library default values for dev and value sets for test and prod
+            AppLogger.log_step('Creating ADLS connections for staged deployment')
+
+            # use default values for dev environment
+            dev_deploy_job = StagingEnvironments.get_dev_environment()
+            dev_adls_server = dev_deploy_job.parameters[DeploymentJob.adls_server_parameter]
+            dev_adls_container_name = dev_deploy_job.parameters[DeploymentJob.adls_container_name_parameter]
+            dev_adls_container_path = dev_deploy_job.parameters[DeploymentJob.adls_container_path_parameter]
+            dev_adls_path = dev_adls_container_name + dev_adls_container_path
+            
+            dev_connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
+                dev_adls_server,
+                dev_adls_path)
+
+            variable_library = VariableLibrary()
+            variable_library.add_variable("adls_server", dev_adls_server)
+            variable_library.add_variable("adls_container_name", dev_adls_container_name)
+            variable_library.add_variable("adls_container_path", dev_adls_container_path)
+            variable_library.add_variable("adls_connection_id", dev_connection['id'])
+        
+            # add value set for test environment
+            test_deploy_job = StagingEnvironments.get_test_environment()        
+            test_adls_server = test_deploy_job.parameters[DeploymentJob.adls_server_parameter]
+            test_adls_container_name = test_deploy_job.parameters[DeploymentJob.adls_container_name_parameter]
+            test_adls_container_path = test_deploy_job.parameters[DeploymentJob.adls_container_path_parameter]
+            test_adls_path = test_adls_container_name + test_adls_container_path
+            
+            test_connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
+                test_adls_server,
+                test_adls_path)
+
+            test_value_set = Valueset('test')
+            test_value_set.add_variable_override('adls_server', test_adls_server)
+            test_value_set.add_variable_override('adls_container_name', test_adls_container_name)
+            test_value_set.add_variable_override('adls_container_path', test_adls_container_path)
+            test_value_set.add_variable_override('adls_connection_id', test_connection['id'])
+        
+            variable_library.add_valueset(test_value_set)
+    
+            # prod
+            prod_deploy_job = StagingEnvironments.get_prod_environment()        
+            prod_adls_server = prod_deploy_job.parameters[DeploymentJob.adls_server_parameter]
+            prod_adls_container_name = prod_deploy_job.parameters[DeploymentJob.adls_container_name_parameter]
+            prod_adls_container_path = prod_deploy_job.parameters[DeploymentJob.adls_container_path_parameter]
+            prod_adls_path = prod_adls_container_name + prod_adls_container_path
+            
+            prod_connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
+                prod_adls_server,
+                prod_adls_path)
+
+            prod_value_set = Valueset('prod')
+            prod_value_set.add_variable_override('adls_server', prod_adls_server)
+            prod_value_set.add_variable_override('adls_container_name', prod_adls_container_name)
+            prod_value_set.add_variable_override('adls_container_path', prod_adls_container_path)
+            prod_value_set.add_variable_override('adls_connection_id', prod_connection['id'])
+        
+            variable_library.add_valueset(prod_value_set)
+
+            create_library_request = \
+                ItemDefinitionFactory.get_variable_library_create_request(
+                    "environment_settings",
+                    variable_library
+            )
+
+            variable_library = FabricRestApi.create_item(
+                workspace['id'],
+                create_library_request,
+                data_prep_folder_id)
+            
+            FabricRestApi.set_active_valueset_for_variable_library(
+                workspace['id'],
+                variable_library,
+                deploy_job.name
+            )
+            
+            return variable_library
+ 
+
+
+# tested stuff above
+
+    @classmethod
     def deploy_environment_solution(cls,
                                  target_workspace,
                                  deploy_job = StagingEnvironments.get_dev_environment()):
@@ -259,7 +565,7 @@ class DeploymentManager:
         return workspace
 
     @classmethod
-    def deploy_shortcut_solution(cls,
+    def deploy_shortcut_solution_hardcoded(cls,
                                  target_workspace,
                                  deploy_job = StagingEnvironments.get_dev_environment()):
         """Deploy Shortcut Solution"""
@@ -456,106 +762,6 @@ class DeploymentManager:
             FabricRestApi.create_item(workspace['id'], create_report_request)
  
         return workspace
-
-    @classmethod
-    def deploy_data_pipeline_solution(cls,
-                                       target_workspace, 
-                                       deploy_job = StagingEnvironments.get_dev_environment()):
-        """Deploy Data Pipeline Solution Parameterized with Variable Library"""
-
-        AppLogger.log_job(f"Deploying Custom Data Pipeline Solution to [{target_workspace}]")
-
-        workspace = FabricRestApi.create_workspace(target_workspace)
-        
-        data_prep_folder = FabricRestApi.create_folder(workspace['id'] ,'data_prep')
-        data_prep_folder_id = data_prep_folder['id']
-        
-        cls.create_adls_variable_library(workspace, data_prep_folder_id, deploy_job)
-
-        lakehouse_name = "sales"            
-        lakehouse = FabricRestApi.create_lakehouse(workspace['id'], lakehouse_name)
-
-        notebook_folders = [
-            'Build 01 Silver Layer.Notebook',
-            'Build 02 Gold Layer.Notebook'
-        ]
-
-        notebook_ids = []
-        for notebook_folder in notebook_folders:
-            create_notebook_request = \
-                ItemDefinitionFactory.get_create_notebook_request_from_folder(
-                    notebook_folder,
-                    workspace['id'],
-                    lakehouse)
-
-            notebook = FabricRestApi.create_item(
-                workspace['id'], 
-                create_notebook_request, 
-                data_prep_folder_id)
-            
-            notebook_ids.append(notebook['id'])
-
-        create_pipeline_request = ItemDefinitionFactory.get_create_item_request_from_folder(''
-            'Create Lakehouse Tables.DataPipeline')
-
-        pipeline_redirects = {
-            '{WORKSPACE_ID}': workspace['id'],
-            '{LAKEHOUSE_ID}': lakehouse['id'],
-            '{BUILD_SILVER_NOTEBOOK_ID}': notebook_ids[0],
-            '{BUILD_GOLD_NOTEBOOK_ID}': notebook_ids[1]
-        }
-        
-        create_pipeline_request = \
-            ItemDefinitionFactory.update_part_in_create_request(
-                create_pipeline_request,
-                'pipeline-content.json',
-                pipeline_redirects)
-        
-        pipeline = FabricRestApi.create_item(
-            workspace['id'], 
-            create_pipeline_request, 
-            data_prep_folder_id)
-        
-        FabricRestApi.run_data_pipeline(workspace['id'], pipeline)
-
-        sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse)
-
-        FabricRestApi.refresh_sql_endpoint_metadata(workspace['id'], sql_endpoint['database'])
-
-        semantic_model_folder = 'Product Sales DirectLake Model.SemanticModel'
-        create_model_request = \
-            ItemDefinitionFactory.get_create_item_request_from_folder(
-                semantic_model_folder)
-
-        model_redirects = {
-            '{SQL_ENDPOINT_SERVER}': sql_endpoint['server'],
-            '{SQL_ENDPOINT_DATABASE}': sql_endpoint['database']
-        }
-
-        create_model_request = \
-            ItemDefinitionFactory.update_part_in_create_request(
-                create_model_request,
-                'definition/expressions.tmdl',
-                model_redirects)
-
-        model = FabricRestApi.create_item(workspace['id'], create_model_request)
-
-        FabricRestApi.create_and_bind_semantic_model_connecton(workspace, model['id'], lakehouse)
-
-        report_folders = [
-            'Product Sales Summary.Report',
-            'Product Sales Time Intelligence.Report'
-        ]
-        for report_folder in report_folders:
-            create_report_request = \
-                ItemDefinitionFactory.get_create_report_request_from_folder(
-                    report_folder,
-                    model['id'])
-
-            FabricRestApi.create_item(workspace['id'], create_report_request)
-
-        return workspace
-
 
 
     @classmethod
@@ -1207,224 +1413,6 @@ class DeploymentManager:
 
         return workspace
 
-    @classmethod
-    def deploy_shortcut_solution_with_varlib(cls,
-                                 target_workspace,
-                                 deploy_job = StagingEnvironments.get_dev_environment()):
-        """Deploy Shortcut Solution with VarLib"""
-
-        lakehouse_name = "sales"
-        notebook_folders = [
-            'Create 01 Silver Layer.Notebook',
-            'Create 02 Gold Layer.Notebook'
-        ]
-        semantic_model_folder = 'Product Sales DirectLake Model.SemanticModel'
-        report_folders = [
-            'Product Sales Summary.Report',
-            'Product Sales Time Intelligence.Report'
-        ]
-
-        AppLogger.log_job(f"Deploying Custom Shortcut with VarLib Solution to [{target_workspace}]")
-
-        deploy_job.display_deployment_parameters("adls")
-
-        workspace = FabricRestApi.create_workspace(target_workspace)
-
-        FabricRestApi.update_workspace_description(workspace['id'], 'Custom Shortcut Solution')
-
-        lakehouse = FabricRestApi.create_lakehouse(workspace['id'], lakehouse_name)
-
-        adls_container_name = deploy_job.parameters[DeploymentJob.adls_container_name_parameter]
-        adls_container_path = deploy_job.parameters[DeploymentJob.adls_container_path_parameter]
-        adls_server = deploy_job.parameters[DeploymentJob.adls_server_parameter]
-        adls_path = f'/{adls_container_name}{adls_container_path}'
-
-        connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
-            adls_server,
-            adls_path,
-            workspace)
-
-        shortcut_name = "sales-data"
-        shortcut_path = "Files"
-        shortcut_location = adls_server
-        shortcut_subpath = adls_path
-     
-        variable_library = VariableLibrary()
-        variable_library.add_variable("adls_shortcut_location", adls_server)
-        variable_library.add_variable("adls_shortcut_subpath",    adls_path)
-        variable_library.add_variable("adls_connection_id",    connection['id'])
-
-        create_library_request = \
-            ItemDefinitionFactory.get_variable_library_create_request(
-                "environment_settings",
-                variable_library
-        )
-
-        FabricRestApi.create_item(workspace['id'], create_library_request)
-
-        adls_shortcut_location_variable = "$(/**/environment_settings/adls_shortcut_location)"
-        adls_shortcut_subpath_variable = "$(/**/environment_settings/adls_shortcut_subpath)"
-        adls_connection_id_variable = "$(/**/environment_settings/adls_connection_id)"
-
-        FabricRestApi.create_adls_gen2_shortcut(workspace['id'],
-                                                lakehouse['id'],
-                                                shortcut_name,
-                                                shortcut_path,
-                                                adls_shortcut_location_variable,
-                                                adls_shortcut_subpath_variable,
-                                                adls_connection_id_variable)
-
-        for notebook_folder in notebook_folders:
-            create_notebook_request = \
-                ItemDefinitionFactory.get_create_notebook_request_from_folder(
-                    notebook_folder,
-                    workspace['id'],
-                    lakehouse)
-
-            notebook = FabricRestApi.create_item(workspace['id'], create_notebook_request)
-            FabricRestApi.run_notebook(workspace['id'], notebook)
-
-        sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse)
-
-        FabricRestApi.refresh_sql_endpoint_metadata(workspace['id'], sql_endpoint['database'])
-
-        create_model_request = \
-            ItemDefinitionFactory.get_create_item_request_from_folder(
-                semantic_model_folder)
-
-        model_redirects = {
-            '{SQL_ENDPOINT_SERVER}': sql_endpoint['server'],
-            '{SQL_ENDPOINT_DATABASE}': sql_endpoint['database']
-        }
-
-        create_model_request = \
-            ItemDefinitionFactory.update_part_in_create_request(create_model_request,
-                                                                'definition/expressions.tmdl',
-                                                                model_redirects)
-
-        model = FabricRestApi.create_item(workspace['id'], create_model_request)
-
-        FabricRestApi.create_and_bind_semantic_model_connecton(workspace, model['id'], lakehouse)
-
-        for report_folder in report_folders:
-            create_report_request = \
-                ItemDefinitionFactory.get_create_report_request_from_folder(
-                    report_folder,
-                    model['id'])
-
-            FabricRestApi.create_item(workspace['id'], create_report_request)
-
-        return workspace
-
-    @classmethod
-    def create_adls_variable_library(cls, workspace, data_prep_folder_id, deploy_job: DeploymentJob):
-        """Create Vairable Library with ADLS settings"""
-        
-        if deploy_job.deployment_type == DeploymentJobType.CUSTOMER_TENANT:
-            # use customer-specific values for tenant workspace parameterization
-            AppLogger.log_step(f'Creating ADLS Gen2 connection for customer[{deploy_job.name}]')
-            adls_server = deploy_job.parameters[DeploymentJob.adls_server_parameter]
-            adls_container_name = deploy_job.parameters[DeploymentJob.adls_container_name_parameter]
-            adls_container_path = deploy_job.parameters[DeploymentJob.adls_container_path_parameter]
-            adls_path = adls_container_name + adls_container_path
-            
-            connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
-                adls_server,
-                adls_path, 
-                workspace)
-
-            variable_library = VariableLibrary()
-            variable_library.add_variable("adls_server", adls_server)
-            variable_library.add_variable("adls_container_name", adls_container_name)
-            variable_library.add_variable("adls_container_path", adls_container_path)
-            variable_library.add_variable("adls_connection_id", connection['id'])
-            
-            create_library_request = ItemDefinitionFactory.get_variable_library_create_request(
-                "environment_settings",
-                variable_library)
-
-            return FabricRestApi.create_item(
-                    workspace['id'],
-                    create_library_request,
-                    data_prep_folder_id)
-            
-        if deploy_job.deployment_type == DeploymentJobType.STAGED_DEPLOYMENT:
-            # create variable library default values for dev and value sets for test and prod
-            AppLogger.log_step('Creating ADLS connections for staged deployment')
-
-            # use default values for dev environment
-            dev_deploy_job = StagingEnvironments.get_dev_environment()
-            dev_adls_server = dev_deploy_job.parameters[DeploymentJob.adls_server_parameter]
-            dev_adls_container_name = dev_deploy_job.parameters[DeploymentJob.adls_container_name_parameter]
-            dev_adls_container_path = dev_deploy_job.parameters[DeploymentJob.adls_container_path_parameter]
-            dev_adls_path = dev_adls_container_name + dev_adls_container_path
-            
-            dev_connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
-                dev_adls_server,
-                dev_adls_path)
-
-            variable_library = VariableLibrary()
-            variable_library.add_variable("adls_server", dev_adls_server)
-            variable_library.add_variable("adls_container_name", dev_adls_container_name)
-            variable_library.add_variable("adls_container_path", dev_adls_container_path)
-            variable_library.add_variable("adls_connection_id", dev_connection['id'])
-        
-            # add value set for test environment
-            test_deploy_job = StagingEnvironments.get_test_environment()        
-            test_adls_server = test_deploy_job.parameters[DeploymentJob.adls_server_parameter]
-            test_adls_container_name = test_deploy_job.parameters[DeploymentJob.adls_container_name_parameter]
-            test_adls_container_path = test_deploy_job.parameters[DeploymentJob.adls_container_path_parameter]
-            test_adls_path = test_adls_container_name + test_adls_container_path
-            
-            test_connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
-                test_adls_server,
-                test_adls_path)
-
-            test_value_set = Valueset('test')
-            test_value_set.add_variable_override('adls_server', test_adls_server)
-            test_value_set.add_variable_override('adls_container_name', test_adls_container_name)
-            test_value_set.add_variable_override('adls_container_path', test_adls_container_path)
-            test_value_set.add_variable_override('adls_connection_id', test_connection['id'])
-        
-            variable_library.add_valueset(test_value_set)
-    
-            # prod
-            prod_deploy_job = StagingEnvironments.get_prod_environment()        
-            prod_adls_server = prod_deploy_job.parameters[DeploymentJob.adls_server_parameter]
-            prod_adls_container_name = prod_deploy_job.parameters[DeploymentJob.adls_container_name_parameter]
-            prod_adls_container_path = prod_deploy_job.parameters[DeploymentJob.adls_container_path_parameter]
-            prod_adls_path = prod_adls_container_name + prod_adls_container_path
-            
-            prod_connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
-                prod_adls_server,
-                prod_adls_path)
-
-            prod_value_set = Valueset('prod')
-            prod_value_set.add_variable_override('adls_server', prod_adls_server)
-            prod_value_set.add_variable_override('adls_container_name', prod_adls_container_name)
-            prod_value_set.add_variable_override('adls_container_path', prod_adls_container_path)
-            prod_value_set.add_variable_override('adls_connection_id', prod_connection['id'])
-        
-            variable_library.add_valueset(prod_value_set)
-
-            create_library_request = \
-                ItemDefinitionFactory.get_variable_library_create_request(
-                    "environment_settings",
-                    variable_library
-            )
-
-            variable_library = FabricRestApi.create_item(
-                workspace['id'],
-                create_library_request,
-                data_prep_folder_id)
-            
-            FabricRestApi.set_active_valueset_for_variable_library(
-                workspace['id'],
-                variable_library,
-                deploy_job.name
-            )
-            
-            return variable_library
     
     # specialty solutions which do not support parameterization with deploy job
 
