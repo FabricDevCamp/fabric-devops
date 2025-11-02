@@ -2365,7 +2365,7 @@ class DeploymentManager:
         for lakehouse in lakehouses:
             shortcuts = FabricRestApi.list_shortcuts(workspace['id'], lakehouse['id'])
             for shortcut in shortcuts:
-                if (shortcut['target']['type'] == 'AdlsGen2') and (shortcut['name' == 'sales-data']):
+                if (shortcut['target']['type'] == 'AdlsGen2') and (shortcut['name'] == 'sales-data'):
                                                             
                     shortcut_name = "sales-data"
                     shortcut_path = "Files"
