@@ -318,10 +318,10 @@ class DeploymentManager:
 
         lakehouse = FabricRestApi.create_lakehouse(workspace['id'], lakehouse_name)
 
-        adls_container_name = deploy_job.parameters[DeploymentJob.adls_container_name_parameter]
-        adls_container_path = deploy_job.parameters[DeploymentJob.adls_container_path_parameter]
-        adls_server = deploy_job.parameters[DeploymentJob.adls_server_parameter]
-        adls_path = f'/{adls_container_name}{adls_container_path}'
+        # adls_container_name = deploy_job.parameters[DeploymentJob.adls_container_name_parameter]
+        # adls_container_path = deploy_job.parameters[DeploymentJob.adls_container_path_parameter]
+        # adls_server = deploy_job.parameters[DeploymentJob.adls_server_parameter]
+        # adls_path = f'/{adls_container_name}{adls_container_path}'
 
         shortcut_name = "sales-data"
         shortcut_path = "Files"
@@ -330,7 +330,7 @@ class DeploymentManager:
         adls_shortcut_subpath_variable = "$(/**/environment_settings/adls_shortcut_subpath)"
         adls_connection_id_variable = "$(/**/environment_settings/adls_connection_id)"
 
-        FabricRestApi.create_adls_gen2_shortcut_with_variables(workspace['id'],
+        FabricRestApi.create_adls_gen2_shortcut(workspace['id'],
                                                 lakehouse['id'],
                                                 shortcut_name,
                                                 shortcut_path,
@@ -2363,7 +2363,25 @@ class DeploymentManager:
 
         lakehouses = list(filter(lambda item: item['type']=='Lakehouse', workspace_items))
         for lakehouse in lakehouses:
-            shortcuts = FabricRestApi.create_adls_gen2_shortcut_with_variables
+            shortcuts = FabricRestApi.list_shortcuts(workspace['id'], lakehouse['id'])
+            for shortcut in shortcuts:
+                if (shortcut['target']['type'] == 'AdlsGen2') and (shortcut['name' == 'sales-data']):
+                                                            
+                    shortcut_name = "sales-data"
+                    shortcut_path = "Files"
+
+                    adls_shortcut_location_variable = "$(/**/environment_settings/adls_server)"
+                    adls_shortcut_subpath_variable = "$(/**/environment_settings/adls_shortcut_subpath)"
+                    adls_connection_id_variable = "$(/**/environment_settings/adls_connection_id)"
+
+                    FabricRestApi.create_adls_gen2_shortcut(workspace['id'],
+                                                            lakehouse['id'],
+                                                            shortcut_name,
+                                                            shortcut_path,
+                                                            adls_shortcut_location_variable,
+                                                            adls_shortcut_subpath_variable,
+                                                            adls_connection_id_variable)
+                    
 
         notebooks = list(filter(lambda item: item['type']=='Notebook', workspace_items))
         for notebook in notebooks:
