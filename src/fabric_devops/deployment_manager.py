@@ -432,6 +432,7 @@ class DeploymentManager:
             variable_library.add_variable("adls_server", dev_adls_server)
             variable_library.add_variable("adls_container_name", dev_adls_container_name)
             variable_library.add_variable("adls_container_path", dev_adls_container_path)
+            variable_library.add_variable("adls_shortcut_subpath", adls_container_name + adls_container_path)
             variable_library.add_variable("adls_connection_id", dev_connection['id'])
         
             # add value set for test environment
@@ -449,6 +450,7 @@ class DeploymentManager:
             test_value_set.add_variable_override('adls_server', test_adls_server)
             test_value_set.add_variable_override('adls_container_name', test_adls_container_name)
             test_value_set.add_variable_override('adls_container_path', test_adls_container_path)
+            test_value_set.add_variable_override("adls_shortcut_subpath", test_adls_container_name + test_adls_container_path)
             test_value_set.add_variable_override('adls_connection_id', test_connection['id'])
         
             variable_library.add_valueset(test_value_set)
@@ -468,6 +470,7 @@ class DeploymentManager:
             prod_value_set.add_variable_override('adls_server', prod_adls_server)
             prod_value_set.add_variable_override('adls_container_name', prod_adls_container_name)
             prod_value_set.add_variable_override('adls_container_path', prod_adls_container_path)
+            prod_value_set.add_variable_override("adls_shortcut_subpath", prod_adls_container_name + prod_adls_container_path)
             prod_value_set.add_variable_override('adls_connection_id', prod_connection['id'])
         
             variable_library.add_valueset(prod_value_set)
