@@ -1,5 +1,5 @@
 
-name: Deploy Specialty Solution
+name: Deploy Project with Specialty Solution
 run-name: Deploy ${{inputs.solution_name}}
 
 on:
