@@ -309,7 +309,7 @@ class DeploymentManager:
         AppLogger.log_job(f"Deploying Custom Shortcut Solution to [{target_workspace}]")
         
         workspace = FabricRestApi.create_workspace(target_workspace)
-        FabricRestApi.update_workspace_description('Custom Shortcut Solution')
+        FabricRestApi.update_workspace_description(workspace['id'], 'Custom Shortcut Solution')
         
         data_prep_folder = FabricRestApi.create_folder(workspace['id'] ,'data_prep')
         data_prep_folder_id = data_prep_folder['id']
