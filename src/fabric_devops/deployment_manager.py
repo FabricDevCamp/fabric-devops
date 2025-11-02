@@ -330,7 +330,7 @@ class DeploymentManager:
         adls_shortcut_subpath_variable = "$(/**/environment_settings/adls_shortcut_subpath)"
         adls_connection_id_variable = "$(/**/environment_settings/adls_connection_id)"
 
-        FabricRestApi.create_adls_gen2_shortcut(workspace['id'],
+        FabricRestApi.create_adls_gen2_shortcut_with_variables(workspace['id'],
                                                 lakehouse['id'],
                                                 shortcut_name,
                                                 shortcut_path,
@@ -2363,7 +2363,7 @@ class DeploymentManager:
 
         lakehouses = list(filter(lambda item: item['type']=='Lakehouse', workspace_items))
         for lakehouse in lakehouses:
-            pass
+            shortcuts = FabricRestApi.create_adls_gen2_shortcut_with_variables
 
         notebooks = list(filter(lambda item: item['type']=='Notebook', workspace_items))
         for notebook in notebooks:

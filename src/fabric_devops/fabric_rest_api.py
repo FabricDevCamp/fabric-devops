@@ -1326,15 +1326,15 @@ class FabricRestApi:
                     'propertiesConfiguredByVariables': [
                         {
                              'property': 'target.adlsGen2.connectionId',
-                             'variable': '$(/**/environment_settings/target_connection_id)'
+                             'variable': '$(/**/environment_settings/adls_connection_id)'
                         },
                         {
                             'property': 'target.adlsGen2.location',
-                            'variable': '$(/**/environment_settings/target_location)'
+                            'variable': '$(/**/environment_settings/adls_server)'
                         },
                         {
                             'property': 'target.adlsGen2.subpath',
-                            'variable': '$(/**/environment_settings/target_subpath)'
+                            'variable': '$(/**/environment_settings/adls_shortcut_subpath)'
                         }
                     ]
                 }
@@ -1368,6 +1368,11 @@ class FabricRestApi:
         }
         cls._execute_post_request(rest_url, post_body)
         AppLogger.log_substep(f'Shortcut [{path}/{name}] successfullly created')
+
+    @classmethod
+    def reset_shortcut_cache(cls, workspace_id):
+        endpoint = f'workspaces/{workspace_id}/onelake/resetShortcutCache'
+        return cls._execute_post_request(endpoint)        
 
     @classmethod
     def list_shortcuts(cls, workspace_id, lakehouse_id):
