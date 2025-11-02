@@ -1,5 +1,5 @@
 
-name: Deploy Project using Deployment Pipeline
+name: Deploy Project with Deployment Pipeline
 run-name: Deploy ${{inputs.solution_name}} with Deployment Pipeline
 
 on:
