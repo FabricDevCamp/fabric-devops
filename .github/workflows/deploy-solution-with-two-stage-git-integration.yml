@@ -1,5 +1,5 @@
 
-name: Deploy Solution with 2-Stage GIT Sync
+name: Deploy Project with 2-Stage GIT Sync
 run-name: Deploy ${{inputs.solution_name}} to ${{inputs.project_name}}
 
 on:
