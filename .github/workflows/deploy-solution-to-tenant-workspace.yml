@@ -1,5 +1,5 @@
 
-name: Deploy Project to Tenant Workspace
+name: Deploy Project to Multitenant Workspace
 run-name: Deploy ${{inputs.solution_name}} to ${{ inputs.customer_name }}
 
 on:
