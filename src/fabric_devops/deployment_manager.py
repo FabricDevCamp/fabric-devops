@@ -345,7 +345,11 @@ class DeploymentManager:
                     workspace['id'],
                     lakehouse)
 
-            notebook = FabricRestApi.create_item(workspace['id'], create_notebook_request)
+            notebook = FabricRestApi.create_item(
+                workspace['id'], 
+                create_notebook_request,
+                data_prep_folder_id)
+            
             FabricRestApi.run_notebook(workspace['id'], notebook)
 
         sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse)
@@ -2143,23 +2147,8 @@ class DeploymentManager:
         for lakehouse in lakehouses:
             shortcuts = FabricRestApi.list_shortcuts(workspace['id'], lakehouse['id'])
             for shortcut in shortcuts:
-                connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
-                                adls_server,
-                                adls_path,
-                                workspace)
-
-                shortcut_name = shortcut['name']
-                shortcut_path = shortcut['path']
-                shortcut_location = adls_server
-                shortcut_subpath = adls_path
-
-                FabricRestApi.create_adls_gen2_shortcut(workspace['id'],
-                                                        lakehouse['id'],
-                                                        shortcut_name,
-                                                        shortcut_path,
-                                                        shortcut_location,
-                                                        shortcut_subpath,
-                                                        connection['id'])
+                pass
+      
 
         notebooks = list(filter(lambda item: item['type']=='Notebook', workspace_items))
         for notebook in notebooks:
@@ -2277,13 +2266,23 @@ class DeploymentManager:
 
         lakehouses = list(filter(lambda item: item['type']=='Lakehouse', workspace_items))
         for lakehouse in lakehouses:
-            pass
+            shortcuts = FabricRestApi.list_shortcuts(workspace['id'], lakehouse['id'])
+            for shortcut in shortcuts:
+                if (shortcut['target']['type'] == 'AdlsGen2') and (shortcut['name'] == 'sales-data'):
+                    FabricRestApi.reset_adls_gen2_shortcut(workspace['id'], lakehouse['id'], shortcut)
 
         notebooks = list(filter(lambda item: item['type']=='Notebook', workspace_items))
         for notebook in notebooks:
             # Apply fixes for [Create Lakehouse Tables.Notebook]
             
-            if notebook['displayName'] in ['Create Lakehouse Tables', 'Build 01 Silver Layer', 'Build 02 Gold Layer']:
+            notebooks_for_sales_lakehouse = [
+                'Create Lakehouse Tables', 
+                'Create 01 Silver Layer', 
+                'Create 02 Gold Layer', 
+                'Build 01 Silver Layer', 
+                'Build 02 Gold Layer']
+            
+            if notebook['displayName'] in notebooks_for_sales_lakehouse:
                 cls.update_source_lakehouse_in_notebook(
                     workspace_name,
                     notebook['displayName'],
@@ -3061,3 +3060,68 @@ class DeploymentManager:
             'Merging CI/CD workflow files to dev branch')
         
 
+    @classmethod
+    def get_deployment_rule_substitutions(cls, source_workspace, target_workspace):
+        """Generate parameter.yml file"""
+        indent = '  '
+        file_content = f'\nDeployment Rule Substitutions from [{source_workspace["displayName"]}] to [{target_workspace["displayName"]}]\n'
+        
+        source_workspace_items = FabricRestApi.list_workspace_items(source_workspace['id'])        
+        target_workspace_items = FabricRestApi.list_workspace_items(target_workspace['id'])
+
+        target_items = {}
+        for target_item in target_workspace_items:
+            item_name = target_item['displayName'] + "." + target_item['type']
+            target_items[item_name] = target_item
+           
+        for source_item in source_workspace_items:
+            item_name = source_item['displayName'] + "." + source_item['type']            
+            if source_item['type'] == 'SemanticModel':
+                target_item = target_items[item_name]
+                
+                file_content += indent + f'Rules for [{item_name}]\n'
+
+                source_datasources = FabricRestApi.get_datasources_for_semantic_model(
+                    source_workspace['id'],
+                    source_item['id']
+                )
+
+                target_datasources = FabricRestApi.get_datasources_for_semantic_model(
+                    target_workspace['id'],
+                    target_item['id']
+                )
+
+                for index, source_datasource in enumerate(source_datasources):
+
+                    if source_datasource['datasourceType'] == "Web":
+                        source_url = source_datasource['connectionDetails']['url']
+                        target_url = target_datasources[index]['connectionDetails']['url']
+                        file_content += indent + '[Web:Url]\n'
+                        file_content += (indent * 2) + f'source: [{source_url}]\n'
+                        file_content += (indent * 2) + f'target: [{target_url}]\n'
+
+                    if source_datasource['datasourceType'] == "Sql":
+                        source_sql_server = source_datasource['connectionDetails']['server']
+                        source_sql_database = source_datasource['connectionDetails']['database']
+                        target_sql_server = target_datasources[index]['connectionDetails']['server']
+                        target_sql_database = target_datasources[index]['connectionDetails']['database']
+                        file_content += indent + '[SQL:Server]\n'
+                        file_content += (indent * 2) + f'source: {source_sql_server}\n'
+                        file_content += (indent * 2) + f'target: {target_sql_server}\n'
+                        file_content += indent + '[SQL:Database]\n'
+                        file_content += (indent * 2) + f'source: {source_sql_database}\n'
+                        file_content += (indent * 2) + f'target: {target_sql_database}\n'
+               
+        return file_content
+
+    @classmethod
+    def get_deployment_rules_for_deployment_pipeline(
+        cls,     
+        dev_workspace,
+        test_workspace,
+        prod_workspace):
+        """Get Deployment Rules for Deployment Pipeline"""
+        output = cls.get_deployment_rule_substitutions(dev_workspace, test_workspace)
+        output += cls.get_deployment_rule_substitutions(test_workspace, prod_workspace)
+                                                                                 
+        return output

@@ -1288,11 +1288,23 @@ class FabricRestApi:
                     json.dumps( datasource, indent=4 ) )
 
     @classmethod
+    def reset_adls_gen2_shortcut(cls, workspace_id, lakehouse_id, shortcut):
+        """Reset ADLS Gen2 Shortcut"""
+        cls.create_adls_gen2_shortcut(
+            workspace_id,
+            lakehouse_id,
+            shortcut['name'],
+            shortcut['path'],
+            "$(/**/environment_settings/adls_server)",
+            "$(/**/environment_settings/adls_shortcut_subpath)",
+            "$(/**/environment_settings/adls_connection_id)"
+        )
+        
+    @classmethod
     def create_adls_gen2_shortcut(cls, workspace_id, lakehouse_id, name, path,
                                     location, subpath, connection_id):
         """Create ADLS Gen2 Shortcut"""
-        AppLogger.log_step('Creating OneLake shortcut using ADLS connection...')
-
+        AppLogger.log_substep(f'Creating OneLake shortcut [{path}/{name}] using ADLS connection...')
         rest_url = f'workspaces/{workspace_id}/items/{lakehouse_id}/shortcuts?shortcutConflictPolicy=CreateOrOverwrite'
         post_body = {
             'name': name,
@@ -1306,7 +1318,6 @@ class FabricRestApi:
             }
         }
         cls._execute_post_request(rest_url, post_body)
-        AppLogger.log_substep(f'Shortcut [{path}/{name}] successfullly created')
 
     @classmethod
     def create_adls_gen2_shortcut_with_variables(cls, workspace_id, lakehouse_id, name, path,
