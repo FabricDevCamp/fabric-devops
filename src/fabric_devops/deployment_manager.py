@@ -2145,21 +2145,19 @@ class DeploymentManager:
 
         lakehouses = list(filter(lambda item: item['type']=='Lakehouse', workspace_items))
         for lakehouse in lakehouses:
-            shortcuts = FabricRestApi.list_shortcuts(workspace['id'], lakehouse['id'])
-            for shortcut in shortcuts:
-                pass
-      
+            pass
+         
+        notebooks_for_sales_lakehouse = [
+            'Create Lakehouse Tables', 
+            'Create 01 Silver Layer', 
+            'Create 02 Gold Layer', 
+            'Build 01 Silver Layer', 
+            'Build 02 Gold Layer']
 
         notebooks = list(filter(lambda item: item['type']=='Notebook', workspace_items))
-        for notebook in notebooks:
-            # Apply fixes for [Create Lakehouse Tables.Notebook]
-            if notebook['displayName'] in ['Create Lakehouse Tables',
-                                           'Build 01 Silver Layer',
-                                           'Build 02 Gold Layer',
-                                           'Create Lakehouse Materialized Views',
-                                           'Create Lakehouse Schemas',
-                                           'Create Lakehouse Tables with VarLib']:
-                # bind notebook to 'sales' lakehouse in same workspace
+        for notebook in notebooks:      
+            
+            if notebook['displayName'] in notebooks_for_sales_lakehouse:
                 cls.update_source_lakehouse_in_notebook(
                     workspace_name,
                     notebook['displayName'],
@@ -2176,35 +2174,8 @@ class DeploymentManager:
 
         pipelines = list(filter(lambda item: item['type']=='DataPipeline', workspace_items))
         for pipeline in pipelines:
-            if pipeline['displayName'] == 'Create Lakehouse Tables':
-                connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
-                    adls_server,
-                    adls_path,
-                    workspace)
-
-                # create_pipeline_request = \
-                #     ItemDefinitionFactory.get_create_item_request_from_folder(
-                #         data_pipeline_folder)
-
-                # pipeline_redirects = {
-                #     '{WORKSPACE_ID}': workspace['id'],
-                #     '{LAKEHOUSE_ID}': lakehouse['id'],
-                #     '{CONNECTION_ID}': connection['id'],
-                #     '{CONTAINER_NAME}': adls_container_name,
-                #     '{CONTAINER_PATH}': adls_container_path,
-                #     '{NOTEBOOK_ID_BUILD_SILVER}': notebook_ids[0],
-                #     '{NOTEBOOK_ID_BUILD_GOLD}': notebook_ids[1]
-                # }
-
-                # create_pipeline_request = \
-                #     ItemDefinitionFactory.update_part_in_create_request(
-                #         create_pipeline_request,
-                #         'pipeline-content.json',
-                #         pipeline_redirects)
-
-                # pipeline = FabricRestApi.create_item(workspace['id'], create_pipeline_request)
-
-                # FabricRestApi.run_data_pipeline(workspace['id'], pipeline)
+            if run_etl_jobs and 'Create' in pipeline['displayName']:                
+                FabricRestApi.run_data_pipeline(workspace['id'], pipeline)
 
 
 
@@ -2272,9 +2243,7 @@ class DeploymentManager:
                     FabricRestApi.reset_adls_gen2_shortcut(workspace['id'], lakehouse['id'], shortcut)
 
         notebooks = list(filter(lambda item: item['type']=='Notebook', workspace_items))
-        for notebook in notebooks:
-            # Apply fixes for [Create Lakehouse Tables.Notebook]
-            
+        for notebook in notebooks:       
             notebooks_for_sales_lakehouse = [
                 'Create Lakehouse Tables', 
                 'Create 01 Silver Layer', 
