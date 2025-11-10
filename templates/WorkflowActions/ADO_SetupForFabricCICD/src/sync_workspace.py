@@ -15,7 +15,8 @@ match branch_name:
     case 'dev':
         workspace_id = EnvironmentSettings.DEV_WORKSPACE_ID
         FabricRestApi.update_workspace_from_git(workspace_id)
-        deployment_job = EnvironmentSettings.DEPLOYMENT_JOBS['dev']   
+        deployment_job = EnvironmentSettings.DEPLOYMENT_JOBS['dev']
+        FabricRestApi.commit_workspace_to_git(workspace_id, 'Sync Dev Workspace Items to GIT')
         DeploymentManager.apply_post_sync_fixes(workspace_id, deployment_job)
         AppLogger.log_job_complete(workspace_id)
 
