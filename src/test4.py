@@ -5,8 +5,8 @@ from fabric_devops import DeploymentManager, EnvironmentSettings, AppLogger, Sta
                           AdoProjectManager, FabricRestApi, GitHubRestApi
 
 
-PROJECT_NAME = 'Alpha'
-SOLUTION_NAME ="Custom Shortcut Solution"
+PROJECT_NAME = 'Ringo'
+SOLUTION_NAME ="Custom Data Pipeline Solution"
 deploy_job = StagingEnvironments.get_dev_environment()
 
 DEV_WORKSPACE_NAME = F'{PROJECT_NAME}-dev'

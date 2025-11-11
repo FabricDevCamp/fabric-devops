@@ -2868,6 +2868,67 @@ class DeploymentManager:
         return file_content
     
     @classmethod
+    def setup_ado_repo_for_fabric_cicd_alt(cls,
+                                       dev_workspace,
+                                       test_workspace,
+                                       prod_workspace,
+                                       project_name = None):
+        """Setup ADO repo for fabric_cicd alternate"""
+        
+        if project_name is None:
+            project_name = prod_workspace['displayName']
+
+        AppLogger.log_job("Configuring GIT integration in Azure DevOps for fabric_cicd")
+
+        AdoProjectManager.create_project(project_name)
+     
+        FabricRestApi.connect_workspace_to_ado_repo(dev_workspace, project_name, 'main')
+     
+        FabricRestApi.connect_workspace_to_ado_repo(test_workspace, project_name, 'main')        
+        FabricRestApi.disconnect_workspace_from_git(test_workspace['id'])
+        
+        cls.apply_post_deploy_fixes(
+            test_workspace['displayName'],
+            StagingEnvironments.get_test_environment())
+
+        FabricRestApi.connect_workspace_to_ado_repo(prod_workspace, project_name, 'main')
+        FabricRestApi.disconnect_workspace_from_git(prod_workspace['id'])
+
+        cls.apply_post_deploy_fixes(
+            prod_workspace['displayName'],
+            StagingEnvironments.get_prod_environment())
+        
+        variable_group = AdoProjectManager.create_variable_group_for_fabric_cicd(
+            'environmental_variables',
+            project_name, 
+            dev_workspace['id'],
+            test_workspace['id'],
+            prod_workspace['id'])
+        
+        AdoProjectManager.copy_files_from_folder_to_repo(
+            project_name,
+            'main',
+            'ADO_SetupForFabricCICD_Alt',
+            variable_group['id'])
+        
+        AppLogger.log_step("Generating parameter.yml used by fabric-cicd")
+
+        parameter_file_content = cls.generate_parameter_yml_file(
+            dev_workspace,
+            test_workspace,
+            prod_workspace
+        )
+
+        AdoProjectManager.write_file_to_repo(
+            project_name,
+            "main",
+            "workspace/parameter.yml",
+            parameter_file_content,
+            "Adding parameter.yml used by fabric_cicd"
+        )
+      
+
+    @classmethod
     def setup_ado_repo_for_fabric_cicd(cls, 
                                        dev_workspace, 
                                        test_workspace, 
