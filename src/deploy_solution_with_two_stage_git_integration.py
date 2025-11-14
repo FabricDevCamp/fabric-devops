@@ -56,28 +56,7 @@ match os.getenv("GIT_INTEGRATION_PROVIDER"):
             commit_comment = 'Sync updates from feature workspace to repo after applying fixes')
 
         AppLogger.log_job_complete(FEATURE1_WORKSPACE['id'])
-
-        # create feature2 workspace
-        FEATURE2_NAME = 'feature2'
-        FEATURE2_BRANCH_NAME = f'dev-{FEATURE2_NAME}'
-        FEATURE2_WORKSPACE_NAME = F'{DEV_WORKSPACE_NAME}-{FEATURE2_NAME}'
-        FEATURE2_WORKSPACE = FabricRestApi.create_workspace(FEATURE2_WORKSPACE_NAME)
-
-        # create feature2 branch and connect to feature2 workspace
-        AdoProjectManager.create_branch(PROJECT_NAME, FEATURE2_BRANCH_NAME, 'dev')
-        FabricRestApi.connect_workspace_to_ado_repo(FEATURE2_WORKSPACE, PROJECT_NAME, FEATURE2_BRANCH_NAME)
-
-        # # apply post sync/deploy fixes to feature2 workspace
-        # DeploymentManager.apply_post_deploy_fixes(
-        #     FEATURE2_WORKSPACE_NAME,
-        #     StagingEnvironments.get_dev_environment(),
-        #     True)
-
-        # FabricRestApi.commit_workspace_to_git(
-        #     FEATURE2_WORKSPACE['id'],
-        #     commit_comment = 'Sync updates from feature workspace to repo after applying fixes')
-
-        AppLogger.log_job_complete(FEATURE2_WORKSPACE['id'])    
+        
     case 'GitHub':
         # create GitHub repo and connect to workspace
         repo_name = PROJECT_NAME.replace(" ", "-")

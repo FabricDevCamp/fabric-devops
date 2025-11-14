@@ -7,6 +7,10 @@ parameters:
   displayName: Run post deploy fixes
   type: boolean
   default: true
+- name: add_admin_user
+  displayName: Add admin user
+  type: boolean
+  default: true
 
 trigger: none
 
@@ -43,4 +47,5 @@ jobs:
       DEV_WORKSPACE_ID: $(DEV_WORKSPACE_ID)
       PROD_WORKSPACE_ID: $(PROD_WORKSPACE_ID)
       FEATURE_NAME: ${{ parameters.feature_name }}
-      
+      RUN_POST_DEPLOY_FIXES: ${{parameters.run_post_deploy_fixes}}
+      ADD_ADMIN_USER: ${{parameters.add_admin_user}}
