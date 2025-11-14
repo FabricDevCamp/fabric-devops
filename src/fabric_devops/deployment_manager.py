@@ -2699,7 +2699,7 @@ class DeploymentManager:
         
         variable_group = AdoProjectManager.create_two_stage_variable_group(
             'environmental_variables',
-            project_name, 
+            project_name,
             dev_workspace['id'],
             prod_workspace['id'])
         
