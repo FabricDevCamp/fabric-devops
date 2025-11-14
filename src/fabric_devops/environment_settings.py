@@ -15,6 +15,7 @@ class EnvironmentSettings:
     AUTHORITY = f'https://login.microsoftonline.com/{FABRIC_TENANT_ID}'
     FABRIC_CAPACITY_ID = os.getenv("FABRIC_CAPACITY_ID")
     ADMIN_USER_ID = os.getenv("ADMIN_USER_ID")
+    DEVELOPERS_GROUP_ID = os.getenv("DEVELOPERS_GROUP_ID")
     SERVICE_PRINCIPAL_OBJECT_ID = os.getenv('SERVICE_PRINCIPAL_OBJECT_ID')
 
     PERSONAL_ACCESS_TOKEN_GITHUB = os.getenv('PERSONAL_ACCESS_TOKEN_GITHUB')

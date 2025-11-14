@@ -413,6 +413,19 @@ class FabricRestApi:
         return cls._execute_post_request(endpoint, post_body)
 
     @classmethod
+    def add_workspace_group(cls, workspace_id, group_id, role_assignment):
+        """Add workspace role for group"""
+        endpoint =    'workspaces/' + workspace_id + '/roleAssignments'
+        post_body = {
+            'role': role_assignment,
+            'principal': {
+            'id': group_id,
+            'type': 'Group'
+            }
+        }
+        return cls._execute_post_request(endpoint, post_body)
+
+    @classmethod
     def add_workspace_spn(cls, workspace_id, spn_id, role_assignment):
         """Add workspace role for user"""
         endpoint =    'workspaces/' + workspace_id + '/roleAssignments'
@@ -1715,47 +1728,6 @@ class FabricRestApi:
         endpoint = f'https://{workspace_id}.userdatafunctions.fabric.microsoft.com/v1/workspaces/{workspace_id}/userDataFunctions/{function_id}/functions/{function_name}/invoke'
         print(endpoint)
         return cls._execute_post_request(endpoint, parameters)
-
-    # @classmethod
-    # def create_git_connection_to_ado_repo(cls, workspace, project_name, branch = 'main'):
-    #     """Connect Workspace to GIT Repository"""
-
-    #     workspace_id = workspace['id']
-    #     endpoint = f"workspaces/{workspace_id}/git/connect"
-
-    #     workspace_folder = "workspace"
-
-    #     if EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL:     
-
-    #         connection = cls._create_ado_source_control_connection(project_name, workspace)
-    #         connection_id = connection['id']
-    #         connect_request = {
-    #             "gitProviderDetails": {
-    #                 "organizationName": "FabricDevCamp",
-    #                 "projectName": project_name,
-    #                 "gitProviderType": "AzureDevOps",
-    #                 "repositoryName": project_name,
-    #                 "branchName": branch,
-    #                 "directoryName": f"/{workspace_folder}"
-    #             },
-    #             "myGitCredentials": {
-    #                 "source": "ConfiguredConnection",
-    #                 "connectionId": connection_id            
-    #             }
-    #         }
-    #     else:
-    #         connect_request = {
-    #             "gitProviderDetails": {
-    #                 "organizationName": "FabricDevCamp",
-    #                 "projectName": project_name,
-    #                 "gitProviderType": "AzureDevOps",
-    #                 "repositoryName": project_name,
-    #                 "branchName": branch,
-    #                 "directoryName": f"/{workspace_folder}"
-    #             }
-    #         }
-
-    #     return cls._execute_post_request(endpoint, connect_request)
 
     @classmethod
     def _create_ado_source_control_connection(cls, url, workspace, top_level_step = False):
