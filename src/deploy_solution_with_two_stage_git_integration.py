@@ -37,12 +37,13 @@ match os.getenv("GIT_INTEGRATION_PROVIDER"):
 
         # create feature1 workspace
         FEATURE1_NAME = 'feature1'
+        FEATURE1_BRANCH_NAME = f'dev-{FEATURE1_NAME}'
         FEATURE1_WORKSPACE_NAME = F'{DEV_WORKSPACE_NAME}-{FEATURE1_NAME}'
         FEATURE1_WORKSPACE = FabricRestApi.create_workspace(FEATURE1_WORKSPACE_NAME)
 
         # create feature1 branch and connect to feature1 workspace
-        AdoProjectManager.create_branch(PROJECT_NAME, FEATURE1_NAME, 'dev')
-        FabricRestApi.connect_workspace_to_ado_repo(FEATURE1_WORKSPACE, PROJECT_NAME, FEATURE1_NAME)
+        AdoProjectManager.create_branch(PROJECT_NAME, FEATURE1_BRANCH_NAME, 'dev')
+        FabricRestApi.connect_workspace_to_ado_repo(FEATURE1_WORKSPACE, PROJECT_NAME, FEATURE1_BRANCH_NAME)
 
         # apply post sync/deploy fixes to feature1 workspace
         DeploymentManager.apply_post_deploy_fixes(
@@ -54,11 +55,29 @@ match os.getenv("GIT_INTEGRATION_PROVIDER"):
             FEATURE1_WORKSPACE['id'],
             commit_comment = 'Sync updates from feature workspace to repo after applying fixes')
 
-        AdoProjectManager.create_and_merge_pull_request(PROJECT_NAME, FEATURE1_NAME , 'dev')
-        AdoProjectManager.create_and_merge_pull_request(PROJECT_NAME, 'dev', 'main')
-
         AppLogger.log_job_complete(FEATURE1_WORKSPACE['id'])
-        
+
+        # create feature2 workspace
+        FEATURE2_NAME = 'feature2'
+        FEATURE2_BRANCH_NAME = f'dev-{FEATURE2_NAME}'
+        FEATURE2_WORKSPACE_NAME = F'{DEV_WORKSPACE_NAME}-{FEATURE2_NAME}'
+        FEATURE2_WORKSPACE = FabricRestApi.create_workspace(FEATURE2_WORKSPACE_NAME)
+
+        # create feature2 branch and connect to feature2 workspace
+        AdoProjectManager.create_branch(PROJECT_NAME, FEATURE2_BRANCH_NAME, 'dev')
+        FabricRestApi.connect_workspace_to_ado_repo(FEATURE2_WORKSPACE, PROJECT_NAME, FEATURE2_BRANCH_NAME)
+
+        # # apply post sync/deploy fixes to feature2 workspace
+        # DeploymentManager.apply_post_deploy_fixes(
+        #     FEATURE2_WORKSPACE_NAME,
+        #     StagingEnvironments.get_dev_environment(),
+        #     True)
+
+        # FabricRestApi.commit_workspace_to_git(
+        #     FEATURE2_WORKSPACE['id'],
+        #     commit_comment = 'Sync updates from feature workspace to repo after applying fixes')
+
+        AppLogger.log_job_complete(FEATURE2_WORKSPACE['id'])    
     case 'GitHub':
         # create GitHub repo and connect to workspace
         repo_name = PROJECT_NAME.replace(" ", "-")

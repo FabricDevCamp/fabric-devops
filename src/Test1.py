@@ -1,12 +1,12 @@
 """Deploy Demo Solution with ADO GIT Intergation"""
 import json
 from fabric_devops import DeploymentManager, AppLogger, StagingEnvironments, \
-                          AdoProjectManager, FabricRestApi, GitHubRestApi
+                          AdoProjectManager, FabricRestApi, GitHubRestApi, ItemDefinitionFactory
 
-repo_name = 'Apollo'
-
-GitHubRestApi.create_and_merge_pull_request(
-    repo_name, 'feature1', 'dev', "yup", 'yup yup'
-)
+create_notebook_request = \
+            ItemDefinitionFactory.get_create_item_request_from_folder(
+                'Create Lakehouse Tables.Notebook')
+            
+print( json.dumps(create_notebook_request, indent=4) )
 
 
