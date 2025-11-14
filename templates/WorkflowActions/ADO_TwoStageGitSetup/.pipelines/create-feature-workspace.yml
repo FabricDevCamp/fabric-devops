@@ -42,4 +42,5 @@ jobs:
       FABRIC_CAPACITY_ID: $(FABRIC_CAPACITY_ID)
       DEV_WORKSPACE_ID: $(DEV_WORKSPACE_ID)
       PROD_WORKSPACE_ID: $(PROD_WORKSPACE_ID)
+      FEATURE_NAME: ${{ parameters.feature_name }}
       
