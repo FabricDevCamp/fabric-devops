@@ -35,7 +35,7 @@ FabricRestApi.connect_workspace_to_ado_repo(FEATURE_WORKSPACE, PROJECT_NAME, FEA
 
 if RUN_POST_DEPLOY_FIXES:
     deployment_job = EnvironmentSettings.DEPLOYMENT_JOBS['dev']
-    DeploymentManager.apply_post_sync_fixes(FEATURE_WORKSPACE['id'], deployment_job)
+    DeploymentManager.apply_post_deploy_fixes(FEATURE_WORKSPACE['id'], deployment_job)
 
     FabricRestApi.commit_workspace_to_git(
         FEATURE_WORKSPACE['id'],
