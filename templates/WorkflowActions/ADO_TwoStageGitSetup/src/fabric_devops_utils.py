@@ -28,6 +28,8 @@ class EnvironmentSettings:
 
     ADMIN_USER_ID = os.getenv("ADMIN_USER_ID")
     DEVELOPERS_GROUP_ID = os.getenv("DEVELOPERS_GROUP_ID")
+    
+    ADO_PROJECT_NAME = os.getenv("BUILD_REPOSITORY_NAME")
 
     FABRIC_REST_API_RESOURCE_ID = 'https://api.fabric.microsoft.com'
     FABRIC_REST_API_BASE_URL = 'https://api.fabric.microsoft.com/v1/'
@@ -1349,7 +1351,9 @@ class FabricRestApi:
         AppLogger.log_substep(f'Workspace created with Id of [{workspace_id}]')
 
         AppLogger.log_substep('Adding workspace role of [Admin] for admin user')
-        # cls.add_workspace_user(workspace_id, EnvironmentSettings.ADMIN_USER_ID, 'Admin')
+        cls.add_workspace_user(workspace_id, EnvironmentSettings.ADMIN_USER_ID, 'Admin')
+    
+        AppLogger.log_substep('Adding workspace role of [Member] for developers group')
         cls.add_workspace_group(workspace_id, EnvironmentSettings.DEVELOPERS_GROUP_ID, 'Member')
 
         return workspace

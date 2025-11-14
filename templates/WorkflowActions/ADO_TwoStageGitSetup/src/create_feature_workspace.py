@@ -6,7 +6,7 @@ AppLogger.log_job("Creating feature branch")
 
 dev_workspace = FabricRestApi.get_workspace_info(EnvironmentSettings.DEV_WORKSPACE_ID)
 DEV_WORKSPACE_NAME = dev_workspace['displayName']
-PROJECT_NAME = DEV_WORKSPACE_NAME.replace('-dev', '')
+PROJECT_NAME = EnvironmentSettings.ADO_PROJECT_NAME
 
 FEATURE_NAME = os.getenv("FEATURE_NAME")
 FEATURE_BRANCH_NAME = f'dev-{FEATURE_NAME}'
