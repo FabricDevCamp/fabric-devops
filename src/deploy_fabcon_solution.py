@@ -27,13 +27,13 @@ def deploy_fabcon_solution(
 
     FabricRestApi.update_workspace_description(workspace['id'], 'Custom FabCon Solution')
 
-    data_prep_folder = FabricRestApi.create_folder(workspace['id'], 'data_prep')
-    data_prep_folder_id = data_prep_folder['id']
+    staging_folder = FabricRestApi.create_folder(workspace['id'], 'staging')
+    staging_folder_id = staging_folder['id']
 
     bronze_lakehouse = FabricRestApi.create_lakehouse(
         workspace['id'], 
         bronze_lakehouse_name,
-        data_prep_folder_id)
+        staging_folder_id)
 
     adls_container_name = deploy_job.parameters[DeploymentJob.adls_container_name_parameter]
     adls_container_path = deploy_job.parameters[DeploymentJob.adls_container_path_parameter]
@@ -62,7 +62,7 @@ def deploy_fabcon_solution(
     silver_lakehouse = FabricRestApi.create_lakehouse(
         workspace['id'],
         silver_lakehouse_name,
-        data_prep_folder_id)
+        staging_folder_id)
 
     FabricRestApi.create_onelake_shortcut(
         workspace['id'],
@@ -90,7 +90,7 @@ def deploy_fabcon_solution(
     notebook = FabricRestApi.create_item(
         workspace['id'], 
         create_notebook_request,
-        data_prep_folder_id)
+        staging_folder_id)
 
     FabricRestApi.run_notebook(workspace['id'], notebook)
 
@@ -131,7 +131,7 @@ def deploy_fabcon_solution(
         pipeline = FabricRestApi.create_item(
             workspace['id'], 
             pipeline_create_request,
-            data_prep_folder_id)
+            staging_folder_id)
         
         FabricRestApi.run_data_pipeline(workspace['id'], pipeline)
 

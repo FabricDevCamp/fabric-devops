@@ -200,10 +200,10 @@ class DeploymentManager:
         workspace = FabricRestApi.create_workspace(target_workspace)
         FabricRestApi.update_workspace_description(workspace['id'], 'Custom Data Pipeline Solution')
         
-        data_prep_folder = FabricRestApi.create_folder(workspace['id'] ,'data_prep')
-        data_prep_folder_id = data_prep_folder['id']
+        staging_folder = FabricRestApi.create_folder(workspace['id'] ,'staging')
+        staging_folder_id = staging_folder['id']
         
-        cls.create_adls_variable_library(workspace, data_prep_folder_id, deploy_job)
+        cls.create_adls_variable_library(workspace, staging_folder_id, deploy_job)
 
         lakehouse_name = "sales"            
         lakehouse = FabricRestApi.create_lakehouse(workspace['id'], lakehouse_name)
@@ -224,7 +224,7 @@ class DeploymentManager:
             notebook = FabricRestApi.create_item(
                 workspace['id'], 
                 create_notebook_request, 
-                data_prep_folder_id)
+                staging_folder_id)
             
             notebook_ids.append(notebook['id'])
 
@@ -247,7 +247,7 @@ class DeploymentManager:
         pipeline = FabricRestApi.create_item(
             workspace['id'], 
             create_pipeline_request, 
-            data_prep_folder_id)
+            staging_folder_id)
         
         FabricRestApi.run_data_pipeline(workspace['id'], pipeline)
 
@@ -311,10 +311,10 @@ class DeploymentManager:
         workspace = FabricRestApi.create_workspace(target_workspace)
         FabricRestApi.update_workspace_description(workspace['id'], 'Custom Shortcut Solution')
         
-        data_prep_folder = FabricRestApi.create_folder(workspace['id'] ,'data_prep')
-        data_prep_folder_id = data_prep_folder['id']
+        staging_folder = FabricRestApi.create_folder(workspace['id'] ,'staging')
+        staging_folder_id = staging_folder['id']
         
-        cls.create_adls_variable_library(workspace, data_prep_folder_id, deploy_job)
+        cls.create_adls_variable_library(workspace, staging_folder_id, deploy_job)
 
         lakehouse = FabricRestApi.create_lakehouse(workspace['id'], lakehouse_name)
 
@@ -348,7 +348,7 @@ class DeploymentManager:
             notebook = FabricRestApi.create_item(
                 workspace['id'], 
                 create_notebook_request,
-                data_prep_folder_id)
+                staging_folder_id)
             
             FabricRestApi.run_notebook(workspace['id'], notebook)
 
@@ -385,7 +385,7 @@ class DeploymentManager:
         return workspace
 
     @classmethod
-    def create_adls_variable_library(cls, workspace, data_prep_folder_id, deploy_job: DeploymentJob):
+    def create_adls_variable_library(cls, workspace, staging_folder_id, deploy_job: DeploymentJob):
         """Create Vairable Library with ADLS settings"""
         
         if deploy_job.deployment_type == DeploymentJobType.CUSTOMER_TENANT:
@@ -415,7 +415,7 @@ class DeploymentManager:
             return FabricRestApi.create_item(
                     workspace['id'],
                     create_library_request,
-                    data_prep_folder_id)
+                    staging_folder_id)
             
         if deploy_job.deployment_type == DeploymentJobType.STAGED_DEPLOYMENT:
             # create variable library default values for dev and value sets for test and prod
@@ -488,7 +488,7 @@ class DeploymentManager:
             variable_library = FabricRestApi.create_item(
                 workspace['id'],
                 create_library_request,
-                data_prep_folder_id)
+                staging_folder_id)
             
             FabricRestApi.set_active_valueset_for_variable_library(
                 workspace['id'],
@@ -1091,13 +1091,13 @@ class DeploymentManager:
 
         workspace = FabricRestApi.create_workspace(target_workspace)
 
-        data_prep_folder = FabricRestApi.create_folder(workspace['id'], 'data_prep')
-        data_prep_folder_id = data_prep_folder['id']
+        staging_folder = FabricRestApi.create_folder(workspace['id'], 'staging')
+        staging_folder_id = staging_folder['id']
 
         lakehouse = FabricRestApi.create_lakehouse(
             workspace['id'],
             lakehouse_name,
-            data_prep_folder_id)
+            staging_folder_id)
 
         warehouse = FabricRestApi.create_warehouse(
             workspace['id'],
@@ -1136,7 +1136,7 @@ class DeploymentManager:
             pipeline = FabricRestApi.create_item(
                 workspace['id'], 
                 pipeline_create_request,
-                data_prep_folder_id)
+                staging_folder_id)
 
             FabricRestApi.run_data_pipeline(workspace['id'], pipeline)
 
@@ -1198,13 +1198,13 @@ class DeploymentManager:
 
         FabricRestApi.update_workspace_description(workspace['id'], 'Custom FabCon Solution')
 
-        data_prep_folder = FabricRestApi.create_folder(workspace['id'], 'data_prep')
-        data_prep_folder_id = data_prep_folder['id']
+        staging_folder = FabricRestApi.create_folder(workspace['id'], 'staging')
+        staging_folder_id = staging_folder['id']
 
         bronze_lakehouse = FabricRestApi.create_lakehouse(
             workspace['id'], 
             bronze_lakehouse_name,
-            data_prep_folder_id)
+            staging_folder_id)
 
         adls_container_name = deploy_job.parameters[DeploymentJob.adls_container_name_parameter]
         adls_container_path = deploy_job.parameters[DeploymentJob.adls_container_path_parameter]
@@ -1233,7 +1233,7 @@ class DeploymentManager:
         silver_lakehouse = FabricRestApi.create_lakehouse(
             workspace['id'],
             silver_lakehouse_name,
-            data_prep_folder_id)
+            staging_folder_id)
 
         FabricRestApi.create_onelake_shortcut(
             workspace['id'],
@@ -1261,7 +1261,7 @@ class DeploymentManager:
         notebook = FabricRestApi.create_item(
             workspace['id'], 
             create_notebook_request,
-            data_prep_folder_id)
+            staging_folder_id)
 
         FabricRestApi.run_notebook(workspace['id'], notebook)
 
@@ -1302,7 +1302,7 @@ class DeploymentManager:
             pipeline = FabricRestApi.create_item(
                 workspace['id'], 
                 pipeline_create_request,
-                data_prep_folder_id)
+                staging_folder_id)
             
             FabricRestApi.run_data_pipeline(workspace['id'], pipeline)
 
