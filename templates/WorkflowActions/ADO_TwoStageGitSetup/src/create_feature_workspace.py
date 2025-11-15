@@ -8,8 +8,8 @@ dev_workspace = FabricRestApi.get_workspace_info(EnvironmentSettings.DEV_WORKSPA
 DEV_WORKSPACE_NAME = dev_workspace['displayName']
 PROJECT_NAME = EnvironmentSettings.ADO_PROJECT_NAME
 
-RUN_POST_DEPLOY_FIXES = os.getenv("RUN_POST_DEPLOY_FIXES") == 'true'
-ADD_ADMIN_USER = os.getenv("ADD_ADMIN_USER") == 'true'
+RUN_POST_DEPLOY_FIXES = os.getenv("RUN_POST_DEPLOY_FIXES") == 'True'
+ADD_ADMIN_USER = os.getenv("ADD_ADMIN_USER") == 'True'
 
 FEATURE_NAME = os.getenv("FEATURE_NAME")
 FEATURE_BRANCH_NAME = f'dev-{FEATURE_NAME}'
@@ -20,8 +20,8 @@ FEATURE_WORKSPACE = FabricRestApi.create_workspace(FEATURE_WORKSPACE_NAME)
     
 AppLogger.log_substep('Adding workspace role of [Member] for developers group')
 FabricRestApi.add_workspace_group(
-    FEATURE_WORKSPACE['id'], 
-    EnvironmentSettings.DEVELOPERS_GROUP_ID, 
+    FEATURE_WORKSPACE['id'],
+    EnvironmentSettings.DEVELOPERS_GROUP_ID,
     'Member')
 
 if ADD_ADMIN_USER:
