@@ -3237,10 +3237,16 @@ class DeploymentManager:
 
     @classmethod
     def update_datasource_path_in_notebook(cls,
-                workspace_name,
-                notebook_name,
-                redirects):
+        workspace_name,
+        notebook_name,
+        deployment_job):
         """Update datasource path in notebook"""
+        
+        redirects = {
+            EnvironmentSettings.DEPLOYMENT_JOBS['dev']['web_datasource_path']: deployment_job['web_datasource_path'],
+            EnvironmentSettings.DEPLOYMENT_JOBS['prod']['web_datasource_path']: deployment_job['web_datasource_path'],                    
+        }
+    
         workspace = FabricRestApi.get_workspace_by_name(workspace_name)
         notebook = FabricRestApi.get_item_by_name(workspace['id'], notebook_name, 'Notebook')
         
@@ -3253,7 +3259,7 @@ class DeploymentManager:
                 redirects)
         }
 
-        FabricRestApi.update_item_definition(workspace['id'], notebook, notebook_definition)        
+        FabricRestApi.update_item_definition(workspace['id'], notebook, notebook_definition)            
 
     @classmethod
     def update_source_lakehouse_in_notebook(cls,
@@ -3349,14 +3355,10 @@ class DeploymentManager:
                     "sales")
 
                 if notebook['displayName'] == 'Create Lakehouse Tables':
-                    redirects = {
-                        EnvironmentSettings.DEPLOYMENT_JOBS['dev']['web_datasource_path']: \
-                        web_datasource_path
-                    }
                     cls.update_datasource_path_in_notebook(
                         workspace_name,
                         notebook['displayName'],
-                        redirects)
+                        deployment_job)
 
             if run_etl_jobs and 'Create' in notebook['displayName']:                
                 FabricRestApi.run_notebook(workspace['id'], notebook)
