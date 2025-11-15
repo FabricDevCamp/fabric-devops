@@ -5,7 +5,7 @@ import re
 
 import os
 import time
-import datetime
+from datetime import datetime, date
 import json
 from json.decoder import JSONDecodeError
 from typing import List
@@ -32,12 +32,14 @@ class EnvironmentSettings:
     
     DEPLOYMENT_JOBS = {
         'dev': {
+            'name': 'dev',
             'web_datasource_path': 'https://fabricdevcamp.blob.core.windows.net/sampledata/ProductSales/dev',
             'adls_server': 'https://fabricdevcamp.dfs.core.windows.net/',
             'adls_container_name': 'sampledata', 
             'adls_container_path': '/ProductSales/Prod',            
         },  
         "prod": {
+            'name': 'prod',
             'web_datasource_path': 'https://fabricdevcamp.blob.core.windows.net/sampledata/ProductSales/prod',
             'adls_server': 'https://fabricdevcamp.dfs.core.windows.net/',
             'adls_container_name': 'sampledata',
@@ -1290,9 +1292,10 @@ class FabricRestApi:
     @classmethod
     def refresh_sql_endpoint_metadata(cls, workspace_id, sql_endpoint_id):
         """Refresh SL Endpoint"""
-        AppLogger.log_step("Updating SQL Endpoint metadata...")
+        AppLogger.log_substep("Updating SQL Endpoint metadata...")
         endpoint = \
             f"workspaces/{workspace_id}/sqlEndpoints/{sql_endpoint_id}/refreshMetadata?preview=True"
+        cls._execute_post_request(endpoint, {})
         AppLogger.log_substep("SQL Endpoint metadata update complete")
 
     @classmethod
@@ -2480,115 +2483,6 @@ class DeploymentManager:
                 FabricRestApi.create_and_bind_semantic_model_connecton(
                     workspace,
                     model['id'])
-
-    @classmethod
-    def update_variable_library(cls, workspace_name, library_name, deployment_job):
-        """Update Variable Library"""
-
-        workspace = FabricRestApi.get_workspace_by_name(workspace_name)
-        variable_library_item = FabricRestApi.get_item_by_name(workspace['id'],
-                                                        library_name,
-                                                        'VariableLibrary')
-        
-        web_datasource_path = deployment_job['web_datasource_path']
-        adls_container_name = deployment_job['adls_container_name']
-        adls_container_path = deployment_job['adls_container_path_parameter']
-        adls_server = deployment_job['adls_server_parameter']
-        adls_path = f'/{adls_container_name}{adls_container_path}'
-
-
-        variable_library_definition = FabricRestApi.get_item_definition(workspace['id'],
-                                                                        variable_library_item)
-
-        parts = variable_library_definition['definition']['parts']
-
-        variables = None
-
-        for part in parts:
-            if part['path'] == 'variables.json':
-                payload = part['payload']
-                payload_bytes = base64.b64decode(payload)
-                payload_content = payload_bytes.decode('utf-8')
-                variables = json.loads(payload_content)['variables']
-                break
-
-        if variables is not None:
-            variable_library    = VariableLibrary(variables)
-
-            valueset = Valueset(deployment_job.name)
-
-            for variable in variables:
-                if variable['name'] in deployment_parameters:
-                    variable_name = variable['name']
-                    variable_override = deployment_parameters[variable_name]
-                    valueset.add_variable_override(variable_name, variable_override)
-
-            # set additional overrides with workspace-specific ids
-            lakehouse_id_parameter = 'lakehouse_id'
-            notebook_id_build_silver_parameter = 'notebook_id_build_silver'
-            notebook_id_build_gold_parameter    = 'notebook_id_build_gold'
-            adls_connection_id_parameter = 'adls_connection_id'
-
-            lakehouse = FabricRestApi.get_item_by_name(workspace['id'], 'sales', 'Lakehouse')
-            valueset.add_variable_override(lakehouse_id_parameter, lakehouse['id'])
-
-            notebook_build_silver = FabricRestApi.get_item_by_name(
-                workspace['id'],
-                'Build 01 Silver Layer', 
-                'Notebook')
-
-            valueset.add_variable_override(
-                notebook_id_build_silver_parameter,
-                notebook_build_silver['id'])
-
-            notebook_build_gold = FabricRestApi.get_item_by_name(
-                workspace['id'],
-                'Build 02 Gold Layer', 
-                'Notebook')
-
-            valueset.add_variable_override(
-                notebook_id_build_gold_parameter,
-                notebook_build_gold['id'])
-
-            adls_server = deployment_job.parameters[DeploymentJob.adls_server_parameter]
-            adls_container_name = \
-                deployment_job.parameters[DeploymentJob.adls_container_name_parameter]
-            adls_container_path = \
-                deployment_job.parameters[DeploymentJob.adls_container_path_parameter]
-            adls_server_path = adls_container_name + adls_container_path
-
-            connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
-                adls_server,
-                adls_server_path,
-                workspace)
-
-            valueset.add_variable_override(adls_connection_id_parameter, connection['id'])
-
-            variable_library.add_valueset(valueset)
-
-            update_request = \
-                ItemDefinitionFactory.get_update_variable_library_request(variable_library)
-
-            FabricRestApi.update_item_definition(
-                workspace['id'],
-                variable_library_item,
-                update_request)
-
-            FabricRestApi.set_active_valueset_for_variable_library(
-                workspace['id'],
-                variable_library_item,
-                deployment_job.name)
-
-            # run data pipeline
-            data_pipeline_name = 'Create Lakehouse Tables'
-            data_pipeline = FabricRestApi.get_item_by_name(
-                workspace['id'],
-                data_pipeline_name,
-                'DataPipeline')
-            FabricRestApi.run_data_pipeline(workspace['id'], data_pipeline)
-
-        else:
-            AppLogger.log_error("Error running data pipeline")
 
     @classmethod
     def run_data_pipeline(cls, workspace_name, data_pipeline_name):
