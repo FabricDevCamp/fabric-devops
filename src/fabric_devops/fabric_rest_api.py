@@ -1733,7 +1733,7 @@ class FabricRestApi:
     def _create_ado_source_control_connection(cls, url, workspace, top_level_step = False):
         """Create GitHub connections with Personal Access Token"""
 
-        display_name = f"Workspace[{workspace['id']}]-AzureDevOpsSourceControl"
+        display_name = f"AzureDevOpsSourceControl-SPN[{url}]"
 
         create_connection_request = {
             'displayName': display_name,
