@@ -2385,7 +2385,10 @@ class FabricRestApi:
     @classmethod
     def set_active_valueset_for_variable_library(cls, workspace_id, library, valueset):
         """Set active valueset for variable library"""
-        AppLogger.log_step(
+        if valueset == 'dev':
+            valueset = None
+            
+        AppLogger.log_substep(
             "Setting active valueset for variable library " + \
             f"[{library['displayName']}] to [{valueset}]...")
 
@@ -2396,7 +2399,6 @@ class FabricRestApi:
             }
         }
         cls._execute_patch_request(rest_url, post_body)
-        AppLogger.log_substep('Active valueset set successfullly')
         
     @classmethod
     def initialize_git_connection(cls, workspace_id, initialize_connection_request):
@@ -3444,7 +3446,7 @@ class DeploymentManager:
             FabricRestApi.set_active_valueset_for_variable_library(
                 workspace['id'],
                 variable_library,
-                deployment_job.name
+                deployment_job['name']
             )
 
         lakehouses = list(filter(lambda item: item['type']=='Lakehouse', workspace_items))
