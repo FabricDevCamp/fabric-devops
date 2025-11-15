@@ -3514,10 +3514,16 @@ class DeploymentManager:
                     workspace_name, 
                     model['displayName'],
                     target_lakehouse_name)
-
+                
+                target_lakehouse = FabricRestApi.get_item_by_name(
+                    workspace['id'], 
+                    target_lakehouse_name, 
+                    "Lakehouse")
+                
                 FabricRestApi.create_and_bind_semantic_model_connecton(
                     workspace,
-                    model['id'])
+                    model['id'],
+                    target_lakehouse)
 
     # @classmethod
     # def apply_post_deploy_fixes(cls,
