@@ -1919,6 +1919,8 @@ class FabricRestApi:
     @classmethod
     def update_item_definition(cls, workspace_id, item, update_item_definition_request):
         """Update Item Definition using update-item--definition-request"""
+        AppLogger.log_substep(
+            f"Updating [{item['displayName']}.{item['type']}]...")
         endpoint = f"workspaces/{workspace_id}/items/{item['id']}/updateDefinition"
         item = cls._execute_post_request(endpoint, update_item_definition_request)
         return item
@@ -2447,7 +2449,7 @@ class FabricRestApi:
     @classmethod
     def update_workspace_from_git(cls, workspace_id, update_from_git_request = None):
         """Update Workspace from GIT Repository"""
-        AppLogger.log_step("Pushing item definitions from GIT reposiitory to workspace items")
+        AppLogger.log_substep("Pushing item definitions from GIT reposiitory to workspace items")
         
         if update_from_git_request is None:            
             git_status = FabricRestApi.get_git_status(workspace_id)
@@ -3453,7 +3455,7 @@ class DeploymentManager:
                     FabricRestApi.reset_adls_gen2_shortcut(workspace['id'], lakehouse['id'], shortcut)
 
         notebooks = list(filter(lambda item: item['type']=='Notebook', workspace_items))
-        for notebook in notebooks:       
+        for notebook in notebooks:  
             notebooks_for_sales_lakehouse = [
                 'Create Lakehouse Tables', 
                 'Create 01 Silver Layer', 

@@ -2235,13 +2235,8 @@ class DeploymentManager:
                 deployment_job.name
             )
 
-        sales_lakehouse = None
         lakehouses = list(filter(lambda item: item['type']=='Lakehouse', workspace_items))
-        for lakehouse in lakehouses:
-            
-            if lakehouse['displayName'] == 'sales':
-                sales_lakehouse = lakehouse
-                
+        for lakehouse in lakehouses:                
             shortcuts = FabricRestApi.list_shortcuts(workspace['id'], lakehouse['id'])
             for shortcut in shortcuts:
                 if (shortcut['target']['type'] == 'AdlsGen2') and (shortcut['name'] == 'sales-data'):
