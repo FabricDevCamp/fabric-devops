@@ -2874,7 +2874,7 @@ class DeploymentManager:
         return file_content
     
     @classmethod
-    def setup_ado_repo_for_fabric_cicd_alt(cls,
+    def setup_one_branch_ado_repo_for_fabric_cicd(cls,
                                        dev_workspace,
                                        test_workspace,
                                        prod_workspace,
@@ -2933,9 +2933,8 @@ class DeploymentManager:
             "Adding parameter.yml used by fabric_cicd"
         )
       
-
     @classmethod
-    def setup_ado_repo_for_fabric_cicd(cls, 
+    def setup_three_branch_ado_repo_for_fabric_cicd(cls, 
                                        dev_workspace, 
                                        test_workspace, 
                                        prod_workspace, 

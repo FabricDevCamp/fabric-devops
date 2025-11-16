@@ -30,7 +30,7 @@ match os.getenv("GIT_INTEGRATION_PROVIDER"):
     case 'Azure DevOps':
         # create ADO project and connect project main repo to workspace
         
-        DeploymentManager.setup_ado_repo_for_fabric_cicd(
+        DeploymentManager.setup_three_branch_ado_repo_for_fabric_cicd(
             DEV_WORKSPACE,
             TEST_WORKSPACE,
             PROD_WORKSPACE,
