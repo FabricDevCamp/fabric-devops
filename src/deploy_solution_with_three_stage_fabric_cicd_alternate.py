@@ -4,7 +4,7 @@ from fabric_devops import DeploymentManager, StagingEnvironments,\
                           AdoProjectManager, FabricRestApi, GitHubRestApi, AppLogger
 
 PROJECT_NAME = 'John'
-SOLUTION_NAME ="Custom Data Pipeline Solution"
+SOLUTION_NAME ="Custom Pipeline Solution"
 
 DEPLOYMENT_PIPELINE_NAME = PROJECT_NAME
 DEV_WORKSPACE_NAME = f"{PROJECT_NAME}-dev"

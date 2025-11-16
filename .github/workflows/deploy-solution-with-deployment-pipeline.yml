@@ -16,7 +16,7 @@ on:
                 - Custom Power BI Solution
                 - Custom Notebook Solution
                 - Custom Shortcut Solution
-                - Custom Data Pipeline Solution
+                - Custom Pipeline Solution
                 - Custom User Data Function Solution
                 - Custom Dataflow Gen2 Solution
                 default: Custom Power BI Solution

@@ -6,7 +6,7 @@ from fabric_devops import DeploymentManager, EnvironmentSettings, AppLogger, Sta
 
 
 PROJECT_NAME = 'Ringo'
-SOLUTION_NAME ="Custom Data Pipeline Solution"
+SOLUTION_NAME ="Custom Pipeline Solution"
 deploy_job = StagingEnvironments.get_dev_environment()
 
 DEV_WORKSPACE_NAME = F'{PROJECT_NAME}-dev'

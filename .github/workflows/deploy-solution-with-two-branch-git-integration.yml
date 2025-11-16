@@ -16,8 +16,8 @@ on:
                 - Custom Power BI Solution
                 - Custom Notebook Solution
                 - Custom Shortcut Solution
-                - Custom Data Pipeline Solution
-                default: Custom Data Pipeline Solution
+                - Custom Pipeline Solution
+                default: Custom Pipeline Solution
             git_integration_provider:
                 type: choice
                 description: Git Integration Provider

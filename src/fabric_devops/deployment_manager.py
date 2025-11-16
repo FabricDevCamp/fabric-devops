@@ -39,7 +39,7 @@ class DeploymentManager:
                 workspace = cls.deploy_environment_solution(target_workspace, deploy_job)
             case 'Custom Shortcut Solution':
                 workspace = cls.deploy_shortcut_solution(target_workspace, deploy_job)
-            case 'Custom Data Pipeline Solution':
+            case 'Custom Pipeline Solution':
                 workspace = cls.deploy_data_pipeline_solution(target_workspace, deploy_job)
             case 'Custom Copy Job Solution':
                 workspace = cls.deploy_copyjob_solution(target_workspace, deploy_job)
@@ -195,10 +195,10 @@ class DeploymentManager:
                                        deploy_job = StagingEnvironments.get_dev_environment()):
         """Deploy Data Pipeline Solution Parameterized with Variable Library"""
 
-        AppLogger.log_job(f"Deploying Custom Data Pipeline Solution to [{target_workspace}]")
+        AppLogger.log_job(f"Deploying Custom Pipeline Solution to [{target_workspace}]")
 
         workspace = FabricRestApi.create_workspace(target_workspace)
-        FabricRestApi.update_workspace_description(workspace['id'], 'Custom Data Pipeline Solution')
+        FabricRestApi.update_workspace_description(workspace['id'], 'Custom Pipeline Solution')
         
         staging_folder = FabricRestApi.create_folder(workspace['id'] ,'staging')
         staging_folder_id = staging_folder['id']
@@ -682,7 +682,7 @@ class DeploymentManager:
             'Product Sales Top 10 Cities.Report'
         ]
 
-        AppLogger.log_job(f"Deploying Custom Data Pipeline Solution to [{target_workspace}]")
+        AppLogger.log_job(f"Deploying Custom Pipeline Solution to [{target_workspace}]")
 
         deploy_job.display_deployment_parameters('adls')
 
@@ -779,7 +779,7 @@ class DeploymentManager:
 
         lakehouse_name = "sales"
              
-        AppLogger.log_job(f"Deploying Custom Data Pipeline Solution to [{target_workspace}]")
+        AppLogger.log_job(f"Deploying Custom Pipeline Solution to [{target_workspace}]")
 
         deploy_job.display_deployment_parameters('adls')
 

@@ -16,7 +16,7 @@ on:
                 - Custom Power BI Solution
                 - Custom Notebook Solution
                 - Custom Shortcut Solution
-                - Custom Data Pipeline Solution
+                - Custom Pipeline Solution
                 - Custom User Data Function Solution
                 - Custom Copy Job Solution
                 - Custom Dataflow Gen2 Solution
@@ -24,8 +24,8 @@ on:
                 - Custom Medallion Warehouse Solution
                 - Custom Notebook Solution with Variable Library
                 - Custom Shortcut Solution with Variable Library
-                - Custom Data Pipeline Solution
-                default: Custom Data Pipeline Solution
+                - Custom Pipeline Solution
+                default: Custom Pipeline Solution
             target_environment:
                 type: choice
                 description: Target Environment
