@@ -632,7 +632,6 @@ class AdoProjectManager:
                     "isSecret": False,
                     "isReadOnly": True
                 },
-
                 "DEV_WORKSPACE_ID": {
                     "value": dev_workspace_id,
                     "isSecret": False,
