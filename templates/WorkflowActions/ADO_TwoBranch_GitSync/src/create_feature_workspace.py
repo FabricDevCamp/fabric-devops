@@ -1,4 +1,4 @@
-"""Display Workspace Info"""
+"""Create feature workspace from new ADO branch"""
 import os
 from fabric_devops_utils import EnvironmentSettings, AppLogger, FabricRestApi, AdoProjectManager, DeploymentManager
 
