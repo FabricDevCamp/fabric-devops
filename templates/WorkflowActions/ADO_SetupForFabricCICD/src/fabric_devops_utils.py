@@ -3497,7 +3497,7 @@ class DeploymentManager:
             if run_etl_jobs and 'Create' in pipeline['displayName']:
                 FabricRestApi.run_data_pipeline(workspace['id'], pipeline)
 
-        sql_endpoints =    list(filter(lambda item: item['type']=='SQLEndpoint', workspace_items))
+        sql_endpoints = list(filter(lambda item: item['type']=='SQLEndpoint', workspace_items))
         for sql_endpoint in sql_endpoints:
             FabricRestApi.refresh_sql_endpoint_metadata(
                 workspace['id'],
