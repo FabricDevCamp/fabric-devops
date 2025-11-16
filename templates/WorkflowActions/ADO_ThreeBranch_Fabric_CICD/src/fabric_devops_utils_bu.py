@@ -504,14 +504,9 @@ class FabricRestApi:
         workspace = cls._execute_post_request('workspaces', post_body)
         workspace_id = workspace['id']
         AppLogger.log_substep(f'Workspace created with Id of [{workspace_id}]')
-
-        if EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL:
-            AppLogger.log_substep('Adding workspace role of [Admin] for admin user')
-            cls.add_workspace_user(workspace_id, EnvironmentSettings.ADMIN_USER_ID, 'Admin')
-        else:
-            AppLogger.log_substep('Adding workspace role of [Admin] for service principal')
-            cls.add_workspace_spn(workspace_id, EnvironmentSettings.SERVICE_PRINCIPAL_OBJECT_ID, 'Admin')
-
+        AppLogger.log_substep('Adding workspace role of [Admin] for admin user')
+        cls.add_workspace_user(workspace_id, EnvironmentSettings.ADMIN_USER_ID, 'Admin')
+   
         return workspace
 
     @classmethod
@@ -667,17 +662,11 @@ class FabricRestApi:
         AppLogger.log_substep(
             f"Connection created with id [{connection['id']}]")
 
-        if EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL:
-            AppLogger.log_substep('Adding connection role of [Owner] for user')
-            cls.add_connection_role_assignment_for_user(connection['id'],
+        AppLogger.log_substep('Adding connection role of [Owner] for user')
+        cls.add_connection_role_assignment_for_user(connection['id'],
                                                         EnvironmentSettings.ADMIN_USER_ID,
                                                         'Owner')
-        else:
-            AppLogger.log_substep('Adding connection role of [Owner] for SPN')
-            cls.add_connection_role_assignment_for_spn(connection['id'],
-                                                         EnvironmentSettings.SERVICE_PRINCIPAL_OBJECT_ID,
-                                                         'Owner')
-
+        
         return connection
 
     @classmethod
