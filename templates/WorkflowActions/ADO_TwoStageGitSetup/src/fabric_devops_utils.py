@@ -38,14 +38,14 @@ class EnvironmentSettings:
     DEPLOYMENT_JOBS = {
         'dev': {
             'name': 'dev',
-            'web_datasource_path': 'https://fabricdevcamp.blob.core.windows.net/sampledata/ProductSales/Dev/',
+            'web_datasource_path': 'https://fabricdevcamp.blob.core.windows.net/sampledata/ProductSales/Dev',
             'adls_server': 'https://fabricdevcamp.dfs.core.windows.net/',
             'adls_container_name': 'sampledata', 
             'adls_container_path': '/ProductSales/Prod',            
         },
         "prod": {
             'name': 'prod',
-            'web_datasource_path': 'https://fabricdevcamp.blob.core.windows.net/sampledata/ProductSales/Prod/',
+            'web_datasource_path': 'https://fabricdevcamp.blob.core.windows.net/sampledata/ProductSales/Prod',
             'adls_server': 'https://fabricdevcamp.dfs.core.windows.net/',
             'adls_container_name': 'sampledata',
             'adls_container_path': '/ProductSales/Prod',
