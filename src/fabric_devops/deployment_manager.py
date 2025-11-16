@@ -2914,7 +2914,7 @@ class DeploymentManager:
         AdoProjectManager.copy_files_from_folder_to_repo(
             project_name,
             'main',
-            'ADO_SetupForFabricCICD_Alt',
+            'ADO_OneBranch_Fabric_CICD',
             variable_group['id'])
         
         AppLogger.log_step("Generating parameter.yml used by fabric-cicd")
@@ -2978,7 +2978,7 @@ class DeploymentManager:
         AdoProjectManager.copy_files_from_folder_to_repo(
             project_name,
             'dev',
-            'ADO_SetupForFabricCICD',
+            'ADO_ThreeBranch_Fabric_CICD',
             variable_group['id'])
         
         AdoProjectManager.create_and_merge_pull_request(project_name, 'dev', 'test')
