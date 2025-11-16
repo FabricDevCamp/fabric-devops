@@ -627,6 +627,12 @@ class AdoProjectManager:
                     "isSecret": False,
                     "isReadOnly": True
                 },
+                "DEVELOPERS_GROUP_ID": {
+                    "value": EnvironmentSettings.DEVELOPERS_GROUP_ID,
+                    "isSecret": False,
+                    "isReadOnly": True
+                },
+
                 "DEV_WORKSPACE_ID": {
                     "value": dev_workspace_id,
                     "isSecret": False,

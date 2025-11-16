@@ -502,8 +502,7 @@ class FabricRestApi:
     @classmethod
     def create_connection(cls, create_connection_request, top_level_step = False):
         """ Create new connection"""
-        log_message = f"Creating {create_connection_request['connectionDetails']['type']} " + \
-                        f"connection named {create_connection_request['displayName']} ..."
+        log_message = f"Creating connection {create_connection_request['displayName']} ..."
 
         if top_level_step:
             AppLogger.log_step(log_message)
@@ -514,6 +513,8 @@ class FabricRestApi:
         for connection in existing_connections:
             if 'displayName' in connection and \
                 connection['displayName'] == create_connection_request['displayName']:
+                AppLogger.log_substep(
+                    f"Using existing Connection with id [{connection['id']}]")
                 return connection
 
         connection = cls._execute_post_request('connections', create_connection_request)
