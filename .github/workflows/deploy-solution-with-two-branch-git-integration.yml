@@ -1,5 +1,5 @@
 
-name: Deploy Project with 2-Stage GIT Sync
+name: Deploy Project with 2-Branch GIT Sync
 run-name: Deploy ${{inputs.solution_name}} to ${{inputs.project_name}}
 
 on:
@@ -71,4 +71,4 @@ jobs:
                 GIT_INTEGRATION_PROVIDER: ${{inputs.git_integration_provider}}
                 RUN_AS_SERVICE_PRINCIPAL: ${{inputs.run_as_service_principal}}
               run: 
-                python src/deploy_solution_with_two_stage_git_integration.py
+                python src/deploy_solution_with_two_branch_git_integration.py
