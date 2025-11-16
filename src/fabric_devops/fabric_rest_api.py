@@ -563,9 +563,7 @@ class FabricRestApi:
     @classmethod
     def create_anonymous_web_connection(cls, web_url, workspace = None):
         """Create new Web connection using Anonymous credentials"""
-        display_name = 'Web'
-        if workspace is not None:
-            display_name = f"Workspace[{workspace['id']}]-" + display_name
+        display_name = f'Web-Anonymous-[{web_url}]'
 
         create_connection_request = {
             'displayName': display_name,
