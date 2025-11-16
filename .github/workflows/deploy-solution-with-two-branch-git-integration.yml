@@ -1,6 +1,6 @@
 
 name: Deploy Project with 2-Branch GIT Sync
-run-name: Deploy ${{inputs.solution_name}} to ${{inputs.project_name}}
+run-name: Depoy [${{inputs.solution_name}}] to Project [${{inputs.project_name}}] using Git Sync with ${{inputs.git_integration_provider}}
 
 on:
     workflow_dispatch:

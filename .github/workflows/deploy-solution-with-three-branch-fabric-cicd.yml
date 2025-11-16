@@ -1,6 +1,6 @@
 
 name: Deploy Project with 3-Branch fabric-cicd
-run-name: Depoy [${{inputs.solution_name}}] to project [${{inputs.project_name}}] using fabric-cicd & ${{inputs.git_integration_provider}}
+run-name: Depoy [${{inputs.solution_name}}] to Project [${{inputs.project_name}}] using fabric-cicd & ${{inputs.git_integration_provider}}
 
 on:
     workflow_dispatch:
