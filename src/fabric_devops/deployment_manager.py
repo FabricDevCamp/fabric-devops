@@ -2712,7 +2712,7 @@ class DeploymentManager:
         AdoProjectManager.copy_files_from_folder_to_repo(
             project_name,
             'dev',
-            'ADO_TwoStageGitSetup',
+            'ADO_TwoBranch_GitSync',
             variable_group['id'])
         
         AdoProjectManager.create_and_merge_pull_request(project_name, 'dev','main')
