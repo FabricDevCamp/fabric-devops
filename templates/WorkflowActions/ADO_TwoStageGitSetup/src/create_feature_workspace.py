@@ -6,17 +6,21 @@ AppLogger.log_job("Creating feature branch")
 
 dev_workspace = FabricRestApi.get_workspace_info(EnvironmentSettings.DEV_WORKSPACE_ID)
 DEV_WORKSPACE_NAME = dev_workspace['displayName']
+workspace_desciption = dev_workspace['description']
+
 PROJECT_NAME = EnvironmentSettings.ADO_PROJECT_NAME
 
 RUN_POST_DEPLOY_FIXES = os.getenv("RUN_POST_DEPLOY_FIXES") == 'True'
 ADD_ADMIN_USER = os.getenv("ADD_ADMIN_USER") == 'True'
 
 FEATURE_NAME = os.getenv("FEATURE_NAME")
-FEATURE_BRANCH_NAME = f'dev-{FEATURE_NAME}'
-FEATURE_BRANCH = AdoProjectManager.create_branch(PROJECT_NAME, FEATURE_BRANCH_NAME, 'dev')
 
 FEATURE_WORKSPACE_NAME = F'{DEV_WORKSPACE_NAME}-{FEATURE_NAME}'
 FEATURE_WORKSPACE = FabricRestApi.create_workspace(FEATURE_WORKSPACE_NAME)
+FabricRestApi.update_workspace_description(FEATURE_WORKSPACE['id'], workspace_desciption)
+
+FEATURE_BRANCH_NAME = f'dev-{FEATURE_NAME}'
+FEATURE_BRANCH = AdoProjectManager.create_branch(PROJECT_NAME, FEATURE_BRANCH_NAME, 'dev')
     
 AppLogger.log_substep('Adding workspace role of [Member] for developers group')
 FabricRestApi.add_workspace_group(

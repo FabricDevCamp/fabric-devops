@@ -23,8 +23,10 @@ dev_workspace = DeploymentManager.deploy_solution_by_name(
     DEV_WORKSPACE_NAME,
     dev_deploy_job)
 
-prod_workspace = FabricRestApi.create_workspace(PROD_WORKSPACE_NAME)
+workspace_description = dev_workspace['description']
 
+prod_workspace = FabricRestApi.create_workspace(PROD_WORKSPACE_NAME)
+FabricRestApi.update_workspace_description(prod_workspace['id'], workspace_description)
 
 match os.getenv("GIT_INTEGRATION_PROVIDER"):
 
