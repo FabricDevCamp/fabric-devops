@@ -1,0 +1,42 @@
+name: Sync Workspace
+run-name: Sync workspace from branch ${{ github.ref_name }} 
+
+on:
+    workflow_dispatch:
+    push:
+      branches:
+        - dev
+        - main
+
+jobs:
+    deployment-job:
+      name: Create Feature Workspace
+      runs-on: ubuntu-latest
+
+      steps:
+        - name: Check out the code
+          uses: actions/checkout@v4
+
+        - name: Set up Python
+          uses: actions/setup-python@v2
+          with:
+            python-version: "3.12"
+
+        - name: Install msal
+          run: |
+              pip install msal
+
+        - name: Create Feature Workspace
+          env:
+              BRANCH_NAME: ${{ github.ref_name }}
+              GITHUB_WORKSPACE : $GITHUB_WORKSPACE
+              FABRIC_CLIENT_ID: ${{ secrets.FABRIC_CLIENT_ID }}
+              FABRIC_CLIENT_SECRET: ${{ secrets.FABRIC_CLIENT_SECRET }}
+              FABRIC_TENANT_ID: ${{ secrets.FABRIC_TENANT_ID }}
+              PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
+              FABRIC_CAPACITY_ID: ${{ vars.FABRIC_CAPACITY_ID }}         
+              ADMIN_USER_ID: ${{ vars.ADMIN_USER_ID }}
+              DEV_WORKSPACE_ID: ${{ vars.DEV_WORKSPACE_ID }}
+              PROD_WORKSPACE_ID: ${{ vars.PROD_WORKSPACE_ID }}
+          run: 
+              python 'src/create_feature_workspace.py'
