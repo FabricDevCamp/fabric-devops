@@ -2749,16 +2749,17 @@ class DeploymentManager:
         cls.apply_post_deploy_fixes(
             prod_workspace['displayName'],
             StagingEnvironments.get_prod_environment())
-        
-        GitHubRestApi.create_repository_secret(repo_name, 'FABRIC_CLIENT_ID', EnvironmentSettings.FABRIC_CLIENT_ID)
-        GitHubRestApi.create_repository_secret(repo_name, 'FABRIC_CLIENT_SECRET', EnvironmentSettings.FABRIC_CLIENT_SECRET)
-        GitHubRestApi.create_repository_secret(repo_name, 'FABRIC_TENANT_ID', EnvironmentSettings.FABRIC_TENANT_ID)
-        GitHubRestApi.create_repository_secret(repo_name, 'PERSONAL_ACCESS_TOKEN_GITHUB', EnvironmentSettings.PERSONAL_ACCESS_TOKEN_GITHUB)
-
-        GitHubRestApi.create_repository_variable(repo_name, 'ADMIN_USER_ID', EnvironmentSettings.ADMIN_USER_ID)
+           
+        GitHubRestApi.create_repository_variable(repo_name, 'FABRIC_TENANT_ID', EnvironmentSettings.FABRIC_TENANT_ID)
+        GitHubRestApi.create_repository_variable(repo_name, 'FABRIC_CLIENT_ID', EnvironmentSettings.FABRIC_CLIENT_ID)
         GitHubRestApi.create_repository_variable(repo_name, 'FABRIC_CAPACITY_ID', EnvironmentSettings.FABRIC_CAPACITY_ID)
+        GitHubRestApi.create_repository_variable(repo_name, 'ADMIN_USER_ID', EnvironmentSettings.ADMIN_USER_ID)
+        GitHubRestApi.create_repository_variable(repo_name, 'DEVELOPERS_GROUP_ID', EnvironmentSettings.DEVELOPERS_GROUP_ID)
         GitHubRestApi.create_repository_variable(repo_name, 'DEV_WORKSPACE_ID', dev_workspace['id'])
         GitHubRestApi.create_repository_variable(repo_name, 'PROD_WORKSPACE_ID', prod_workspace['id'])
+        
+        GitHubRestApi.create_repository_secret(repo_name, 'FABRIC_CLIENT_SECRET', EnvironmentSettings.FABRIC_CLIENT_SECRET)
+        GitHubRestApi.create_repository_secret(repo_name, 'PERSONAL_ACCESS_TOKEN_GITHUB', EnvironmentSettings.PERSONAL_ACCESS_TOKEN_GITHUB)
         
         AppLogger.log_step('Add Workflow Files')
         GitHubRestApi.copy_files_from_folder_to_repo(repo_name, 'dev', 'GitHub_TwoStageGitStep')

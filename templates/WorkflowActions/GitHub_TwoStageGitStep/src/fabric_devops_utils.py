@@ -12,6 +12,7 @@ from typing import List
 
 import requests
 import msal
+import requests
 
 class EnvironmentSettings:
     """Environment Settings"""
@@ -23,8 +24,13 @@ class EnvironmentSettings:
     FABRIC_CAPACITY_ID = os.getenv("FABRIC_CAPACITY_ID")
 
     DEV_WORKSPACE_ID = os.getenv("DEV_WORKSPACE_ID")
-    TEST_WORKSPACE_ID = os.getenv("TEST_WORKSPACE_ID")
     PROD_WORKSPACE_ID = os.getenv("PROD_WORKSPACE_ID")
+
+    ADMIN_USER_ID = os.getenv("ADMIN_USER_ID")
+    DEVELOPERS_GROUP_ID = os.getenv("DEVELOPERS_GROUP_ID")
+    
+    REPOSITORY_NAME = os.environ.get('REPOSITORY_NAME')
+    BRANCH_NAME = os.environ.get('BRANCH_NAME')
 
     FABRIC_REST_API_RESOURCE_ID = 'https://api.fabric.microsoft.com'
     FABRIC_REST_API_BASE_URL = 'https://api.fabric.microsoft.com/v1/'
@@ -33,20 +39,497 @@ class EnvironmentSettings:
     DEPLOYMENT_JOBS = {
         'dev': {
             'name': 'dev',
-            'web_datasource_path': 'https://fabricdevcamp.blob.core.windows.net/sampledata/ProductSales/dev',
+            'web_datasource_path': 'https://fabricdevcamp.blob.core.windows.net/sampledata/ProductSales/Dev/',
             'adls_server': 'https://fabricdevcamp.dfs.core.windows.net/',
             'adls_container_name': 'sampledata', 
             'adls_container_path': '/ProductSales/Prod',            
-        },  
+        },
         "prod": {
             'name': 'prod',
-            'web_datasource_path': 'https://fabricdevcamp.blob.core.windows.net/sampledata/ProductSales/prod',
+            'web_datasource_path': 'https://fabricdevcamp.blob.core.windows.net/sampledata/ProductSales/Prod/',
             'adls_server': 'https://fabricdevcamp.dfs.core.windows.net/',
             'adls_container_name': 'sampledata',
             'adls_container_path': '/ProductSales/Prod',
         }
     }
-    
+
+class GitHubRestApi:
+    """Wrapper class for calling GitHub REST APIs"""
+
+    ACCESS_TOKEN = EnvironmentSettings.PERSONAL_ACCESS_TOKEN_GITHUB
+
+    GITHUB_ORGANIZATION = 'fabricdevcampdemos'
+    GITHUB_OWNER = 'TedAtDevCamp'
+    BASE_URL = 'https://api.github.com/'
+
+#region Low-level details about authentication and HTTP requests and responses
+
+    @classmethod
+    def _execute_get_request(cls, endpoint):
+        """Execute GET Request on Fabric REST API Endpoint"""
+        rest_url = cls.BASE_URL + endpoint
+        request_headers = {'Content-Type':'application/json',
+                           'Authorization': f'token {cls.ACCESS_TOKEN}'}
+        response = requests.get(url=rest_url, headers=request_headers, timeout=60)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            AppLogger.log_error(
+                f'Error executing GET request: {response.status_code} - {response.text}')
+            return None
+
+    @classmethod
+    def _execute_post_request(cls, endpoint, post_body='', content_type = 'application/json'):
+
+        """Execute POST request with support for Long-running Operations (LRO)"""
+        rest_url = cls.BASE_URL + endpoint
+        request_headers = {'Content-Type': content_type,
+                           'Authorization': f'token {cls.ACCESS_TOKEN}'}           
+        response = requests.post(url=rest_url, json=post_body, headers=request_headers, timeout=60)
+
+        if response.status_code in { 200, 201 }:
+            try:
+                return response.json()
+            except JSONDecodeError:
+                return None
+
+        if response.status_code == 202:
+            AppLogger.log_step("Got back 202 ACCEPTED from POST Request")
+            operation_state_url = response.headers.get('Location')
+            wait_time = 10 # int(response.headers.get('Retry-After'))
+            time.sleep(wait_time)
+            response = requests.get(url=operation_state_url, headers=request_headers, timeout=60)
+            operation_state = response.json()
+            while operation_state['status'] != 'Succeeded' and \
+                  operation_state['status'] != 'Failed':
+                time.sleep(wait_time)
+                response = requests.get(url=operation_state_url,
+                                        headers=request_headers,
+                                        timeout=60)
+                operation_state = response.json()
+
+            if operation_state['status'] == 'Succeeded':
+                if 'Location' in response.headers:
+                    operation_result_url = response.headers.get('Location')
+                    response = requests.get(url=operation_result_url,
+                                            headers=request_headers,
+                                            timeout=60)
+                    if response.status_code == 200:
+                        return response.json()
+                    else:
+                        AppLogger.log_error(f"Error - {response.status_code}")
+                        return None
+                else:
+                    return None
+            else:
+                AppLogger.log_error(f"Error - {operation_state}")
+
+        elif response.status_code == 429: # handle TOO MANY REQUESTS error
+            wait_time = int(response.headers.get('Retry-After'))
+            time.sleep(wait_time)
+            return cls._execute_post_request(endpoint, post_body)
+        else:
+            AppLogger.log_error(
+                f'Error executing POST request: {response.status_code} - {response.text}')
+            return None
+
+    @classmethod
+    def _execute_put_request(cls, endpoint, post_body='',  content_type = 'application/json'):
+        """Execute PUT request """
+        rest_url = cls.BASE_URL + endpoint
+        request_headers = {
+            'Content-Type': content_type,
+            'Authorization': f'token {cls.ACCESS_TOKEN}'
+        }           
+        response = requests.put(url=rest_url, json=post_body, headers=request_headers, timeout=60)
+
+        if response.status_code in { 200, 201 }:
+            try:
+                return response.json()
+            except JSONDecodeError:
+                return None
+
+        if response.status_code == 202:
+            AppLogger.log_step("Got back 202 ACCEPTED from PUT  Request")
+
+        AppLogger.log_error(
+            f'Error executing POST request: {response.status_code} - {response.text}')
+
+    @classmethod
+    def _execute_put_request_with_file(cls, endpoint, post_body=''):
+        """Execute PUT request """
+        rest_url = cls.BASE_URL + endpoint
+        request_headers = {'Content-Type':'application/vnd.github+json',
+                           'Authorization': f'token {cls.ACCESS_TOKEN}'}           
+        response = requests.put(url=rest_url, json=post_body, headers=request_headers, timeout=60)
+
+        if response.status_code in { 200, 201 }:
+            try:
+                return response.json()
+            except JSONDecodeError:
+                return None
+
+        AppLogger.log_error(
+            f'Error executing Put request: {response.status_code} - {response.text}')
+
+    @classmethod
+    def _execute_patch_request(cls, endpoint, post_body):
+        """Execute GET Request on Fabric REST API Endpoint"""
+        rest_url = cls.BASE_URL + endpoint
+        request_headers = {'Content-Type':'application/json',
+                           'Authorization': f'token {cls.ACCESS_TOKEN}'}
+        response = requests.patch(url=rest_url, json=post_body, headers=request_headers, timeout=60)
+        if response.status_code == 200:
+            return response.json()
+
+        if response.status_code == 429: # handle TOO MANY REQUESTS error
+            wait_time = int(response.headers.get('Retry-After'))
+            time.sleep(wait_time)
+            return cls._execute_patch_request(endpoint, post_body)
+        else:
+            AppLogger.log_error(
+                f'Error executing PATCH request: {response.status_code} - {response.text}')
+            return None
+
+
+    @classmethod
+    def _execute_delete_request(cls, endpoint):
+        """Execute DELETE Request on Fabric REST API Endpoint"""
+        rest_url = cls.BASE_URL + endpoint
+        request_headers = {'Content-Type':'application/json',
+                           'Authorization': f'token {cls.ACCESS_TOKEN}'}
+
+        response = requests.delete(url=rest_url, headers=request_headers, timeout=60)
+        if response.status_code in { 200, 204 }:
+            return None
+        if response.status_code == 429: # handle TOO MANY REQUESTS error
+            wait_time = int(response.headers.get('Retry-After'))
+            time.sleep(wait_time)
+            cls._execute_delete_request(endpoint)
+            return None
+        else:
+            AppLogger.log_error(
+                f'Error executing DELETE request: {response.status_code} - {response.text}')
+            return None
+
+#endregion
+
+    @classmethod
+    def get_github_user(cls):
+        """Get GitHub User"""
+        endpoint = "user"
+        return cls._execute_get_request(endpoint)
+
+    @classmethod
+    def get_github_repositories(cls):
+        """Get GitHub Repositories"""
+        endpoint = f"orgs/{cls.GITHUB_ORGANIZATION}/repos"
+        return cls._execute_get_request(endpoint)
+
+    @classmethod
+    def display_github_repos(cls):
+        """Display GitHub Repositories"""
+        AppLogger.log_step('Repos')
+        repos = cls.get_github_repositories()
+        for repo in repos:
+            AppLogger.log_substep(f"{repo['name']} [{repo['id']}]")
+
+    @classmethod
+    def get_github_repository_by_name(cls, repo_name):
+        """Get GitHub Repository by Name"""
+        repos = cls.get_github_repositories()
+        for repo in repos:
+            if repo['name'] == repo_name:
+                return repo
+        return None
+
+    @classmethod
+    def create_repository(cls, repo_name, branches = None, private = False):
+        """Create GitHub Repository"""
+        AppLogger.log_step(f"Creating new GitHub repo [{repo_name}]")
+        repo = cls.get_github_repository_by_name(repo_name)
+        if repo is not None:
+            AppLogger.log_substep("Deleting existing repo with same name")
+            cls.delete_github_repository(repo_name)
+
+        endpoint = f"/orgs/{cls.GITHUB_ORGANIZATION}/repos"
+        body = {
+            'name': repo_name,
+            'private': private,
+            'auto_init': True
+        }
+        repo = cls._execute_post_request(endpoint, body)
+        AppLogger.log_substep("Repo created successfully")
+
+        cls.create_workspace_readme(repo_name)
+
+        if branches is not None:
+            for branch in branches:
+                cls.create_branch(repo_name, branch)
+
+        return repo
+
+    @classmethod
+    def delete_github_repository(cls, repo_name):
+        """Delete GitHub Repository"""
+        endpoint = f"repos/{cls.GITHUB_ORGANIZATION}/{repo_name}"
+        return cls._execute_delete_request(endpoint)
+
+    @classmethod
+    def list_branches(cls, repo_name):
+        """Create GitHub Repository Branch"""
+        endpoint = f"/orgs/{cls.GITHUB_ORGANIZATION}/repos/{repo_name}/branches"
+        repos = cls._execute_get_request(endpoint)
+        return repos
+
+    @classmethod
+    def compare_branches(cls, repo_name, source_branch, target_branch):
+        """Create GitHub Repository Branch"""
+        endpoint = f"repos/{cls.GITHUB_ORGANIZATION}/{repo_name}/compare/{target_branch}...{source_branch}"
+        result = cls._execute_get_request(endpoint)
+        return result
+
+
+    @classmethod
+    def create_branch(cls, repo_name, branch_name):
+        """Create GitHub Repository Branch"""
+        AppLogger.log_substep(f"Creating branch [{branch_name}]")
+
+        endpoint_branchces = f"repos/{cls.GITHUB_ORGANIZATION}/{repo_name}/git/refs/heads"
+        branches = cls._execute_get_request(endpoint_branchces)
+        sha = branches[-1]['object']['sha']
+
+        endpoint_refs = f"repos/{cls.GITHUB_ORGANIZATION}/{repo_name}/git/refs"
+
+        body = {
+            'ref': f'refs/heads/{branch_name}',
+            "sha": sha
+        }
+
+        return cls._execute_post_request(endpoint_refs, body)
+
+
+    @classmethod
+    def create_pull_request(
+        cls, 
+        repo_name, 
+        source_branch, 
+        target_branch, 
+        commit_title, 
+        commit_comment):
+        """Create GitHub Repository Branch"""
+        AppLogger.log_substep(f"Creating pull request for branch [{source_branch}]")
+
+        endpoint_pull_requests = f"repos/{cls.GITHUB_ORGANIZATION}/{repo_name}/pulls"
+
+        body = {
+            'owner': cls.GITHUB_ORGANIZATION,
+            'repo': repo_name,
+            'title': commit_title,
+            'body': commit_comment,
+            'head': (cls.GITHUB_ORGANIZATION + ":" + source_branch),
+            'base': target_branch
+        }
+
+        return cls._execute_post_request(
+            endpoint_pull_requests,
+            body,
+            content_type='application/vnd.github.raw+json')
+
+    @classmethod
+    def merge_pull_request(cls, repo_name, pull_number, commit_title, commit_comment):
+        """Create GitHub Repository Branch"""
+        AppLogger.log_substep(f"Merge pull request [{commit_title}]")
+
+        endpoint_pull_request = f"repos/{cls.GITHUB_ORGANIZATION}/{repo_name}/pulls/{pull_number}"
+        pull_request = cls._execute_get_request(endpoint_pull_request)
+
+        pull_request_mergable = pull_request['mergeable']
+
+        while pull_request_mergable is not True:
+            time.sleep(2)
+            pull_request = cls._execute_get_request(endpoint_pull_request)
+            pull_request_mergable = pull_request['mergeable']
+
+        endpoint_pull_request_merge = f"repos/{cls.GITHUB_ORGANIZATION}/{repo_name}/pulls/{pull_number}/merge"
+
+        body = {
+            'owner': cls.GITHUB_ORGANIZATION,
+            'repo': repo_name, 
+            'pull_number': str(pull_number),
+            'commit_title': commit_title,
+            'commit_message': commit_comment,
+        }
+
+        return cls._execute_put_request(
+            endpoint_pull_request_merge,
+            body,
+            content_type='application/vnd.github+json')
+
+    @classmethod
+    def create_and_merge_pull_request(
+        cls,
+        repo_name,
+        source_branch,
+        target_branch,
+        commit_title,
+        commit_comment):
+        """Create and Merge Pull Request"""
+        AppLogger.log_step(f"Merging changes from [{source_branch}] to [{target_branch}]")
+
+        comparison = GitHubRestApi.compare_branches(repo_name, source_branch, target_branch)
+
+        comparison_has_no_commits = len(comparison['commits']) == 0
+        
+        if comparison_has_no_commits:
+            AppLogger.log_substep("No need to create pull request because the two branches are already in sync")
+            return
+              
+        pull_request = cls.create_pull_request(
+            repo_name,
+            source_branch,
+            target_branch,
+            commit_title,
+            commit_comment
+        )
+        
+        pull_request_number = pull_request['number']
+        cls.merge_pull_request(repo_name, pull_request_number, commit_title, commit_comment)
+
+    @classmethod
+    def create_workspace_readme(cls, repo_name):
+        """Create Content"""
+        content = f"## ReadMe file for {repo_name}"
+        base64_content = base64.b64encode(content.encode('utf-8')).decode('utf-8')
+
+        endpoint = f"repos/{cls.GITHUB_ORGANIZATION}/{repo_name}/contents/workspace/readme.md"
+
+        body = {
+            "message":"Adding ReadMe.md file",
+            "content": base64_content
+        }
+        
+        cls._execute_put_request(endpoint, body)
+
+    @classmethod
+    def write_file_to_repo(cls, repo_name, branch, file_path, file_content, comment = None):
+        """Create Content"""        
+        if comment is None:
+            comment = f'Writing file {file_path}'
+        
+        base64_content = base64.b64encode(file_content.encode('utf-8')).decode('utf-8')
+        endpoint = f"repos/{cls.GITHUB_ORGANIZATION}/{repo_name}/contents/{file_path}"
+        body = {
+            "message": comment,
+            "content": base64_content,
+            "branch": branch
+        }
+        
+        cls._execute_put_request_with_file(endpoint, body)
+
+    @classmethod
+    def set_default_branch(cls, repo_name, default_branch_name):
+        """Create GitHub Repository Branch"""
+        AppLogger.log_substep(f"Setting [{default_branch_name}] branch as default branch")
+        endpoint = f"repos/{cls.GITHUB_ORGANIZATION}/{repo_name}"
+        body = {
+            'name': repo_name,
+            'default_branch': default_branch_name
+        }
+        cls._execute_patch_request(endpoint, body)
+
+    @classmethod
+    def _get_part_path(cls, item_folder_path, file_path):
+        """get path for item definition part"""
+        offset = file_path.find(item_folder_path) + len(item_folder_path)
+        return file_path[offset:].replace('\\', '/')
+
+    @classmethod
+    def copy_files_from_folder_to_repo(cls, repo_name, branch, folder_path):
+        """Copy files to repo"""
+        folder_path = f".//templates//WorkflowActions//{folder_path}//"
+        for root, dirs, files in os.walk(folder_path):
+            for file in files:
+                file_path = os.path.join(root, file)
+                file = open(file_path,'r', encoding="utf-8")
+                file_content = file.read()
+                relative_file_path = file_path.replace(folder_path, '')\
+                                              .replace('\\', '/')
+                cls.write_file_to_repo(repo_name, branch, relative_file_path, file_content)
+
+    @classmethod
+    def _get_org_public_key(cls):
+        """Create GitHub Repository Branch"""
+        endpoint = f"/orgs/{cls.GITHUB_ORGANIZATION}/actions/secrets/public-key"
+        return cls._execute_get_request(endpoint)
+
+    @classmethod
+    def create_organization_secret(cls, repo_name, secret_name, secret_value):
+        """Create repository secret"""
+
+        public_key_result = cls._get_org_public_key()
+        public_key_id = public_key_result['key_id']
+        public_key_value = public_key_result['key']        
+        public_key = public.PublicKey(public_key_value.encode("utf-8"), encoding.Base64Encoder())
+        sealed_box = public.SealedBox(public_key)
+        encrypted = sealed_box.encrypt(secret_value.encode("utf-8"))
+        base64_encrypted = base64.b64encode(encrypted).decode("utf-8")
+
+        endpoint = f"/orgs/{cls.GITHUB_ORGANIZATION}/actions/secrets/{secret_name}"
+        body = {
+            'owner': cls.GITHUB_ORGANIZATION,
+            'repo': repo_name,
+            'secret_name': secret_name,
+            'encrypted_value': base64_encrypted,
+            'key_id': public_key_id,
+            'visibility': 'all'
+        }
+
+        cls._execute_put_request(endpoint, body, 'application/vnd.github+json')
+
+    @classmethod
+    def _get_repo_public_key(cls, repo_name):
+        """Create GitHub Repository Branch"""
+        endpoint = f"/repos/{cls.GITHUB_ORGANIZATION}/{repo_name}/actions/secrets/public-key"
+        return cls._execute_get_request(endpoint)
+
+    @classmethod
+    def create_repository_secret(cls, repo_name, secret_name, secret_value):
+        """Create repository secret"""
+
+        public_key_result = cls._get_repo_public_key(repo_name)
+        public_key_id = public_key_result['key_id']
+        public_key_value = public_key_result['key']        
+        public_key = public.PublicKey(public_key_value.encode("utf-8"), encoding.Base64Encoder())
+        sealed_box = public.SealedBox(public_key)
+        encrypted = sealed_box.encrypt(secret_value.encode("utf-8"))
+        base64_encrypted = base64.b64encode(encrypted).decode("utf-8")
+
+        endpoint = f"/repos/{cls.GITHUB_ORGANIZATION}/{repo_name}/actions/secrets/{secret_name}"
+        body = {
+            'owner': cls.GITHUB_ORGANIZATION,
+            'repo': repo_name,
+            'secret_name': secret_name,
+            'encrypted_value': base64_encrypted,
+            'key_id': public_key_id
+        }
+
+        cls._execute_put_request(endpoint, body, 'application/vnd.github+json')
+
+    @classmethod
+    def create_repository_variable(cls, repo_name, variable_name, variable_value):
+        """Create repository variable"""
+
+        endpoint = f"/repos/{cls.GITHUB_ORGANIZATION}/{repo_name}/actions/variables"
+        body = {
+            'owner': cls.GITHUB_ORGANIZATION,
+            'repo': repo_name,
+            'name': variable_name,
+            'value': variable_value,
+        }
+
+        cls._execute_post_request(endpoint, body, 'application/vnd.github+json')
+
 class AppLogger:
     """Logic to write log output to console and/or logs"""
 
@@ -492,13 +975,6 @@ class FabricRestApi:
         workspace_id = workspace['id']
         AppLogger.log_substep(f'Workspace created with Id of [{workspace_id}]')
 
-        if EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL:
-            AppLogger.log_substep('Adding workspace role of [Admin] for admin user')
-            cls.add_workspace_user(workspace_id, EnvironmentSettings.ADMIN_USER_ID, 'Admin')
-        else:
-            AppLogger.log_substep('Adding workspace role of [Admin] for service principal')
-            cls.add_workspace_spn(workspace_id, EnvironmentSettings.SERVICE_PRINCIPAL_OBJECT_ID, 'Admin')
-
         return workspace
 
     @classmethod
@@ -555,6 +1031,19 @@ class FabricRestApi:
             'principal': {
             'id': user_id,
             'type': 'User'
+            }
+        }
+        return cls._execute_post_request(endpoint, post_body)
+
+    @classmethod
+    def add_workspace_group(cls, workspace_id, group_id, role_assignment):
+        """Add workspace role for group"""
+        endpoint =    'workspaces/' + workspace_id + '/roleAssignments'
+        post_body = {
+            'role': role_assignment,
+            'principal': {
+            'id': group_id,
+            'type': 'Group'
             }
         }
         return cls._execute_post_request(endpoint, post_body)
@@ -647,6 +1136,9 @@ class FabricRestApi:
         for connection in existing_connections:
             if 'displayName' in connection and \
                 connection['displayName'] == create_connection_request['displayName']:
+                AppLogger.log_substep(
+                    f"Using existing Connection with id [{connection['id']}]")
+
                 return connection
 
         connection = cls._execute_post_request('connections', create_connection_request)
@@ -654,16 +1146,11 @@ class FabricRestApi:
         AppLogger.log_substep(
             f"Connection created with id [{connection['id']}]")
 
-        if EnvironmentSettings.RUN_AS_SERVICE_PRINCIPAL:
-            AppLogger.log_substep('Adding connection role of [Owner] for user')
-            cls.add_connection_role_assignment_for_user(connection['id'],
-                                                        EnvironmentSettings.ADMIN_USER_ID,
-                                                        'Owner')
-        else:
-            AppLogger.log_substep('Adding connection role of [Owner] for SPN')
-            cls.add_connection_role_assignment_for_spn(connection['id'],
-                                                         EnvironmentSettings.SERVICE_PRINCIPAL_OBJECT_ID,
-                                                         'Owner')
+        AppLogger.log_substep('Adding connection role of [Owner] for user')
+        cls.add_connection_role_assignment_for_user(connection['id'],
+                                                    EnvironmentSettings.ADMIN_USER_ID,
+                                                    'Owner')
+
 
         return connection
 
@@ -696,9 +1183,7 @@ class FabricRestApi:
     @classmethod
     def create_anonymous_web_connection(cls, web_url, workspace = None):
         """Create new Web connection using Anonymous credentials"""
-        display_name = 'Web'
-        if workspace is not None:
-            display_name = f"Workspace[{workspace['id']}]-" + display_name
+        display_name = f'Web-Anonymous-[{web_url}]'
 
         create_connection_request = {
             'displayName': display_name,
@@ -1059,6 +1544,8 @@ class FabricRestApi:
     @classmethod
     def update_item_definition(cls, workspace_id, item, update_item_definition_request):
         """Update Item Definition using update-item--definition-request"""
+        AppLogger.log_substep(
+            f"Updating [{item['displayName']}.{item['type']}]...")
         endpoint = f"workspaces/{workspace_id}/items/{item['id']}/updateDefinition"
         item = cls._execute_post_request(endpoint, update_item_definition_request)
         return item
@@ -1094,7 +1581,6 @@ class FabricRestApi:
             'definitionParts': definition_parts
         }
         return cls._execute_post_request(endpoint, post_body)
-
 
     @classmethod
     def copy_workspace_items(cls, source_workspace_name, target_workspace_name):        
@@ -1291,7 +1777,7 @@ class FabricRestApi:
 
     @classmethod
     def refresh_sql_endpoint_metadata(cls, workspace_id, sql_endpoint_id):
-        """Refresh SL Endpoint"""
+        """Refresh SQL Endpoint"""
         AppLogger.log_substep("Updating SQL Endpoint metadata...")
         endpoint = \
             f"workspaces/{workspace_id}/sqlEndpoints/{sql_endpoint_id}/refreshMetadata?preview=True"
@@ -1478,6 +1964,19 @@ class FabricRestApi:
         AppLogger.log_substep(f'Shortcut [{path}/{name}] successfullly created')
 
     @classmethod
+    def reset_adls_gen2_shortcut(cls, workspace_id, lakehouse_id, shortcut):
+        """Reset ADLS Gen2 Shortcut"""
+        cls.create_adls_gen2_shortcut(
+            workspace_id,
+            lakehouse_id,
+            shortcut['name'],
+            shortcut['path'],
+            "$(/**/environment_settings/adls_server)",
+            "$(/**/environment_settings/adls_shortcut_subpath)",
+            "$(/**/environment_settings/adls_connection_id)"
+        )     
+
+    @classmethod
     def create_onelake_shortcut(cls, 
                                 workspace_id, 
                                 target_lakehouse_id,
@@ -1512,7 +2011,10 @@ class FabricRestApi:
     @classmethod
     def set_active_valueset_for_variable_library(cls, workspace_id, library, valueset):
         """Set active valueset for variable library"""
-        AppLogger.log_step(
+        if valueset == 'dev':
+            valueset = None
+            
+        AppLogger.log_substep(
             "Setting active valueset for variable library " + \
             f"[{library['displayName']}] to [{valueset}]...")
 
@@ -1523,7 +2025,6 @@ class FabricRestApi:
             }
         }
         cls._execute_patch_request(rest_url, post_body)
-        AppLogger.log_substep('Active valueset set successfullly')
         
     @classmethod
     def initialize_git_connection(cls, workspace_id, initialize_connection_request):
@@ -1550,16 +2051,33 @@ class FabricRestApi:
         return cls._execute_post_request(endpoint)
 
     @classmethod
-    def commit_workspace_to_git(cls, workspace_id, commit_to_git_request):
+    def commit_workspace_to_git(cls, workspace_id, commit_to_git_request = None, commit_comment = "commit workspace changes back to repo"):
         """Commit Workspace to GIT Repository"""
+         
         AppLogger.log_substep("Committing Workspace content to GIT repository")
+                
+        if commit_to_git_request is None:
+            currest_status = cls.get_git_status(workspace_id)
+            changes = currest_status['changes']
+            if len(changes) == 0:
+                AppLogger.log_substep("There are no changes to push")
+                return None
+            commit_to_git_request = {
+                    'mode': 'All',
+                    'workspaceHead': currest_status['workspaceHead'],
+                    'remoteCommitHash': currest_status['remoteCommitHash'],
+                    'comment': commit_comment
+            }
+            
         endpoint = f"workspaces/{workspace_id}/git/commitToGit"
-        return cls._execute_post_request(endpoint, commit_to_git_request)
-
+        response = cls._execute_post_request(endpoint, commit_to_git_request)
+        AppLogger.log_substep('GIT sync process completed successfully')
+        return response
+    
     @classmethod
     def update_workspace_from_git(cls, workspace_id, update_from_git_request = None):
         """Update Workspace from GIT Repository"""
-        AppLogger.log_step("Pushing item definitions from GIT reposiitory to workspace items")
+        AppLogger.log_substep("Pushing item definitions from GIT reposiitory to workspace items")
         
         if update_from_git_request is None:            
             git_status = FabricRestApi.get_git_status(workspace_id)
@@ -1589,6 +2107,123 @@ class FabricRestApi:
         """Update My GIT Credentials"""
         endpoint = f"workspaces/{workspace_id}/git/myGitCredentials"
         return cls._execute_patch_request(endpoint, update_git_credentials_request)
+
+    @classmethod
+    def _create_github_source_control_connection(cls, url, workspace, top_level_step = False):
+        """Create GitHub connections with Personal Access Token"""
+
+        display_name = f"Workspace[{workspace['id']}]-GitHubSourceControl"
+
+        create_connection_request = {
+            'displayName': display_name,
+            'connectivityType': 'ShareableCloud',
+            'privacyLevel': 'Organizational',
+            'connectionDetails': {
+                'type': 'GitHubSourceControl',
+                'creationMethod': 'GitHubSourceControl.Contents',
+                'parameters': [ 
+                    { 'name': 'url', 'dataType': 'Text', 'value': url }
+                ]
+            },
+            'credentialDetails': {
+                'credentials': {
+                    'key': EnvironmentSettings.PERSONAL_ACCESS_TOKEN_GITHUB,
+                    'credentialType': 'Key'
+                },
+                'singleSignOnType': 'None',
+                'connectionEncryption': 'NotEncrypted',
+                'skipTestConnection': 'false'
+            }
+        }
+
+        return cls.create_connection(create_connection_request, top_level_step=top_level_step)
+
+    @classmethod
+    def _get_github_source_control_connection(cls, repo_name, workspace = None):
+        """Get GitHub Repo Connection"""
+
+        github_repo_url = f'https://github.com/fabricdevcampdemos/{repo_name}'
+
+        connections = FabricRestApi.list_connections()
+
+        for connection in connections:
+            if connection['connectionDetails']['type'] == 'GitHubSourceControl' and \
+                 connection['connectionDetails']['path'] == github_repo_url:
+                return connection
+
+        return cls._create_github_source_control_connection(github_repo_url, workspace)
+    
+    @classmethod
+    def _create_workspace_connection_to_github_repo(cls, workspace_id, repo_name, connection_id, branch = 'main'):
+        """Connect Workspace to GIT Repository"""
+        endpoint = f"workspaces/{workspace_id}/git/connect"
+
+        connect_request = {
+            "gitProviderDetails": {
+                "ownerName": "fabricdevcampdemos",
+                "gitProviderType": "GitHub",
+                "repositoryName": repo_name,
+                "branchName": branch,
+                "directoryName": "/workspace"
+            },
+            "myGitCredentials": {
+                "source": "ConfiguredConnection",
+                "connectionId": connection_id            
+            }
+        }
+
+        return cls._execute_post_request(endpoint, connect_request)
+
+    @classmethod
+    def connect_workspace_to_github_repo(cls, workspace, repo_name, branch = 'main'):
+        """Connect Workspace to GitHub Repository"""
+
+        AppLogger.log_substep(f"Connecting workspace[{workspace['displayName']}] " + \
+                                f"to branch[{branch}] in GitHub repo[{repo_name}]")
+
+        connection = cls._get_github_source_control_connection(repo_name, workspace)
+        connection_id = connection['id']
+
+        cls._create_workspace_connection_to_github_repo(workspace['id'], repo_name, connection_id, branch)
+
+        AppLogger.log_substep("Workspace connection created successfully")
+
+
+        init_request = {
+            'initializationStrategy': 'PreferWorkspace'
+        }
+
+        init_response = cls.initialize_git_connection(workspace['id'], init_request)
+
+        required_action = init_response['requiredAction']
+
+        if required_action == 'CommitToGit':
+            commit_to_git_request = {
+                'mode': 'All',
+                'workspaceHead': init_response['workspaceHead'],
+                'comment': 'Initial commit'
+            }
+            cls.commit_workspace_to_git(
+                workspace['id'], 
+                commit_to_git_request, 
+                'Initial commt from workspace')
+
+        if required_action == 'UpdateFromGit':
+            update_from_git_request = {
+                "workspaceHead": init_response['workspaceHead'],
+                "remoteCommitHash": init_response['remoteCommitHash'],
+                "conflictResolution": {
+                    "conflictResolutionType": "Workspace",
+                    "conflictResolutionPolicy": "PreferWorkspace"
+                },
+                "options": {
+                    "allowOverrideItems": True
+                }
+                            
+            }
+            cls.update_workspace_from_git(workspace['id'], update_from_git_request)
+
+        AppLogger.log_substep("Workspace connection successfully created and synchronized")
 
 class Variable:
     """Variable in Variable Library"""
@@ -2198,10 +2833,16 @@ class DeploymentManager:
 
     @classmethod
     def update_datasource_path_in_notebook(cls,
-                workspace_name,
-                notebook_name,
-                redirects):
+        workspace_name,
+        notebook_name,
+        deployment_job):
         """Update datasource path in notebook"""
+        
+        redirects = {
+            EnvironmentSettings.DEPLOYMENT_JOBS['dev']['web_datasource_path']: deployment_job['web_datasource_path'],
+            EnvironmentSettings.DEPLOYMENT_JOBS['prod']['web_datasource_path']: deployment_job['web_datasource_path'],                    
+        }
+    
         workspace = FabricRestApi.get_workspace_by_name(workspace_name)
         notebook = FabricRestApi.get_item_by_name(workspace['id'], notebook_name, 'Notebook')
         
@@ -2214,7 +2855,7 @@ class DeploymentManager:
                 redirects)
         }
 
-        FabricRestApi.update_item_definition(workspace['id'], notebook, notebook_definition)        
+        FabricRestApi.update_item_definition(workspace['id'], notebook, notebook_definition)            
 
     @classmethod
     def update_source_lakehouse_in_notebook(cls,
@@ -2310,14 +2951,10 @@ class DeploymentManager:
                     "sales")
 
                 if notebook['displayName'] == 'Create Lakehouse Tables':
-                    redirects = {
-                        EnvironmentSettings.DEPLOYMENT_JOBS['dev']['web_datasource_path']: \
-                        web_datasource_path
-                    }
                     cls.update_datasource_path_in_notebook(
                         workspace_name,
                         notebook['displayName'],
-                        redirects)
+                        deployment_job)
 
             if run_etl_jobs and 'Create' in notebook['displayName']:                
                 FabricRestApi.run_notebook(workspace['id'], notebook)
@@ -2393,52 +3030,47 @@ class DeploymentManager:
 
     @classmethod
     def apply_post_deploy_fixes(cls,
-                                workspace_name,
+                                workspace_id,
                                 deployment_job,
-                                run_etl_jobs = False):
+                                run_etl_jobs = True):
         
-        """Apply Post Deploy Fixes"""                    
+        """Apply Post Deploy Fixes"""
+        workspace = FabricRestApi.get_workspace_info(workspace_id)
+        workspace_name = workspace['displayName']                 
         AppLogger.log_step(f"Applying post deploy fixes to [{workspace_name}]")
-        workspace = FabricRestApi.get_workspace_by_name(workspace_name)
         workspace_items = FabricRestApi.list_workspace_items(workspace['id'])
-
-        web_datasource_path = deployment_job['web_datasource_path']
-        adls_container_name = deployment_job['adls_container_name']
-        adls_container_path = deployment_job['adls_container_path_parameter']
-        adls_server = deployment_job['adls_server_parameter']
-        adls_path = f'/{adls_container_name}{adls_container_path}'
+        
+        variable_libraries = list(filter(lambda item: item['type']=='VariableLibrary', workspace_items))
+        for variable_library in variable_libraries:
+            FabricRestApi.set_active_valueset_for_variable_library(
+                workspace['id'],
+                variable_library,
+                deployment_job['name']
+            )
 
         lakehouses = list(filter(lambda item: item['type']=='Lakehouse', workspace_items))
         for lakehouse in lakehouses:
             shortcuts = FabricRestApi.list_shortcuts(workspace['id'], lakehouse['id'])
             for shortcut in shortcuts:
-                connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
-                                adls_server,
-                                adls_path,
-                                workspace)
-
-                shortcut_name = shortcut['name']
-                shortcut_path = shortcut['path']
-                shortcut_location = adls_server
-                shortcut_subpath = adls_path
-
-                FabricRestApi.create_adls_gen2_shortcut(workspace['id'],
-                                                        lakehouse['id'],
-                                                        shortcut_name,
-                                                        shortcut_path,
-                                                        shortcut_location,
-                                                        shortcut_subpath,
-                                                        connection['id'])
+                if (shortcut['target']['type'] == 'AdlsGen2') and (shortcut['name'] == 'sales-data'):
+                    FabricRestApi.reset_adls_gen2_shortcut(workspace['id'], lakehouse['id'], shortcut)
 
         notebooks = list(filter(lambda item: item['type']=='Notebook', workspace_items))
-        for notebook in notebooks:
-            # Apply fixes for [Create Lakehouse Tables.Notebook]
-            if notebook['displayName'] == 'Create Lakehouse Tables':
+        for notebook in notebooks:  
+            notebooks_for_sales_lakehouse = [
+                'Create Lakehouse Tables', 
+                'Create 01 Silver Layer', 
+                'Create 02 Gold Layer', 
+                'Build 01 Silver Layer', 
+                'Build 02 Gold Layer']
+            
+            if notebook['displayName'] in notebooks_for_sales_lakehouse:
                 cls.update_source_lakehouse_in_notebook(
                     workspace_name,
                     notebook['displayName'],
                     "sales")
 
+            if notebook['displayName'] == 'Create Lakehouse Tables':
                 cls.update_datasource_path_in_notebook(
                     workspace_name,
                     notebook['displayName'],
@@ -2446,6 +3078,12 @@ class DeploymentManager:
                 
             if run_etl_jobs and 'Create' in notebook['displayName']:                
                 FabricRestApi.run_notebook(workspace['id'], notebook)
+
+        pipelines  = list(filter(lambda item: item['type']=='DataPipeline', workspace_items))
+        for pipeline in pipelines:
+            # run pipelines if required                
+            if run_etl_jobs and 'Create' in pipeline['displayName']:
+                FabricRestApi.run_data_pipeline(workspace['id'], pipeline)
 
         sql_endpoints =    list(filter(lambda item: item['type']=='SQLEndpoint', workspace_items))
         for sql_endpoint in sql_endpoints:
@@ -2460,7 +3098,7 @@ class DeploymentManager:
             if model['displayName'] ==    'Product Sales Imported Model':
                 # fix connection to imported models
                 datasource_path =    \
-                    deployment_job.parameters[deployment_job.web_datasource_path_parameter]
+                    deployment_job['web_datasource_path']
 
                 DeploymentManager.update_imported_semantic_model_source(
                     workspace,
@@ -2479,10 +3117,16 @@ class DeploymentManager:
                     workspace_name, 
                     model['displayName'],
                     target_lakehouse_name)
-
+                
+                target_lakehouse = FabricRestApi.get_item_by_name(
+                    workspace['id'], 
+                    target_lakehouse_name, 
+                    "Lakehouse")
+                
                 FabricRestApi.create_and_bind_semantic_model_connecton(
                     workspace,
-                    model['id'])
+                    model['id'],
+                    target_lakehouse)
 
     @classmethod
     def run_data_pipeline(cls, workspace_name, data_pipeline_name):
@@ -2502,5 +3146,6 @@ class DeploymentManager:
         workspace = FabricRestApi.get_workspace_by_name(workspace_name)
         lakehouse = FabricRestApi.get_item_by_name(workspace['id'], 
                                                      lakehouse_name, 'Lakehouse')
-        sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse)
+        
+        return FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse)
  

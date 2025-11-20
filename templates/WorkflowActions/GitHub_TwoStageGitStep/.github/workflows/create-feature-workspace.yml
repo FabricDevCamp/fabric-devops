@@ -1,12 +1,21 @@
-name: Sync Workspace
-run-name: Sync workspace from branch ${{ github.ref_name }} 
+name: Create Feature Workspace
+run-name: Create feature workspace from branch ${{ github.ref_name }} 
 
 on:
     workflow_dispatch:
-    push:
-      branches:
-        - dev
-        - main
+        inputs:
+            feature_name:
+                description: Feature Name
+                required: true
+                default: "feature2"
+            run_post_deploy_fixes:
+                type: boolean
+                description: Run poat deploy fixes
+                default: true
+            add_admin_user:
+                type: boolean
+                description: Add admin user
+                default: true
 
 jobs:
     deployment-job:
@@ -28,15 +37,21 @@ jobs:
 
         - name: Create Feature Workspace
           env:
+              REPOSITORY_NAME: ${{ github.repository }}
               BRANCH_NAME: ${{ github.ref_name }}
               GITHUB_WORKSPACE : $GITHUB_WORKSPACE
-              FABRIC_CLIENT_ID: ${{ secrets.FABRIC_CLIENT_ID }}
-              FABRIC_CLIENT_SECRET: ${{ secrets.FABRIC_CLIENT_SECRET }}
-              FABRIC_TENANT_ID: ${{ secrets.FABRIC_TENANT_ID }}
-              PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
+              GITHUB_ACCESS_TOKEN: $GITHUB_ACCESS_TOKEN
+              FABRIC_TENANT_ID: ${{ vars.FABRIC_TENANT_ID }}
+              FABRIC_CLIENT_ID: ${{ vars.FABRIC_CLIENT_ID }}
               FABRIC_CAPACITY_ID: ${{ vars.FABRIC_CAPACITY_ID }}         
               ADMIN_USER_ID: ${{ vars.ADMIN_USER_ID }}
+              DEVELOPERS_GROUP_ID: ${{ vars.DEVELOPERS_GROUP_ID }}
               DEV_WORKSPACE_ID: ${{ vars.DEV_WORKSPACE_ID }}
               PROD_WORKSPACE_ID: ${{ vars.PROD_WORKSPACE_ID }}
+              FABRIC_CLIENT_SECRET: ${{ secrets.FABRIC_CLIENT_SECRET }}
+              PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
+              FEATURE_NAME: ${{inputs.feature_name}}
+              RUN_POST_DEPLOY_FIXES: ${{inputs.run_post_deploy_fixes}}
+              ADD_ADMIN_USER: ${{inputs.add_admin_user}}
           run: 
               python 'src/create_feature_workspace.py'

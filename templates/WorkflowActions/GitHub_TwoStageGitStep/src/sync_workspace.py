@@ -6,6 +6,7 @@ from fabric_devops_utils import EnvironmentSettings, DeploymentManager, FabricRe
 
 AppLogger.log_job("Synching workspace after PR completion")
 
+repository_name = os.environ.get('REPOSITORY_NAME')
 branch_name = os.environ.get('BRANCH_NAME')
 
 AppLogger.log_step(f'Pipeline triggered by PR completing on branch [{branch_name}]')
