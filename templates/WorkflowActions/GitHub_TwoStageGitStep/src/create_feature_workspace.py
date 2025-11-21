@@ -17,11 +17,10 @@ FEATURE_WORKSPACE = FabricRestApi.create_workspace(FEATURE_WORKSPACE_NAME)
 FabricRestApi.update_workspace_description(FEATURE_WORKSPACE['id'], workspace_desciption)
 
 FEATURE_BRANCH_NAME = f'dev-{FEATURE_NAME}'
-FEATURE_BRANCH = GitHubRestApi.create_branch((
+FEATURE_BRANCH = GitHubRestApi.create_feature_branch(
     EnvironmentSettings.REPOSITORY_NAME,
-    FEATURE_BRANCH_NAME, 
-    'dev'))
-    
+    FEATURE_BRANCH_NAME)
+
 AppLogger.log_substep('Adding workspace role of [Member] for developers group')
 FabricRestApi.add_workspace_group(
     FEATURE_WORKSPACE['id'],
@@ -35,7 +34,10 @@ if ADD_ADMIN_USER:
         EnvironmentSettings.ADMIN_USER_ID, 
         'Admin')
     
-FabricRestApi.connect_workspace_to_ado_repo(FEATURE_WORKSPACE, PROJECT_NAME, FEATURE_BRANCH_NAME)
+FabricRestApi.connect_workspace_to_github_repo(
+    FEATURE_WORKSPACE,
+    EnvironmentSettings.REPOSITORY_NAME,
+    FEATURE_BRANCH_NAME)
 
 if RUN_POST_DEPLOY_FIXES:
     deployment_job = EnvironmentSettings.DEPLOYMENT_JOBS['dev']

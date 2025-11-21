@@ -5,7 +5,7 @@ import re
 
 import os
 import time
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 import json
 from json.decoder import JSONDecodeError
 from typing import List
@@ -28,6 +28,8 @@ class EnvironmentSettings:
 
     ADMIN_USER_ID = os.getenv("ADMIN_USER_ID")
     DEVELOPERS_GROUP_ID = os.getenv("DEVELOPERS_GROUP_ID")
+    
+    PERSONAL_ACCESS_TOKEN_GITHUB = os.getenv("PERSONAL_ACCESS_TOKEN_GITHUB")
     
     REPOSITORY_NAME = os.environ.get('REPOSITORY_NAME')
     BRANCH_NAME = os.environ.get('BRANCH_NAME')
@@ -297,6 +299,33 @@ class GitHubRestApi:
 
         endpoint_branchces = f"repos/{cls.GITHUB_ORGANIZATION}/{repo_name}/git/refs/heads"
         branches = cls._execute_get_request(endpoint_branchces)
+        sha = branches[-1]['object']['sha']
+
+        endpoint_refs = f"repos/{cls.GITHUB_ORGANIZATION}/{repo_name}/git/refs"
+
+        body = {
+            'ref': f'refs/heads/{branch_name}',
+            "sha": sha
+        }
+
+        return cls._execute_post_request(endpoint_refs, body)
+
+
+    @classmethod
+    def create_feature_branch(cls, repo_name, branch_name):
+        """Create GitHub Repository Branch"""
+        AppLogger.log_substep(f"Creating branch [{branch_name}]")
+
+        print('got here')
+        
+        endpoint_branchces = f"repos/{cls.GITHUB_ORGANIZATION}/{repo_name}/git/refs/heads"
+        
+        print ( endpoint_branchces )
+        
+        branches = cls._execute_get_request(endpoint_branchces)
+        
+        print(json.dumps(branches, indent=4), flush=True)
+        
         sha = branches[-1]['object']['sha']
 
         endpoint_refs = f"repos/{cls.GITHUB_ORGANIZATION}/{repo_name}/git/refs"
@@ -631,7 +660,7 @@ class FabricRestApi:
     def _get_fabric_access_token(cls):
       scope = EnvironmentSettings.FABRIC_REST_API_RESOURCE_ID + "//.default"
       if (scope in cls._token_cache) and \
-         (datetime.datetime.now() < cls._token_cache[scope]['access_token_expiration']):
+         (datetime.now() < cls._token_cache[scope]['access_token_expiration']):
            return cls._token_cache[scope]['access_token']
                 
       app = msal.ConfidentialClientApplication(
@@ -643,8 +672,8 @@ class FabricRestApi:
 
       cls._token_cache[scope] = {
         'access_token': authentication_result['access_token'],
-        'access_token_expiration': datetime.datetime.now() + \
-                                   datetime.timedelta(0,  int(authentication_result['expires_in']))
+        'access_token_expiration': datetime.now() + \
+                                   timedelta(0,  int(authentication_result['expires_in']))
         }
 
       return authentication_result['access_token']
