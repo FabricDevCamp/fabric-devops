@@ -18,7 +18,6 @@ class GitHubRestApi:
     ACCESS_TOKEN = EnvironmentSettings.PERSONAL_ACCESS_TOKEN_GITHUB
 
     GITHUB_ORGANIZATION = 'fabricdevcampdemos'
-    GITHUB_OWNER = 'TedAtDevCamp'
     BASE_URL = 'https://api.github.com/'
 
 #region Low-level details about authentication and HTTP requests and responses

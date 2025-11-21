@@ -29,7 +29,14 @@ class EnvironmentSettings:
     ADMIN_USER_ID = os.getenv("ADMIN_USER_ID")
     DEVELOPERS_GROUP_ID = os.getenv("DEVELOPERS_GROUP_ID")
     
-    REPOSITORY_NAME = os.environ.get('REPOSITORY_NAME')
+    RUNNING_IN_GITHUB = os.getenv('GITHUB_ACTIONS') == 'true'
+    
+    GITHUB_ORGANIZATION = os.getenv('GITHUB_REPOSITORY_OWNER')
+    if RUNNING_IN_GITHUB:
+        REPOSITORY_NAME = os.getenv('GITHUB_REPOSITORY').split('/')[1]
+    else:
+        REPOSITORY_NAME = os.environ.get('REPOSITORY_NAME')
+        
     BRANCH_NAME = os.environ.get('BRANCH_NAME')
 
     FABRIC_REST_API_RESOURCE_ID = 'https://api.fabric.microsoft.com'
@@ -58,8 +65,7 @@ class GitHubRestApi:
 
     ACCESS_TOKEN = os.getenv("ACCESS_TOKEN_FOR_GITHUB")
 
-    GITHUB_ORGANIZATION = 'fabricdevcampdemos'
-    GITHUB_OWNER = 'TedAtDevCamp'
+    GITHUB_ORGANIZATION = EnvironmentSettings.GITHUB_ORGANIZATION
     BASE_URL = 'https://api.github.com/'
 
 #region Low-level details about authentication and HTTP requests and responses
