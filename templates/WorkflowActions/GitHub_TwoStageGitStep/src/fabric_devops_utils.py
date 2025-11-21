@@ -29,8 +29,6 @@ class EnvironmentSettings:
     ADMIN_USER_ID = os.getenv("ADMIN_USER_ID")
     DEVELOPERS_GROUP_ID = os.getenv("DEVELOPERS_GROUP_ID")
     
-    GITHUB_ACCESS_TOKEN = os.getenv("GITHUB_ACCESS_TOKEN")
-    
     REPOSITORY_NAME = os.environ.get('REPOSITORY_NAME')
     BRANCH_NAME = os.environ.get('BRANCH_NAME')
 
@@ -58,7 +56,7 @@ class EnvironmentSettings:
 class GitHubRestApi:
     """Wrapper class for calling GitHub REST APIs"""
 
-    ACCESS_TOKEN = EnvironmentSettings.GITHUB_ACCESS_TOKEN
+    ACCESS_TOKEN = os.getenv("ACCESS_TOKEN_FOR_GITHUB")
 
     GITHUB_ORGANIZATION = 'fabricdevcampdemos'
     GITHUB_OWNER = 'TedAtDevCamp'
