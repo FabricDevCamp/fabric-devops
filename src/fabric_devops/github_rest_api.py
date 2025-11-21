@@ -237,9 +237,23 @@ class GitHubRestApi:
     @classmethod
     def list_branches(cls, repo_name):
         """Create GitHub Repository Branch"""
-        endpoint = f"/orgs/{cls.GITHUB_ORGANIZATION}/repos/{repo_name}/branches"
+        endpoint = f"/repos/{cls.GITHUB_ORGANIZATION}/{repo_name}/branches"
+        print( endpoint)
         repos = cls._execute_get_request(endpoint)
         return repos
+
+    @classmethod
+    def get_branch_by_name(cls, repo_name, branch_name):
+        """Create GitHub Repository Branch"""
+        endpoint = f"/repos/{cls.GITHUB_ORGANIZATION}/{repo_name}/branches/{branch_name}"
+        repos = cls._execute_get_request(endpoint)
+        return repos
+
+    @classmethod
+    def get_sha_for_branch(cls, repo_name, branch_name):
+        """Create GitHub Repository Branch"""
+        branch = cls.get_branch_by_name(repo_name, branch_name)
+        return branch['commit']['sha']
 
     @classmethod
     def compare_branches(cls, repo_name, source_branch, target_branch):
@@ -248,15 +262,12 @@ class GitHubRestApi:
         result = cls._execute_get_request(endpoint)
         return result
 
-
     @classmethod
-    def create_branch(cls, repo_name, branch_name):
+    def create_branch(cls, repo_name, branch_name, source_branch = 'main'):
         """Create GitHub Repository Branch"""
-        AppLogger.log_substep(f"Creating branch [{branch_name}]")
-
-        endpoint_branchces = f"repos/{cls.GITHUB_ORGANIZATION}/{repo_name}/git/refs/heads"
-        branches = cls._execute_get_request(endpoint_branchces)
-        sha = branches[-1]['object']['sha']
+        AppLogger.log_substep(f"Creating branch [{branch_name}] from [{source_branch}]")
+        
+        sha = cls.get_sha_for_branch(repo_name, source_branch)
 
         endpoint_refs = f"repos/{cls.GITHUB_ORGANIZATION}/{repo_name}/git/refs"
 
@@ -266,7 +277,6 @@ class GitHubRestApi:
         }
 
         return cls._execute_post_request(endpoint_refs, body)
-
 
     @classmethod
     def create_pull_request(

@@ -19,7 +19,7 @@ FabricRestApi.update_workspace_description(FEATURE_WORKSPACE['id'], workspace_de
 FEATURE_BRANCH_NAME = f'dev-{FEATURE_NAME}'
 FEATURE_BRANCH = GitHubRestApi.create_branch(
     EnvironmentSettings.REPOSITORY_NAME,
-    FEATURE_BRANCH_NAME)
+    FEATURE_BRANCH_NAME, 'dev')
 
 AppLogger.log_substep('Adding workspace role of [Member] for developers group')
 FabricRestApi.add_workspace_group(

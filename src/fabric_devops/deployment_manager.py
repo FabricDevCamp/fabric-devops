@@ -2733,7 +2733,7 @@ class DeploymentManager:
         AppLogger.log_substep("Configuring GIT integration support with GitHub repository")
 
         GitHubRestApi.create_repository(repo_name)
-        GitHubRestApi.create_branch(repo_name, 'dev')
+        GitHubRestApi.create_branch(repo_name, 'dev', 'main')
         GitHubRestApi.set_default_branch(repo_name, 'dev')
         FabricRestApi.connect_workspace_to_github_repo(dev_workspace, repo_name, 'dev')
         

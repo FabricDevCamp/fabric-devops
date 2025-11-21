@@ -74,7 +74,7 @@ match os.getenv("GIT_INTEGRATION_PROVIDER"):
         FEATURE1_WORKSPACE = FabricRestApi.create_workspace(FEATURE1_WORKSPACE_NAME)
 
         # create feature1 branch and connect to feature1 workspace
-        GitHubRestApi.create_branch(repo_name,  FEATURE1_NAME)
+        GitHubRestApi.create_branch(repo_name,  FEATURE1_NAME, 'dev')
         FabricRestApi.connect_workspace_to_github_repo(FEATURE1_WORKSPACE, repo_name, FEATURE1_NAME)
 
         # apply post sync/deploy fixes to feature1 workspace
