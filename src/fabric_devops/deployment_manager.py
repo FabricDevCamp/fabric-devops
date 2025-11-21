@@ -128,8 +128,6 @@ class DeploymentManager:
 
         AppLogger.log_job(f"Deploying Custom Notebook Solution to [{target_workspace}]")
 
-        deploy_job.display_deployment_parameters('web')
-
         workspace = FabricRestApi.create_workspace(target_workspace)
 
         FabricRestApi.update_workspace_description(workspace['id'], 'Custom Notebook Solution')
