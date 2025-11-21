@@ -29,7 +29,7 @@ class EnvironmentSettings:
     ADMIN_USER_ID = os.getenv("ADMIN_USER_ID")
     DEVELOPERS_GROUP_ID = os.getenv("DEVELOPERS_GROUP_ID")
     
-    PERSONAL_ACCESS_TOKEN_GITHUB = os.getenv("PERSONAL_ACCESS_TOKEN_GITHUB")
+    GITHUB_ACCESS_TOKEN = os.getenv("GITHUB_ACCESS_TOKEN")
     
     REPOSITORY_NAME = os.environ.get('REPOSITORY_NAME')
     BRANCH_NAME = os.environ.get('BRANCH_NAME')
@@ -58,7 +58,7 @@ class EnvironmentSettings:
 class GitHubRestApi:
     """Wrapper class for calling GitHub REST APIs"""
 
-    ACCESS_TOKEN = EnvironmentSettings.PERSONAL_ACCESS_TOKEN_GITHUB
+    ACCESS_TOKEN = EnvironmentSettings.GITHUB_ACCESS_TOKEN
 
     GITHUB_ORGANIZATION = 'fabricdevcampdemos'
     GITHUB_OWNER = 'TedAtDevCamp'
@@ -71,7 +71,7 @@ class GitHubRestApi:
         """Execute GET Request on Fabric REST API Endpoint"""
         rest_url = cls.BASE_URL + endpoint
         request_headers = {'Content-Type':'application/json',
-                           'Authorization': f'token {cls.ACCESS_TOKEN}'}
+                           'Authorization': f'token {cls.G}'}
         response = requests.get(url=rest_url, headers=request_headers, timeout=60)
         if response.status_code == 200:
             return response.json()
