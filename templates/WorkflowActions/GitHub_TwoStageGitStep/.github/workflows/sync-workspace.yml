@@ -39,5 +39,6 @@ jobs:
               PROD_WORKSPACE_ID: ${{ vars.PROD_WORKSPACE_ID }}
               FABRIC_CLIENT_SECRET: ${{ secrets.FABRIC_CLIENT_SECRET }}
               ACCESS_TOKEN_FOR_GITHUB: ${{ secrets.ACCESS_TOKEN_FOR_GITHUB }}
+              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           run: 
               python 'src/sync_workspace.py'

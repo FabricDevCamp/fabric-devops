@@ -51,5 +51,6 @@ jobs:
               FEATURE_NAME: ${{inputs.feature_name}}
               RUN_POST_DEPLOY_FIXES: ${{inputs.run_post_deploy_fixes}}
               ADD_ADMIN_USER: ${{inputs.add_admin_user}}
+              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           run: 
               python 'src/create_feature_workspace.py'

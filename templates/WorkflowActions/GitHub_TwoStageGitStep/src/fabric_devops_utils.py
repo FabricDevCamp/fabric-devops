@@ -32,10 +32,13 @@ class EnvironmentSettings:
     RUNNING_IN_GITHUB = os.getenv('GITHUB_ACTIONS') == 'true'
     
     GITHUB_ORGANIZATION = os.getenv('GITHUB_REPOSITORY_OWNER')
+    GITHUB_ACCESS_TOKEN = os.getenv('GITHUB_TOKEN')
+
     if RUNNING_IN_GITHUB:
         REPOSITORY_NAME = os.getenv('GITHUB_REPOSITORY').split('/')[1]
     else:
         REPOSITORY_NAME = os.environ.get('REPOSITORY_NAME')
+        GITHUB_ACCESS_TOKEN = os.getenv('GITHUB_TOKEN')
         
     BRANCH_NAME = os.environ.get('BRANCH_NAME')
 
