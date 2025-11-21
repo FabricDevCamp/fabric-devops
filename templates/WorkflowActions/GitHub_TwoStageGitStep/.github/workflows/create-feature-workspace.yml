@@ -21,6 +21,8 @@ jobs:
     deployment-job:
       name: Create Feature Workspace
       runs-on: ubuntu-latest
+      permissions:
+        contents: write
 
       steps:
         - name: Check out the code
@@ -47,7 +49,6 @@ jobs:
               DEV_WORKSPACE_ID: ${{ vars.DEV_WORKSPACE_ID }}
               PROD_WORKSPACE_ID: ${{ vars.PROD_WORKSPACE_ID }}
               FABRIC_CLIENT_SECRET: ${{ secrets.FABRIC_CLIENT_SECRET }}
-              ACCESS_TOKEN_FOR_GITHUB: ${{ secrets.ACCESS_TOKEN_FOR_GITHUB }}
               FEATURE_NAME: ${{inputs.feature_name}}
               RUN_POST_DEPLOY_FIXES: ${{inputs.run_post_deploy_fixes}}
               ADD_ADMIN_USER: ${{inputs.add_admin_user}}

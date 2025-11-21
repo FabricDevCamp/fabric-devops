@@ -12,7 +12,9 @@ jobs:
     deployment-job:
       name: Sync Workspace Items
       runs-on: ubuntu-latest
-
+      permissions:
+        contents: write
+        
       steps:
         - name: Check out the code
           uses: actions/checkout@v4
@@ -38,7 +40,6 @@ jobs:
               DEV_WORKSPACE_ID: ${{ vars.DEV_WORKSPACE_ID }}
               PROD_WORKSPACE_ID: ${{ vars.PROD_WORKSPACE_ID }}
               FABRIC_CLIENT_SECRET: ${{ secrets.FABRIC_CLIENT_SECRET }}
-              ACCESS_TOKEN_FOR_GITHUB: ${{ secrets.ACCESS_TOKEN_FOR_GITHUB }}
               GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           run: 
               python 'src/sync_workspace.py'

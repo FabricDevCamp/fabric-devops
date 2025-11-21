@@ -380,7 +380,6 @@ class FabricRestApi:
     @classmethod
     def delete_workspace(cls, workspace_id):
         """Delete Workspace"""
-        AppLogger.log_substep("Deleting workspace")
         workspace_connections    = cls.list_workspace_connections(workspace_id)
         for connection in workspace_connections:
             AppLogger.log_substep(f"Deleting connection {connection['displayName']}")
@@ -1675,7 +1674,7 @@ class FabricRestApi:
         """Connect Workspace to GitHub Repository"""
 
         AppLogger.log_substep(f"Connecting workspace[{workspace['displayName']}] " + \
-                                f"to branch[{branch}] in GitHub repo[{repo_name}]")
+                              f"to branch[{branch}] in GitHub repository[{repo_name}]")
 
         connection = cls._get_github_source_control_connection(repo_name, workspace)
         connection_id = connection['id']

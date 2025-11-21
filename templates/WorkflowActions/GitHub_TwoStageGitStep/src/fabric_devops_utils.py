@@ -2198,7 +2198,7 @@ class FabricRestApi:
         """Connect Workspace to GitHub Repository"""
 
         AppLogger.log_substep(f"Connecting workspace[{workspace['displayName']}] " + \
-                                f"to branch[{branch}] in GitHub repo[{repo_name}]")
+                                f"to branch[{branch}] in GitHub repository[{repo_name}]")
 
         connection = cls._get_github_source_control_connection(repo_name, workspace)
         connection_id = connection['id']

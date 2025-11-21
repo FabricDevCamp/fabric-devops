@@ -80,8 +80,6 @@ class DeploymentManager:
 
         AppLogger.log_job(f"Deploying Customer Power BI Solution to [{target_workspace}]")
 
-        deploy_job.display_deployment_parameters('web')
-
         workspace = FabricRestApi.create_workspace(target_workspace)
 
         FabricRestApi.update_workspace_description(workspace['id'], 'Custom Power BI Solution')
@@ -2758,7 +2756,7 @@ class DeploymentManager:
         GitHubRestApi.create_repository_variable(repo_name, 'DEV_WORKSPACE_ID', dev_workspace['id'])
         GitHubRestApi.create_repository_variable(repo_name, 'PROD_WORKSPACE_ID', prod_workspace['id'])
     
-        GitHubRestApi.create_repository_secret(repo_name, 'ACCESS_TOKEN_FOR_GITHUB', EnvironmentSettings.PERSONAL_ACCESS_TOKEN_GITHUB)    
+        # GitHubRestApi.create_repository_secret(repo_name, 'ACCESS_TOKEN_FOR_GITHUB', EnvironmentSettings.PERSONAL_ACCESS_TOKEN_GITHUB)    
         GitHubRestApi.create_repository_secret(repo_name, 'FABRIC_CLIENT_SECRET', EnvironmentSettings.FABRIC_CLIENT_SECRET)
          
         AppLogger.log_step('Add Workflow Files')
