@@ -2759,7 +2759,7 @@ class DeploymentManager:
         GitHubRestApi.create_repository_variable(repo_name, 'PROD_WORKSPACE_ID', prod_workspace['id'])
         
         GitHubRestApi.create_repository_secret(repo_name, 'FABRIC_CLIENT_SECRET', EnvironmentSettings.FABRIC_CLIENT_SECRET)
-        GitHubRestApi.create_repository_secret(repo_name, 'PERSONAL_ACCESS_TOKEN_GITHUB', EnvironmentSettings.PERSONAL_ACCESS_TOKEN_GITHUB)
+        GitHubRestApi.create_repository_secret(repo_name, 'GITHUB_ACCESS_TOKEN', EnvironmentSettings.PERSONAL_ACCESS_TOKEN_GITHUB)
         
         AppLogger.log_step('Add Workflow Files')
         GitHubRestApi.copy_files_from_folder_to_repo(repo_name, 'dev', 'GitHub_TwoStageGitStep')

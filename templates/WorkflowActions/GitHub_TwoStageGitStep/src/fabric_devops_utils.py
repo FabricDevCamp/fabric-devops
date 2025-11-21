@@ -71,7 +71,7 @@ class GitHubRestApi:
         """Execute GET Request on Fabric REST API Endpoint"""
         rest_url = cls.BASE_URL + endpoint
         request_headers = {'Content-Type':'application/json',
-                           'Authorization': f'token {cls.G}'}
+                           'Authorization': f'token {cls.ACCESS_TOKEN}'}
         response = requests.get(url=rest_url, headers=request_headers, timeout=60)
         if response.status_code == 200:
             return response.json()
