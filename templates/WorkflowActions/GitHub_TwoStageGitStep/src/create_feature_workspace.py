@@ -17,7 +17,7 @@ FEATURE_WORKSPACE = FabricRestApi.create_workspace(FEATURE_WORKSPACE_NAME)
 FabricRestApi.update_workspace_description(FEATURE_WORKSPACE['id'], workspace_desciption)
 
 FEATURE_BRANCH_NAME = f'dev-{FEATURE_NAME}'
-FEATURE_BRANCH = GitHubRestApi.create_feature_branch(
+FEATURE_BRANCH = GitHubRestApi.create_branch(
     EnvironmentSettings.REPOSITORY_NAME,
     FEATURE_BRANCH_NAME)
 
