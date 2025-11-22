@@ -8,7 +8,7 @@ FEATURE_NAME = os.getenv("FEATURE_NAME")
 RUN_POST_DEPLOY_FIXES = os.getenv("RUN_POST_DEPLOY_FIXES") == 'true'
 ADD_ADMIN_USER = os.getenv("ADD_ADMIN_USER") == 'true'
 
-dev_workspace = FabricRestApi.get_workspace_info(EnvironmentSettings.DEV_WORKSPACE_ID)
+dev_workspace = FabricRestApi.get_workspace_info(EnvironmentSettings.WORKSPACE_ID_DEV)
 DEV_WORKSPACE_NAME = dev_workspace['displayName']
 workspace_desciption = dev_workspace['description']
 

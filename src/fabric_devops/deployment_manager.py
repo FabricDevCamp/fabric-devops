@@ -2751,8 +2751,8 @@ class DeploymentManager:
         GitHubRestApi.create_repository_variable(repo_name, 'FABRIC_CAPACITY_ID', EnvironmentSettings.FABRIC_CAPACITY_ID)
         GitHubRestApi.create_repository_variable(repo_name, 'ADMIN_USER_ID', EnvironmentSettings.ADMIN_USER_ID)
         GitHubRestApi.create_repository_variable(repo_name, 'DEVELOPERS_GROUP_ID', EnvironmentSettings.DEVELOPERS_GROUP_ID)
-        GitHubRestApi.create_repository_variable(repo_name, 'DEV_WORKSPACE_ID', dev_workspace['id'])
-        GitHubRestApi.create_repository_variable(repo_name, 'PROD_WORKSPACE_ID', prod_workspace['id'])
+        GitHubRestApi.create_repository_variable(repo_name, 'WORKSPACE_ID_DEV', dev_workspace['id'])
+        GitHubRestApi.create_repository_variable(repo_name, 'WORKSPACE_ID_PROD', prod_workspace['id'])
     
         GitHubRestApi.create_repository_secret(repo_name, 'ACCESS_TOKEN_FOR_GITHUB', EnvironmentSettings.PERSONAL_ACCESS_TOKEN_GITHUB)    
         GitHubRestApi.create_repository_secret(repo_name, 'FABRIC_CLIENT_SECRET', EnvironmentSettings.FABRIC_CLIENT_SECRET)
@@ -3054,9 +3054,9 @@ class DeploymentManager:
 
         GitHubRestApi.create_repository_variable(repo_name, 'ADMIN_USER_ID', EnvironmentSettings.ADMIN_USER_ID)
         GitHubRestApi.create_repository_variable(repo_name, 'FABRIC_CAPACITY_ID', EnvironmentSettings.FABRIC_CAPACITY_ID)
-        GitHubRestApi.create_repository_variable(repo_name, 'DEV_WORKSPACE_ID', dev_workspace['id'])
-        GitHubRestApi.create_repository_variable(repo_name, 'TEST_WORKSPACE_ID', test_workspace['id'])
-        GitHubRestApi.create_repository_variable(repo_name, 'PROD_WORKSPACE_ID', prod_workspace['id'])
+        GitHubRestApi.create_repository_variable(repo_name, 'WORKSPACE_ID_DEV', dev_workspace['id'])
+        GitHubRestApi.create_repository_variable(repo_name, 'WORKSPACE_ID_TEST', test_workspace['id'])
+        GitHubRestApi.create_repository_variable(repo_name, 'WORKSPACE_ID_PROD', prod_workspace['id'])
 
         AppLogger.log_step("Generating parameter.yml used by fabric-cicd")
 

@@ -17,7 +17,7 @@ token_credential = \
 
 AppLogger.log_substep('Pipeline triggered by manual command')
 
-workspace_id = EnvironmentSettings.TEST_WORKSPACE_ID
+workspace_id = EnvironmentSettings.WORKSPACE_ID_TEST
 ENVIRONMENT = 'TEST'
 
 AppLogger.log_substep(

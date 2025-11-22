@@ -27,7 +27,7 @@ jobs:
           run: |
               pip install msal
 
-        - name: Sync Workspace Items
+        - name: Merge Feature Updates
           env:
               REPOSITORY_NAME: ${{ github.repository }}
               BRANCH_NAME: ${{ github.ref_name }}
@@ -36,9 +36,9 @@ jobs:
               FABRIC_CAPACITY_ID: ${{ vars.FABRIC_CAPACITY_ID }}         
               ADMIN_USER_ID: ${{ vars.ADMIN_USER_ID }}
               DEVELOPERS_GROUP_ID: ${{ vars.DEVELOPERS_GROUP_ID }}
-              DEV_WORKSPACE_ID: ${{ vars.DEV_WORKSPACE_ID }}
-              PROD_WORKSPACE_ID: ${{ vars.PROD_WORKSPACE_ID }}
+              WORKSPACE_ID_DEV: ${{ vars.WORKSPACE_ID_DEV }}
+              WORKSPACE_ID_PROD: ${{ vars.WORKSPACE_ID_PROD }}
               FABRIC_CLIENT_SECRET: ${{ secrets.FABRIC_CLIENT_SECRET }}
-              GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN_FOR_GITHUB }}
+              ACCESS_TOKEN_FOR_GITHUB: ${{ secrets.ACCESS_TOKEN_FOR_GITHUB }}
           run: 
               python 'src/merge_feature_updates.py'

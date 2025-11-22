@@ -22,9 +22,9 @@ class EnvironmentSettings:
     AUTHORITY = f'https://login.microsoftonline.com/{FABRIC_TENANT_ID}'
     FABRIC_CAPACITY_ID = os.getenv("FABRIC_CAPACITY_ID")
 
-    DEV_WORKSPACE_ID = os.getenv("DEV_WORKSPACE_ID")
-    TEST_WORKSPACE_ID = os.getenv("TEST_WORKSPACE_ID")
-    PROD_WORKSPACE_ID = os.getenv("PROD_WORKSPACE_ID")
+    WORKSPACE_ID_DEV = os.getenv("WORKSPACE_ID_DEV")
+    WORKSPACE_ID_TEST = os.getenv("WORKSPACE_ID_TEST")
+    WORKSPACE_ID_PROD = os.getenv("WORKSPACE_ID_PROD")
 
     FABRIC_REST_API_RESOURCE_ID = 'https://api.fabric.microsoft.com'
     FABRIC_REST_API_BASE_URL = 'https://api.fabric.microsoft.com/v1/'

@@ -4,7 +4,7 @@ from fabric_devops_utils import EnvironmentSettings, AppLogger, FabricRestApi, A
 
 AppLogger.log_job("Creating feature branch")
 
-dev_workspace = FabricRestApi.get_workspace_info(EnvironmentSettings.DEV_WORKSPACE_ID)
+dev_workspace = FabricRestApi.get_workspace_info(EnvironmentSettings.WORKSPACE_ID_DEV)
 DEV_WORKSPACE_NAME = dev_workspace['displayName']
 workspace_desciption = dev_workspace['description']
 

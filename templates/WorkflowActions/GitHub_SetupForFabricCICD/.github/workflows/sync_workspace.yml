@@ -35,8 +35,8 @@ jobs:
               PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
               FABRIC_CAPACITY_ID: ${{ vars.FABRIC_CAPACITY_ID }}         
               ADMIN_USER_ID: ${{ vars.ADMIN_USER_ID }}
-              DEV_WORKSPACE_ID: ${{ vars.DEV_WORKSPACE_ID }}
-              TEST_WORKSPACE_ID: ${{ vars.TEST_WORKSPACE_ID }}
-              PROD_WORKSPACE_ID: ${{ vars.PROD_WORKSPACE_ID }}
+              WORKSPACE_ID_DEV: ${{ vars.WORKSPACE_ID_DEV }}
+              WORKSPACE_ID_TEST: ${{ vars.WORKSPACE_ID_TEST }}
+              WORKSPACE_ID_PROD: ${{ vars.WORKSPACE_ID_PROD }}
           run: 
               python 'src/sync_workspace.py'

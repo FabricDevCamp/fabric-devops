@@ -23,9 +23,9 @@ class EnvironmentSettings:
     AUTHORITY = f'https://login.microsoftonline.com/{FABRIC_TENANT_ID}'
     FABRIC_CAPACITY_ID = os.getenv("FABRIC_CAPACITY_ID")
 
-    DEV_WORKSPACE_ID = os.getenv("DEV_WORKSPACE_ID")
-    TEST_WORKSPACE_ID = os.getenv("TEST_WORKSPACE_ID")
-    PROD_WORKSPACE_ID = os.getenv("PROD_WORKSPACE_ID")
+    WORKSPACE_ID_DEV = os.getenv("WORKSPACE_ID_DEV")
+    WORKSPACE_ID_TEST = os.getenv("WORKSPACE_ID_TEST")
+    WORKSPACE_ID_PROD = os.getenv("WORKSPACE_ID_PROD")
     
     ADMIN_USER_ID = os.getenv("ADMIN_USER_ID")
     DEVELOPERS_GROUP_ID = os.getenv("DEVELOPERS_GROUP_ID")
@@ -719,12 +719,12 @@ class AdoProjectManager:
                     "isSecret": False,
                     "isReadOnly": True
                 },
-                "DEV_WORKSPACE_ID": {
+                "WORKSPACE_ID_DEV": {
                     "value": dev_workspace_id,
                     "isSecret": False,
                     "isReadOnly": True
                 },
-                "PROD_WORKSPACE_ID": {
+                "WORKSPACE_ID_PROD": {
                     "value": prod_workspace_id,
                     "isSecret": False,
                     "isReadOnly": True
@@ -784,17 +784,17 @@ class AdoProjectManager:
                     "isSecret": False,
                     "isReadOnly": True
                 },
-                "DEV_WORKSPACE_ID": {
+                "WORKSPACE_ID_DEV": {
                     "value": dev_workspace_id,
                     "isSecret": False,
                     "isReadOnly": True
                 },
-                "TEST_WORKSPACE_ID": {
+                "WORKSPACE_ID_TEST": {
                     "value": test_workspace_id,
                     "isSecret": False,
                     "isReadOnly": True
                 },                
-                "PROD_WORKSPACE_ID": {
+                "WORKSPACE_ID_PROD": {
                     "value": prod_workspace_id,
                     "isSecret": False,
                     "isReadOnly": True

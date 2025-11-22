@@ -562,12 +562,12 @@ class AdoProjectManager:
                     "isSecret": False,
                     "isReadOnly": True
                 },
-                "DEV_WORKSPACE_ID": {
+                "WORKSPACE_ID_DEV": {
                     "value": dev_workspace_id,
                     "isSecret": False,
                     "isReadOnly": True
                 },
-                "PROD_WORKSPACE_ID": {
+                "WORKSPACE_ID_PROD": {
                     "value": prod_workspace_id,
                     "isSecret": False,
                     "isReadOnly": True
@@ -632,17 +632,17 @@ class AdoProjectManager:
                     "isSecret": False,
                     "isReadOnly": True
                 },
-                "DEV_WORKSPACE_ID": {
+                "WORKSPACE_ID_DEV": {
                     "value": dev_workspace_id,
                     "isSecret": False,
                     "isReadOnly": True
                 },
-                "TEST_WORKSPACE_ID": {
+                "WORKSPACE_ID_TEST": {
                     "value": test_workspace_id,
                     "isSecret": False,
                     "isReadOnly": True
                 },                
-                "PROD_WORKSPACE_ID": {
+                "WORKSPACE_ID_PROD": {
                     "value": prod_workspace_id,
                     "isSecret": False,
                     "isReadOnly": True

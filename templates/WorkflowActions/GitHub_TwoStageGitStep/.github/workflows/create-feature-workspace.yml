@@ -46,12 +46,12 @@ jobs:
               FABRIC_CAPACITY_ID: ${{ vars.FABRIC_CAPACITY_ID }}         
               ADMIN_USER_ID: ${{ vars.ADMIN_USER_ID }}
               DEVELOPERS_GROUP_ID: ${{ vars.DEVELOPERS_GROUP_ID }}
-              DEV_WORKSPACE_ID: ${{ vars.DEV_WORKSPACE_ID }}
-              PROD_WORKSPACE_ID: ${{ vars.PROD_WORKSPACE_ID }}
+              WORKSPACE_ID_DEV: ${{ vars.WORKSPACE_ID_DEV }}
+              WORKSPACE_ID_PROD: ${{ vars.WORKSPACE_ID_PROD }}
               FABRIC_CLIENT_SECRET: ${{ secrets.FABRIC_CLIENT_SECRET }}
               FEATURE_NAME: ${{inputs.feature_name}}
               RUN_POST_DEPLOY_FIXES: ${{inputs.run_post_deploy_fixes}}
               ADD_ADMIN_USER: ${{inputs.add_admin_user}}
-              GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN_FOR_GITHUB }}
+              ACCESS_TOKEN_FOR_GITHUB: ${{ secrets.ACCESS_TOKEN_FOR_GITHUB }}
           run: 
               python 'src/create_feature_workspace.py'

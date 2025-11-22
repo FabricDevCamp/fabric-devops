@@ -44,8 +44,8 @@ jobs:
       ADMIN_USER_ID: $(ADMIN_USER_ID)
       DEVELOPERS_GROUP_ID: $(DEVELOPERS_GROUP_ID)
       FABRIC_CAPACITY_ID: $(FABRIC_CAPACITY_ID)
-      DEV_WORKSPACE_ID: $(DEV_WORKSPACE_ID)
-      PROD_WORKSPACE_ID: $(PROD_WORKSPACE_ID)
+      WORKSPACE_ID_DEV: $(WORKSPACE_ID_DEV)
+      WORKSPACE_ID_PROD: $(WORKSPACE_ID_PROD)
       FEATURE_NAME: ${{ parameters.feature_name }}
       RUN_POST_DEPLOY_FIXES: ${{parameters.run_post_deploy_fixes}}
       ADD_ADMIN_USER: ${{parameters.add_admin_user}}

@@ -21,10 +21,10 @@ AppLogger.log_substep(f'Pipeline triggered by PR completing on branch [{branch_n
 
 match branch_name: 
     case 'test':
-      workspace_id = EnvironmentSettings.TEST_WORKSPACE_ID
+      workspace_id = EnvironmentSettings.WORKSPACE_ID_TEST
       ENVIRONMENT = 'TEST'
     case 'main':
-      workspace_id = EnvironmentSettings.PROD_WORKSPACE_ID
+      workspace_id = EnvironmentSettings.WORKSPACE_ID_PROD
       ENVIRONMENT = 'PROD'
 
 AppLogger.log_substep(f'Updating workspace with id [{workspace_id}] in environment {ENVIRONMENT}')
