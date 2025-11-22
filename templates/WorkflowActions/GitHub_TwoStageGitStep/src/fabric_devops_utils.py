@@ -12,7 +12,6 @@ from typing import List
 
 import requests
 import msal
-import requests
 
 class EnvironmentSettings:
     """Environment Settings"""
@@ -32,7 +31,7 @@ class EnvironmentSettings:
     RUNNING_IN_GITHUB = os.getenv('GITHUB_ACTIONS') == 'true'
     
     GITHUB_ORGANIZATION = os.getenv('GITHUB_REPOSITORY_OWNER')
-    GITHUB_ACCESS_TOKEN = os.getenv('GITHUB_TOKEN')
+    GITHUB_ACCESS_TOKEN = os.getenv('ACCESS_TOKEN_FOR_GITHUB')
 
     if RUNNING_IN_GITHUB:
         REPOSITORY_NAME = os.getenv('GITHUB_REPOSITORY').split('/')[1]
