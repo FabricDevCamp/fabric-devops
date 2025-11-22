@@ -1,15 +1,15 @@
-name: Sync Workspace
+name: Merge Feature Updates to dev
 run-name: Sync workspace from GIT branch ${{ github.ref_name }} 
 
 on:
     workflow_dispatch:
     push:
       branches:
-        - main
+        - dev
 
 jobs:
     deployment-job:
-      name: Sync Workspace Items
+      name: Merge Feature Updates to dev
       runs-on: ubuntu-latest
       permissions:
         contents: write
@@ -41,4 +41,4 @@ jobs:
               FABRIC_CLIENT_SECRET: ${{ secrets.FABRIC_CLIENT_SECRET }}
               GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN_FOR_GITHUB }}
           run: 
-              python 'src/sync_workspace.py'
+              python 'src/merge_feature_updates.py'
