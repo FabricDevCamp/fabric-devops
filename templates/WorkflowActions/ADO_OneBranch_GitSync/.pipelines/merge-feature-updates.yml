@@ -1,7 +1,7 @@
 trigger:
   branches:
     include:
-      - dev
+      - main
 
 variables: 
 - group: 'environmental_variables'
@@ -34,5 +34,4 @@ jobs:
       ADMIN_USER_ID: $(ADMIN_USER_ID)
       DEVELOPERS_GROUP_ID: $(DEVELOPERS_GROUP_ID)
       FABRIC_CAPACITY_ID: $(FABRIC_CAPACITY_ID)
-      WORKSPACE_ID_DEV: $(WORKSPACE_ID_DEV)
       WORKSPACE_ID_PROD: $(WORKSPACE_ID_PROD)

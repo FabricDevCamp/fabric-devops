@@ -2674,8 +2674,36 @@ class DeploymentManager:
 
         AppLogger.log_job_complete(workspace['id'])
 
-    # setup for two-stage repo setup
-    
+    # setup for GIT repositories setup
+       
+    @classmethod
+    def setup_one_stage_ado_repo(cls, prod_workspace, project_name = None):
+        """Setup Git Workspace Connecton to ADO repo"""
+        
+        if project_name is None:
+            project_name = prod_workspace['displayName'].replace(" ", "-")
+
+        AppLogger.log_job("Configuring GIT integration in Azure DevOps")
+
+        AdoProjectManager.create_project(project_name)
+     
+        FabricRestApi.connect_workspace_to_ado_repo(prod_workspace, project_name, 'main')
+        
+        variable_group = AdoProjectManager.create_one_stage_variable_group(
+            'environmental_variables',
+            project_name,
+            prod_workspace['id'])
+        
+        AdoProjectManager.copy_files_from_folder_to_repo(
+            project_name,
+            'dev',
+            'ADO_OneBranch_GitSync',
+            variable_group['id'])
+        
+        AdoProjectManager.create_and_merge_pull_request(project_name, 'dev','main')
+
+        AppLogger.log_job_complete(prod_workspace['id'])
+
     @classmethod
     def setup_two_stage_ado_repo(cls, dev_workspace, prod_workspace, project_name = None):
         """Setup Git Workspace Connecton to ADO repo"""

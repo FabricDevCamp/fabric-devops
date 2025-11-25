@@ -1,0 +1,78 @@
+
+name: Deploy Project with 1-Branch GIT Sync
+run-name: Depoy [${{inputs.solution_name}}] to Project [${{inputs.project_name}}] using Git Sync with ${{inputs.git_integration_provider}}
+
+on:
+    workflow_dispatch:
+        inputs:
+            project_name:
+                description: Project Name
+                required: true
+                default: "Adonis"
+            solution_name:
+                type: choice
+                description: Solution to deploy
+                options: 
+                - Custom Power BI Solution
+                - Custom Notebook Solution
+                - Custom Shortcut Solution
+                - Custom Pipeline Solution
+                default: Custom Pipeline Solution
+            git_integration_provider:
+                type: choice
+                description: Git Integration Provider
+                options: 
+                - Azure DevOps
+                - GitHub
+                default: Azure DevOps
+            create_feature_workspace:
+                type: boolean
+                description: Create feature workspace
+                default: true
+            run_as_service_principal:
+                type: boolean
+                description: Run as service principal
+                default: true
+
+jobs:
+    deployment-job:
+        name: Deploy ${{inputs.solution_name}}
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Check out the code
+              uses: actions/checkout@v4
+
+            - name: Set up Python
+              uses: actions/setup-python@v2
+              with:
+                    python-version: "3.12"
+
+            - name: Install MSAL
+              run: |
+                    pip install msal -q
+
+            - name: Install PyNaCl
+              run: |
+                    pip install PyNaCl -q
+
+            - name: Install pyodbc
+              run: |
+                    pip install pyodbc -q
+
+            - name: Deploy Solution                
+              env:
+                FABRIC_CLIENT_ID: ${{ secrets.FABRIC_CLIENT_ID }}
+                FABRIC_CLIENT_SECRET: ${{ secrets.FABRIC_CLIENT_SECRET }}
+                FABRIC_TENANT_ID: ${{ secrets.FABRIC_TENANT_ID }}                    
+                FABRIC_CAPACITY_ID: ${{ secrets.FABRIC_CAPACITY_ID }}             
+                ADMIN_USER_ID: ${{ secrets.ADMIN_USER_ID }}
+                DEVELOPERS_GROUP_ID: ${{ secrets.DEVELOPERS_GROUP_ID }}
+                SERVICE_PRINCIPAL_OBJECT_ID: ${{ secrets.SERVICE_PRINCIPAL_OBJECT_ID }}
+                PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
+                SOLUTION_NAME: ${{inputs.solution_name}}        
+                PROJECT_NAME: ${{inputs.project_name}}
+                GIT_INTEGRATION_PROVIDER: ${{inputs.git_integration_provider}}
+                RUN_AS_SERVICE_PRINCIPAL: ${{inputs.run_as_service_principal}}
+              run: 
+                python src/deploy_solution_with_one_branch_git_integration.py

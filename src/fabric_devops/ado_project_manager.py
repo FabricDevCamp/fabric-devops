@@ -522,6 +522,65 @@ class AdoProjectManager:
                     cls.create_pipeline(project_name, pipeline_name, relative_file_path, variable_group_id)
 
     @classmethod
+    def create_one_stage_variable_group(cls, name, project_name, prod_workspace_id):
+        """Add Variable Group"""
+        AppLogger.log_step(f"Creating variable group [{name}]")
+        project = cls.get_project(project_name)
+        endpoint = 'distributedtask/variablegroups'
+        body = {
+            "name": name,
+            "description": "Variable group added through code",
+            "type": "Vsts",
+            "variables": {
+                "FABRIC_CLIENT_ID": {
+                    "value": EnvironmentSettings.FABRIC_CLIENT_ID,
+                    "isSecret": False,
+                    "isReadOnly": True
+                },
+                "FABRIC_CLIENT_SECRET": {
+                    "value": EnvironmentSettings.FABRIC_CLIENT_SECRET,
+                    "isSecret": True,
+                    "isReadOnly": True
+                },
+                "FABRIC_TENANT_ID": {
+                    "value": EnvironmentSettings.FABRIC_TENANT_ID,
+                    "isSecret": False,
+                    "isReadOnly": True
+                },
+                "FABRIC_CAPACITY_ID": {
+                    "value": EnvironmentSettings.FABRIC_CAPACITY_ID,
+                    "isSecret": False,
+                    "isReadOnly": True
+                },
+                "ADMIN_USER_ID": {
+                    "value": EnvironmentSettings.ADMIN_USER_ID,
+                    "isSecret": False,
+                    "isReadOnly": True
+                },
+                "DEVELOPERS_GROUP_ID": {
+                    "value": EnvironmentSettings.DEVELOPERS_GROUP_ID,
+                    "isSecret": False,
+                    "isReadOnly": True
+                },
+                "WORKSPACE_ID_PROD": {
+                    "value": prod_workspace_id,
+                    "isSecret": False,
+                    "isReadOnly": True
+                }                    
+            },
+            "variableGroupProjectReferences": [{
+                "name": name,
+                "description": "Variable group added through code",
+                "projectReference": {
+                    "id": project['id'],
+                    "name": project_name
+                }
+            }]
+        }
+
+        return cls._execute_post_request(endpoint, body)
+
+    @classmethod
     def create_two_stage_variable_group(cls, name, project_name, dev_workspace_id, prod_workspace_id):
         """Add Variable Group"""
         AppLogger.log_step(f"Creating variable group [{name}]")

@@ -1,16 +1,26 @@
-trigger:
-  branches:
-    include:
-      - dev
+parameters:
+- name: feature_name
+  displayName: Feature Name
+  type: string
+  default: 'feature2'
+- name: run_post_deploy_fixes
+  displayName: Run post deploy fixes
+  type: boolean
+  default: true
+- name: add_admin_user
+  displayName: Add admin user
+  type: boolean
+  default: true
+
+trigger: none
 
 variables: 
 - group: 'environmental_variables'
 
 jobs:
-- job: Merge_Feature_Updates
+- job: Create_Feature_Workspace
   pool:
     vmImage: ubuntu-latest
-  
   steps:
   - task: UsePythonVersion@0
     inputs:
@@ -23,7 +33,7 @@ jobs:
   - task: PythonScript@0  
     inputs:
       scriptSource: 'filePath'
-      scriptPath: 'src/merge_feature_updates.py' 
+      scriptPath: 'src/create_feature_workspace.py' 
       workingDirectory: '$(Build.SourcesDirectory)/src' # Optional: Specify the working directory for the script
       failOnStderr: true # Optional: Fail the task if any text is written to the stderr stream  
     env:
@@ -36,3 +46,6 @@ jobs:
       FABRIC_CAPACITY_ID: $(FABRIC_CAPACITY_ID)
       WORKSPACE_ID_DEV: $(WORKSPACE_ID_DEV)
       WORKSPACE_ID_PROD: $(WORKSPACE_ID_PROD)
+      FEATURE_NAME: ${{ parameters.feature_name }}
+      RUN_POST_DEPLOY_FIXES: ${{parameters.run_post_deploy_fixes}}
+      ADD_ADMIN_USER: ${{parameters.add_admin_user}}
