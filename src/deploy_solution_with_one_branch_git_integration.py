@@ -56,7 +56,7 @@ match os.getenv("GIT_INTEGRATION_PROVIDER"):
                 commit_comment = 'Sync updates from feature workspace to repo after applying fixes')
 
             AppLogger.log_job_complete(FEATURE1_WORKSPACE['id'])
-    `        
+
     case 'GitHub':
         # create GitHub repo and connect to workspace
         repo_name = PROJECT_NAME.replace(" ", "-")
