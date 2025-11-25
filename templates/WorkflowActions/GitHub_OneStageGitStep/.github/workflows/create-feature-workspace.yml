@@ -1,0 +1,57 @@
+name: Create Feature Workspace
+run-name: Create feature workspace from branch ${{ github.ref_name }} 
+
+on:
+    workflow_dispatch:
+        inputs:
+            feature_name:
+                description: Feature Name
+                required: true
+                default: "feature2"
+            run_post_deploy_fixes:
+                type: boolean
+                description: Run poat deploy fixes
+                default: true
+            add_admin_user:
+                type: boolean
+                description: Add admin user
+                default: true
+
+jobs:
+    deployment-job:
+      name: Create Feature Workspace
+      runs-on: ubuntu-latest
+      permissions:
+        contents: write
+
+      steps:
+        - name: Check out the code
+          uses: actions/checkout@v4
+
+        - name: Set up Python
+          uses: actions/setup-python@v2
+          with:
+            python-version: "3.12"
+
+        - name: Install msal
+          run: |
+              pip install msal
+
+        - name: Create Feature Workspace
+          env:
+              REPOSITORY_NAME: ${{ github.repository }}
+              BRANCH_NAME: ${{ github.ref_name }}
+              FABRIC_TENANT_ID: ${{ vars.FABRIC_TENANT_ID }}
+              FABRIC_CLIENT_ID: ${{ vars.FABRIC_CLIENT_ID }}
+              FABRIC_CAPACITY_ID: ${{ vars.FABRIC_CAPACITY_ID }}         
+              ADMIN_USER_ID: ${{ vars.ADMIN_USER_ID }}
+              DEVELOPERS_GROUP_ID: ${{ vars.DEVELOPERS_GROUP_ID }}
+              WORKSPACE_ID_DEV: ${{ vars.WORKSPACE_ID_DEV }}
+              WORKSPACE_ID_PROD: ${{ vars.WORKSPACE_ID_PROD }}
+              FABRIC_CLIENT_SECRET: ${{ secrets.FABRIC_CLIENT_SECRET }}
+              FEATURE_NAME: ${{inputs.feature_name}}
+              RUN_POST_DEPLOY_FIXES: ${{inputs.run_post_deploy_fixes}}
+              ADD_ADMIN_USER: ${{inputs.add_admin_user}}
+              ACCESS_TOKEN_FOR_GITHUB: ${{ secrets.ACCESS_TOKEN_FOR_GITHUB }}
+          run: 
+              python 'src/create_feature_workspace.py'

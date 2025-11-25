@@ -2741,6 +2741,39 @@ class DeploymentManager:
 
         AppLogger.log_job_complete(dev_workspace['id'])
 
+
+    @classmethod
+    def setup_one_stage_github_repo(cls, prod_workspace, project_name = None):
+        """Setup Git Workspace Connecton to GitHub repo"""
+
+        AppLogger.log_step("Configuring GIT integration support with GitHub repository")
+          
+        if project_name is None:
+            project_name = prod_workspace['displayName']
+            
+        repo_name = project_name.replace(" ", "-")
+
+        AppLogger.log_substep("Configuring GIT integration support with GitHub repository")
+
+        GitHubRestApi.create_repository(repo_name)
+        FabricRestApi.connect_workspace_to_github_repo(prod_workspace, repo_name, 'main')
+        
+        GitHubRestApi.create_repository_variable(repo_name, 'FABRIC_TENANT_ID', EnvironmentSettings.FABRIC_TENANT_ID)
+        GitHubRestApi.create_repository_variable(repo_name, 'FABRIC_CLIENT_ID', EnvironmentSettings.FABRIC_CLIENT_ID)
+        GitHubRestApi.create_repository_variable(repo_name, 'FABRIC_CAPACITY_ID', EnvironmentSettings.FABRIC_CAPACITY_ID)
+        GitHubRestApi.create_repository_variable(repo_name, 'ADMIN_USER_ID', EnvironmentSettings.ADMIN_USER_ID)
+        GitHubRestApi.create_repository_variable(repo_name, 'DEVELOPERS_GROUP_ID', EnvironmentSettings.DEVELOPERS_GROUP_ID)
+        GitHubRestApi.create_repository_variable(repo_name, 'WORKSPACE_ID_PROD', prod_workspace['id'])
+    
+        GitHubRestApi.create_repository_secret(repo_name, 'ACCESS_TOKEN_FOR_GITHUB', EnvironmentSettings.PERSONAL_ACCESS_TOKEN_GITHUB)    
+        GitHubRestApi.create_repository_secret(repo_name, 'FABRIC_CLIENT_SECRET', EnvironmentSettings.FABRIC_CLIENT_SECRET)
+         
+        AppLogger.log_step('Add Workflow Files')
+        GitHubRestApi.copy_files_from_folder_to_repo(repo_name, 'main', 'GitHub_OneStageGitStep')
+
+        AppLogger.log_job_complete(prod_workspace['id'])
+
+
     @classmethod
     def setup_two_stage_github_repo(cls, dev_workspace, prod_workspace, project_name = None):
         """Setup Git Workspace Connecton to GitHub repo"""
