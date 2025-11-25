@@ -2696,12 +2696,10 @@ class DeploymentManager:
         
         AdoProjectManager.copy_files_from_folder_to_repo(
             project_name,
-            'dev',
+            'main',
             'ADO_OneBranch_GitSync',
             variable_group['id'])
         
-        AdoProjectManager.create_and_merge_pull_request(project_name, 'dev','main')
-
         AppLogger.log_job_complete(prod_workspace['id'])
 
     @classmethod
