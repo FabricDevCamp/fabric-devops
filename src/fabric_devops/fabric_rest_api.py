@@ -714,7 +714,7 @@ class FabricRestApi:
                                                          top_level_step = False):
         """Create Azure Storage connections"""
 
-        display_name = 'ADLS'
+        display_name = 'ADLS-Key'
         if workspace is not None:
             display_name = f"Workspace[{workspace['id']}]-" + display_name
 
@@ -755,7 +755,7 @@ class FabricRestApi:
             if lakehouse is not None:
                 display_name = display_name + f"Lakehouse[{lakehouse['displayName']}]"
         else:
-            display_name = f'ADLS-{server}:{path}'
+            display_name = f'ADLS-SPN-{server}:{path}'
 
         create_connection_request = {
             'displayName': display_name,
@@ -790,6 +790,8 @@ class FabricRestApi:
                                                          top_level_step = False):
         """Create Azure Storage connections"""
 
+        display_name = ""
+        
         if workspace is None:
             display_name = f"ADLS-SAS-[{server}{path}]"
             

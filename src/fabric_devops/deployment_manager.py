@@ -41,6 +41,8 @@ class DeploymentManager:
                 workspace = cls.deploy_shortcut_solution(target_workspace, deploy_job)
             case 'Custom Pipeline Solution':
                 workspace = cls.deploy_data_pipeline_solution(target_workspace, deploy_job)
+            case 'Custom Medallion Lakehouse Solution':
+                workspace - cls.deploy_medallion_lakehouse_solution(target_workspace, deploy_job)
             case 'Custom Copy Job Solution':
                 workspace = cls.deploy_copyjob_solution(target_workspace, deploy_job)
             case 'Custom User Data Function Solution':
@@ -766,6 +768,139 @@ class DeploymentManager:
  
         return workspace
 
+    @classmethod
+    def deploy_medallion_lakehouse_solution(
+            cls,
+            target_workspace,
+            deploy_job = StagingEnvironments.get_dev_environment()):
+        """Deploy Medallion Warehouse Solution"""
+
+        bronze_lakehouse_name = "sales_bronze"
+        silver_lakehouse_name = "sales_silver"
+        gold_lakehouse_name = "sales"
+
+        semantic_model_folder = 'Product Sales DirectLake Model.SemanticModel'
+        report_folders = [
+            'Product Sales Summary.Report',
+            'Product Sales Time Intelligence.Report',
+            'Product Sales Top 10 Cities.Report'
+        ]
+
+        AppLogger.log_job(f"Deploying FabCon Solution to [{target_workspace}]")
+
+        deploy_job.display_deployment_parameters()
+
+        workspace = FabricRestApi.create_workspace(target_workspace)
+
+        FabricRestApi.update_workspace_description(workspace['id'], 'Medallion Lakehouse Solution')
+
+        staging_folder = FabricRestApi.create_folder(workspace['id'], 'staging')
+        staging_folder_id = staging_folder['id']
+
+        bronze_lakehouse = FabricRestApi.create_lakehouse(
+            workspace['id'], 
+            bronze_lakehouse_name,
+            staging_folder_id)
+
+        adls_container_name = deploy_job.parameters[DeploymentJob.adls_container_name_parameter]
+        adls_container_path = deploy_job.parameters[DeploymentJob.adls_container_path_parameter]
+        adls_server = deploy_job.parameters[DeploymentJob.adls_server_parameter]
+        adls_path = f'/{adls_container_name}{adls_container_path}'
+
+        connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
+            adls_server,
+            adls_path,
+            workspace)
+
+        shortcut_name = "sales-data"
+        shortcut_path = "Files"
+        shortcut_location = adls_server
+        shortcut_subpath = adls_path
+
+        FabricRestApi.create_adls_gen2_shortcut(
+            workspace['id'],
+            bronze_lakehouse['id'],
+            shortcut_name,
+            shortcut_path,
+            shortcut_location,
+            shortcut_subpath,
+            connection['id'])
+
+        silver_lakehouse = FabricRestApi.create_lakehouse(
+            workspace['id'],
+            silver_lakehouse_name,
+            staging_folder_id)
+
+        FabricRestApi.create_onelake_shortcut(
+            workspace['id'],
+            silver_lakehouse['id'],
+            bronze_lakehouse['id'],
+            shortcut_name,
+            shortcut_path)
+        
+        create_notebook_request = \
+            ItemDefinitionFactory.get_create_item_request_from_folder(
+            'Build Silver.Notebook')
+        
+        notebook_redirects = {
+            '{WORKSPACE_ID}': workspace['id'],
+            '{LAKEHOUSE_ID}': silver_lakehouse['id'],
+            '{LAKEHOUSE_NAME}': silver_lakehouse['displayName']
+        }
+
+        create_notebook_request = \
+            ItemDefinitionFactory.update_part_in_create_request(
+                create_notebook_request,
+                'notebook-content.py', 
+                notebook_redirects)
+
+        notebook = FabricRestApi.create_item(
+            workspace['id'], 
+            create_notebook_request,
+            staging_folder_id)
+
+        FabricRestApi.run_notebook(workspace['id'], notebook)
+
+        silver_sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], silver_lakehouse)
+
+        FabricRestApi.refresh_sql_endpoint_metadata(workspace['id'], silver_sql_endpoint['database'])
+
+        gold_lakehouse = FabricRestApi.create_lakehouse(
+            workspace['id'],
+            gold_lakehouse_name)
+
+
+        # create_model_request = \
+        #     ItemDefinitionFactory.get_create_item_request_from_folder(
+        #         semantic_model_folder)
+
+        # model_redirects = {
+        #     '{SQL_ENDPOINT_SERVER}': warehouse_connect_string,
+        #     '{SQL_ENDPOINT_DATABASE}': gold_warehouse['id']
+        # }
+
+        # create_model_request = \
+        #     ItemDefinitionFactory.update_part_in_create_request(
+        #         create_model_request,
+        #         'definition/expressions.tmdl',
+        #         model_redirects)
+
+        # model = FabricRestApi.create_item(workspace['id'], create_model_request)
+
+        # FabricRestApi.create_and_bind_semantic_model_connecton(workspace, model['id'], gold_warehouse)
+
+        # for report_folder in report_folders:
+            
+        #     create_report_request = \
+        #         ItemDefinitionFactory.get_create_report_request_from_folder(
+        #             report_folder,
+        #             model['id'])
+
+        #     FabricRestApi.create_item(workspace['id'], create_report_request)
+ 
+        return workspace
+
+ 
 
     @classmethod
     def deploy_copyjob_solution(cls,
