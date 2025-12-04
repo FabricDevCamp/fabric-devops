@@ -786,7 +786,7 @@ class DeploymentManager:
             'Product Sales Top 10 Cities.Report'
         ]
 
-        AppLogger.log_job(f"Deploying FabCon Solution to [{target_workspace}]")
+        AppLogger.log_job(f"Deploying Medallion Lakehouse Solution to [{target_workspace}]")
 
         deploy_job.display_deployment_parameters()
 
@@ -796,35 +796,28 @@ class DeploymentManager:
 
         staging_folder = FabricRestApi.create_folder(workspace['id'], 'staging')
         staging_folder_id = staging_folder['id']
+        
+        cls.create_adls_variable_library(workspace, staging_folder_id, deploy_job)
 
         bronze_lakehouse = FabricRestApi.create_lakehouse(
             workspace['id'], 
             bronze_lakehouse_name,
             staging_folder_id)
 
-        adls_container_name = deploy_job.parameters[DeploymentJob.adls_container_name_parameter]
-        adls_container_path = deploy_job.parameters[DeploymentJob.adls_container_path_parameter]
-        adls_server = deploy_job.parameters[DeploymentJob.adls_server_parameter]
-        adls_path = f'/{adls_container_name}{adls_container_path}'
-
-        connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
-            adls_server,
-            adls_path,
-            workspace)
-
         shortcut_name = "sales-data"
         shortcut_path = "Files"
-        shortcut_location = adls_server
-        shortcut_subpath = adls_path
+     
+        adls_shortcut_location_variable = "$(/**/environment_settings/adls_server)"
+        adls_shortcut_subpath_variable = "$(/**/environment_settings/adls_shortcut_subpath)"
+        adls_connection_id_variable = "$(/**/environment_settings/adls_connection_id)"
 
-        FabricRestApi.create_adls_gen2_shortcut(
-            workspace['id'],
-            bronze_lakehouse['id'],
-            shortcut_name,
-            shortcut_path,
-            shortcut_location,
-            shortcut_subpath,
-            connection['id'])
+        FabricRestApi.create_adls_gen2_shortcut(workspace['id'],
+                                                bronze_lakehouse['id'],
+                                                shortcut_name,
+                                                shortcut_path,
+                                                adls_shortcut_location_variable,
+                                                adls_shortcut_subpath_variable,
+                                                adls_connection_id_variable)
 
         silver_lakehouse = FabricRestApi.create_lakehouse(
             workspace['id'],
@@ -895,7 +888,6 @@ class DeploymentManager:
         gold_sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], gold_lakehouse)
 
         FabricRestApi.refresh_sql_endpoint_metadata(workspace['id'], gold_sql_endpoint['database'])
-
 
         create_model_request = \
             ItemDefinitionFactory.get_create_item_request_from_folder(
