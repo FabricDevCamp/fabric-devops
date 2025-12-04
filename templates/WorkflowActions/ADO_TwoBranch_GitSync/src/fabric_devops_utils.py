@@ -3342,24 +3342,31 @@ class DeploymentManager:
         notebooks = list(filter(lambda item: item['type']=='Notebook', workspace_items))
         for notebook in notebooks:
             # Apply fixes for [Create Lakehouse Tables.Notebook]
-            if notebook['displayName'] in ['Create Lakehouse Tables',
-                                           'Build 01 Silver Layer',
-                                           'Build 02 Gold Layer',
-                                           'Create Lakehouse Materialized Views',
-                                           'Create Lakehouse Schemas',
-                                           'Create Lakehouse Tables with VarLib']:
-                # bind notebook to 'sales' lakehouse in same workspace
-                AppLogger.log_substep(f"Updating notebook [{notebook['displayName']}]")
+            notebooks_for_sales_lakehouse = [
+                'Create Lakehouse Tables', 
+                'Create 01 Silver Layer', 
+                'Create 02 Gold Layer', 
+                'Build 01 Silver Layer', 
+                'Build 02 Gold Layer',
+                'Create 02 Gold']
+            
+            if notebook['displayName'] in notebooks_for_sales_lakehouse:
                 cls.update_source_lakehouse_in_notebook(
                     workspace_name,
                     notebook['displayName'],
                     "sales")
 
-                if notebook['displayName'] == 'Create Lakehouse Tables':
-                    cls.update_datasource_path_in_notebook(
-                        workspace_name,
-                        notebook['displayName'],
-                        deployment_job)
+            if notebook['displayName'] == 'Create 01 Silver':
+                cls.update_source_lakehouse_in_notebook(
+                    workspace_name,
+                    notebook['displayName'],
+                    "sales_silver")
+            
+            if notebook['displayName'] == 'Create Lakehouse Tables':
+                cls.update_datasource_path_in_notebook(
+                    workspace_name,
+                    notebook['displayName'],
+                    deployment_job)
 
             if run_etl_jobs and 'Create' in notebook['displayName']:                
                 FabricRestApi.run_notebook(workspace['id'], notebook)

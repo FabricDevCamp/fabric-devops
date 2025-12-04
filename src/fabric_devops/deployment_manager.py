@@ -919,8 +919,6 @@ class DeploymentManager:
  
         return workspace
 
- 
-
     @classmethod
     def deploy_copyjob_solution(cls,
                                         target_workspace,
