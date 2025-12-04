@@ -17,7 +17,7 @@ on:
                 - Custom Notebook Solution
                 - Custom Shortcut Solution
                 - Custom Pipeline Solution
-                - Custom Medallion Lakehouse Solution
+                - Medallion Lakehouse Solution
                 - Custom User Data Function Solution
                 - Custom Copy Job Solution
                 - Custom Dataflow Gen2 Solution

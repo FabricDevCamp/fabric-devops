@@ -17,6 +17,7 @@ on:
                 - Custom Notebook Solution
                 - Custom Shortcut Solution
                 - Custom Pipeline Solution
+                - Medallion Lakehouse Solution
                 default: Custom Pipeline Solution
             git_integration_provider:
                 type: choice

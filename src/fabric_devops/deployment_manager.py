@@ -41,7 +41,7 @@ class DeploymentManager:
                 workspace = cls.deploy_shortcut_solution(target_workspace, deploy_job)
             case 'Custom Pipeline Solution':
                 workspace = cls.deploy_data_pipeline_solution(target_workspace, deploy_job)
-            case 'Custom Medallion Lakehouse Solution':
+            case 'Medallion Lakehouse Solution':
                 workspace = cls.deploy_medallion_lakehouse_solution(target_workspace, deploy_job)
             case 'Custom Copy Job Solution':
                 workspace = cls.deploy_copyjob_solution(target_workspace, deploy_job)
@@ -833,7 +833,7 @@ class DeploymentManager:
         
         create_notebook_request = \
             ItemDefinitionFactory.get_create_item_request_from_folder(
-            'Build Silver.Notebook')
+            'Create 01 Silver.Notebook')
         
         notebook_redirects = {
             '{WORKSPACE_ID}': workspace['id'],
@@ -864,7 +864,7 @@ class DeploymentManager:
         
         create_notebook_request = \
             ItemDefinitionFactory.get_create_item_request_from_folder(
-            'Build Gold.Notebook')
+            'Create 02 Gold.Notebook')
         
         notebook_redirects = {
             '{WORKSPACE_ID}': workspace['id'],
@@ -2399,13 +2399,20 @@ class DeploymentManager:
                 'Create 01 Silver Layer', 
                 'Create 02 Gold Layer', 
                 'Build 01 Silver Layer', 
-                'Build 02 Gold Layer']
+                'Build 02 Gold Layer',
+                'Create 02 Gold']
             
             if notebook['displayName'] in notebooks_for_sales_lakehouse:
                 cls.update_source_lakehouse_in_notebook(
                     workspace_name,
                     notebook['displayName'],
                     "sales")
+
+            if notebook['displayName'] == 'Create 01 Silver':
+                cls.update_source_lakehouse_in_notebook(
+                    workspace_name,
+                    notebook['displayName'],
+                    "sales_silver")
 
             if notebook['displayName'] == 'Create Lakehouse Tables':
                 cls.update_datasource_path_in_notebook(
@@ -2414,6 +2421,9 @@ class DeploymentManager:
                     deployment_job)
                 
             if run_etl_jobs and 'Create' in notebook['displayName']:                
+                FabricRestApi.run_notebook(workspace['id'], notebook)
+                
+            if notebook['displayName'] in ['Build Gold', 'Build Silver']:                
                 FabricRestApi.run_notebook(workspace['id'], notebook)
 
         pipelines  = list(filter(lambda item: item['type']=='DataPipeline', workspace_items))
