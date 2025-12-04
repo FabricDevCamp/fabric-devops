@@ -42,7 +42,7 @@ class DeploymentManager:
             case 'Custom Pipeline Solution':
                 workspace = cls.deploy_data_pipeline_solution(target_workspace, deploy_job)
             case 'Custom Medallion Lakehouse Solution':
-                workspace - cls.deploy_medallion_lakehouse_solution(target_workspace, deploy_job)
+                workspace = cls.deploy_medallion_lakehouse_solution(target_workspace, deploy_job)
             case 'Custom Copy Job Solution':
                 workspace = cls.deploy_copyjob_solution(target_workspace, deploy_job)
             case 'Custom User Data Function Solution':
@@ -854,12 +854,12 @@ class DeploymentManager:
                 'notebook-content.py', 
                 notebook_redirects)
 
-        notebook = FabricRestApi.create_item(
+        notebook_build_silver = FabricRestApi.create_item(
             workspace['id'], 
             create_notebook_request,
             staging_folder_id)
 
-        FabricRestApi.run_notebook(workspace['id'], notebook)
+        FabricRestApi.run_notebook(workspace['id'], notebook_build_silver)
 
         silver_sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], silver_lakehouse)
 
@@ -868,35 +868,62 @@ class DeploymentManager:
         gold_lakehouse = FabricRestApi.create_lakehouse(
             workspace['id'],
             gold_lakehouse_name)
+        
+        create_notebook_request = \
+            ItemDefinitionFactory.get_create_item_request_from_folder(
+            'Build Gold.Notebook')
+        
+        notebook_redirects = {
+            '{WORKSPACE_ID}': workspace['id'],
+            '{LAKEHOUSE_ID}': gold_lakehouse['id'],
+            '{LAKEHOUSE_NAME}': gold_lakehouse['displayName']
+        }
+
+        create_notebook_request = \
+            ItemDefinitionFactory.update_part_in_create_request(
+                create_notebook_request,
+                'notebook-content.py', 
+                notebook_redirects)
+
+        notebook_build_gold = FabricRestApi.create_item(
+            workspace['id'], 
+            create_notebook_request,
+            staging_folder_id)
+
+        FabricRestApi.run_notebook(workspace['id'], notebook_build_gold)
+        
+        gold_sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], gold_lakehouse)
+
+        FabricRestApi.refresh_sql_endpoint_metadata(workspace['id'], gold_sql_endpoint['database'])
 
 
-        # create_model_request = \
-        #     ItemDefinitionFactory.get_create_item_request_from_folder(
-        #         semantic_model_folder)
-
-        # model_redirects = {
-        #     '{SQL_ENDPOINT_SERVER}': warehouse_connect_string,
-        #     '{SQL_ENDPOINT_DATABASE}': gold_warehouse['id']
-        # }
-
-        # create_model_request = \
-        #     ItemDefinitionFactory.update_part_in_create_request(
-        #         create_model_request,
-        #         'definition/expressions.tmdl',
-        #         model_redirects)
-
-        # model = FabricRestApi.create_item(workspace['id'], create_model_request)
-
-        # FabricRestApi.create_and_bind_semantic_model_connecton(workspace, model['id'], gold_warehouse)
-
-        # for report_folder in report_folders:
+        create_model_request = \
+            ItemDefinitionFactory.get_create_item_request_from_folder(
+                semantic_model_folder)
             
-        #     create_report_request = \
-        #         ItemDefinitionFactory.get_create_report_request_from_folder(
-        #             report_folder,
-        #             model['id'])
+        model_redirects = {
+            '{SQL_ENDPOINT_SERVER}': gold_sql_endpoint['server'],
+            '{SQL_ENDPOINT_DATABASE}': gold_sql_endpoint['database']
+        }
 
-        #     FabricRestApi.create_item(workspace['id'], create_report_request)
+        create_model_request = \
+            ItemDefinitionFactory.update_part_in_create_request(
+                create_model_request,
+                'definition/expressions.tmdl',
+                model_redirects)
+
+        model = FabricRestApi.create_item(workspace['id'], create_model_request)
+
+        FabricRestApi.create_and_bind_semantic_model_connecton(workspace, model['id'], gold_lakehouse)
+
+        for report_folder in report_folders:
+            
+            create_report_request = \
+                ItemDefinitionFactory.get_create_report_request_from_folder(
+                    report_folder,
+                    model['id'])
+
+            FabricRestApi.create_item(workspace['id'], create_report_request)
  
         return workspace
 
