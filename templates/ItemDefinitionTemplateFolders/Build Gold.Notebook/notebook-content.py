@@ -23,13 +23,6 @@
 silver_lakehouse = notebookutils.lakehouse.get('sales_silver')
 silver_lakehouse_path = silver_lakehouse['properties']['abfsPath']
 
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
-
 # CELL ********************
 
 # create products table for gold layer
@@ -41,7 +34,7 @@ silver_products_table_path = f'{silver_lakehouse_path}/Tables/products'
 df_gold_products = (
     spark.read
          .format("delta")
-         .load(silver_prodicts_tabke_path)
+         .load(silver_products_table_path)
 )
 
 # (3) write DataFrame to new gold layer table 
@@ -55,14 +48,6 @@ df_gold_products = (
 # (4) display table schema and data
 df_gold_products.printSchema()
 df_gold_products.show()
-
-
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
 
 # CELL ********************
 
@@ -95,13 +80,6 @@ df_gold_customers = (
 # display table schema and data
 df_gold_customers.printSchema()
 df_gold_customers.show()
-
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
 
 # CELL ********************
 
@@ -142,15 +120,7 @@ df_gold_sales = (
 df_gold_sales.printSchema()
 df_gold_sales.show()
 
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
-
 # CELL ********************
-
 
 # create calendar table for gold layer
 from datetime import date
@@ -198,11 +168,3 @@ df_calendar_spark = (
 # display table schema and data
 df_calendar_spark.printSchema()
 df_calendar_spark.show()
-
-
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
