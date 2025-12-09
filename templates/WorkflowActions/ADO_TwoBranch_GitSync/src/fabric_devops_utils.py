@@ -479,7 +479,7 @@ class AdoProjectManager:
         push_body = {
             "commits":[
                 {
-                    "comment":"Commit initial ReadMe.md",
+                    "comment":"Adding ReadMe.md",
                     "changes":[
                         {
                             "item":{ "path":"/ReadMe.md"},
@@ -579,8 +579,12 @@ class AdoProjectManager:
         cls.set_default_branch(project_name, "dev")
 
     @classmethod
-    def write_file_to_repo(cls, project_name, branch, file_path, file_content, comment = 'Adding file to repo'):
+    def write_file_to_repo(cls, project_name, branch, file_path, file_content, comment = None):
         """Write Files to Repo"""        
+
+        if comment is None:
+            comment = f'Adding file [{file_path}]'        
+        
         base64_content = base64.b64encode(file_content.encode('utf-8')).decode('utf-8')
         
         repository = cls.get_project_repository(project_name)
