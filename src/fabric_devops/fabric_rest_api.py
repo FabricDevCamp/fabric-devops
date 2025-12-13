@@ -1609,7 +1609,7 @@ class FabricRestApi:
     def _create_github_source_control_connection(cls, url, workspace, top_level_step = False):
         """Create GitHub connections with Personal Access Token"""
 
-        display_name = f"Workspace[{workspace['id']}]-GitHubSourceControl"
+        display_name = f"GIT-GitHub-PAT-[{url}]"
 
         create_connection_request = {
             'displayName': display_name,
@@ -1733,7 +1733,7 @@ class FabricRestApi:
     def _create_ado_source_control_connection(cls, url, workspace, top_level_step = False):
         """Create GitHub connections with Personal Access Token"""
 
-        display_name = f"ADO-GIT-SPN-[{url}]"
+        display_name = f"GIT-ADO-SPN-[{url}]"
 
         create_connection_request = {
             'displayName': display_name,
@@ -1849,7 +1849,7 @@ class FabricRestApi:
         init_response = cls.initialize_git_connection(workspace['id'], init_request)
 
         required_action = init_response['requiredAction']
-
+    
         if required_action == 'CommitToGit':
             commit_to_git_request = {
                 'mode': 'All',
@@ -1859,7 +1859,7 @@ class FabricRestApi:
             cls.commit_workspace_to_git(
                 workspace['id'], 
                 commit_to_git_request,
-                '')
+                'Initial commit of workspace items to GIT')
 
         if required_action == 'UpdateFromGit':
             update_from_git_request = {
