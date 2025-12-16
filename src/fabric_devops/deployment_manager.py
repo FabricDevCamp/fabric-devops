@@ -121,7 +121,110 @@ class DeploymentManager:
         return workspace
 
     @classmethod
-    def deploy_notebook_solution(cls,
+    def deploy_notebook_solution(
+        cls,
+        target_workspace,
+        deploy_job = StagingEnvironments.get_dev_environment()):
+        """Deploy Notebook Solution"""
+
+        lakehouse_name = "sales"
+
+        AppLogger.log_job(f"Deploying Custom Notebook Solution to [{target_workspace}]")
+
+        deploy_job.display_deployment_parameters('web')
+
+        workspace = FabricRestApi.create_workspace(target_workspace)
+        
+        FabricRestApi.update_workspace_description(workspace['id'], 'Custom Notebook Solution with Variable Library')
+
+        web_datasource_path_dev = StagingEnvironments.get_dev_environment().parameters['web_datasource_path']
+        web_datasource_path_test = StagingEnvironments.get_test_environment().parameters['web_datasource_path']
+        web_datasource_path_prod = StagingEnvironments.get_prod_environment().parameters['web_datasource_path']
+
+        web_datasource_path = deploy_job.parameters[deploy_job.web_datasource_path_parameter]
+                
+        
+        variable_library = VariableLibrary()
+        variable_library.add_variable("web_datasource_path", web_datasource_path_dev)
+        
+        test_valueset = Valueset('test')
+        test_valueset.add_variable_override('web_datasource_path', web_datasource_path_test)
+        variable_library.add_valueset(test_valueset)       
+        
+        prod_valueset = Valueset('prod')
+        prod_valueset.add_variable_override('web_datasource_path', web_datasource_path_prod)
+        variable_library.add_valueset(prod_valueset)
+
+        create_library_request = \
+            ItemDefinitionFactory.get_variable_library_create_request(
+                "environment_settings",
+                variable_library
+        )
+
+        variable_library = FabricRestApi.create_item(workspace['id'], create_library_request)
+        
+        FabricRestApi.set_active_valueset_for_variable_library(
+                workspace['id'],
+                variable_library,
+                deploy_job.name
+        )
+
+        lakehouse = FabricRestApi.create_lakehouse(workspace['id'], lakehouse_name)
+
+        create_notebook_request = \
+            ItemDefinitionFactory.get_create_item_request_from_folder(
+                'Create Lakehouse Tables with VarLib.Notebook')
+
+        notebook_redirects = {
+            '{WORKSPACE_ID}': workspace['id'],
+            '{LAKEHOUSE_ID}': lakehouse['id'],
+            '{LAKEHOUSE_NAME}': lakehouse['displayName']
+        }
+
+        create_notebook_request = \
+            ItemDefinitionFactory.update_part_in_create_request(create_notebook_request,
+                                                                'notebook-content.py', 
+                                                                notebook_redirects)
+
+        notebook = FabricRestApi.create_item(workspace['id'], create_notebook_request)
+
+        FabricRestApi.run_notebook(workspace['id'], notebook)
+
+        sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse)
+
+        FabricRestApi.refresh_sql_endpoint_metadata(workspace['id'], sql_endpoint['database'])
+
+        create_model_request = \
+            ItemDefinitionFactory.get_create_item_request_from_folder(
+                'Product Sales DirectLake Model.SemanticModel')
+
+        model_redirects = {
+            '{SQL_ENDPOINT_SERVER}': sql_endpoint['server'],
+            '{SQL_ENDPOINT_DATABASE}': sql_endpoint['database']
+        }
+
+        create_model_request = \
+            ItemDefinitionFactory.update_part_in_create_request(create_model_request,
+                                                                'definition/expressions.tmdl',
+                                                                model_redirects)
+
+        model = FabricRestApi.create_item(workspace['id'], create_model_request)
+
+        FabricRestApi.create_and_bind_semantic_model_connecton(workspace, model['id'], lakehouse)
+
+        create_report_request = \
+            ItemDefinitionFactory.get_create_report_request_from_folder(
+                'Product Sales Summary.Report',
+                model['id'])
+
+        FabricRestApi.create_item(workspace['id'], create_report_request)
+
+        return workspace
+
+
+
+    @classmethod
+    def deploy_notebook_solution_without_varlib(cls,
                                  target_workspace,
                                  deploy_job = StagingEnvironments.get_dev_environment()):
         """Deploy Notebook Solution"""
@@ -1486,89 +1589,7 @@ class DeploymentManager:
 
     # solutions which use variable libraries for parameterization
 
-    @classmethod
-    def deploy_notebook_solution_with_varlib(
-        cls,
-        target_workspace,
-        deploy_job = StagingEnvironments.get_dev_environment()):
-        """Deploy Notebook Solution"""
-
-        lakehouse_name = "sales"
-
-        AppLogger.log_job(f"Deploying Custom Notebook Solution to [{target_workspace}]")
-
-        deploy_job.display_deployment_parameters('web')
-
-        workspace = FabricRestApi.create_workspace(target_workspace)
-        
-        FabricRestApi.update_workspace_description(workspace['id'], 'Custom Notebook Solution with Variable Library')
-
-        web_datasource_path = deploy_job.parameters[deploy_job.web_datasource_path_parameter]
-        
-        variable_library = VariableLibrary()
-        variable_library.add_variable("web_datasource_path", web_datasource_path)
-        
-        create_library_request = \
-            ItemDefinitionFactory.get_variable_library_create_request(
-                "environment_settings",
-                variable_library
-        )
-
-        FabricRestApi.create_item(workspace['id'], create_library_request)
-
-        lakehouse = FabricRestApi.create_lakehouse(workspace['id'], lakehouse_name)
-
-        create_notebook_request = \
-            ItemDefinitionFactory.get_create_item_request_from_folder(
-                'Create Lakehouse Tables with VarLib.Notebook')
-
-        notebook_redirects = {
-            '{WORKSPACE_ID}': workspace['id'],
-            '{LAKEHOUSE_ID}': lakehouse['id'],
-            '{LAKEHOUSE_NAME}': lakehouse['displayName']
-        }
-
-        create_notebook_request = \
-            ItemDefinitionFactory.update_part_in_create_request(create_notebook_request,
-                                                                'notebook-content.py', 
-                                                                notebook_redirects)
-
-        notebook = FabricRestApi.create_item(workspace['id'], create_notebook_request)
-
-        FabricRestApi.run_notebook(workspace['id'], notebook)
-
-        sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(workspace['id'], lakehouse)
-
-        FabricRestApi.refresh_sql_endpoint_metadata(workspace['id'], sql_endpoint['database'])
-
-        create_model_request = \
-            ItemDefinitionFactory.get_create_item_request_from_folder(
-                'Product Sales DirectLake Model.SemanticModel')
-
-        model_redirects = {
-            '{SQL_ENDPOINT_SERVER}': sql_endpoint['server'],
-            '{SQL_ENDPOINT_DATABASE}': sql_endpoint['database']
-        }
-
-        create_model_request = \
-            ItemDefinitionFactory.update_part_in_create_request(create_model_request,
-                                                                'definition/expressions.tmdl',
-                                                                model_redirects)
-
-        model = FabricRestApi.create_item(workspace['id'], create_model_request)
-
-        FabricRestApi.create_and_bind_semantic_model_connecton(workspace, model['id'], lakehouse)
-
-        create_report_request = \
-            ItemDefinitionFactory.get_create_report_request_from_folder(
-                'Product Sales Summary.Report',
-                model['id'])
-
-        FabricRestApi.create_item(workspace['id'], create_report_request)
-
-        return workspace
-
-    
+     
     # specialty solutions which do not support parameterization with deploy job
 
     @classmethod
