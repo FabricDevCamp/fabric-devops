@@ -140,10 +140,7 @@ class DeploymentManager:
         web_datasource_path_dev = StagingEnvironments.get_dev_environment().parameters['web_datasource_path']
         web_datasource_path_test = StagingEnvironments.get_test_environment().parameters['web_datasource_path']
         web_datasource_path_prod = StagingEnvironments.get_prod_environment().parameters['web_datasource_path']
-
-        web_datasource_path = deploy_job.parameters[deploy_job.web_datasource_path_parameter]
-                
-        
+     
         variable_library = VariableLibrary()
         variable_library.add_variable("web_datasource_path", web_datasource_path_dev)
         
