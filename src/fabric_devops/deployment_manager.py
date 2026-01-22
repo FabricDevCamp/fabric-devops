@@ -170,7 +170,7 @@ class DeploymentManager:
 
         create_notebook_request = \
             ItemDefinitionFactory.get_create_item_request_from_folder(
-                'Create Lakehouse Tables')
+                'Create Lakehouse Tables.Report')
 
         notebook_redirects = {
             '{WORKSPACE_ID}': workspace['id'],
