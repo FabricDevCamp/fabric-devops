@@ -20,7 +20,7 @@
 # copy CSV files to lakehouse to load data into bronze layer 
 import requests
 
-csv_base_url = '{WEB_DATASOURCE_PATH}'
+csv_base_url = notebookutils.variableLibrary.get("$(/**/environment_settings/web_datasource_path)")
 
 print(f'Coping files from {csv_base_url}')
 
