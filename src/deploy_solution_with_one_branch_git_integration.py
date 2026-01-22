@@ -37,12 +37,12 @@ match os.getenv("GIT_INTEGRATION_PROVIDER"):
         if CREATE_FEATURE_WORKSPACE:
             
             FEATURE1_NAME = 'feature1'
-            FEATURE1_BRANCH_NAME = f'dev-{FEATURE1_NAME}'
+            FEATURE1_BRANCH_NAME = f'{PROJECT_NAME}-{FEATURE1_NAME}'
             FEATURE1_WORKSPACE_NAME = F'{PROD_WORKSPACE_NAME}-{FEATURE1_NAME}'
             FEATURE1_WORKSPACE = FabricRestApi.create_workspace(FEATURE1_WORKSPACE_NAME)
 
             # create feature1 branch and connect to feature1 workspace
-            AdoProjectManager.create_branch(PROJECT_NAME, FEATURE1_BRANCH_NAME, 'dev')
+            AdoProjectManager.create_branch(PROJECT_NAME, FEATURE1_BRANCH_NAME, 'main')
             FabricRestApi.connect_workspace_to_ado_repo(FEATURE1_WORKSPACE, PROJECT_NAME, FEATURE1_BRANCH_NAME)
 
             # apply post sync/deploy fixes to feature1 workspace
