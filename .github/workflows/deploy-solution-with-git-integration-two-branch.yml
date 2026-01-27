@@ -1,6 +1,6 @@
 
-name: Deploy Project with 3-Branch fabric-cicd
-run-name: Depoy [${{inputs.solution_name}}] to Project [${{inputs.project_name}}] using fabric-cicd & ${{inputs.git_integration_provider}}
+name: Deploy Project with GIT Sync 2-Branch
+run-name: Depoy [${{inputs.solution_name}}] to Project [${{inputs.project_name}}] using Git Sync with ${{inputs.git_integration_provider}}
 
 on:
     workflow_dispatch:
@@ -17,11 +17,12 @@ on:
                 - Custom Notebook Solution
                 - Custom Shortcut Solution
                 - Custom Pipeline Solution
+                - Medallion Lakehouse Solution
                 default: Custom Pipeline Solution
             git_integration_provider:
                 type: choice
                 description: Git Integration Provider
-                options:
+                options: 
                 - Azure DevOps
                 - GitHub
                 default: Azure DevOps
@@ -71,4 +72,4 @@ jobs:
                 GIT_INTEGRATION_PROVIDER: ${{inputs.git_integration_provider}}
                 RUN_AS_SERVICE_PRINCIPAL: ${{inputs.run_as_service_principal}}
               run: 
-                python src/deploy_solution_with_three_branch_fabric_cicd.py
+                python src/deploy_solution_with_two_branch_git_integration.py

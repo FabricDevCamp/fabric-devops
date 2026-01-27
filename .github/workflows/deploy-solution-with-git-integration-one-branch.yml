@@ -1,5 +1,5 @@
 
-name: Deploy Project with 1-Branch GIT Sync
+name: Deploy Project with GIT Sync 1-Branch
 run-name: Depoy [${{inputs.solution_name}}] to Project [${{inputs.project_name}}] using Git Sync with ${{inputs.git_integration_provider}}
 
 on:
