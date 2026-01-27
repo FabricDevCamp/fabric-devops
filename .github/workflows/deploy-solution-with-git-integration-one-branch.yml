@@ -1,5 +1,5 @@
 
-name: Deploy Project with GIT Sync 1-Branch
+name: Deploy Project with GIT Sync - 1 Branch
 run-name: Depoy [${{inputs.solution_name}}] to Project [${{inputs.project_name}}] using Git Sync with ${{inputs.git_integration_provider}}
 
 on:
@@ -76,4 +76,4 @@ jobs:
                 CREATE_FEATURE_WORKSPACE: ${{inputs.create_feature_workspace}}
                 RUN_AS_SERVICE_PRINCIPAL: ${{inputs.run_as_service_principal}}
               run: 
-                python src/deploy_solution_with_one_branch_git_integration.py
+                python src/deploy_solution_with_git_integration_one_branch.py

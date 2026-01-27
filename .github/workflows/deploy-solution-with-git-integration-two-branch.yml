@@ -1,5 +1,5 @@
 
-name: Deploy Project with GIT Sync 2-Branch
+name: Deploy Project with GIT Sync - 2 Branch
 run-name: Depoy [${{inputs.solution_name}}] to Project [${{inputs.project_name}}] using Git Sync with ${{inputs.git_integration_provider}}
 
 on:
@@ -72,4 +72,4 @@ jobs:
                 GIT_INTEGRATION_PROVIDER: ${{inputs.git_integration_provider}}
                 RUN_AS_SERVICE_PRINCIPAL: ${{inputs.run_as_service_principal}}
               run: 
-                python src/deploy_solution_with_two_branch_git_integration.py
+                python src/deploy_solution_with_git_integration_two_branch.py

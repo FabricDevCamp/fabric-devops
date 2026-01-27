@@ -71,4 +71,4 @@ jobs:
                 GIT_INTEGRATION_PROVIDER: ${{inputs.git_integration_provider}}
                 RUN_AS_SERVICE_PRINCIPAL: ${{inputs.run_as_service_principal}}
               run: 
-                python src/deploy_solution_with_one_branch_fabric_cicd.py
+                python src/deploy_solution_with_fabric_cicd_one_branch.py
