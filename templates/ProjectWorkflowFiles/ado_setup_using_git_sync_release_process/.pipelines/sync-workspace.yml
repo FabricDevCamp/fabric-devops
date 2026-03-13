@@ -1,0 +1,51 @@
+name: 'Sync_Dev_Workspace_$(Date:yyyyMMdd)'
+appendCommitMessageToRunName: false
+
+trigger:
+  branches:
+    include:
+      - main
+      - test
+      - dev
+   paths:
+    include:
+      - workspace
+
+variables: 
+- group: 'environmental_variables'
+
+jobs:
+- job: Sync_Workspace
+  pool:
+    vmImage: ubuntu-latest
+  
+  steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.12'
+      addToPath: true
+
+  - script: pip install microsoft-fabric-api -q
+    displayName: 'Install Python SDK for Fabric REST APIs'
+  
+  - script: pip install fabric-cicd -q
+    displayName: 'Install  fabric-cicd'
+
+
+  - task: PythonScript@0  
+    inputs:
+      scriptSource: 'filePath'
+      scriptPath: 'src/sync_workspace.py' 
+      workingDirectory: '$(Build.SourcesDirectory)/src'
+      failOnStderr: true  
+    env:
+      AZURE_CLIENT_ID: $(AZURE_CLIENT_ID)
+      AZURE_CLIENT_SECRET: $(AZURE_CLIENT_SECRET)
+      AZURE_TENANT_ID: $(AZURE_TENANT_ID)
+      SERVICE_PRINCIPAL_OBJECT_ID: $(SERVICE_PRINCIPAL_OBJECT_ID)
+      ADMIN_USER_ID: $(ADMIN_USER_ID)
+      DEVELOPERS_GROUP_ID: $(DEVELOPERS_GROUP_ID)
+      FABRIC_CAPACITY_ID: $(FABRIC_CAPACITY_ID)
+      WORKSPACE_ID_DEV: $(WORKSPACE_ID_DEV)
+      WORKSPACE_ID_TEST: $(WORKSPACE_ID_TEST)
+      WORKSPACE_ID_PROD: $(WORKSPACE_ID_PROD)

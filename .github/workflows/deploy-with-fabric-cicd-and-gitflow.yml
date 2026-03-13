@@ -1,0 +1,85 @@
+name: Deploy with fabric-cicd and GitFlow
+run-name: Deploy [${{inputs.solution_name}}] to [${{inputs.project_name}}] using fabric-cicd & GitFlow
+
+on:
+    workflow_dispatch:
+        inputs:
+            project_name:
+                description: Project Name
+                required: true
+                default: "Product Sales"
+            solution_name:
+                type: choice
+                description: Solution to deploy
+                options: 
+                - Power BI Solution
+                - Notebook Solution
+                - Shortcut Solution
+                - Pipeline Solution
+                - Medallion Solution
+                default: Custom Pipeline Solution
+            git_integration_provider:
+                type: choice
+                description: Git Integration Provider
+                options: 
+                - Azure DevOps
+                - GitHub
+                default: GitHub
+            create_feature_workspace:
+                type: boolean
+                description: Create feature workspace
+                default: false
+
+jobs:
+    deployment-job:
+        name: Deploy ${{inputs.solution_name}}
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Check out the code
+              uses: actions/checkout@v4
+
+            - name: Set up Python
+              uses: actions/setup-python@v2
+              with:
+                    python-version: "3.12"
+
+            - name: Install azure-identity package
+              run: |
+                    pip install azure-identity -q
+
+            - name: Install MSAL
+              run: |
+                    pip install msal -q
+
+            - name: Install Python SDK for Fabric REST APIs
+              run: |
+                    pip install microsoft-fabric-api -q
+
+            - name: fabric-cicd library
+              run: |
+                    pip install fabric-cicd -q
+
+            - name: Install PyNaCl
+              run: |
+                    pip install PyNaCl -q
+
+            - name: Deploy Solution                
+              env:
+                AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+                AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+                AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}    
+                SERVICE_PRINCIPAL_OBJECT_ID: ${{ secrets.SERVICE_PRINCIPAL_OBJECT_ID }}        
+                AZURE_STORAGE_SAS_TOKEN: ${{ secrets.AZURE_STORAGE_SAS_TOKEN }}                
+                FABRIC_CAPACITY_ID: ${{ secrets.FABRIC_CAPACITY_ID }}             
+                ADMIN_USER_ID: ${{ secrets.ADMIN_USER_ID }}
+                DEVELOPERS_GROUP_ID: ${{ secrets.DEVELOPERS_GROUP_ID }}
+                ADO_ORGANIZATION: ${{ secrets.ADO_ORGANIZATION }}
+                ORGANIZATION_GITHUB: ${{ secrets.ORGANIZATION_GITHUB }}
+                PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
+                PROJECT_NAME: ${{inputs.project_name}}
+                SOLUTION_NAME: ${{inputs.solution_name}}
+                GIT_INTEGRATION_PROVIDER: ${{inputs.git_integration_provider}}
+                CREATE_FEATURE_WORKSPACE: ${{inputs.create_feature_workspace}}
+              run:
+                python src/deploy_with_fabric-cicd_and_gitflow.py

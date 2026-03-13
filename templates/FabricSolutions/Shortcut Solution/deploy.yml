@@ -1,0 +1,21 @@
+core:
+    workspace_id:
+        dev:  "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+        test: "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
+        prod: "cccccccc-cccc-cccc-cccc-cccccccccccc"
+
+    repository_directory:
+        dev:  "."
+        test: "."
+        prod: "."
+
+    item_types_in_scope:
+        dev :  [ "Lakehouse", "Notebook", "SemanticModel", "Report"]    
+        test : [ "VariableLibrary", "Lakehouse", "Notebook", "SemanticModel", "Report"]
+        prod : [ "VariableLibrary", "Lakehouse", "Notebook", "SemanticModel", "Report"]
+
+    parameter:
+        dev:  "parameter.yml"
+        test: "parameter.yml"
+        prod: "parameter.yml"
+

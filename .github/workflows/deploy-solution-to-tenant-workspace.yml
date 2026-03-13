@@ -1,0 +1,74 @@
+
+name: Deploy solution to tenant workspace
+run-name: Deploy [${{inputs.solution_name}}] to tenant workspace for [${{inputs.customer_name}}]
+
+on:
+    workflow_dispatch:
+        inputs:
+            customer_name:
+              type: choice
+              description: Target Customer
+              options: 
+              - Adventure Works
+              - Contoso
+              - Fabrikam
+              - Northwind
+              - Seamark Farms
+              - Wingtip Toys
+              - Deploy To All Customers
+              default: Custom Pipeline Solution
+            solution_name:
+                type: choice
+                description: Solution to deploy
+                options: 
+                - Power BI Solution
+                - Notebook Solution
+                - Shortcut Solution
+                - Pipeline Solution
+                - Medallion Solution
+                default: Pipeline Solution
+
+jobs:
+    deployment-job:
+        name: Deploy ${{inputs.solution_name}}
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Check out the code
+              uses: actions/checkout@v4
+
+            - name: Set up Python
+              uses: actions/setup-python@v2
+              with:
+                    python-version: "3.12"
+
+
+            - name: Install azure-identity package
+              run: |
+                    pip install azure-identity -q
+
+            - name: Install MSAL
+              run: |
+                    pip install msal -q
+
+            - name: Install Python SDK for Fabric REST APIs
+              run: |
+                    pip install microsoft-fabric-api -q
+
+            - name: fabric-cicd library
+              run: |
+                    pip install fabric-cicd -q
+
+            - name: Deploy solution to tenant workspace                
+              env:
+                AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+                AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+                AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}    
+                AZURE_STORAGE_SAS_TOKEN: ${{ secrets.AZURE_STORAGE_SAS_TOKEN }}                
+                FABRIC_CAPACITY_ID: ${{ secrets.FABRIC_CAPACITY_ID }}             
+                ADMIN_USER_ID: ${{ secrets.ADMIN_USER_ID }}
+                DEVELOPERS_GROUP_ID: ${{ secrets.DEVELOPERS_GROUP_ID }}
+                CUSTOMER_NAME: ${{inputs.customer_name}}
+                SOLUTION_NAME: ${{inputs.solution_name}}        
+              run:
+                python src/deploy_solution_to_tenant_workspace.py

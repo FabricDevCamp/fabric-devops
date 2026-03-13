@@ -1,0 +1,10 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/variableLibrary/definition/valueSet/1.0.0/schema.json",
+  "name": "test",
+  "variableOverrides": [
+    {
+      "name": "web_datasource_path",
+      "value": "https://fabricdevcamp.blob.core.windows.net/sampledata/ProductSales/Test/"
+    }
+  ]
+}

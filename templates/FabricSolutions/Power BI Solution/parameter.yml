@@ -1,0 +1,9 @@
+find_replace:
+
+    # [Web Datasource Url]
+    - find_value: "https://fabricdevcamp.blob.core.windows.net/sampledata/ProductSales/Dev"
+      replace_value:
+        test: "https://fabricdevcamp.blob.core.windows.net/sampledata/ProductSales/Test"
+        prod: "https://fabricdevcamp.blob.core.windows.net/sampledata/ProductSales/Prod"
+      item_type: "SemanticModel"
+      item_name: ["Product Sales Imported Model"]

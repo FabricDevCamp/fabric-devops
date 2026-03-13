@@ -1,0 +1,96 @@
+
+name: Deploy solution to new workspace
+run-name: Deploy [${{inputs.solution_name}}] to [${{inputs.workspace_name}}] with [${{inputs.target_environment}}] env settings
+
+on:
+    workflow_dispatch:
+        inputs:
+            workspace_name:
+                description: Workspace Name
+                required: true
+                default: "Product Sales"
+            solution_name:
+                type: choice
+                description: Solution to deploy
+                options: 
+                - Power BI Solution
+                - Notebook Solution
+                - Shortcut Solution
+                - Pipeline Solution
+                - Medallion Solution
+                default: Pipeline Solution
+            target_environment:
+                type: choice
+                description: Target Environment
+                options: 
+                - dev
+                - test
+                - prod
+                default: dev
+            deploy_using_fabric_cicd:
+                type: boolean
+                description: Deploy using fabric-cicd
+                default: true
+            git_integration_provider:
+                type: choice
+                description: Git Integration Provider
+                options: 
+                - None
+                - Azure DevOps
+                - GitHub
+                default: None
+
+jobs:
+    deployment-job:
+        name: Deploy ${{inputs.solution_name}}
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Check out the code
+              uses: actions/checkout@v4
+
+            - name: Set up Python
+              uses: actions/setup-python@v2
+              with:
+                    python-version: "3.12"
+
+
+            - name: Install azure-identity package
+              run: |
+                    pip install azure-identity -q
+
+            - name: Install MSAL
+              run: |
+                    pip install msal -q
+
+            - name: Install Python SDK for Fabric REST APIs
+              run: |
+                    pip install microsoft-fabric-api -q
+
+            - name: fabric-cicd library
+              run: |
+                    pip install fabric-cicd -q
+
+            - name: Install PyNaCl
+              run: |
+                    pip install PyNaCl -q
+
+            - name: Deploy solution to new workspace      
+              env:
+                AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+                AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+                AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}    
+                AZURE_STORAGE_SAS_TOKEN: ${{ secrets.AZURE_STORAGE_SAS_TOKEN }}                
+                FABRIC_CAPACITY_ID: ${{ secrets.FABRIC_CAPACITY_ID }}             
+                ADMIN_USER_ID: ${{ secrets.ADMIN_USER_ID }}
+                DEVELOPERS_GROUP_ID: ${{ secrets.DEVELOPERS_GROUP_ID }}
+                ADO_ORGANIZATION: ${{ secrets.ADO_ORGANIZATION }}
+                ORGANIZATION_GITHUB: ${{ secrets.ORGANIZATION_GITHUB }}
+                PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
+                WORKSPACE_NAME: ${{inputs.workspace_name}}
+                SOLUTION_NAME: ${{inputs.solution_name}}        
+                TARGET_ENVIRONMENT: ${{inputs.target_environment}}
+                DEPLOY_USING_FABRIC_CICD: ${{inputs.deploy_using_fabric_cicd}}
+                GIT_INTEGRATION_PROVIDER: ${{inputs.git_integration_provider}}
+              run:
+                python src/deploy_solution_to_new_workspace.py

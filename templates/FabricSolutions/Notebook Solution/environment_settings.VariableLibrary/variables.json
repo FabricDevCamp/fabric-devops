@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/variableLibrary/definition/variables/1.0.0/schema.json",
+  "variables": [
+    {
+      "name": "web_datasource_path",
+      "note": "some note",
+      "type": "String",
+      "value": "https://fabricdevcamp.blob.core.windows.net/sampledata/ProductSales/Dev/"
+    }
+  ]
+}
