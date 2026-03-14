@@ -1,4 +1,6 @@
 """Fabric DevOps Utility Classes"""
+# this version of fabric_devops specific for Azure Dev Ops projects
+# updated: 03/14/2026
 
 import base64
 import re

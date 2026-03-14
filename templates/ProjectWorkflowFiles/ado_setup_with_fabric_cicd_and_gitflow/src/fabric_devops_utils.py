@@ -1,4 +1,6 @@
 """Fabric DevOps Utility Classes"""
+# this version of fabric_devops specific for Azure Dev Ops projects
+# updated: 03/14/2026
 
 import base64
 import re
@@ -10,7 +12,6 @@ from json.decoder import JSONDecodeError
 from typing import List
 import requests
 import msal
-import requests
 
 from azure.identity import DefaultAzureCredential
 from microsoft_fabric_api import FabricClient
@@ -158,6 +159,7 @@ class AppLogger:
         print('-' * len(error_message), flush=True)
         
         """Module to manage calls to Fabric REST APIs"""
+
 
 class AdoProjectManager:
     """Wrapper class for calling Azure REST APIs for Azure Dev Ops"""
@@ -553,7 +555,7 @@ class AdoProjectManager:
         repository = cls.get_project_repository(project_name)
         repository_id = repository['id']
         endpoint = f'git/repositories/{repository_id}/refs'
-        return cls._execute_get_request_on_project(project_name, endpoint)
+        return cls._execute_get_request_on_project(project_name, endpoint)['value']
 
     @classmethod
     def get_branch(cls, project_name, branch):
@@ -882,6 +884,27 @@ class AdoProjectManager:
         return cls._execute_post_request(endpoint, body)
 
     @classmethod
+    def list_pipelines(cls, project_name):
+        """List Pipelines"""
+        return cls._execute_get_request_on_project(project_name, 'pipelines')['value']
+   
+    @classmethod
+    def get_pipeline_by_name(cls, project_name, pipeline_name):
+        """Get Pipeline By Name"""
+        pipelines = cls.list_pipelines(project_name)
+        for pipeline in pipelines:
+            if pipeline['name'] == pipeline_name:
+                return pipeline
+
+    @classmethod
+    def get_pipeline_id_by_name(cls, project_name, pipeline_name):
+        """Get Pipeline By Name"""
+        pipelines = cls.list_pipelines(project_name)
+        for pipeline in pipelines:
+            if pipeline['name'] == pipeline_name:
+                return pipeline['id']
+
+    @classmethod
     def create_pipeline(cls, project_name, pipeline_name, pipeline_yml_file, variable_group_id = None):
         """Create Pipeline"""
         AppLogger.log_step(f"Creating pipeline [{pipeline_name}]")
@@ -905,6 +928,65 @@ class AdoProjectManager:
         pipeline_id = pipeline['id']
         if variable_group_id is not None:
             cls.set_pipeline_permission(project_name, variable_group_id, pipeline_id)
+
+    @classmethod
+    def list_pipeline_runs(cls, project_name, pipeline_id):
+        """Get pipeline runs"""
+        endpoint = f'pipelines/{pipeline_id}/runs/'
+        return cls._execute_get_request_on_project(project_name, endpoint)
+
+    @classmethod
+    def get_pipeline_run(cls, project_name, pipeline_id, run_id):
+        """Get pipeline run"""
+        endpoint = f'pipelines/{pipeline_id}/runs/{run_id}'
+        return cls._execute_get_request_on_project(project_name, endpoint)
+
+    @classmethod
+    def get_pipeline_run_state(cls, project_name, pipeline_id, run_id):
+        """Get pipeline run state"""
+        endpoint = f'pipelines/{pipeline_id}/runs/{run_id}'
+        return cls._execute_get_request_on_project(project_name, endpoint)['state']
+
+    @classmethod
+    def run_pipeline(cls, project_name, pipeline_name, branch_name):
+        """Run  Pipeline By Name"""
+        AppLogger.log_step(f"Running pipeline [{pipeline_name}] on branch [{branch_name}]")
+        pipeline_id = cls.get_pipeline_id_by_name(project_name, pipeline_name)
+        endpoint = f'pipelines/{pipeline_id}/runs'
+        post_body = {
+            "stagesToSkip": [],
+            "resources": {
+                "repositories": {
+                    "self" : { 
+                        "refName" : f"refs/heads/{branch_name}"
+                    }
+                }
+            },
+            "variables":{}
+        }
+          
+        pipeline_run = cls._execute_post_request_on_project(project_name, endpoint, post_body)
+        pipeline_run_id = pipeline_run['id']
+        
+        pipeline_run_state = cls.get_pipeline_run_state(
+            project_name,
+            pipeline_id, 
+            pipeline_run_id
+        )
+        
+        while pipeline_run_state == 'inProgress':
+            time.sleep(20)
+            pipeline_run_state = cls.get_pipeline_run_state(
+                project_name,
+                pipeline_id,
+                pipeline_run_id
+            )
+                
+        if pipeline_run_state == 'completed':
+            AppLogger.log_substep('Pipeline run completed successfully')
+        else:
+            AppLogger.log_error(f'Error running pipeline - state={pipeline_run_state}')
+
 
     @classmethod
     def set_pipeline_permission(cls, project_name, variable_group_id, pipeline_id):
@@ -1042,6 +1124,7 @@ class AdoProjectManager:
         """Get Azure Dev Ops Identities"""
         endpoint = rf'identities?searchFilter=AccountName&filterValue={EnvironmentSettings.AZURE_TENANT_ID}\{EnvironmentSettings.SERVICE_PRINCIPAL_OBJECT_ID}&queryMembership=None'
         return cls._execute_get_request_on_vssps(endpoint)['value'][0]['id']
+
 
 class FabricRestApi:
     """Fabric REST API Wrapper Class"""
@@ -3059,7 +3142,7 @@ class DeploymentManager:
                     target_lakehouse_name)
 
     @classmethod
-    def apply_post_deploy_fixes(cls, workspace_id):        
+    def apply_post_deploy_fixes(cls, workspace_id):
         """Apply Post Deploy Fixes"""
 
         workspace = FabricRestApi.get_workspace_info(workspace_id)
