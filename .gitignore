@@ -20,3 +20,6 @@ __pycache__/
 # Exports folder
 exports
 exports/
+
+# log files
+*.log
