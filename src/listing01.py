@@ -4,17 +4,23 @@ import os
 from azure.identity import ClientSecretCredential
 from microsoft_fabric_api import FabricClient
 
+print(f'{os.getenv("AZURE_CLIENT_ID")}')
+print(f'{os.getenv("AZURE_TENANT_ID")}')
+
+print(f'{os.getenv("AZURE_CLIENT_SECRET")}')
+
+
 credential = ClientSecretCredential(
-    os.getenv('AZURE_TENANT_ID'),
-    os.getenv('AZURE_CLIENT_ID'),
-    os.getenv('AZURE_CLIENT_SECRET')
+  client_id=os.getenv('AZURE_CLIENT_ID'),
+  tenant_id= os.getenv('AZURE_TENANT_ID'),
+  client_secret= os.getenv('AZURE_CLIENT_SECRET')
 )
     
 fabric_client = FabricClient(credential)
     
 # Call Create Workspace API
 create_workspace_request = {
-    "display_name": 'Hello Python SDK',
+    "display_name": 'Hello Python SDK 3',
     "description":  'Look ma, I can create a workspace using code!',
     "capacity_id":  os.getenv('FABRIC_CAPACITY_ID')
 }

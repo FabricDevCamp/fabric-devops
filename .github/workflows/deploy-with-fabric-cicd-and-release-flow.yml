@@ -17,7 +17,7 @@ on:
                 - Shortcut Solution
                 - Pipeline Solution
                 - Medallion Solution
-                default: Custom Pipeline Solution
+                default: Medallion Solution
             git_integration_provider:
                 type: choice
                 description: Git Integration Provider
@@ -28,7 +28,7 @@ on:
             create_feature_workspace:
                 type: boolean
                 description: Create feature workspace
-                default: false
+                default: true
 
 jobs:
     deployment-job:

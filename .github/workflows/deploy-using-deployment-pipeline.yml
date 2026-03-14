@@ -7,7 +7,7 @@ on:
             project_name:
                 description: Project Name
                 required: true
-                default: "Product Sales"
+                default: "Sales DPL"
             solution_name:
                 type: choice
                 description: Solution to deploy
@@ -17,7 +17,7 @@ on:
                 - Shortcut Solution
                 - Pipeline Solution
                 - Medallion Solution
-                default: Custom Pipeline Solution
+                default: Medallion Solution
             git_integration_provider:
                 type: choice
                 description: Git Integration Provider
@@ -25,11 +25,11 @@ on:
                 - Azure DevOps
                 - GitHub
                 - None
-                default: GitHub
+                default: Azure DevOps
             create_feature_workspace:
                 type: boolean
                 description: Create feature workspace
-                default: false
+                default: true
 
 jobs:
     deployment-job:

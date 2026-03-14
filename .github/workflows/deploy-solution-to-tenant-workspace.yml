@@ -16,7 +16,7 @@ on:
               - Seamark Farms
               - Wingtip Toys
               - Deploy To All Customers
-              default: Custom Pipeline Solution
+              default: Adventure Works
             solution_name:
                 type: choice
                 description: Solution to deploy
@@ -26,7 +26,7 @@ on:
                 - Shortcut Solution
                 - Pipeline Solution
                 - Medallion Solution
-                default: Pipeline Solution
+                default: Medallion Solution
 
 jobs:
     deployment-job:

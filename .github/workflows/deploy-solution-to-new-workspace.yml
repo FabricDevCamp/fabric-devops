@@ -18,7 +18,7 @@ on:
                 - Shortcut Solution
                 - Pipeline Solution
                 - Medallion Solution
-                default: Pipeline Solution
+                default: Medallion Solution
             target_environment:
                 type: choice
                 description: Target Environment
