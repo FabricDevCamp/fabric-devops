@@ -833,6 +833,19 @@ class FabricRestApi:
 
     #endregion
     
+    #region Batch import/export support
+    
+    @classmethod
+    def export_item_definitions(cls, workspace_id):
+        """Get Item Definition"""
+        endpoint = f"workspaces/{workspace_id}/exportItemDefinitions"
+        post_body    = {
+            'mode': 'All'
+        }
+        return cls._execute_post_request(endpoint, post_body)
+    
+    #endregion
+    
     #region deployment pipelines
           
     @classmethod
@@ -1493,8 +1506,6 @@ class FabricRestApi:
                 f'Error executing POST request: {response.status_code} - {response.text}')
 
     #endregion
-
-
 
 class PowerBiRestApi:
     """Power BI REST API Wrapper Class used for operations not yet supported by Fabric REST API"""
