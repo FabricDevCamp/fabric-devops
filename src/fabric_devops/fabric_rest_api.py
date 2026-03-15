@@ -1103,13 +1103,13 @@ class FabricRestApi:
         return FabricRestApi._create_ado_source_control_connection(ado_repo_url)
 
     @classmethod
-    def _create_workspace_connection_to_ado_repo(cls, workspace_id, project_name, connection_id, 
+    def _create_workspace_connection_to_ado_repo(cls, workspace_id, project_name, connection_id,
                                                  branch = 'main', git_folder = '/workspace'):
         """Connect Workspace Connection to Azure DevOps Repository"""
 
         connect_request = {
             "gitProviderDetails": {
-                "organizationName": "FabricDevCamp",
+                "organizationName": EnvironmentSettings.ADO_ORGANIZATION,
                 "projectName": project_name,
                 "gitProviderType": "AzureDevOps",
                 "repositoryName": project_name,
