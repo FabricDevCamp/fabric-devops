@@ -1,3 +1,5 @@
-from fabric_devops import FabricRestApi
+from fabric_devops import FabricRestApi, ItemDefinitionFactory
 
-FabricRestApi.create_workspace("Hey Hey")
+# FabricRestApi.get_workspace_by_name("Product Sales")
+
+ItemDefinitionFactory.export_item_definitions_from_workspace("Product Sales")

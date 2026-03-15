@@ -838,7 +838,7 @@ class FabricRestApi:
     @classmethod
     def export_item_definitions(cls, workspace_id):
         """Get Item Definition"""
-        endpoint = f"workspaces/{workspace_id}/exportItemDefinitions"
+        endpoint = f"workspaces/{workspace_id}/exportItemDefinitions?beta=true"
         post_body    = {
             'mode': 'All'
         }
