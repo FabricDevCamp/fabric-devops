@@ -2733,29 +2733,31 @@ class DeploymentManager:
                                                      lakehouse_name, 'Lakehouse')
         
         return FabricRestApi.get_sql_endpoint_for_lakehouse(workspace.id, lakehouse)
- 
+
     @classmethod
     def create_feature_workspace_in_github(cls, repo_name, feature_name, base_branch):
         """Create feature workspace from new GitHub branch"""
-        
-        # create first feature workspace
+
         feature_workspace_name = F'{repo_name}-dev-{feature_name}'
-        feature_branch_name = f'dev-{feature_name}'
         feature_workspace = FabricRestApi.create_workspace(feature_workspace_name)
+        
+        feature_branch_name = f'dev-{feature_name}'
         GitHubRestApi.create_branch(repo_name, feature_branch_name, base_branch)
+
         FabricRestApi.connect_workspace_to_github_repo(
             feature_workspace,
             repo_name,
             feature_branch_name
         )
-        
+
         DeploymentManager.apply_post_sync_fixes(
             feature_workspace.id,
             EnvironmentSettings.DEPLOYMENT_JOBS['dev']
         )
 
         DeploymentManager.apply_post_deploy_fixes(feature_workspace.id)
-        
+
         FabricRestApi.commit_workspace_to_git(feature_workspace.id)
-        
+
         return feature_workspace
+

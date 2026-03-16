@@ -243,7 +243,7 @@ class GitHubRestApi:
         )
         
         # create /workspace folder and add ReadMe.md
-        cls.create_workspace_readme(repo_name, 'main')
+        # cls.create_workspace_readme(repo_name, 'main')
 
         return repo
 

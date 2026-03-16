@@ -23,3 +23,4 @@ match branch_name:
 
     case _:
         AppLogger.log_error("Ouch, unknown branch name")
+

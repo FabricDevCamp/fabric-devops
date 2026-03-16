@@ -215,8 +215,16 @@ class FabricRestApi:
 
     @classmethod
     def delete_workspace(cls, workspace_id):
-        """Delete Workspace"""        
-        cls.fabric_client.core.workspaces.delete_workspace(workspace_id=workspace_id)        
+        """Delete Workspace"""
+
+        # cascade delete workspace-specific connections        
+        connections = cls.list_connections():
+        for connection in connections:
+            if workspace_id in connection.display_name:
+                cls.delete_connection(connection.id)
+        
+        # delete workspace
+        cls.fabric_client.core.workspaces.delete_workspace(workspace_id=workspace_id)
 
     #endregion
     
@@ -298,6 +306,11 @@ class FabricRestApi:
         )
      
         return connection
+
+    @classmethod
+    def delete_connection(cls, connection_id):
+        """delete connections"""
+        cls.fabric_client.core.connections.delete_connection(connection_id)
 
     @classmethod
     def add_connection_role_assignment_for_user(cls, connection_id, admin_user_id, connection_role):
