@@ -218,7 +218,7 @@ class FabricRestApi:
         """Delete Workspace"""
 
         # cascade delete workspace-specific connections        
-        connections = cls.list_connections():
+        connections = cls.list_connections()
         for connection in connections:
             if workspace_id in connection.display_name:
                 cls.delete_connection(connection.id)
