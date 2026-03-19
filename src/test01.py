@@ -1,5 +1,12 @@
-from fabric_devops import FabricRestApi, ItemDefinitionFactory
+"""Setup project with deployment pipeline"""
+import os
 
-# FabricRestApi.get_workspace_by_name("Product Sales")
+from fabric_devops import GitHubRestApi
 
-ItemDefinitionFactory.export_item_definitions_from_workspace("Product Sales")
+PROJECT_NAME = 'Blutarsky'
+SOLUTION_NAME = 'Notebook Solution'
+GIT_INTEGRATION_PROVIDER = ''
+CREATE_FEATURE_WORKSPACE = False
+
+
+GitHubRestApi.create_repository("Hanna")

@@ -214,7 +214,7 @@ class GitHubRestApi:
         body = {
             'name': repo_name,
             'private': private,
-            'auto_init': True
+            'auto_init': False
         }
         repo = cls._execute_post_request(endpoint, body)
         AppLogger.log_substep("Repo created successfully")

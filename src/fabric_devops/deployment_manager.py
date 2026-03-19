@@ -82,7 +82,7 @@ class DeploymentManager:
                 raise LookupError(f'Unknown solution name [{solution_name}]')
 
     #endregion
-    
+
     #region Variable library support
 
     @classmethod
@@ -1063,6 +1063,10 @@ class DeploymentManager:
         target_stage_id = stages_list[1].id
 
         AppLogger.log_step("Deploy from [dev] to [test]")
+        
+        AppLogger.log_step(f'source_stage_id: {stages_list[0].id}')
+        AppLogger.log_step(f'target_stage_id: {stages_list[1].id}')
+
         FabricRestApi.deploy_to_pipeline_stage(pipeline.id, source_stage_id, target_stage_id)
         AppLogger.log_substep("Deploy operation complete")
 
@@ -1554,14 +1558,14 @@ class DeploymentManager:
 
         cls.deploy_from_dev_to_test(pipeline_name)
 
-        DeploymentManager.apply_post_pipeline_deploy_fixes(
+        cls.apply_post_pipeline_deploy_fixes(
             test_workspace_name,
             StagingEnvironments.get_test_environment(),
             run_etl_jobs=True)
 
-        DeploymentManager.deploy_from_test_to_prod(pipeline_name)
+        cls.deploy_from_test_to_prod(pipeline_name)
 
-        DeploymentManager.apply_post_pipeline_deploy_fixes(
+        cls.apply_post_pipeline_deploy_fixes(
             prod_workspace_name,
             StagingEnvironments.get_prod_environment(),
             run_etl_jobs=True)

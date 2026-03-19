@@ -224,7 +224,7 @@ class FabricRestApi:
                 cls.delete_connection(connection.id)
         
         # delete workspace
-        cls.fabric_client.core.workspaces.delete_workspace(workspace_id=workspace_id)
+        cls.fabric_client.core.workspaces.delete_workspace(workspace_id)
 
     #endregion
     
@@ -956,26 +956,8 @@ class FabricRestApi:
         )
 
     @classmethod
-    def deploy_to_pipeline_stage_with_sdk(cls, pipeline_id, source_stage_id, target_stage_id,    note = None):
+    def deploy_to_pipeline_stage_with_sdk(cls, pipeline_id, source_stage_id, target_stage_id, note = None):
         """Deploy to pipeline stage"""
-        deploy_request = {
-            'sourceStageId': source_stage_id,
-            'targetStageId': target_stage_id
-        }
-        if note is not None:
-            deploy_request['note'] = note
-        else:
-            deploy_request['note'] = 'A bunch of saves'
-
-        cls.fabric_client.core.deploymentpipelines.deploy_stage_content(
-            pipeline_id,
-            deploy_request
-        )
-
-    @classmethod
-    def deploy_to_pipeline_stage(cls, pipeline_id, source_stage_id, target_stage_id,    note = None):
-        """Deploy to pipeline stage"""
-        # endpoint = f'deploymentPipelines/{pipeline_id}/deploy'
         deploy_request = {
             'sourceStageId': source_stage_id,
             'targetStageId': target_stage_id
@@ -985,12 +967,33 @@ class FabricRestApi:
         else:
             deploy_request['note'] = 'Demo of automating deployment using APIs'
 
+        AppLogger.log_substep('Calling deploy_stage_content')
         cls.fabric_client.core.deployment_pipelines.deploy_stage_content(
             pipeline_id,
             deploy_request
         )
         
-        # cls._execute_post_request(endpoint, deploy_request)
+
+    @classmethod
+    def deploy_to_pipeline_stage(cls, pipeline_id, source_stage_id, target_stage_id,    note = None):
+        """Deploy to pipeline stage"""
+        endpoint = f'deploymentPipelines/{pipeline_id}/deploy'
+        deploy_request = {
+            'sourceStageId': source_stage_id,
+            'targetStageId': target_stage_id
+        }
+        if note is not None:
+            deploy_request['note'] = note
+        else:
+            deploy_request['note'] = 'Demo of automating deployment using APIs'
+
+        AppLogger.log_substep('Calling deploy_stage_content')
+        # cls.fabric_client.core.deployment_pipelines.deploy_stage_content(
+        #     pipeline_id,
+        #     deploy_request
+        # )
+        
+        cls._execute_post_request(endpoint, deploy_request)
     
     #endregion
     
@@ -1576,5 +1579,3 @@ class PowerBiRestApi:
             refresh_details = cls._execute_get_request_to_powerbi(rest_url_refresh_details)
 
         AppLogger.log_substep("Refresh operation complete")
-
-

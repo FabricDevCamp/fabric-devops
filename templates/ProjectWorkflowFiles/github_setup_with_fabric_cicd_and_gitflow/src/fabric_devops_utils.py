@@ -1,6 +1,6 @@
 """Fabric DevOps Utility Classes"""
 # this version of fabric_devops specific for GitHub projects
-# updated: 03/14/2026
+# updated: 03/19/2026
 
 import base64
 import re
@@ -1479,6 +1479,8 @@ class FabricRestApi:
 
             if datasource['datasourceType'].lower() == 'sql':
                 AppLogger.log_substep('Creating SQL connection for semantic model')
+                if lakehouse is None:
+                    lakehouse = FabricRestApi.get_item_by_name(workspace.id, 'sales', 'Lakehouse')
                 server = datasource['connectionDetails']['server']
                 database = datasource['connectionDetails']['database']
                 connection = cls.create_sql_connection_with_service_principal(server,
@@ -2686,7 +2688,7 @@ class DeploymentManager:
         """Apply Post Deploy Fixes"""
 
         workspace = FabricRestApi.get_workspace_info(workspace_id)
-        workspace_name = workspace.display_name                         
+        workspace_name = workspace.display_name              
         workspace_items = list(FabricRestApi.list_workspace_items(workspace.id))
        
         AppLogger.log_step(f"Applying post deploy fixes to [{workspace_name}]")

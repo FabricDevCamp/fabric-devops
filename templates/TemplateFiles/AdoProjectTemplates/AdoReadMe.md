@@ -1,3 +1,3 @@
-﻿# ADO repository used to demonstrate GIT integration with Fabric workspaces
+﻿# ADO repo used to demo GIT integration with Fabric workspaces
 
-This readme file was generated with code.
+This readme file was generated with code by **fabric_devops**.
