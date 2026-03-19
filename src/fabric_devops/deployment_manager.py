@@ -1857,11 +1857,11 @@ class DeploymentManager:
     #region GitHub project setup processes
 
     @classmethod
-    def create_feature_workspace_for_github_repo(cls, repo_name, feature_name, base_branch):
+    def create_feature_workspace_for_github_repo(cls, dev_workspace_name, repo_name, feature_name, base_branch):
         """Create feature workspace from new GitHub branch"""
              
         # create first feature workspace
-        feature_workspace_name = F'{repo_name}-dev-{feature_name}'
+        feature_workspace_name = F'{dev_workspace_name}-{feature_name}'
         feature_branch_name = f'dev-{feature_name}'
         
         feature_workspace = FabricRestApi.create_workspace(feature_workspace_name)
@@ -1932,6 +1932,7 @@ class DeploymentManager:
         if create_feature_workspace:
             AppLogger.log_job("Creating new feature workspace for report development")
             DeploymentManager.create_feature_workspace_for_github_repo(
+                dev_workspace_name,
                 repo_name,
                 'reporting',
                 'main'
@@ -2005,6 +2006,7 @@ class DeploymentManager:
         if create_feature_workspace:
             AppLogger.log_job("Creating new feature workspace for report development")
             DeploymentManager.create_feature_workspace_for_github_repo(
+                dev_workspace_name
                 repo_name,
                 'reporting',
                 'dev'
@@ -2106,6 +2108,7 @@ class DeploymentManager:
         if create_feature_workspace:
             AppLogger.log_job("Creating new feature workspace for report development")
             DeploymentManager.create_feature_workspace_for_github_repo(
+                dev_workspace_name,
                 repo_name,
                 'reporting',
                 'dev'
@@ -2224,6 +2227,7 @@ class DeploymentManager:
         if create_feature_workspace:
             AppLogger.log_job("Creating new feature workspace for report development")
             DeploymentManager.create_feature_workspace_for_github_repo(
+                dev_workspace_name,
                 repo_name,
                 'reporting',
                 'main'
