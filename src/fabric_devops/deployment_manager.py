@@ -2006,7 +2006,7 @@ class DeploymentManager:
         if create_feature_workspace:
             AppLogger.log_job("Creating new feature workspace for report development")
             DeploymentManager.create_feature_workspace_for_github_repo(
-                dev_workspace_name
+                dev_workspace_name,
                 repo_name,
                 'reporting',
                 'dev'
