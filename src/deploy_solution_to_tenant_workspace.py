@@ -11,7 +11,7 @@ match CUSTOMER_NAME:
     case 'Adventure Works':
         DEPLOYMENT_JOBS = [SampleCustomerData.get_adventureworks()]
     case 'Contoso':
-        CUSTOMER_JOBS = [SampleCustomerData.get_contoso()]
+        DEPLOYMENT_JOBS = [SampleCustomerData.get_contoso()]
     case 'Fabrikam':
         DEPLOYMENT_JOBS = [SampleCustomerData.get_fabrikam()]
     case 'Northwind':

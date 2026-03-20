@@ -91,7 +91,7 @@ class FabricRestApi:
         AppLogger.log_step(f'Creating workspace [{display_name}]')
 
         if capacity_id is None:
-            capacity_id = 'ccf863ed-7145-4789-811d-d9bcd4a8563f'
+            capacity_id = cls.FABRIC_CAPACITY_ID
 
         existing_workspace = cls.get_workspace_by_name(display_name)
         if existing_workspace is not None:
