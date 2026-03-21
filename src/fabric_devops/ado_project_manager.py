@@ -405,6 +405,13 @@ class AdoProjectManager:
         cls.delete_project(project['id'])
     
     @classmethod
+    def delete_all_projects(cls):
+        """Delete All Projects"""
+        projects = cls.get_projects()
+        for project in projects:
+            cls.delete_project(project['id'])    
+    
+    @classmethod
     def get_project_repositories(cls, project_name):
         """Get Project Repositories"""
         endpoint = 'git/repositories'

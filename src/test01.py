@@ -9,4 +9,4 @@ GIT_INTEGRATION_PROVIDER = ''
 CREATE_FEATURE_WORKSPACE = False
 
 
-AdoProjectManager.create_project("Beans")
+AdoProjectManager.delete_all_projects()
