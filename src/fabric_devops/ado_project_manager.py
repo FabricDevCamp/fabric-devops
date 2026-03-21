@@ -412,7 +412,11 @@ class AdoProjectManager:
     @classmethod
     def get_project_repository(cls, project_name):
         """Get Project Repository"""
-        return cls.get_project_repositories(project_name)[0]
+        repo_list = cls.get_project_repositories(project_name)
+        if len(repo_list) > 0:
+            return cls.get_project_repositories(project_name)[0]
+        else:
+            return None
     
     @classmethod
     def get_branches(cls, project_name):
