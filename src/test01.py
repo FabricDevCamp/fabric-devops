@@ -1,7 +1,7 @@
 """Setup project with deployment pipeline"""
 import os
 
-from fabric_devops import GitHubRestApi
+from fabric_devops import AdoProjectManager
 
 PROJECT_NAME = 'Blutarsky'
 SOLUTION_NAME = 'Notebook Solution'
@@ -9,4 +9,4 @@ GIT_INTEGRATION_PROVIDER = ''
 CREATE_FEATURE_WORKSPACE = False
 
 
-GitHubRestApi.create_repository("Hanna")
+AdoProjectManager.create_project("Beans")
