@@ -30,6 +30,8 @@ class FabricRestApi:
     
     # used for creating ADLS connections using SAS token
     AZURE_STORAGE_SAS_TOKEN = os.getenv('AZURE_STORAGE_SAS_TOKEN')
+    
+    ADO_ORGANIZATION = os.getenv('ADO_ORGANIZATION')
 
     #endregion
     
@@ -1106,8 +1108,8 @@ class FabricRestApi:
     @classmethod
     def _get_ado_repo_connection(cls, project_name):
         """Get Azure DevOps Repo Connection"""
-
-        ado_repo_url = f'https://dev.azure.com/fabricdevcamp/{project_name}/_git/{project_name}/'
+        
+        ado_repo_url = f'https://dev.azure.com/{cls.ADO_ORGANIZATION}/{project_name}/_git/{project_name}/'
 
         connections = FabricRestApi.list_connections()
 
