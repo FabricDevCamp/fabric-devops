@@ -263,8 +263,8 @@ class ItemDefinitionFactory:
                     part_path = part['path']
                     part_content = part['payload']
                     cls._write_file_to_exports_folder(workspace_name, item_folder, part_path, part_content)
-            except:
-                AppLogger.log_substep(f" - Could not export {item.display_name}.{item.type}")
+            except Exception as e:
+                AppLogger.log_substep(f" - Could not export {item.display_name}.{item.type}: {e}")
 
     @classmethod
     def _delete_exports_folder_contents(cls, workspace_name):

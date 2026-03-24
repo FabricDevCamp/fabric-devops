@@ -188,7 +188,7 @@ class AdoProjectManager:
     @classmethod
     def _execute_patch_request(cls, endpoint, post_body):
         """Execute GET Request on Fabric REST API Endpoint"""
-        rest_url = EnvironmentSettings.FABRIC_REST_API_BASE_URL + endpoint
+        rest_url = cls.BASE_URL + endpoint
         access_token = cls._get_ado_access_token()
         request_headers = {'Accept': f'application/json; {cls.ADO_API_VERSION}',
                            'Content-Type': f'application/json; {cls.ADO_API_VERSION}',

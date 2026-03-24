@@ -4,10 +4,8 @@ import os
 from azure.identity import ClientSecretCredential
 from microsoft_fabric_api import FabricClient
 
-print(f'{os.getenv("AZURE_CLIENT_ID")}')
-print(f'{os.getenv("AZURE_TENANT_ID")}')
-
-print(f'{os.getenv("AZURE_CLIENT_SECRET")}')
+print(f'Client ID: {os.getenv("AZURE_CLIENT_ID")}')
+print(f'Tenant ID: {os.getenv("AZURE_TENANT_ID")}')
 
 
 credential = ClientSecretCredential(

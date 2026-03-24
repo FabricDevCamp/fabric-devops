@@ -25,6 +25,14 @@ class EnvironmentSettings:
     AZURE_STORAGE_CONTAINER_PATH = '/ProductSales/Dev'
     AZURE_STORAGE_SERVER = f'https://{AZURE_STORAGE_ACCOUNT_NAME}.dfs.core.windows.net/'
     AZURE_STORAGE_PATH = AZURE_STORAGE_CONTAINER + AZURE_STORAGE_CONTAINER_PATH
+    AZURE_STORAGE_SAS_TOKEN = os.getenv('AZURE_STORAGE_SAS_TOKEN')
+
+    ADO_ORGANIZATION = os.getenv('ADO_ORGANIZATION')
+    
+    ORGANIZATION_GITHUB = os.getenv('ORGANIZATION_GITHUB')
+    PERSONAL_ACCESS_TOKEN_GITHUB = os.getenv('PERSONAL_ACCESS_TOKEN_GITHUB')
+
+    FABRIC_NONTRIAL_CAPACITY_ID = os.getenv('FABRIC_NONTRIAL_CAPACITY_ID')
 
     # this read-only SaS token is provided so you can tested out creating ADLS Gen2 connections
     AZURE_STORAGE_SAS_TOKEN = \
