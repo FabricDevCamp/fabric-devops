@@ -1,12 +1,12 @@
-"""Setup project with deployment pipeline"""
-import os
+from azure.identity import DefaultAzureCredential
+from microsoft_fabric_api import FabricClient
 
-from fabric_devops import GitHubRestApi
+# Create credential and client
+credential = DefaultAzureCredential(exclude_interactive_browser_credential=False)
+fabric_client = FabricClient(credential)
 
-PROJECT_NAME = 'Blutarsky'
-SOLUTION_NAME = 'Notebook Solution'
-GIT_INTEGRATION_PROVIDER = ''
-CREATE_FEATURE_WORKSPACE = False
-
-
-GitHubRestApi.create_repository("Hanna")
+# Get the list of workspaces using the client
+workspaces = [workspace for workspace in fabric_client.core.workspaces.list_workspaces()]
+print(f"Number of workspaces: {len(workspaces)}")
+for workspace in workspaces:
+    print(f"Workspace: {workspace.display_name}, Capacity ID: {workspace.capacity_id}")

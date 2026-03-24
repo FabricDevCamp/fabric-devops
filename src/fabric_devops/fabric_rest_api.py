@@ -30,6 +30,8 @@ class FabricRestApi:
     
     # used for creating ADLS connections using SAS token
     AZURE_STORAGE_SAS_TOKEN = os.getenv('AZURE_STORAGE_SAS_TOKEN')
+    
+    ADO_ORGANIZATION = os.getenv('ADO_ORGANIZATION')
 
     #endregion
     
@@ -229,6 +231,11 @@ class FabricRestApi:
     #endregion
     
     #region connection functions
+
+    @classmethod
+    def get_gatewys(cls):
+        """Get Gateways"""
+        return cls.fabric_client.core.gateways.list_gateways()
 
     @classmethod
     def list_connections(cls):
@@ -1106,8 +1113,8 @@ class FabricRestApi:
     @classmethod
     def _get_ado_repo_connection(cls, project_name):
         """Get Azure DevOps Repo Connection"""
-
-        ado_repo_url = f'https://dev.azure.com/fabricdevcamp/{project_name}/_git/{project_name}/'
+        
+        ado_repo_url = f'https://dev.azure.com/{cls.ADO_ORGANIZATION}/{project_name}/_git/{project_name}/'
 
         connections = FabricRestApi.list_connections()
 
@@ -1537,6 +1544,13 @@ class PowerBiRestApi:
                              'Authorization': f'Bearer {access_token}'}
         response = requests.post(url=rest_url, headers=request_headers, json=post_body, timeout=60)
         return response
+
+    @classmethod
+    def get_gateways(cls):
+        """get geteways"""
+        rest_url    = f'gateways'
+        return cls._execute_get_request_to_powerbi(rest_url)['value']
+
 
     @classmethod
     def list_datasources_for_semantic_model(cls, workspace_id, semantic_model_id):

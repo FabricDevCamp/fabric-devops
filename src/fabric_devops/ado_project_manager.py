@@ -89,7 +89,6 @@ class AdoProjectManager:
                 f'Error executing GET request: {response.status_code} - {response.text}')
             return None
 
-
     @classmethod
     def _execute_get_request_on_project(cls, project_name, endpoint):
         """Execute GET Request on Fabric REST API Endpoint"""
@@ -243,7 +242,6 @@ class AdoProjectManager:
                 f'Error executing PUT request: {response.status_code} - {response.text}')
             return None
 
-
     @classmethod
     def _execute_delete_request(cls, endpoint):
         """Execute DELETE Request on Fabric REST API Endpoint"""
@@ -334,8 +332,11 @@ class AdoProjectManager:
         }
         
         cls._execute_post_request(endpoint, body)
-        time.sleep(5)
         new_project = cls.get_project(project_name)
+        while new_project['state'] != 'wellFormed':
+            time.sleep(3)
+            new_project = cls.get_project(project_name)
+            
         AppLogger.log_substep(f"New ADO project created with Id [{new_project['id']}]")
 
         repository = cls.get_project_repository(project_name)
@@ -404,6 +405,13 @@ class AdoProjectManager:
         cls.delete_project(project['id'])
     
     @classmethod
+    def delete_all_projects(cls):
+        """Delete All Projects"""
+        projects = cls.get_projects()
+        for project in projects:
+            cls.delete_project(project['id'])    
+    
+    @classmethod
     def get_project_repositories(cls, project_name):
         """Get Project Repositories"""
         endpoint = 'git/repositories'
@@ -412,8 +420,9 @@ class AdoProjectManager:
     @classmethod
     def get_project_repository(cls, project_name):
         """Get Project Repository"""
-        return cls.get_project_repositories(project_name)[0]
-    
+        repo_list = cls.get_project_repositories(project_name)
+        return repo_list[0]
+        
     @classmethod
     def get_branches(cls, project_name):
         """Get Branches"""
