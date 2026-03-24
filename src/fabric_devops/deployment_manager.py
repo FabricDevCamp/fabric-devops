@@ -1249,7 +1249,8 @@ class DeploymentManager:
         for model in models:
             FabricRestApi.create_and_bind_semantic_model_connecton(
                 workspace,
-                model.id)
+                model.id,
+                FabricRestApi.get_item_by_name(workspace.id, 'sales', 'Lakehouse'))
     #endregion
 
     #region fabric-cicd support
