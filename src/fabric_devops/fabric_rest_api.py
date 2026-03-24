@@ -233,6 +233,11 @@ class FabricRestApi:
     #region connection functions
 
     @classmethod
+    def get_gatewys(cls):
+        """Get Gateways"""
+        return cls.fabric_client.core.gateways.list_gateways()
+
+    @classmethod
     def list_connections(cls):
         """List all connections accessible to caller"""
         return cls.fabric_client.core.connections.list_connections()
@@ -1539,6 +1544,13 @@ class PowerBiRestApi:
                              'Authorization': f'Bearer {access_token}'}
         response = requests.post(url=rest_url, headers=request_headers, json=post_body, timeout=60)
         return response
+
+    @classmethod
+    def get_gateways(cls):
+        """get geteways"""
+        rest_url    = f'gateways'
+        return cls._execute_get_request_to_powerbi(rest_url)['value']
+
 
     @classmethod
     def list_datasources_for_semantic_model(cls, workspace_id, semantic_model_id):

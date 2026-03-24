@@ -1,21 +1,12 @@
-"""Deploy solution to new workspace"""
-import os
+from azure.identity import DefaultAzureCredential
+from microsoft_fabric_api import FabricClient
 
-from fabric_devops import DeploymentManager,  AppLogger, StagingEnvironments,\
-                          FabricRestApi, AdoProjectManager, GitHubRestApi 
+# Create credential and client
+credential = DefaultAzureCredential(exclude_interactive_browser_credential=False)
+fabric_client = FabricClient(credential)
 
-WORKSPACE_NAME = 'Minnie'
-SOLUTION_NAME = 'Power BI Solution'
-
-deploy_job = StagingEnvironments.get_dev_environment()
-
-workspace = DeploymentManager.deploy_solution_by_name(
-    SOLUTION_NAME,
-    WORKSPACE_NAME,
-    deploy_job)
-
-# create ADO project and connect workspace
-AdoProjectManager.create_project(WORKSPACE_NAME, workspace)
-FabricRestApi.connect_workspace_to_ado_repo(workspace, WORKSPACE_NAME)
-
-AppLogger.log_job_complete(workspace.id)
+# Get the list of workspaces using the client
+workspaces = [workspace for workspace in fabric_client.core.workspaces.list_workspaces()]
+print(f"Number of workspaces: {len(workspaces)}")
+for workspace in workspaces:
+    print(f"Workspace: {workspace.display_name}, Capacity ID: {workspace.capacity_id}")
