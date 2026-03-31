@@ -332,8 +332,9 @@ class AdoProjectManager:
         }
         
         cls._execute_post_request(endpoint, body)
-        new_project = cls.get_project(project_name)
-        while ('state' not in new_project) or (new_project['state'] != 'wellFormed'):
+        time.sleep(3)
+        new_project = cls.get_project(project_name)         
+        while (new_project is None) or (new_project['state'] != 'wellFormed'):
             time.sleep(3)
             new_project = cls.get_project(project_name)
             
