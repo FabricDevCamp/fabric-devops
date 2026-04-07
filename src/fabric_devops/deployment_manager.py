@@ -1158,7 +1158,7 @@ class DeploymentManager:
         """Apply Post Sync Fixes"""
         workspace = FabricRestApi.get_workspace_info(workspace_id)
         workspace_name = workspace.display_name
-        AppLogger.log_step(f"Applying post sync fixes to [{workspace.display_name}]")
+        AppLogger.log_step(f"Applying post sync fixes to workspace [{workspace.display_name}]")
         
         workspace_items = list(FabricRestApi.list_workspace_items(workspace.id))
 
@@ -1220,7 +1220,7 @@ class DeploymentManager:
                     target_lakehouse_name)
 
     @classmethod
-    def apply_post_deploy_fixes(cls, workspace_id, rebuild_adls_shortcuts):
+    def apply_post_deploy_fixes(cls, workspace_id):
         
         """Apply Post Deploy Fixes"""
         workspace = FabricRestApi.get_workspace_info(workspace_id)
