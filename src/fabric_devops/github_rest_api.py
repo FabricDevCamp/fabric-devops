@@ -3,6 +3,7 @@
 import time
 import base64
 import os
+import json
 from json.decoder import JSONDecodeError
 
 from nacl import encoding, public
@@ -214,11 +215,11 @@ class GitHubRestApi:
         body = {
             'name': repo_name,
             'private': private,
-            'auto_init': False
+            'auto_init': True
         }
-        repo = cls._execute_post_request(endpoint, body)
-        AppLogger.log_substep("Repo created successfully")
-
+        cls._execute_post_request(endpoint, body)
+        AppLogger.log_substep(f"Repo created successfully")
+        
         if workspace is None:
             root_folder_readme_content = ItemDefinitionFactory.get_template_file(
                 'GitHubRepoTemplates/GitHubReadMe.md')
