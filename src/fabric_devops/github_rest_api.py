@@ -111,7 +111,7 @@ class GitHubRestApi:
             AppLogger.log_step("Got back 202 ACCEPTED from PUT  Request")
 
         AppLogger.log_error(
-            f'Error executing POST request: {response.status_code} - {response.text}')
+            f'Error executing PUT request: {response.status_code} - {response.text}')
 
     @classmethod
     def _execute_put_request_with_file(cls, endpoint, post_body=''):
@@ -575,3 +575,27 @@ class GitHubRestApi:
         endpoint = f"/repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/actions/runs/{run_id}"
         response = cls._execute_get_request(endpoint)
         return response
+
+
+    @classmethod
+    def create_environment(cls, repo_name, environment_name, add_reviewers=False):
+        """Create or update environment with protection rules"""
+
+        endpoint = f"/repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/environments/{environment_name}"
+        
+        body = {
+            'wait_timer': 240
+        }
+        
+        # Only set prevent_self_review if required_reviewers are provided
+        if add_reviewers:
+            body['prevent_self_review'] = True
+            body['reviewers'] = [
+                {
+                    'type': 'User',
+                    'id': GitHubRestApi.get_github_user()['id']
+                }
+            ]
+
+        cls._execute_put_request(endpoint, body, 'application/vnd.github+json')
+
