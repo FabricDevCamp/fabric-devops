@@ -73,7 +73,7 @@
                 "properties": {
                   "type": "Lakehouse",
                   "typeProperties": {
-                    "artifactId": "22222222-2222-2222-2222-222222222222",
+                    "artifactId": "57462b57-de21-81ec-4a2b-56dea4b72379",
                     "workspaceId": "00000000-0000-0000-0000-000000000000",
                     "rootFolder": "Files"
                   },
