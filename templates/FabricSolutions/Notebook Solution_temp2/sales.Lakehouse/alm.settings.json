@@ -28,14 +28,6 @@
         {
           "name": "Shortcuts.GoogleCloudStorage",
           "state": "Enabled"
-        },
-        {
-          "name": "Shortcuts.AzureBlobStorage",
-          "state": "Enabled"
-        },
-        {
-          "name": "Shortcuts.OneDriveSharePoint",
-          "state": "Enabled"
         }
       ]
     },

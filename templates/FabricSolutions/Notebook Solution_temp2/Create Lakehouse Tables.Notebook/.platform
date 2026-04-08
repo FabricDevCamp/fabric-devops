@@ -1,11 +1,11 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
   "metadata": {
-    "type": "Report",
-    "displayName": "Product Sales Summary"
+    "type": "Notebook",
+    "displayName": "Create Lakehouse Tables"
   },
   "config": {
     "version": "2.0",
-    "logicalId": "36d75be7-52e8-bdff-4915-44e9c5fc3611"
+    "logicalId": "2b384612-7eb3-8ba7-4525-e1c527e84b8b"
   }
 }
