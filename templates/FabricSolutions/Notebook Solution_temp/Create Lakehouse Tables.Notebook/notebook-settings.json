@@ -1,6 +1,5 @@
 {
   "auto-binding": {
     "lakehouse": "on"
-  },
-  "includeResourcesInGit": "on"
+  }
 }
