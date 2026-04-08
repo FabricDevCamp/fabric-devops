@@ -1175,30 +1175,30 @@ class DeploymentManager:
                 if (shortcut.target.type == 'AdlsGen2') and (shortcut.name == 'sales-data'):
                     FabricRestApi.reset_adls_gen2_shortcut(workspace.id, lakehouse.id, shortcut)
 
-        # notebooks = list(filter(lambda item: item.type=='Notebook', workspace_items))
-        # for notebook in notebooks:
+        notebooks = list(filter(lambda item: item.type=='Notebook', workspace_items))
+        for notebook in notebooks:
             
-        #     # bind notebooks to sales lakehouse
-        #     if notebook.display_name in [
-        #         'Create Lakehouse Tables', 
-        #         'Build 01 Silver Layer',
-        #         'Build 02 Gold Layer',
-        #         'Create 01 Silver Layer',
-        #         'Create 02 Gold Layer',
-        #         'Build 02 Gold Tables']:
-        #         AppLogger.log_substep(f"Updating notebook [{notebook.display_name}]")
-        #         cls.update_source_lakehouse_in_notebook(
-        #             workspace_name,
-        #             notebook.display_name,
-        #             "sales")
+            # bind notebooks to sales lakehouse
+            if notebook.display_name in [
+                'Create Lakehouse Tables', 
+                'Build 01 Silver Layer',
+                'Build 02 Gold Layer',
+                'Create 01 Silver Layer',
+                'Create 02 Gold Layer',
+                'Build 02 Gold Tables']:
+                AppLogger.log_substep(f"Updating notebook [{notebook.display_name}]")
+                cls.update_source_lakehouse_in_notebook(
+                    workspace_name,
+                    notebook.display_name,
+                    "sales")
 
-        #     # bind notebooks to sales_silver lakehouse
-        #     if notebook.display_name in ['Build 01 Silver Tables']:
-        #         AppLogger.log_substep(f"Updating notebook [{notebook.display_name}]")
-        #         cls.update_source_lakehouse_in_notebook(
-        #             workspace_name,
-        #             notebook.display_name,
-        #             "sales_silver")
+            # bind notebooks to sales_silver lakehouse
+            if notebook.display_name in ['Build 01 Silver Tables']:
+                AppLogger.log_substep(f"Updating notebook [{notebook.display_name}]")
+                cls.update_source_lakehouse_in_notebook(
+                    workspace_name,
+                    notebook.display_name,
+                    "sales_silver")
 
         models = list(filter(lambda item: item.type=='SemanticModel', workspace_items))
         for model in models:
