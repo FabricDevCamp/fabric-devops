@@ -1,5 +1,5 @@
 name: Deploy with fabric-cicd and GitHub flow
-run-name: Deploy [${{inputs.solution_name}}] to [${{inputs.project_name}}] using fabric-cicd & release flow
+run-name: Deploy [${{inputs.solution_name}}] to [${{inputs.project_name}}] using fabric-cicd & GitHub flow
 
 on:
     workflow_dispatch:

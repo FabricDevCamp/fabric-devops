@@ -2217,9 +2217,7 @@ class DeploymentManager:
         
         repo_name = project_name.replace(' ','-')
         GitHubRestApi.create_repository(repo_name, dev_workspace)
-        
-        GitHubRestApi.create_workspace_readme(repo_name, 'main')
-             
+                     
         FabricRestApi.connect_workspace_to_github_repo(
             dev_workspace,
             repo_name,

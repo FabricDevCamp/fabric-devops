@@ -228,7 +228,7 @@ class GitHubRestApi:
         else:
             root_folder_readme_content = ItemDefinitionFactory.get_template_file(
                 'GitHubRepoTemplates/GitHubReadMeWithWorkspace.md')
-            
+
             root_folder_readme_content = root_folder_readme_content.replace(
                 '{WORKSPACE_ID}', 
                 workspace.id)
@@ -236,10 +236,9 @@ class GitHubRestApi:
             root_folder_readme_content = root_folder_readme_content.replace(
                 '{WORKSPACE_NAME}', 
                 workspace.display_name)
-            
+
         cls.overwrite_repo_readme_file(repo_name, root_folder_readme_content)
-    
-        
+
         # create readme file in /workspace folder as placeholder
         cls.create_workspace_folder_readme(repo_name, 'main')
 
@@ -270,7 +269,6 @@ class GitHubRestApi:
         """Create GitHub Repository Branch"""
         branch = cls.get_branch_by_name(repo_name, branch_name)
         return branch['commit']['sha']
-
 
     @classmethod
     def overwrite_repo_readme_file(cls, repo_name, contents):
