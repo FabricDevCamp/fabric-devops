@@ -1,0 +1,51 @@
+name: Deploy to prod Workspace
+run-name: Deploy from branch [${{ github.ref_name }}] to [prod] Workspace 
+
+on:
+    workflow_dispatch:
+    push: 
+      branches:
+        - 'prod*'
+
+jobs:
+    deployment-job:
+      name: Deploy to [prod] Workspace
+      runs-on: ubuntu-latest
+
+      steps:
+        - name: Check out the code
+          uses: actions/checkout@v4
+
+        - name: Set up Python
+          uses: actions/setup-python@v2
+          with:
+            python-version: "3.12"
+
+        - name: Install Python SDK for Fabric REST APIs
+          run: |
+              pip install microsoft-fabric-api -q
+
+        - name: Install  fabric-cicd
+          run: |
+              pip install fabric-cicd -q
+
+        - name: Install PyNaCl
+          run: |
+                pip install PyNaCl -q
+
+        - name: Deploy to [prod] Workspace
+          env:
+              BRANCH_NAME: ${{ github.ref_name }}
+              GITHUB_WORKSPACE : $GITHUB_WORKSPACE
+              AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+              AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+              AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+              PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
+              ORGANIZATION_GITHUB: ${{ vars.ORGANIZATION_GITHUB }} 
+              FABRIC_CAPACITY_ID: ${{ vars.FABRIC_CAPACITY_ID }}         
+              ADMIN_USER_ID: ${{ vars.ADMIN_USER_ID }}
+              WORKSPACE_ID_DEV: ${{ vars.WORKSPACE_ID_DEV }}
+              WORKSPACE_ID_TEST: ${{ vars.WORKSPACE_ID_TEST }}
+              WORKSPACE_ID_PROD: ${{ vars.WORKSPACE_ID_PROD }}
+          run: 
+              python 'src/deploy_to_prod_workspace.py'

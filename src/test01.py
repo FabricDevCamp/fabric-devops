@@ -4,7 +4,6 @@ import time
 
 from fabric_devops import  GitHubRestApi
 
-
 PROJECT_NAME = 'Acme'
 
 repo_name = PROJECT_NAME
@@ -13,12 +12,11 @@ repo_name = PROJECT_NAME
 repo = GitHubRestApi.create_repository(PROJECT_NAME)
 
 
+GitHubRestApi.create_environment(repo_name, 'dev')
 
-# GitHubRestApi.create_environment(repo_name, 'dev')
+GitHubRestApi.create_environment(repo_name, 'test', add_reviewers=True)
 
-# GitHubRestApi.create_environment(repo_name, 'test', add_reviewers=True)
-
-# GitHubRestApi.create_environment(repo_name, 'prod', add_reviewers=True)
+GitHubRestApi.create_environment(repo_name, 'prod', add_reviewers=True)
 
 
 # GitHubRestApi.create_workspace_readme(repo_name, 'main')

@@ -217,8 +217,10 @@ class GitHubRestApi:
             'private': private,
             'auto_init': True
         }
+        
         cls._execute_post_request(endpoint, body)
-        AppLogger.log_substep(f"Repo created successfully")
+             
+        AppLogger.log_substep(f"Repo [{repo_name}] created successfully")
         
         if workspace is None:
             root_folder_readme_content = ItemDefinitionFactory.get_template_file(
@@ -235,16 +237,11 @@ class GitHubRestApi:
                 '{WORKSPACE_NAME}', 
                 workspace.display_name)
             
-        cls.write_file_to_repo(
-            repo_name,
-            'main',
-            'ReadMe.md',
-            root_folder_readme_content,
-            'Adding ReadMe.md to root folder'
-        )
+        cls.overwrite_repo_readme_file(repo_name, root_folder_readme_content)
+    
         
-        # create /workspace folder and add ReadMe.md
-        cls.create_workspace_readme(repo_name, 'main')
+        # create readme file in /workspace folder as placeholder
+        cls.create_workspace_folder_readme(repo_name, 'main')
 
         return repo
 
@@ -273,6 +270,26 @@ class GitHubRestApi:
         """Create GitHub Repository Branch"""
         branch = cls.get_branch_by_name(repo_name, branch_name)
         return branch['commit']['sha']
+
+
+    @classmethod
+    def overwrite_repo_readme_file(cls, repo_name, contents):
+        """Get a specific file from a GitHub repository branch"""
+        
+        # get readme file sha
+        endpoint = f"/repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/readme"
+        readme_file = cls._execute_get_request(endpoint)
+        readme_file_sha = readme_file['sha']
+        
+        # overwrite readme file with new content
+        endpoint = f"/repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/contents/README.md"
+        base64_content = base64.b64encode(contents.encode('utf-8')).decode('utf-8')
+        body = {
+            'message': 'Overwrite README.md',
+            'content': base64_content,
+            'sha': readme_file_sha
+        }
+        cls._execute_put_request(endpoint, body)
 
     @classmethod
     def compare_branches(cls, repo_name, source_branch, target_branch):
@@ -385,7 +402,7 @@ class GitHubRestApi:
         cls.merge_pull_request(repo_name, pull_request_number, commit_title, commit_comment)
 
     @classmethod
-    def create_workspace_readme(cls, repo_name, branch_name):
+    def create_workspace_folder_readme(cls, repo_name, branch_name):
         """Create Content"""
         
         content = ItemDefinitionFactory.get_template_file(
@@ -394,10 +411,10 @@ class GitHubRestApi:
         
         base64_content = base64.b64encode(content.encode('utf-8')).decode('utf-8')
 
-        endpoint = f"repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/contents/workspace/ReadMe.md"
+        endpoint = f"repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/contents/workspace/README.md"
 
         body = {
-            "message":"Adding ReadMe.md file",
+            "message":"Adding ReadMe.md file as placehilder in /workspace folder",
             "content": base64_content,
             'branch': branch_name
         }

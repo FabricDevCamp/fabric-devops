@@ -2201,6 +2201,115 @@ class DeploymentManager:
         GitHubRestApi.run_workflow(repo_name, 'apply-post-deploy-workspace-updates.yml', 'main')
 
     @classmethod
+    def setup_github_repo_with_fabric_cicd_and_github_flow(cls, project_name, solution_name, create_feature_workspace = False):
+        """Set up GitHub repo with fabric-cicd and GitHub Flow"""
+             
+        dev_workspace_name = f"{project_name}-dev"
+        test_workspace_name = f"{project_name}-test"
+        prod_workspace_name = f"{project_name}"
+    
+        dev_workspace = DeploymentManager.deploy_solution_by_name(
+            solution_name,
+            dev_workspace_name
+        )
+        
+        AppLogger.log_job("Setting up the development process for contiguous intergation")
+        
+        repo_name = project_name.replace(' ','-')
+        GitHubRestApi.create_repository(repo_name, dev_workspace)
+        
+        GitHubRestApi.create_workspace_readme(repo_name, 'main')
+             
+        FabricRestApi.connect_workspace_to_github_repo(
+            dev_workspace,
+            repo_name,
+            'main'
+        )
+        
+        if create_feature_workspace:
+            AppLogger.log_job("Creating new feature workspace for report development")
+            DeploymentManager.create_feature_workspace_for_github_repo(
+                dev_workspace_name,
+                repo_name,
+                'reporting',
+                'main'
+        )
+
+        AppLogger.log_job("Setting up the release process for continuous deployment using fabric-cicd")
+   
+        test_workspace = FabricRestApi.create_workspace(test_workspace_name)
+        prod_workspace = FabricRestApi.create_workspace(prod_workspace_name)
+        
+        AppLogger.log_step("Adding YAML files used in fabric-cicd deployment")
+        AppLogger.log_substep("Adding deploy.yml file")
+        deploy_config_file_path = f".//templates//FabricSolutions//{solution_name}/deploy.yml"        
+        with open(deploy_config_file_path, 'r', encoding='utf-8') as deploy_config_file:
+            deploy_config = yaml.safe_load(deploy_config_file)
+            deploy_config_yaml = cls.update_deploy_config_with_workspace_ids(
+                deploy_config,
+                dev_workspace.id,
+                test_workspace.id,
+                prod_workspace.id
+            )
+            GitHubRestApi.write_file_to_repo(
+                repo_name,
+                "main",
+                "workspace/deploy.yml",
+                deploy_config_yaml,
+                "Adding deploy.yml used by fabric-cicd"
+        )
+
+        AppLogger.log_substep("Adding parameter.yml file")
+        parameter_file_path = f".//templates//FabricSolutions//{solution_name}/parameter.yml"
+        with open(parameter_file_path, 'r', encoding='utf-8') as parameter_file:
+            parameter_file_content = parameter_file.read()
+            GitHubRestApi.write_file_to_repo(
+                repo_name,
+                "main",
+                "workspace/parameter.yml",
+                parameter_file_content,
+                "Adding parameter.yml used by fabric-cicd"
+        )
+            
+        GitHubRestApi.create_environment(repo_name, 'dev')
+        GitHubRestApi.create_environment(repo_name, 'test', add_reviewers=True)
+        GitHubRestApi.create_environment(repo_name, 'prod', add_reviewers=True)
+            
+        GitHubRestApi.create_variables_for_github_project(
+            repo_name,
+            dev_workspace.id,
+            test_workspace.id,
+            prod_workspace.id
+        )
+
+        AppLogger.log_step("Coppying workflow project files to repo")              
+        GitHubRestApi.copy_files_from_folder_to_repo(
+            repo_name,
+            'main',
+            'github_setup_with_fabric_cicd_and_github_flow'
+        )
+        
+        GitHubRestApi.run_workflow(repo_name, 'deploy-to-test-workspace.yml', 'main')
+        GitHubRestApi.run_workflow(repo_name, 'apply-post-deploy-updates-to-test.yml', 'main')
+
+        GitHubRestApi.run_workflow(repo_name, 'deploy-to-prod-workspace.yml', 'main')
+        GitHubRestApi.run_workflow(repo_name, 'apply-post-deploy-updates-to-prod.yml', 'main')
+
+        # create first test bbuild
+        time_now = datetime.now(ZoneInfo("America/New_York"))
+        time_now_formatted = time_now.strftime("%Y-%m-%d-%H-%M")
+        test_branch_name = str(f'test-{time_now_formatted}')
+        GitHubRestApi.create_branch(repo_name, test_branch_name, 'main')
+        FabricRestApi.update_workspace_description(test_workspace.id, f'BUILD: {test_branch_name}')
+
+        # create first prod build
+        prod_branch_name = test_branch_name.replace('test', 'prod')
+        GitHubRestApi.create_branch(repo_name, prod_branch_name, test_branch_name)
+        FabricRestApi.update_workspace_description(prod_workspace.id, f'BUILD: {prod_branch_name}')
+
+
+
+    @classmethod
     def setup_github_repo_with_fabric_cicd_and_release_flow(cls, project_name, solution_name, create_feature_workspace = False):
         """Set up GitHub repo with fabric-cicd and Release Flow"""
              
