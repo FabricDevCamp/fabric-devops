@@ -32,6 +32,8 @@ class GitHubRestApi:
         response = requests.get(url=rest_url, headers=request_headers, timeout=60)
         if response.status_code == 200:
             return response.json()
+        elif response.status_code == 404: # NOT FOUND error
+            return None
         else:
             AppLogger.log_error(
                 f'Error executing GET request: {response.status_code} - {response.text}')
