@@ -276,7 +276,14 @@ class GitHubRestApi:
         
         # get readme file sha
         endpoint = f"/repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/readme"
+        
         readme_file = cls._execute_get_request(endpoint)
+        
+        while readme_file is None:
+            AppLogger.log_substep("README.md file not found, retrying in 5 seconds...")
+            time.sleep(5)
+            readme_file = cls._execute_get_request(endpoint)
+        
         readme_file_sha = readme_file['sha']
         
         # overwrite readme file with new content
