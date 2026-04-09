@@ -12,18 +12,18 @@ match GIT_INTEGRATION_PROVIDER:
 
     case 'Azure DevOps':
     
-        DeploymentManager.setup_ado_repo_with_fabric_cicd_and_release_flow(
-            PROJECT_NAME,
-            SOLUTION_NAME,
-            CREATE_FEATURE_WORKSPACE
-        )
+        # DeploymentManager.setup_ado_repo_with_fabric_cicd_and_release_flow(
+        #     PROJECT_NAME,
+        #     SOLUTION_NAME,
+        #     CREATE_FEATURE_WORKSPACE
+        # )
         
     case 'GitHub':
     
-        DeploymentManager.setup_github_repo_with_fabric_cicd_and_release_flow(
+        DeploymentManager.setup_github_repo_with_fabric_cicd_and_github_flow(
             PROJECT_NAME,
             SOLUTION_NAME,
-            CREATE_FEATURE_WORKSPACE            
+            CREATE_FEATURE_WORKSPACE
         )
 
 AppLogger.log_job_complete()
