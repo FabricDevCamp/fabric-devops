@@ -11,6 +11,7 @@ jobs:
     deployment-job:
       name: Deploy to [test] Workspace
       runs-on: ubuntu-latest
+      environment: test
 
       steps:
         - name: Check out the code

@@ -152,7 +152,6 @@ class GitHubRestApi:
                 f'Error executing PATCH request: {response.status_code} - {response.text}')
             return None
 
-
     @classmethod
     def _execute_delete_request(cls, endpoint):
         """Execute DELETE Request on Fabric REST API Endpoint"""
@@ -614,7 +613,7 @@ class GitHubRestApi:
         
         # Only set prevent_self_review if required_reviewers are provided
         if add_reviewers:
-            body['prevent_self_review'] = True
+            body['prevent_self_review'] = False
             body['reviewers'] = [
                 {
                     'type': 'User',

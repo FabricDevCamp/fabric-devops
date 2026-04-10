@@ -11,6 +11,7 @@ jobs:
     deployment-job:
       name: Deploy to [prod] Workspace
       runs-on: ubuntu-latest
+      environment: prod
 
       steps:
         - name: Check out the code
