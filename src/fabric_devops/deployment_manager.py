@@ -2293,7 +2293,7 @@ class DeploymentManager:
         GitHubRestApi.run_workflow(repo_name, 'deploy-to-prod-workspace.yml', 'main')
         GitHubRestApi.run_workflow(repo_name, 'apply-post-deploy-updates-to-prod.yml', 'main')
         
-        # add protection rule for main to require updates through pull request        
+        # add protection rule for main branch to require all updates made through pull requests        
         GitHubRestApi.add_protection_ruleset_for_branch(repo_name, 'main')    
         
         # update prod environment to require approval for deployment    
