@@ -600,7 +600,6 @@ class GitHubRestApi:
         response = cls._execute_get_request(endpoint)
         return response
 
-
     @classmethod
     def create_environment(cls, repo_name, environment_name, add_reviewers=False):
         """Create or update environment with protection rules"""
@@ -608,7 +607,7 @@ class GitHubRestApi:
         endpoint = f"/repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/environments/{environment_name}"
         
         body = {
-            'wait_timer': 240
+            'wait_timer': 0
         }
         
         # Only set prevent_self_review if required_reviewers are provided
