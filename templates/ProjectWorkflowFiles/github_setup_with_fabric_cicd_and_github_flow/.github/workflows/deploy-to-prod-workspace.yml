@@ -3,9 +3,6 @@ run-name: Deploy from branch [${{ github.ref_name }}] to [prod] Workspace
 
 on:
     workflow_dispatch:
-    push: 
-      branches:
-        - 'prod*'
 
 jobs:
     deployment-job:

@@ -2270,8 +2270,8 @@ class DeploymentManager:
         )
             
         GitHubRestApi.create_environment(repo_name, 'dev')
-        GitHubRestApi.create_environment(repo_name, 'test', add_reviewers=True)
-        GitHubRestApi.create_environment(repo_name, 'prod', add_reviewers=True)
+        GitHubRestApi.create_environment(repo_name, 'test')
+        GitHubRestApi.create_environment(repo_name, 'prod')
             
         GitHubRestApi.create_variables_for_github_project(
             repo_name,
@@ -2292,20 +2292,8 @@ class DeploymentManager:
 
         GitHubRestApi.run_workflow(repo_name, 'deploy-to-prod-workspace.yml', 'main')
         GitHubRestApi.run_workflow(repo_name, 'apply-post-deploy-updates-to-prod.yml', 'main')
-
-        # create first test bbuild
-        time_now = datetime.now(ZoneInfo("America/New_York"))
-        time_now_formatted = time_now.strftime("%Y-%m-%d-%H-%M")
-        test_branch_name = str(f'test-{time_now_formatted}')
-        GitHubRestApi.create_branch(repo_name, test_branch_name, 'main')
-        FabricRestApi.update_workspace_description(test_workspace.id, f'BUILD: {test_branch_name}')
-
-        # create first prod build
-        prod_branch_name = test_branch_name.replace('test', 'prod')
-        GitHubRestApi.create_branch(repo_name, prod_branch_name, test_branch_name)
-        FabricRestApi.update_workspace_description(prod_workspace.id, f'BUILD: {prod_branch_name}')
-
-
+        
+        GitHubRestApi.create_environment(repo_name, 'prod', add_reviewers=True)
 
     @classmethod
     def setup_github_repo_with_fabric_cicd_and_release_flow(cls, project_name, solution_name, create_feature_workspace = False):
