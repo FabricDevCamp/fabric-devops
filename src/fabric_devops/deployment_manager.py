@@ -2224,6 +2224,8 @@ class DeploymentManager:
             'main'
         )
         
+        GitHubRestApi.add_protection_ruleset_for_branch(repo_name, 'main')
+        
         if create_feature_workspace:
             AppLogger.log_job("Creating new feature workspace for report development")
             DeploymentManager.create_feature_workspace_for_github_repo(
