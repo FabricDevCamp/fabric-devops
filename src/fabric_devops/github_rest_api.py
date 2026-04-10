@@ -607,7 +607,7 @@ class GitHubRestApi:
         endpoint = f"/repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/environments/{environment_name}"
         
         body = {
-            'wait_timer': 0
+            'wait_timer': 1
         }
         
         # Only set prevent_self_review if required_reviewers are provided
