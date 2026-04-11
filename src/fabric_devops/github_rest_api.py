@@ -54,6 +54,11 @@ class GitHubRestApi:
             except JSONDecodeError:
                 return None
 
+        if response.status_code in { 404 }:
+            AppLogger.log_substep("Got back 404 NOT FOUND from POST Request - waiting for retry")
+            time.sleep(10)
+            return cls._execute_post_request(endpoint, post_body, content_type)
+
         if response.status_code == 202:
             AppLogger.log_step("Got back 202 ACCEPTED from POST Request")
             operation_state_url = response.headers.get('Location')
