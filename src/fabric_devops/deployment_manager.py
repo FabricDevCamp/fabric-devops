@@ -1,5 +1,6 @@
 """Deployment Manager"""
 
+import time
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
@@ -1816,11 +1817,7 @@ class DeploymentManager:
                 parameter_file_content,
                 "Adding parameter.yml used by fabric-cicd"
         )
-            
-        AdoProjectManager.create_environment(project_name, 'dev')
-        AdoProjectManager.create_environment(project_name, 'test')
-        AdoProjectManager.create_environment(project_name, 'prod')
-
+                  
         variable_group = AdoProjectManager.create_variable_group_for_ado_project(
             'environmental_variables',
             project_name,
@@ -1833,7 +1830,17 @@ class DeploymentManager:
             'main',
             'ado_setup_with_fabric_cicd_and_github_flow',
             variable_group_id=variable_group['id'])
-                
+                    
+        AdoProjectManager.create_environment(project_name, 'test')
+        AdoProjectManager.set_pipeline_permission_on_environment(
+            project_name, 'test', 'deploy-to-test-workspace')
+
+        AdoProjectManager.create_environment(project_name, 'prod')
+        AdoProjectManager.set_pipeline_permission_on_environment(
+            project_name, 'test', 'deploy-to-prod-workspace')
+        
+        time.sleep(10)
+        
         AdoProjectManager.run_pipeline(project_name, 'deploy-to-test-workspace', 'main')
         AdoProjectManager.run_pipeline(project_name, 'apply-post-deploy-updates-to-test', 'main')
         AdoProjectManager.run_pipeline(project_name, 'deploy-to-prod-workspace', 'main')

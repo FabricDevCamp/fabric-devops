@@ -1033,6 +1033,24 @@ class AdoProjectManager:
         cls._execute_patch_request_on_project(project_name, endpoint, body)
 
     @classmethod
+    def set_pipeline_permission_on_environment(cls, project_name, environment_name, pipeline_name):
+        """Set pipeline permissions"""
+        AppLogger.log_substep("Setting pipeline permissions on environment")
+        environment_id = cls.get_environment_id(project_name, environment_name)
+        pipeline_id = cls.get_pipeline_id_by_name(project_name, pipeline_name)
+        endpoint = f'pipelines/pipelinePermissions/environment/{environment_id}'
+        body = {
+            "pipelines":[{
+                "id":pipeline_id,
+                "authorized":True
+            }]
+        }
+
+        cls._execute_patch_request_on_project(project_name, endpoint, body)
+
+
+
+    @classmethod
     def get_pull_requests(cls, project_name):
         """Create Pull Request"""
         repository = cls.get_project_repository(project_name)
