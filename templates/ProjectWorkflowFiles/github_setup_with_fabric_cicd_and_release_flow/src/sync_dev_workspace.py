@@ -14,7 +14,7 @@ AppLogger.log_step(f'Pipeline triggered by pull request completion on branch [{b
 
 match branch_name:
     
-    case 'dev':
+    case 'main':
         workspace_id = EnvironmentSettings.WORKSPACE_ID_DEV
         FabricRestApi.update_workspace_from_git(workspace_id)
         deployment_job = EnvironmentSettings.DEPLOYMENT_JOBS['dev']

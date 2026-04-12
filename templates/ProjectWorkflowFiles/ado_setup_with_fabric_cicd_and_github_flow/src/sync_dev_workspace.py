@@ -8,7 +8,7 @@ AppLogger.log_job(
     "Synching workspace by updating from GIT and applying any post-sync fixes..."
 )
 
-branch_name =  os.environ.get('BRANCH_NAME')
+branch_name = os.environ.get('BUILD_SOURCEBRANCH').replace('refs/heads/', '')
 
 AppLogger.log_step(f'Pipeline triggered by pull request completion on branch [{branch_name}]')
 

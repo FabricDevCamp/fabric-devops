@@ -1,12 +1,20 @@
 """Deploy solution to new workspace"""
-import time
+import json
 
 
-from fabric_devops import  GitHubRestApi
+from fabric_devops import  AdoProjectManager
 
-PROJECT_NAME = 'Product Sales'
+PROJECT_NAME = 'Bruce'
 
-repo_name = 'Product-Sales'
+# repo_name = PROJECT_NAME
 
 
-repo = GitHubRestApi.add_protection_ruleset_for_branch(repo_name, 'main')
+# AdoProjectManager.create_project(PROJECT_NAME)
+# AdoProjectManager.create_environment(PROJECT_NAME, 'dev')
+# AdoProjectManager.create_environment(PROJECT_NAME, 'test')
+# AdoProjectManager.create_environment(PROJECT_NAME, 'prod')
+
+
+response = AdoProjectManager.add_approval_to_environment(PROJECT_NAME, 'prod', 'ted@fabricdevcamp.net')
+
+print( json.dumps(response, indent=4))

@@ -1,32 +1,46 @@
-{
-  "name": "super cool ruleset",
-  "target": "branch",
-  "enforcement": "active",
-  "bypass_actors": [
-    {
-      "actor_id": 234,
-      "actor_type": "Team",
-      "bypass_mode": "always"
+={
+    "settings": {
+        "approvers": [
+            {
+                "displayName": null,
+                "id": "6d593fc4-bcb5-6fb0-88d2-bff9aec26e20"
+            }
+        ],
+        "executionOrder": "anyOrder",
+        "minRequiredApprovers": 1,
+        "instructions": "Please review this deployment.",
+        "blockedApprovers": []
+    },
+    "createdBy": {
+        "displayName": "Fabric DevOps App",
+        "id": "08d1fbbc-7d12-66d0-87e4-23bfd59160a7",
+        "uniqueName": "5b3572e6-a387-436b-bf93-9bd7d3d54acb\\c7b17a8e-3113-4f27-8b8c-9dc2439bd0a3",
+        "descriptor": "aadsp.MDhkMWZiYmMtN2QxMi03NmQwLTg3ZTQtMjNiZmQ1OTE2MGE3"
+    },
+    "createdOn": "2026-04-12T11:05:55.8531879Z",
+    "modifiedBy": {
+        "displayName": "Fabric DevOps App",
+        "id": "08d1fbbc-7d12-66d0-87e4-23bfd59160a7",
+        "uniqueName": "5b3572e6-a387-436b-bf93-9bd7d3d54acb\\c7b17a8e-3113-4f27-8b8c-9dc2439bd0a3",
+        "descriptor": "aadsp.MDhkMWZiYmMtN2QxMi03NmQwLTg3ZTQtMjNiZmQ1OTE2MGE3"
+    },
+    "modifiedOn": "2026-04-12T11:05:55.8531879Z",
+    "timeout": 43200,
+    "_links": {
+        "self": {
+            "href": "https://dev.azure.com/FabricDevCamp/6156c079-2bec-4f62-aee8-752ff735c604/_apis/pipelines/checks/configurations/17"
+        }
+    },
+    "id": 17,
+    "version": 1,
+    "type": {
+        "id": "8c6f20a7-a545-4486-9777-f762fafe0d4d",
+        "name": "Approval"
+    },
+    "url": "https://dev.azure.com/FabricDevCamp/6156c079-2bec-4f62-aee8-752ff735c604/_apis/pipelines/checks/configurations/17",
+    "resource": {
+        "type": "environment",
+        "id": "12",
+        "name": "prod"
     }
-  ],
-  "conditions": {
-    "ref_name": {
-      "include": [
-        "refs/heads/main",
-        "refs/heads/master"
-      ],
-      "exclude": [
-        "refs/heads/dev*"
-      ]
-    }
-  },
-  "rules": [
-    {
-      "type": "commit_author_email_pattern",
-      "parameters": {
-        "operator": "contains",
-        "pattern": "github"
-      }
-    }
-  ]
 }

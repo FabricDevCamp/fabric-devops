@@ -636,7 +636,6 @@ class AdoProjectManager:
                 variable_group_id
         )
 
-
     @classmethod
     def copy_files_from_folder_to_repo(cls, project_name, branch, folder_path, variable_group_id):
         """Copy files to repo and create pipeline when copying YAML files"""                    
@@ -1157,3 +1156,56 @@ class AdoProjectManager:
         """Get Azure Dev Ops Identities"""
         endpoint = rf'identities?searchFilter=AccountName&filterValue={EnvironmentSettings.AZURE_TENANT_ID}\{EnvironmentSettings.SERVICE_PRINCIPAL_OBJECT_ID}&queryMembership=None'
         return cls._execute_get_request_on_vssps(endpoint)['value'][0]['id']
+
+    @classmethod
+    def create_environment(cls, project_name, environment_name):
+        """Create environment in ADO project"""
+        AppLogger.log_substep(f"Creating environment [{environment_name}]")
+        endpoint = 'distributedtask/environments'
+        body = {
+            "name": environment_name,
+            "description": "Environment created for Fabric CI/CD demo"
+        
+        }
+
+        return cls._execute_post_request_on_project(project_name, endpoint, body)
+
+    @classmethod
+    def add_approval_to_environment(cls, project_name, environment_name, approver_email):
+        """Add approval to environment"""                              
+        
+        AppLogger.log_substep("Adding approval to environment")
+        endpoint = 'pipelines/checks/configurations/'
+        body = {
+            "type": {
+                "id": "8c6f20a7-a545-4486-9777-f762fafe0d4d", # Static ID for "Manual Approval"
+                "name": "Approval"
+            },
+            "settings": { 
+                "approvers": [ {"id": cls.get_user_id(approver_email) }], # The Identity ID of the approver
+                "executionOrder": "anyOrder", # Options: "anyOrder" or "inSequence"
+                "minRequiredApprovers": 1,
+                "instructions": "Please review this deployment."
+            },
+            "resource": {
+                "type": "environment",
+                "id":  cls.get_environment_id(project_name, environment_name) # Numeric ID of the environment            
+            }
+        }
+
+        return cls._execute_post_request_on_project(project_name, endpoint, body)
+       
+    @classmethod
+    def get_environments(cls, project_name):
+        """Get all environments in the project"""
+        endpoint = 'distributedtask/environments'
+        return cls._execute_get_request_on_project(project_name, endpoint)['value']
+
+    @classmethod
+    def get_environment_id(cls, project_name, environment_name):
+        """Get the ID of a specific environment in the project"""
+        environments = cls.get_environments(project_name)
+        for env in environments:
+            if env['name'] == environment_name:
+                return env['id']
+        raise ValueError(f"Environment '{environment_name}' not found")

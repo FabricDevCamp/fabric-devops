@@ -11,12 +11,11 @@ CREATE_FEATURE_WORKSPACE = os.getenv("CREATE_FEATURE_WORKSPACE") == 'true'
 match GIT_INTEGRATION_PROVIDER:
 
     case 'Azure DevOps':
-        pass
-        # DeploymentManager.setup_ado_repo_with_fabric_cicd_and_release_flow(
-        #     PROJECT_NAME,
-        #     SOLUTION_NAME,
-        #     CREATE_FEATURE_WORKSPACE
-        # )
+        DeploymentManager.setup_ado_repo_with_fabric_cicd_and_github_flow(
+            PROJECT_NAME,
+            SOLUTION_NAME,
+            CREATE_FEATURE_WORKSPACE
+        )
         
     case 'GitHub':
     

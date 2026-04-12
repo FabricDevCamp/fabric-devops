@@ -1754,6 +1754,90 @@ class DeploymentManager:
         AdoProjectManager.run_pipeline(project_name, 'deploy-from-git-to-workspace', 'main')
         AdoProjectManager.run_pipeline(project_name, 'apply-post-deploy-workspace-updates', 'main')
 
+
+
+    @classmethod
+    def setup_ado_repo_with_fabric_cicd_and_github_flow(cls, project_name, solution_name, create_feature_workspace = False):
+        """Set up project with fabric-cicd and GitHub Flow"""
+             
+        dev_workspace_name = f"{project_name}-dev"
+        test_workspace_name = f"{project_name}-test"
+        prod_workspace_name = f"{project_name}"
+    
+        dev_workspace = DeploymentManager.deploy_solution_by_name(
+            solution_name,
+            dev_workspace_name
+        )
+        
+        AppLogger.log_job("Setting up the development process for contiguous intergation")
+        
+        AdoProjectManager.create_project(project_name)
+     
+        FabricRestApi.connect_workspace_to_ado_repo(dev_workspace, project_name, 'main')
+        
+        if create_feature_workspace:
+            AppLogger.log_job("Creating new feature workspace for report development")
+            DeploymentManager.create_feature_workspace_for_ado_project(
+                project_name,
+                'reporting',
+                'main'
+        )
+
+        AppLogger.log_job("Setting up the release process for continuous deployment using fabric-cicd")
+   
+        test_workspace = FabricRestApi.create_workspace(test_workspace_name)
+        prod_workspace = FabricRestApi.create_workspace(prod_workspace_name)
+        
+        AppLogger.log_step("Adding YAML files used in fabric-cicd deployment")
+        AppLogger.log_substep("Adding deploy.yml file")
+        deploy_config_file_path = f".//templates//FabricSolutions//{solution_name}/deploy.yml"        
+        with open(deploy_config_file_path, 'r', encoding='utf-8') as deploy_config_file:
+            deploy_config = yaml.safe_load(deploy_config_file)
+            deploy_config_yaml = cls.update_deploy_config_with_workspace_ids(
+                deploy_config,
+                dev_workspace.id,
+                test_workspace.id,
+                prod_workspace.id
+            )
+            AdoProjectManager.write_file_to_repo(
+                project_name,
+                "main",
+                "workspace/deploy.yml",
+                deploy_config_yaml,
+                "Adding deploy.yml used by fabric-cicd"
+        )
+
+        AppLogger.log_substep("Adding parameter.yml file")
+        parameter_file_path = f".//templates//FabricSolutions//{solution_name}/parameter.yml"
+        with open(parameter_file_path, 'r', encoding='utf-8') as parameter_file:
+            parameter_file_content = parameter_file.read()
+            AdoProjectManager.write_file_to_repo(
+                project_name,
+                "main",
+                "workspace/parameter.yml",
+                parameter_file_content,
+                "Adding parameter.yml used by fabric-cicd"
+        )
+
+        variable_group = AdoProjectManager.create_variable_group_for_ado_project(
+            'environmental_variables',
+            project_name,
+            dev_workspace.id,
+            test_workspace.id,
+            prod_workspace.id)
+
+        AdoProjectManager.copy_files_from_folder_to_repo(
+            project_name,
+            'main',
+            'ado_setup_with_fabric_cicd_and_github_flow',
+            comment='Adding project workflow files',
+            variable_group_id=variable_group['id'])
+                
+        AdoProjectManager.run_pipeline(project_name, 'deploy-to-test-workspace', 'main')
+        AdoProjectManager.run_pipeline(project_name, 'apply-post-deploy-updates-to-test', 'main')
+        AdoProjectManager.run_pipeline(project_name, 'deploy-to-prod-workspace', 'main')
+        AdoProjectManager.run_pipeline(project_name, 'apply-post-deploy-updates-to-prod', 'main')        
+
     @classmethod
     def setup_ado_repo_with_fabric_cicd_and_release_flow(cls, project_name, solution_name, create_feature_workspace = False):
         """Set up project with fabric-cicd and Release Flow"""
