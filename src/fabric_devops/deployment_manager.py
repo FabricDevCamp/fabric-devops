@@ -1754,16 +1754,14 @@ class DeploymentManager:
         AdoProjectManager.run_pipeline(project_name, 'deploy-from-git-to-workspace', 'main')
         AdoProjectManager.run_pipeline(project_name, 'apply-post-deploy-workspace-updates', 'main')
 
-
-
     @classmethod
     def setup_ado_repo_with_fabric_cicd_and_github_flow(cls, project_name, solution_name, create_feature_workspace = False):
         """Set up project with fabric-cicd and GitHub Flow"""
-             
+
         dev_workspace_name = f"{project_name}-dev"
         test_workspace_name = f"{project_name}-test"
         prod_workspace_name = f"{project_name}"
-    
+
         dev_workspace = DeploymentManager.deploy_solution_by_name(
             solution_name,
             dev_workspace_name
@@ -1831,11 +1829,17 @@ class DeploymentManager:
             'main',
             'ado_setup_with_fabric_cicd_and_github_flow',
             variable_group_id=variable_group['id'])
+        
+        AdoProjectManager.create_environment(project_name, 'dev')
+        AdoProjectManager.create_environment(project_name, 'test')
+        AdoProjectManager.create_environment(project_name, 'prod')
                 
         AdoProjectManager.run_pipeline(project_name, 'deploy-to-test-workspace', 'main')
         AdoProjectManager.run_pipeline(project_name, 'apply-post-deploy-updates-to-test', 'main')
         AdoProjectManager.run_pipeline(project_name, 'deploy-to-prod-workspace', 'main')
-        AdoProjectManager.run_pipeline(project_name, 'apply-post-deploy-updates-to-prod', 'main')        
+        AdoProjectManager.run_pipeline(project_name, 'apply-post-deploy-updates-to-prod', 'main')
+        
+        AdoProjectManager.add_approval_to_environment(project_name, 'prod', 'ted@fabricdevcamp.net')   
 
     @classmethod
     def setup_ado_repo_with_fabric_cicd_and_release_flow(cls, project_name, solution_name, create_feature_workspace = False):
