@@ -1035,7 +1035,7 @@ class AdoProjectManager:
     @classmethod
     def set_pipeline_permission_on_environment(cls, project_name, environment_name, pipeline_name):
         """Set pipeline permissions"""
-        AppLogger.log_substep(f"Setting [{environment_name}] environment permissions for pipeline [{pipeline_name}]")
+        AppLogger.log_substep(f"Setting permissions for pipeline [{pipeline_name}] on environment [{environment_name}]")
         environment_id = cls.get_environment_id(project_name, environment_name)
         pipeline_id = cls.get_pipeline_id_by_name(project_name, pipeline_name)
         endpoint = f'pipelines/pipelinePermissions/environment/{environment_id}'
