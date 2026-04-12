@@ -1830,7 +1830,6 @@ class DeploymentManager:
             project_name,
             'main',
             'ado_setup_with_fabric_cicd_and_github_flow',
-            comment='Adding project workflow files',
             variable_group_id=variable_group['id'])
                 
         AdoProjectManager.run_pipeline(project_name, 'deploy-to-test-workspace', 'main')
