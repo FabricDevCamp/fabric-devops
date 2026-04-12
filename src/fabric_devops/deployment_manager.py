@@ -1824,18 +1824,19 @@ class DeploymentManager:
             dev_workspace.id,
             test_workspace.id,
             prod_workspace.id)
-
+        
+        AdoProjectManager.create_environment(project_name, 'test')
+        AdoProjectManager.create_environment(project_name, 'prod')
+   
         AdoProjectManager.copy_files_from_folder_to_repo(
             project_name,
             'main',
             'ado_setup_with_fabric_cicd_and_github_flow',
             variable_group_id=variable_group['id'])
                     
-        AdoProjectManager.create_environment(project_name, 'test')
         AdoProjectManager.set_pipeline_permission_on_environment(
             project_name, 'test', 'deploy-to-test-workspace')
 
-        AdoProjectManager.create_environment(project_name, 'prod')
         AdoProjectManager.set_pipeline_permission_on_environment(
             project_name, 'test', 'deploy-to-prod-workspace')
         
