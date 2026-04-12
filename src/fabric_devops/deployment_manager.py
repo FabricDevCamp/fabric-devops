@@ -1825,6 +1825,7 @@ class DeploymentManager:
             test_workspace.id,
             prod_workspace.id)
         
+        AppLogger.log_step("Creating environments for deployment")
         AdoProjectManager.create_environment(project_name, 'test')
         AdoProjectManager.create_environment(project_name, 'prod')
    
@@ -1833,12 +1834,12 @@ class DeploymentManager:
             'main',
             'ado_setup_with_fabric_cicd_and_github_flow',
             variable_group_id=variable_group['id'])
-                    
+        
+        AppLogger.log_step("Setting pipeline permissions on environments")
         AdoProjectManager.set_pipeline_permission_on_environment(
             project_name, 'test', 'deploy-to-test-workspace')
-
         AdoProjectManager.set_pipeline_permission_on_environment(
-            project_name, 'test', 'deploy-to-prod-workspace')
+            project_name, 'prod', 'deploy-to-prod-workspace')
         
         time.sleep(10)
         
