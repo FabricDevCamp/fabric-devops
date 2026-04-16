@@ -4,10 +4,6 @@ import json
 
 from fabric_devops import  AdoProjectManager
 
-project_name = 'Billy Jean'
+project_name = 'Product Sales'
 
-AdoProjectManager.create_environment(project_name, 'dev')
-AdoProjectManager.create_environment(project_name, 'test')
-AdoProjectManager.create_environment(project_name, 'prod')
-
-AdoProjectManager.add_approval_to_environment(project_name, 'prod', 'ted@fabricdevcamp.net')
+AdoProjectManager.add_branch_policy_to_require_approvals(project_name, 'main')

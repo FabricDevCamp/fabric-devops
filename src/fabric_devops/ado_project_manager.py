@@ -474,6 +474,31 @@ class AdoProjectManager:
         cls.set_default_branch(project_name, "dev")
 
     @classmethod
+    def add_branch_policy_to_require_approvals(cls, project_name, branch_name):
+        """Add Branch Policy to require approvals"""
+        endpoint = f'policy/configurations'
+        body = {
+            "isEnabled": True,
+            "isBlocking": False,
+            "type": {
+                "id": "fa4e907d-c16b-4a4c-9dfa-4906e5d171dd"
+            },
+            "settings": {
+                "minimumApproverCount": 1,
+                "creatorVoteCounts": True,
+                "scope": [
+                {
+                    "repositoryId": None,
+                    "refName": f"refs/heads/{branch_name}",
+                    "matchKind": "exact"
+                }
+                ]
+            }
+            }
+        return cls._execute_post_request_on_project(project_name, endpoint, body)
+
+
+    @classmethod
     def copy_project_files_to_ado_repo(
         cls,
         project_name,
@@ -1047,7 +1072,6 @@ class AdoProjectManager:
         }
 
         cls._execute_patch_request_on_project(project_name, endpoint, body)
-
 
 
     @classmethod
