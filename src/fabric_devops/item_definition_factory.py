@@ -128,7 +128,7 @@ class ItemDefinitionFactory:
         create_request = cls.get_create_item_request_from_folder(solution_folder, item_folder)
         
         notebook_redirects = {
-            '11111111-1111-1111-1111-111111111111': workspace_id,
+            '00000000-0000-0000-0000-000000000000': workspace_id,
             '22222222-2222-2222-2222-222222222222': lakehouse.id
         }
 

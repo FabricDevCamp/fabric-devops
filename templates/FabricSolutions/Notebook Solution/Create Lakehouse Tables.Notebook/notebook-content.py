@@ -5,11 +5,11 @@
 # META {
 # META   "synapse": {
 # META   "lakehouse": {
-# META     "default_lakehouse": "238beadb-9fa0-9a16-48ed-3fd6347c2432",
+# META     "default_lakehouse": "22222222-2222-2222-2222-222222222222",
 # META     "default_lakehouse_name": "sales",
 # META     "default_lakehouse_workspace_id": "00000000-0000-0000-0000-000000000000",
 # META     "known_lakehouses": [
-# META      { "id": "238beadb-9fa0-9a16-48ed-3fd6347c2432" }
+# META      { "id": "22222222-2222-2222-2222-222222222222" }
 # META     ]
 # META   }
 # META   }
