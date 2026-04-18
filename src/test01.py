@@ -1,9 +1,14 @@
 """Deploy solution to new workspace"""
-import json
 
+from fabric_devops import DeploymentManager, StagingEnvironments
 
-from fabric_devops import  AdoProjectManager
+WORKSPACE_NAME = "Project2A"
+SOLUTION_NAME = 'Notebook Solution'
+DEPLOY_USING_FABRIC_CICD = False
+deploy_job = StagingEnvironments.get_dev_environment()
 
-project_name = 'Product Sales'
-
-AdoProjectManager.add_branch_policy_to_require_approvals(project_name, 'main')
+workspace = DeploymentManager.deploy_solution_by_name(
+    SOLUTION_NAME,
+    WORKSPACE_NAME,
+    deploy_job,
+    DEPLOY_USING_FABRIC_CICD)
