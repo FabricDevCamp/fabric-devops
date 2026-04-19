@@ -97,8 +97,10 @@ class FabricRestApi:
 
         existing_workspace = cls.get_workspace_by_name(display_name)
         if existing_workspace is not None:
-            AppLogger.log_substep("Deleting existing workspace with the same name")
-            cls.delete_workspace(existing_workspace.id)
+            # AppLogger.log_substep("Deleting existing workspace with the same name")
+            # cls.delete_workspace(existing_workspace.id)
+            AppLogger.log_substep("Found existing workspace with the same name")
+            return existing_workspace
         
         create_request = {
             "display_name": display_name,
