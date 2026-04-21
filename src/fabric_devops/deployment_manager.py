@@ -2499,3 +2499,29 @@ class DeploymentManager:
         FabricRestApi.update_workspace_description(prod_workspace.id, f'BUILD: {prod_branch_name}')
 
     #endregion
+    
+    @classmethod
+    def setup_ado_repo_for_terraform(cls, project_name):
+        """Set up ADO project with variables/secrets"""
+              
+        AppLogger.log_job("Setting up ADO repo")
+        
+        AdoProjectManager.create_project(project_name)
+     
+        variable_group = AdoProjectManager.create_variable_group_for_ado_project(
+            'environmental_variables',
+            project_name,
+            '11111111-1111-1111-1111-111111111111',
+            '11111111-1111-1111-1111-111111111112',
+            '11111111-1111-1111-1111-111111111113')
+        
+        AppLogger.log_step("Creating environments for deployment")
+        AdoProjectManager.create_environment(project_name, 'test')
+        AdoProjectManager.create_environment(project_name, 'prod')
+   
+        AdoProjectManager.copy_files_from_folder_to_repo(
+            project_name,
+            'main',
+            'ado_setup_with_terraform',
+            variable_group_id=variable_group['id'])
+        
