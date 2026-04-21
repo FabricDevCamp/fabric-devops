@@ -88,7 +88,7 @@ class FabricRestApi:
         return cls.fabric_client.core.workspaces.get_workspace(workspace.id)
 
     @classmethod
-    def create_workspace(cls, display_name, capacity_id = None):
+    def create_workspace(cls, display_name, capacity_id = None, reuse_existing_workspace = False):
         """Create a new Fabric workspace"""
         AppLogger.log_step(f'Creating workspace [{display_name}]')
 
@@ -97,10 +97,12 @@ class FabricRestApi:
 
         existing_workspace = cls.get_workspace_by_name(display_name)
         if existing_workspace is not None:
-            # AppLogger.log_substep("Deleting existing workspace with the same name")
-            # cls.delete_workspace(existing_workspace.id)
-            AppLogger.log_substep("Found existing workspace with the same name")
-            return existing_workspace
+            if reuse_existing_workspace:
+                AppLogger.log_substep("Found existing workspace with the same name")
+                return existing_workspace
+            else: 
+                AppLogger.log_substep("Deleting existing workspace with the same name")
+                cls.delete_workspace(existing_workspace.id)
         
         create_request = {
             "display_name": display_name,
