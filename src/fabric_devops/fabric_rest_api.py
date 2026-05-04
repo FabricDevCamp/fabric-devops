@@ -539,6 +539,19 @@ class FabricRestApi:
         return None
 
     @classmethod
+    def create_item_no_sdk(cls, workspace_id, create_item_request, folder_id = None):
+        """Create Item using create-item-request"""
+        if folder_id is not None:
+            create_item_request['folderId'] = folder_id
+
+        AppLogger.log_step(
+            f"Creating [{create_item_request['displayName']}.{create_item_request['type']}]...")
+        endpoint = f'workspaces/{workspace_id}/items'
+        item = cls._execute_post_request(endpoint, create_item_request)
+        AppLogger.log_substep(f"{item['type']} created with id [{item['id']}]")
+        return item
+
+    @classmethod
     def create_item(cls, workspace_id, create_item_request, folder_id = None):
         """Create Item"""
 

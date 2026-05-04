@@ -155,7 +155,11 @@ class DeploymentManager:
             return variable_library
 
     @classmethod
-    def create_adls_connection_and_variable_library(cls, workspace, staging_folder_id, deploy_job: DeploymentJob):
+    def create_adls_connection_and_variable_library(
+        cls, 
+        workspace, 
+        staging_folder_id = None, 
+        deploy_job: DeploymentJob = StagingEnvironments.get_dev_environment()):
         """Create Vairable Library with ADLS settings"""
         
         if deploy_job.deployment_type == DeploymentJobType.CUSTOMER_TENANT:
@@ -1014,6 +1018,150 @@ class DeploymentManager:
             FabricRestApi.create_item(workspace.id, create_report_request)
  
         return workspace
+
+    @classmethod
+    def deploy_two_workspace_solution_using_apis(
+        cls, project_name,
+        deploy_job = StagingEnvironments.get_dev_environment()):
+        """Deploy Two Workspace Medallion Solution using APIs"""
+        
+        AppLogger.log_job(f"Deploying 2 workspace solution for project [{project_name}] using Fabric REST APIs")
+        
+        staging_workspace_name = f'{project_name}-staging'        
+        staging_workspace = FabricRestApi.create_workspace(staging_workspace_name)
+        FabricRestApi.update_workspace_description(staging_workspace.id, 'Medallion Solution - Staging Workspace')
+        
+        presentation_workspace_name = f'{project_name}-presentation'
+        presentation_workspace = FabricRestApi.create_workspace(presentation_workspace_name)
+        FabricRestApi.update_workspace_description(presentation_workspace.id, 'Medallion Solution - Presentation Workspace')
+
+        cls.create_adls_connection_and_variable_library(staging_workspace, deploy_job= deploy_job)
+
+        bronze_lakehouse_name = "sales_bronze"
+        silver_lakehouse_name = "sales_silver"
+        gold_lakehouse_name = "sales"
+     
+        bronze_lakehouse = FabricRestApi.create_lakehouse(
+            staging_workspace.id,
+            bronze_lakehouse_name
+        )
+
+        shortcut_name = "sales-data"
+        shortcut_path = "Files"
+        adls_shortcut_location_variable = "$(/**/environment_settings/adls_server)"
+        adls_shortcut_subpath_variable = "$(/**/environment_settings/adls_shortcut_subpath)"
+        adls_connection_id_variable = "$(/**/environment_settings/adls_connection_id)"
+
+        FabricRestApi.create_adls_gen2_shortcut(
+            staging_workspace.id,
+            bronze_lakehouse.id,
+            shortcut_name,
+            shortcut_path,
+            adls_shortcut_location_variable,
+            adls_shortcut_subpath_variable,
+            adls_connection_id_variable
+        )
+
+        silver_lakehouse = FabricRestApi.create_lakehouse(
+            staging_workspace.id,
+            silver_lakehouse_name)
+        
+        create_notebook_request = \
+            ItemDefinitionFactory.get_create_item_request_from_folder(
+                'Medallion Solution', 
+                'staging/Build 01 Silver Tables.Notebook'
+            )
+        
+        notebook_redirects = {
+            '11111111-1111-1111-1111-111111111111': staging_workspace.id,
+            '22222222-2222-2222-2222-222222222222': silver_lakehouse.id,
+        }
+
+        create_notebook_request = \
+            ItemDefinitionFactory.update_part_in_create_request(
+                create_notebook_request,
+                'notebook-content.py', 
+                notebook_redirects)
+
+        notebook_build_silver = FabricRestApi.create_item(
+            staging_workspace.id, 
+            create_notebook_request)
+
+        FabricRestApi.run_notebook(staging_workspace.id, notebook_build_silver)
+
+        silver_sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(staging_workspace.id, silver_lakehouse)
+
+        FabricRestApi.refresh_sql_endpoint_metadata(staging_workspace.id, silver_sql_endpoint['database'])
+
+        gold_lakehouse = FabricRestApi.create_lakehouse(
+            presentation_workspace.id,
+            gold_lakehouse_name)
+        
+        create_notebook_request = ItemDefinitionFactory.get_create_item_request_from_folder(
+            'Medallion Solution',
+            'staging/Build 02 Gold Tables.Notebook'            
+        )
+        
+        notebook_redirects = {
+            '11111111-1111-1111-1111-111111111111': presentation_workspace.id,
+            '22222222-2222-2222-2222-222222222222': gold_lakehouse.id,
+        }
+
+        create_notebook_request = ItemDefinitionFactory.update_part_in_create_request(
+            create_notebook_request,
+            'notebook-content.py', 
+            notebook_redirects
+        )
+
+        notebook_build_gold = FabricRestApi.create_item(
+            staging_workspace.id, 
+            create_notebook_request)
+
+        FabricRestApi.run_notebook(staging_workspace.id, notebook_build_gold)
+        
+        gold_sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(presentation_workspace.id, gold_lakehouse)
+
+        FabricRestApi.refresh_sql_endpoint_metadata(presentation_workspace.id, gold_sql_endpoint['database'])
+
+        create_model_request = ItemDefinitionFactory.get_create_item_request_from_folder(
+            'Medallion Solution',
+            'Product Sales DirectLake Model.SemanticModel'
+        )
+            
+        model_redirects = {
+            'abc-xyz.datawarehouse.fabric.microsoft.com': gold_sql_endpoint['server']
+        }
+
+        create_model_request = \
+            ItemDefinitionFactory.update_part_in_create_request(
+                create_model_request,
+                'definition/expressions.tmdl',
+                model_redirects)
+
+        model = FabricRestApi.create_item(presentation_workspace.id, create_model_request)
+
+        FabricRestApi.create_and_bind_semantic_model_connecton(presentation_workspace, model.id, gold_lakehouse)
+
+        report_folders = [
+            'Product Sales Summary.Report',
+            'Product Sales Time Intelligence.Report',
+            'Product Sales Top 10 Cities.Report'
+        ]
+        for report_folder in report_folders:
+            
+            create_report_request = ItemDefinitionFactory.get_create_report_request_from_folder(
+                'Medallion Solution',
+                report_folder,
+                model.id
+            )
+
+            FabricRestApi.create_item(presentation_workspace.id, create_report_request)
+ 
+        return {
+            'presentation': presentation_workspace,
+            'staging:': staging_workspace
+        }
+
 
     #endregion
 

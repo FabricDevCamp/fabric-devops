@@ -95,7 +95,13 @@ class ItemDefinitionFactory:
             item_definition['parts'].remove(item_part)
             item_part['payload'] = cls._search_and_replace_in_payload(item_part['payload'], search_replace_text)
             item_definition['parts'].append(item_part)
-        
+
+        # bug fix for notebook-settings.json file
+        notebook_settings_part = next((part for part in item_definition['parts'] if part['path'] == 'notebook-settings.json'), None)
+        if notebook_settings_part is not None:
+            item_definition['parts'].remove(notebook_settings_part)
+            item_definition['parts'].append(notebook_settings_part)
+                
         return {
             'displayName': create_item_request['displayName'],
             'type': create_item_request['type'],
