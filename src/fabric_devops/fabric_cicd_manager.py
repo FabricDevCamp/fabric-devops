@@ -7,7 +7,7 @@ from .app_logger import AppLogger
 from fabric_cicd import FabricWorkspace, deploy_with_config, append_feature_flag, change_log_level
 from .fabric_rest_api import FabricRestApi
 
-change_log_level()
+# change_log_level()
 
 append_feature_flag("enable_experimental_features")
 append_feature_flag("enable_config_deploy")
