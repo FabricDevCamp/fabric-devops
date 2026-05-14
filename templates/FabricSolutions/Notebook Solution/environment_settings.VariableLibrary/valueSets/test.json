@@ -4,7 +4,7 @@
   "variableOverrides": [
     {
       "name": "web_datasource_path",
-      "value": "https://fabricdevcamp.blob.core.windows.net/sampledata/ProductSales/Test/"
+      "value": "https://github.com/FabricDevCamp/SampleData/raw/refs/heads/main/ProductSales/Test/"
     }
   ]
 }

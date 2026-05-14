@@ -590,12 +590,12 @@ class DeploymentManager:
             'Product Sales Imported Model.SemanticModel'
         )
 
-        DEV_WEB_DATASOURCE_PATH = 'https://fabricdevcamp.blob.core.windows.net/sampledata/ProductSales/Dev/'
+        dev_web_datasource_path = f'{EnvironmentSettings.WEB_DATASOURCE_ROOT_URL}ProductSales/Dev/'
         web_datasource_path = deploy_job.parameters[DeploymentJob.web_datasource_path_parameter]
 
-        if web_datasource_path != DEV_WEB_DATASOURCE_PATH:
+        if web_datasource_path != dev_web_datasource_path:
             model_redirects = { 
-                DEV_WEB_DATASOURCE_PATH: web_datasource_path 
+                dev_web_datasource_path: web_datasource_path
             }
 
             create_model_request['definition'] = ItemDefinitionFactory.update_item_definition_part(

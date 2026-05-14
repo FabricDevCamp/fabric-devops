@@ -1,4 +1,4 @@
-expression CSV_FILE_ROOT = "https://fabricdevcamp.blob.core.windows.net/sampledata/ProductSales/Dev/" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+expression CSV_FILE_ROOT = "https://github.com/FabricDevCamp/SampleData/raw/refs/heads/main/ProductSales/Dev/" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
 	lineageTag: c28eb748-2b18-4002-a15d-ef86447dcf98
 
 	annotation PBI_NavigationStepName = Navigation

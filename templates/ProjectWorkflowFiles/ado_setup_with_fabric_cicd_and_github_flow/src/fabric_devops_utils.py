@@ -44,7 +44,7 @@ class EnvironmentSettings:
         'dev': {
             'name': 'dev',
             'parameters': {
-                'web_datasource_path': 'https://fabricdevcamp.blob.core.windows.net/sampledata/ProductSales/Dev/',
+                'web_datasource_path': 'https://github.com/FabricDevCamp/SampleData/raw/refs/heads/main/ProductSales/Dev/',
                 'adls_server': 'https://fabricdevcamp.dfs.core.windows.net/',
                 'adls_container_name': 'sampledata', 
                 'adls_container_path': '/ProductSales/Dev'
@@ -53,7 +53,7 @@ class EnvironmentSettings:
         'test': {
             'name': 'test',
             'parameters': {
-                'web_datasource_path': 'https://fabricdevcamp.blob.core.windows.net/sampledata/ProductSales/Test/',
+                'web_datasource_path': 'https://github.com/FabricDevCamp/SampleData/raw/refs/heads/main/ProductSales/Test/',
                 'adls_server': 'https://fabricdevcamp.dfs.core.windows.net/',
                 'adls_container_name': 'sampledata', 
                 'adls_container_path': '/ProductSales/Test'
@@ -62,7 +62,7 @@ class EnvironmentSettings:
         "prod": {
             'name': 'prod',
             'parameters': {
-                'web_datasource_path': 'https://fabricdevcamp.blob.core.windows.net/sampledata/ProductSales/Prod/',
+                'web_datasource_path': 'https://github.com/FabricDevCamp/SampleData/raw/refs/heads/main/ProductSales/Prod/',
                 'adls_server': 'https://fabricdevcamp.dfs.core.windows.net/',
                 'adls_container_name': 'sampledata',
                 'adls_container_path': '/ProductSales/Prod'
