@@ -1165,7 +1165,7 @@ class FabricRestApi:
         return cls.fabric_client.core.git.connect(workspace_id, connect_request)
 
     @classmethod
-    def connect_workspace_to_ado_repo(cls, workspace, project_name, branch = 'main'):
+    def connect_workspace_to_ado_repo(cls, workspace, project_name, branch = 'main', git_folder = '/workspace'):
         """Connect Workspace to Azure Dev Ops Repository"""
         AppLogger.log_substep(f"Connecting workspace [{workspace.display_name}] " + \
                                 f"to branch[{branch}] in Azure DevOps repo[{project_name}]")
@@ -1173,7 +1173,7 @@ class FabricRestApi:
         connection = cls._get_ado_repo_connection(project_name)
         connection_id = connection.id
 
-        cls._create_workspace_connection_to_ado_repo(workspace.id, project_name, connection_id, branch)
+        cls._create_workspace_connection_to_ado_repo(workspace.id, project_name, connection_id, branch, git_folder)
         
         AppLogger.log_substep("Workspace connection created successfully")
 

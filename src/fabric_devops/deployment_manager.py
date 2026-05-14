@@ -1156,6 +1156,29 @@ class DeploymentManager:
             )
 
             FabricRestApi.create_item(presentation_workspace.id, create_report_request)
+            
+        AdoProjectManager.create_project(project_name, presentation_workspace)
+        
+        AdoProjectManager.write_file_to_repo(
+            project_name, 
+            'main', 
+            'workspace/staging/ReadMe.md', 
+            "hello",
+            comment='Adding ReadMe.md to [workspace] folder')
+    
+        
+        FabricRestApi.connect_workspace_to_ado_repo(staging_workspace,project_name, 'main', git_folder='/workspace/staging')
+
+        AdoProjectManager.write_file_to_repo(
+            project_name, 
+            'main', 
+            'workspace/presentation/ReadMe.md', 
+            "hello",
+            comment='Adding ReadMe.md to [workspace] folder')
+
+
+        FabricRestApi.connect_workspace_to_ado_repo(presentation_workspace,project_name, 'main', git_folder='/workspace/presentation')
+  
  
         return {
             'presentation': presentation_workspace,
