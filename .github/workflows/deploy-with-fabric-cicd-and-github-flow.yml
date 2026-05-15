@@ -28,7 +28,7 @@ on:
             create_feature_workspace:
                 type: boolean
                 description: Create feature workspace
-                default: true
+                default: false
 
 permissions:
     contents: read
