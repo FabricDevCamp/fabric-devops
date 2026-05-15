@@ -1,6 +1,6 @@
 """Fabric DevOps Utility Classes"""
 # this version of fabric_devops specific for Azure Dev Ops projects
-# updated: 05/15/2026-1PM
+# updated: 05/15/2026-3PM
 
 import base64
 import re
@@ -2540,6 +2540,16 @@ class PowerBiRestApi:
         return cls._execute_get_request_to_powerbi(rest_url)['value']
 
     @classmethod
+    def get_adls_dataource_from_semantic_model(cls, workspace_id, semantic_model_id):
+        """Get ADLS datasource from semantic model"""
+        data_sources = cls.list_datasources_for_semantic_model(workspace_id, semantic_model_id)
+        for datasource in data_sources:                        
+            if datasource['datasourceType'] == 'AzureDataLakeStorage':
+                server    = datasource['connectionDetails']['server']
+                path      = datasource['connectionDetails']['path']
+                return f'{server}{path}'
+
+    @classmethod
     def get_web_url_from_semantic_model(cls, workspace_id, semantic_model_id):
         """Get Web datasource URL from semantic model"""
         data_sources = cls.list_datasources_for_semantic_model(workspace_id, semantic_model_id)
@@ -3131,9 +3141,9 @@ class DeploymentManager:
         for model in models:
              
             if model.display_name == 'Product Sales Imported Model':                
-                adls_server =  deploy_job.parameters[deploy_job.adls_server_parameter]
-                adls_container_name =  deploy_job.parameters[deploy_job.adls_container_name_parameter]
-                adls_container_path =  deploy_job.parameters[deploy_job.adls_container_path_parameter]
+                adls_server =  deploy_job['parameters']['adls_server']
+                adls_container_name =  deploy_job['parameters']['adls_container_name']
+                adls_container_path =  deploy_job['parameters']['adls_container_path']
                 datasource_path = f'{adls_server}{adls_container_name}{adls_container_path}'
                 DeploymentManager.update_imported_semantic_model_source(
                     workspace,
