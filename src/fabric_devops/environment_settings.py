@@ -19,12 +19,12 @@ class EnvironmentSettings:
     ORGANIZATION_GITHUB = os.getenv('ORGANIZATION_GITHUB')
     PERSONAL_ACCESS_TOKEN_GITHUB = os.getenv('PERSONAL_ACCESS_TOKEN_GITHUB')
 
-    #  WEB_DATASOURCE_ROOT_URL = 'https://github.com/FabricDevCamp/SampleData/raw/refs/heads/main/ProductSales/'
-    WEB_DATASOURCE_ROOT_URL = 'https://github.com/FabricDevCamp/SampleData/raw/refs/heads/main/ProductSales/'
+    #  WEB_DATASOURCE_ROOT_URL = 'https://github.com/FabricDevCamp/SampleData/raw/refs/heads/main/productsales/'
+    WEB_DATASOURCE_ROOT_URL = 'https://github.com/FabricDevCamp/SampleData/raw/refs/heads/main/productsales/'
 
     AZURE_STORAGE_ACCOUNT_NAME = 'fabricdevcampdemos'
     AZURE_STORAGE_CONTAINER = 'sampledata'
-    AZURE_STORAGE_CONTAINER_PATH = '/ProductSales/Dev'
+    AZURE_STORAGE_CONTAINER_PATH = '/productsales/dev'
     AZURE_STORAGE_SERVER = f'https://{AZURE_STORAGE_ACCOUNT_NAME}.dfs.core.windows.net/'
     AZURE_STORAGE_PATH = AZURE_STORAGE_CONTAINER + AZURE_STORAGE_CONTAINER_PATH
     AZURE_STORAGE_SAS_TOKEN = os.getenv('AZURE_STORAGE_SAS_TOKEN')

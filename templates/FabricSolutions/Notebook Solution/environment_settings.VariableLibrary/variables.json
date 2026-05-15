@@ -5,7 +5,7 @@
       "name": "web_datasource_path",
       "note": "some note",
       "type": "String",
-      "value": "https://github.com/FabricDevCamp/SampleData/raw/refs/heads/main/ProductSales/Dev/"
+      "value": "https://github.com/FabricDevCamp/SampleData/raw/refs/heads/main/productsales/dev/"
     }
   ]
 }

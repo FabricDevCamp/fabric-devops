@@ -44,7 +44,7 @@ table Products
 		source = ```
 				let
 				    Source = GetCsvFilesFromAzure,
-				    CsvBinary = Source{[#"Folder Path"=AZURE_STORAGE_ROOT, Name="Products.csv"]}[Content],
+				    CsvBinary = Source{[#"Folder Path"=AZURE_STORAGE_ROOT, Name="products.csv"]}[Content],
 				    ImportedCsv = Csv.Document(CsvBinary, [Delimiter=",", Columns=3, Encoding=65001, QuoteStyle=QuoteStyle.None]),
 				    PromotedHeaders = Table.PromoteHeaders(ImportedCsv, [PromoteAllScalars=true]),
 				    ChangedType = Table.TransformColumnTypes(PromotedHeaders,{{"ProductId", Int64.Type}})

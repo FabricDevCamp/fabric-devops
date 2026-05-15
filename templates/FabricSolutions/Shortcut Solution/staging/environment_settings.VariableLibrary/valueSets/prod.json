@@ -12,11 +12,11 @@
         },
         {
             "name": "adls_container_path",
-            "value": "/ProductSales/Prod/"
+            "value": "/productsales/prod/"
         },
         {
             "name": "adls_shortcut_subpath",
-            "value": "sampledata/ProductSales/Prod/"
+            "value": "sampledata/productsales/prod/"
         },
         {
             "name": "adls_connection_id",

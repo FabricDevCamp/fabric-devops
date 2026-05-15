@@ -17,13 +17,13 @@
             "name": "adls_container_path",
             "note": "some note",
             "type": "String",
-            "value": "/ProductSales/Dev/"
+            "value": "/productsales/dev/"
         },
         {
             "name": "adls_shortcut_subpath",
             "note": "some note",
             "type": "String",
-            "value": "sampledata/ProductSales/Dev/"
+            "value": "sampledata/productsales/dev/"
         },
         {
             "name": "adls_connection_id",

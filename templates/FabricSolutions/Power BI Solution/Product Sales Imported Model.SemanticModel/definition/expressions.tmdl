@@ -1,4 +1,4 @@
-expression AZURE_STORAGE_ROOT = "https://fabricdevcampdemos.dfs.core.windows.net/sampledata/ProductSales/Dev/" meta [IsParameterQuery = true, IsParameterQueryRequired = true, Type = "Text"]
+expression AZURE_STORAGE_ROOT = "https://fabricdevcampdemos.dfs.core.windows.net/sampledata/productsales/dev/" meta [IsParameterQuery = true, IsParameterQueryRequired = true, Type = "Text"]
 	lineageTag: 89701245-f82a-481e-8595-efacaa9af10f
 	queryGroup: staging
 
@@ -21,7 +21,7 @@ expression GetCsvFilesFromAzure =
 expression Invoices = ```
 		let
 		    Source = GetCsvFilesFromAzure,
-		    CsvBinary = Source{[#"Folder Path"=AZURE_STORAGE_ROOT, Name="Invoices.csv"]}[Content],
+		    CsvBinary = Source{[#"Folder Path"=AZURE_STORAGE_ROOT, Name="invoices.csv"]}[Content],
 		    ImportedCsv = Csv.Document(CsvBinary, [Delimiter=",", Columns=4, Encoding=65001, QuoteStyle=QuoteStyle.None]),
 		    PromotedHeaders = Table.PromoteHeaders(ImportedCsv, [PromoteAllScalars=true]),
 		    RemovedColumns = Table.RemoveColumns(PromotedHeaders,{"TotalSalesAmount"}),

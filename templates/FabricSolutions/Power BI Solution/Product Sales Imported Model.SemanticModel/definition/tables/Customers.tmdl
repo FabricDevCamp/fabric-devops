@@ -69,7 +69,7 @@ table Customers
 		source = ```
 				let
 				    Source = GetCsvFilesFromAzure,
-				    CsvBinary = Source{[#"Folder Path"=AZURE_STORAGE_ROOT, Name="Customers.csv"]}[Content],
+				    CsvBinary = Source{[#"Folder Path"=AZURE_STORAGE_ROOT, Name="customers.csv"]}[Content],
 				    ImportedCsv = Csv.Document(CsvBinary, [Delimiter=",", Columns=6, Encoding=65001, QuoteStyle=QuoteStyle.None]),
 				    PromotedHeaders = Table.PromoteHeaders(ImportedCsv, [PromoteAllScalars=true]),
 				    MergedColumns = Table.CombineColumns(PromotedHeaders,{"FirstName", "LastName"},Combiner.CombineTextByDelimiter(" ", QuoteStyle.None),"Customer"),

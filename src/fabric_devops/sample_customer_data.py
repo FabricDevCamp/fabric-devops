@@ -18,11 +18,11 @@ class SampleCustomerData:
         # setup Web datasource path
         deployment.set_deployment_parameter(DeploymentJob.web_datasource_path_parameter,
                                             EnvironmentSettings.WEB_DATASOURCE_ROOT_URL +
-                                            'Customers/AdventureWorks/')
+                                            'customers/adventureworks/')
 
         # setup ADLS datasource path
         deployment.set_deployment_parameter(DeploymentJob.adls_container_path_parameter,
-                                            "/ProductSales/Customers/AdventureWorks/")
+                                            "/productsales/customers/adventureworks/")
 
         return deployment
 
@@ -36,11 +36,11 @@ class SampleCustomerData:
         # setup Web datasource path
         deployment.set_deployment_parameter(DeploymentJob.web_datasource_path_parameter,
                                             EnvironmentSettings.WEB_DATASOURCE_ROOT_URL +
-                                            'Customers/Contoso/')
+                                            'customers/contoso/')
 
         # setup ADLS datasource path
         deployment.set_deployment_parameter(DeploymentJob.adls_container_path_parameter,
-                                            "/ProductSales/Customers/Contoso/")
+                                            "/productsales/customers/contoso/")
 
         return deployment
 
@@ -54,11 +54,11 @@ class SampleCustomerData:
         # setup Web datasource path
         deployment.set_deployment_parameter(DeploymentJob.web_datasource_path_parameter,
                                             EnvironmentSettings.WEB_DATASOURCE_ROOT_URL +
-                                            'Customers/Fabrikam/')
+                                            'customers/fabrikam/')
 
         # setup ADLS datasource path
         deployment.set_deployment_parameter(DeploymentJob.adls_container_path_parameter,
-                                            "/ProductSales/Customers/Fabrikam/")
+                                            "/productsales/customers/fabrikam/")
 
         return deployment
 
@@ -72,11 +72,11 @@ class SampleCustomerData:
         # setup Web datasource path
         deployment.set_deployment_parameter(DeploymentJob.web_datasource_path_parameter,
                                             EnvironmentSettings.WEB_DATASOURCE_ROOT_URL +
-                                            'Customers/Northwind/')
+                                            'customers/northwind/')
 
         # setup ADLS datasource path
         deployment.set_deployment_parameter(DeploymentJob.adls_container_path_parameter,
-                                            "/ProductSales/Customers/Northwind/")
+                                            "/productsales/customers/northwind/")
 
         return deployment
 
@@ -90,11 +90,11 @@ class SampleCustomerData:
         # setup Web datasource path
         deployment.set_deployment_parameter(DeploymentJob.web_datasource_path_parameter,
                                             EnvironmentSettings.WEB_DATASOURCE_ROOT_URL +
-                                            'Customers/SeamarkFarms/')
+                                            'customers/seamarkfarms/')
 
         # setup ADLS datasource path
         deployment.set_deployment_parameter(DeploymentJob.adls_container_path_parameter,
-                                            "/ProductSales/Customers/SeamarkFarms/")
+                                            "/productsales/customers/seamarkfarms/")
 
         return deployment
 
@@ -108,11 +108,11 @@ class SampleCustomerData:
         # setup Web datasource path
         deployment.set_deployment_parameter(DeploymentJob.web_datasource_path_parameter,
                                             EnvironmentSettings.WEB_DATASOURCE_ROOT_URL +
-                                            'Customers/Wingtip/')
+                                            'customers/wingtip/')
 
         # setup ADLS datasource path
         deployment.set_deployment_parameter(DeploymentJob.adls_container_path_parameter,
-                                            "/ProductSales/Customers/Wingtip/")
+                                            "/productsales/customers/wingtip/")
 
         return deployment
 

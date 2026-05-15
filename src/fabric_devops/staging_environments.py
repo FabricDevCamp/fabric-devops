@@ -16,11 +16,11 @@ class StagingEnvironments:
         # setup Web datasource path
         deployment.set_deployment_parameter(DeploymentJob.web_datasource_path_parameter,
                                             EnvironmentSettings.WEB_DATASOURCE_ROOT_URL +
-                                            'Dev/')
+                                            'dev/')
 
         # setup ADLS datasource path
         deployment.set_deployment_parameter(DeploymentJob.adls_container_path_parameter,
-                                            "/ProductSales/Dev/")
+                                            "/productsales/dev/")
 
         return deployment
 
@@ -38,7 +38,7 @@ class StagingEnvironments:
 
         # setup ADLS datasource path
         deployment.set_deployment_parameter(DeploymentJob.adls_container_path_parameter,
-                                            "/ProductSales/Test/")
+                                            "/productsales/test/")
 
         return deployment
 
@@ -56,6 +56,6 @@ class StagingEnvironments:
 
         # setup ADLS datasource path
         deployment.set_deployment_parameter(DeploymentJob.adls_container_path_parameter,
-                                            "/ProductSales/Prod/")
+                                            "/productsales/prod/")
 
         return deployment

@@ -154,7 +154,7 @@ table Sales
 		source = ```
 				let
 				    Source = GetCsvFilesFromAzure,
-				    CsvBinary = Source{[#"Folder Path"=AZURE_STORAGE_ROOT, Name="InvoiceDetails.csv"]}[Content],
+				    CsvBinary = Source{[#"Folder Path"=AZURE_STORAGE_ROOT, Name="invoicedetails.csv"]}[Content],
 				    ImportedCsv = Csv.Document(CsvBinary, [Delimiter=",", Columns=5, Encoding=65001, QuoteStyle=QuoteStyle.None]),
 				    PromotedHeaders = Table.PromoteHeaders(ImportedCsv, [PromoteAllScalars=true]),
 				    #"Changed Type" = Table.TransformColumnTypes(PromotedHeaders,{{"Id", Int64.Type}, {"SalesAmount", type number}, {"InvoiceId", Int64.Type}, {"ProductId", Int64.Type}}),

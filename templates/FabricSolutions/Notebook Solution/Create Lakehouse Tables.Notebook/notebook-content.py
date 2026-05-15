@@ -24,7 +24,7 @@ csv_base_url = notebookutils.variableLibrary.get("$(/**/environment_settings/web
 
 print(f'Coping files from {csv_base_url}')
 
-csv_files = { "Customers.csv", "Products.csv", "Invoices.csv", "InvoiceDetails.csv" }
+csv_files = { "customers.csv", "products.csv", "invoices.csv", "invoicedetails.csv" }
 
 folder_path = "Files/sales-data/"
 
@@ -52,7 +52,7 @@ df_products = (
   spark.read.format("csv")
      .option("header","true")
      .schema(schema_products)
-     .load("Files/sales-data/Products.csv")
+     .load("Files/sales-data/products.csv")
 )
 
 # save DataFrame as lakehouse table in Delta format
@@ -89,7 +89,7 @@ df_customers = (
      .schema(schema_customers)
      .option("dateFormat", "MM/dd/yyyy")
      .option("inferSchema", "true")
-     .load("Files/sales-data/Customers.csv")
+     .load("Files/sales-data/customers.csv")
 )
 
 # save DataFrame as lakehouse table in Delta format
@@ -124,7 +124,7 @@ df_invoices = (
      .schema(schema_invoices)
      .option("dateFormat", "MM/dd/yyyy")
      .option("inferSchema", "true") 
-     .load("Files/sales-data/Invoices.csv")
+     .load("Files/sales-data/invoices.csv")
 )
 
 # save DataFrame as lakehouse table in Delta format
@@ -158,7 +158,7 @@ df_invoice_details = (
   spark.read.format("csv")
      .option("header","true")
      .schema(schema_invoice_details)
-     .load("Files/sales-data/InvoiceDetails.csv")
+     .load("Files/sales-data/invoicedetails.csv")
 )
 
 # save DataFrame as lakehouse table in Delta format

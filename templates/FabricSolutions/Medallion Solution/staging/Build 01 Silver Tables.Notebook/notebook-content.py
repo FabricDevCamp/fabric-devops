@@ -22,9 +22,9 @@ bronze_lakehouse_path = bronze_lakehouse['properties']['abfsPath']
 # CELL ********************
 
 # get path for CVS file with bronze products data
-products_cvs_file_path = f'{bronze_lakehouse_path}/Files/sales-data/Products.csv'
+products_cvs_file_path = f'{bronze_lakehouse_path}/Files/sales-data/products.csv'
 
-print('Loading products table from /Files/sales-data/Products.csv')
+print('Loading products table from /Files/sales-data/products.csv')
 
 # create products table for silver layer
 from pyspark.sql.types import StructType, StructField, StringType, LongType, FloatType
@@ -59,9 +59,9 @@ df_products.show()
 # CELL ********************
 
 # get path for CVS file with bronze customers data
-customers_cvs_file_path = f'{bronze_lakehouse_path}/Files/sales-data/Customers.csv'
+customers_cvs_file_path = f'{bronze_lakehouse_path}/Files/sales-data/customers.csv'
 
-print('Loading customers table from /Files/sales-data/Customers.csv')
+print('Loading customers table from /Files/sales-data/customers.csv')
 
 # create customers table for silver layer
 from pyspark.sql.types import StructType, StructField, StringType, LongType, DateType
@@ -101,9 +101,9 @@ df_customers.show()
 # CELL ********************
 
 # get path for CVS file with bronze invoices data
-invoices_cvs_file_path = f'{bronze_lakehouse_path}/Files/sales-data/Invoices.csv'
+invoices_cvs_file_path = f'{bronze_lakehouse_path}/Files/sales-data/invoices.csv'
 
-print('Loading invoices table from /Files/sales-data/Invoices.csv')
+print('Loading invoices table from /Files/sales-data/invoices.csv')
 
 # create invoices table for silver layer
 from pyspark.sql.types import StructType, StructField, LongType, FloatType, DateType
@@ -141,9 +141,9 @@ df_invoices.show()
 # CELL ********************
 
 # get path for CVS file with bronze invoice details data
-invoice_details_cvs_file_path = f'{bronze_lakehouse_path}/Files/sales-data/InvoiceDetails.csv'
+invoice_details_cvs_file_path = f'{bronze_lakehouse_path}/Files/sales-data/invoicedetails.csv'
 
-print('Loading invoices table from /Files/sales-data/InvoiceDetails.csv')
+print('Loading invoices table from /Files/sales-data/invoicedetails.csv')
 
 # create invoice_details table for silver layer
 from pyspark.sql.types import StructType, StructField, LongType, FloatType

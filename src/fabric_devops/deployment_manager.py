@@ -590,7 +590,7 @@ class DeploymentManager:
             'Product Sales Imported Model.SemanticModel'
         )
 
-        dev_web_datasource_path = f'{EnvironmentSettings.WEB_DATASOURCE_ROOT_URL}ProductSales/Dev/'
+        dev_web_datasource_path = f'{EnvironmentSettings.WEB_DATASOURCE_ROOT_URL}roductSales/Dev/'
         web_datasource_path = deploy_job.parameters[DeploymentJob.web_datasource_path_parameter]
 
         if web_datasource_path != dev_web_datasource_path:
