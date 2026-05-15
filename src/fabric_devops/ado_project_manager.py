@@ -1073,7 +1073,6 @@ class AdoProjectManager:
 
         cls._execute_patch_request_on_project(project_name, endpoint, body)
 
-
     @classmethod
     def get_pull_requests(cls, project_name):
         """Create Pull Request"""
