@@ -25,5 +25,7 @@ ENVIRONMEMT = 'prod'
 
 deploy_with_config(
   config_file_path=CONFIG_FILE_PATH,
-  environment=ENVIRONMEMT
+  environment=ENVIRONMEMT,
+  token_credential=token_credential
 )
+
