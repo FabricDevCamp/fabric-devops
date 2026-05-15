@@ -1,21 +1,19 @@
 table Products
-	lineageTag: c6664ca4-71df-4c22-9c27-4acff2f8edfb
+	lineageTag: 091c9e25-45d1-409f-a97a-c279a024434e
 
 	column ProductId
 		dataType: int64
 		isHidden
 		formatString: 0
-		lineageTag: 896099ee-b9fa-4ff3-bf29-1228785d25ab
+		lineageTag: 4e327ea9-caa3-4c60-bbc4-8c04850e33e4
 		summarizeBy: none
 		sourceColumn: ProductId
-
-		changedProperty = IsHidden
 
 		annotation SummarizationSetBy = Automatic
 
 	column Product
 		dataType: string
-		lineageTag: ff20eb54-940f-4bb8-9b68-f98303de9240
+		lineageTag: 32f7c3de-0408-4744-878b-570561940aa2
 		summarizeBy: none
 		sourceColumn: Product
 
@@ -23,7 +21,7 @@ table Products
 
 	column Category
 		dataType: string
-		lineageTag: 509d9236-e94c-4d69-9960-b5684675abdb
+		lineageTag: d82009c9-7921-4922-bec1-43d685fdf7f1
 		summarizeBy: none
 		sourceColumn: Category
 
@@ -42,13 +40,17 @@ table Products
 
 	partition Products = m
 		mode: import
-		source =
+		queryGroup: model
+		source = ```
 				let
-				    Source = Csv.Document(Web.Contents(CSV_FILE_ROOT, [RelativePath="Products.csv"]),[Delimiter=",", Columns=3, Encoding=65001, QuoteStyle=QuoteStyle.None]),
-				    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
-				    #"Changed Type" = Table.TransformColumnTypes(PromotedHeaders,{{"ProductId", Int64.Type}, {"Product", type text}, {"Category", type text}})
-				in
-				    #"Changed Type"
+				    Source = GetCsvFilesFromAzure,
+				    CsvBinary = Source{[#"Folder Path"=AZURE_STORAGE_ROOT, Name="Products.csv"]}[Content],
+				    ImportedCsv = Csv.Document(CsvBinary, [Delimiter=",", Columns=3, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				    PromotedHeaders = Table.PromoteHeaders(ImportedCsv, [PromoteAllScalars=true]),
+				    ChangedType = Table.TransformColumnTypes(PromotedHeaders,{{"ProductId", Int64.Type}})
+				in 
+				    ChangedType
+				```
 
 	annotation PBI_NavigationStepName = Navigation
 

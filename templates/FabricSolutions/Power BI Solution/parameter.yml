@@ -1,9 +1,9 @@
 find_replace:
 
-    # [Web Datasource Url]
-    - find_value: "https://github.com/FabricDevCamp/SampleData/raw/refs/heads/main/ProductSales/Dev"
+    # [AZURE_STORAGE_ROOT]
+    - find_value: "https://fabricdevcampdemos.dfs.core.windows.net/sampledata/ProductSales/Dev/"
       replace_value:
-        test: "https://github.com/FabricDevCamp/SampleData/raw/refs/heads/main/ProductSales/Test"
-        prod: "https://github.com/FabricDevCamp/SampleData/raw/refs/heads/main/ProductSales/Prod"
+        test: "https://fabricdevcampdemos.dfs.core.windows.net/sampledata/ProductSales/Test/"
+        prod: "https://fabricdevcampdemos.dfs.core.windows.net/sampledata/ProductSales/Prod/"
       item_type: "SemanticModel"
       item_name: ["Product Sales Imported Model"]

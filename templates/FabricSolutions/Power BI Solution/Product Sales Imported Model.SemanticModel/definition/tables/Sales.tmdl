@@ -1,5 +1,5 @@
 table Sales
-	lineageTag: ad4c8f4d-6088-48af-87c6-3994a23b98d2
+	lineageTag: a4637a45-cb0b-4bce-b75b-13e1a5efae06
 
 	measure 'Sales Revenue' = Sum(Sales[Sales])
 		formatString: \$#,0;(\$#,0);\$#,0
@@ -12,14 +12,14 @@ table Sales
 		lineageTag: 94141404-6d60-41fe-a767-7af9150d25b2
 
 	measure 'First Sale' = FIRSTDATE(Sales[Date])
-		formatString: m/d/yyyy
+		formatString: mmm d, yyyy
 		displayFolder: Date Metrics
 		lineageTag: 57b47456-57b9-4248-9600-2497e60f375c
 
 		annotation PBI_FormatHint = {"isDateTimeCustom":true}
 
 	measure 'Last Sale' = LASTDATE(Sales[Date])
-		formatString: m/d/yyyy
+		formatString: mmm d, yyyy
 		displayFolder: Date Metrics
 		lineageTag: d1101050-6e52-453f-87df-58bdcb744a13
 
@@ -76,7 +76,7 @@ table Sales
 		dataType: int64
 		isHidden
 		formatString: 0
-		lineageTag: 7b8ca442-d6cb-41af-a75f-00c51e3edb07
+		lineageTag: 41ccda35-54a1-4c9a-9a16-d0b668d47aaa
 		summarizeBy: count
 		sourceColumn: Id
 
@@ -88,7 +88,7 @@ table Sales
 		dataType: int64
 		isHidden
 		formatString: 0
-		lineageTag: ef8b2dda-912f-46e3-9fa1-620ab36917ee
+		lineageTag: 182c44ce-d0cc-4596-a2ea-f2548e808563
 		summarizeBy: sum
 		sourceColumn: Quantity
 
@@ -100,7 +100,7 @@ table Sales
 		dataType: decimal
 		isHidden
 		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
-		lineageTag: 4deb920d-252b-4ed5-a006-f275ad969414
+		lineageTag: c08ca3be-4cd0-424e-b619-700a25581616
 		summarizeBy: sum
 		sourceColumn: Sales
 
@@ -114,7 +114,7 @@ table Sales
 		dataType: int64
 		isHidden
 		formatString: 0
-		lineageTag: edf092b6-d8aa-47f6-ad9d-2283abdce11d
+		lineageTag: ed4a661a-1e62-439e-9d4d-d055107aebb9
 		summarizeBy: none
 		sourceColumn: ProductId
 
@@ -125,8 +125,8 @@ table Sales
 	column Date
 		dataType: dateTime
 		isHidden
-		formatString: Long Date
-		lineageTag: b8975c2f-ecd5-4530-ab1c-3a6a8cb77a7a
+		formatString: mmm d, yyyy
+		lineageTag: 4c997cd4-bf06-4811-bc52-ab9711bf6bea
 		summarizeBy: none
 		sourceColumn: Date
 
@@ -137,9 +137,10 @@ table Sales
 		annotation UnderlyingDateTimeDataType = Date
 
 	column CustomerId
-		dataType: string
+		dataType: int64
 		isHidden
-		lineageTag: eb7585d6-536b-43bd-914c-acd6af6fc9c7
+		formatString: 0
+		lineageTag: ee58ddcd-e127-4697-82fb-cf2b3e6f978a
 		summarizeBy: none
 		sourceColumn: CustomerId
 
@@ -149,18 +150,22 @@ table Sales
 
 	partition Sales = m
 		mode: import
+		queryGroup: model
 		source = ```
 				let
-				    Source = Csv.Document(Web.Contents(CSV_FILE_ROOT, [RelativePath="InvoiceDetails.csv"]),[Delimiter=",", Columns=5, Encoding=65001, QuoteStyle=QuoteStyle.None]),
-				    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
-				    #"Merged Queries" = Table.NestedJoin(PromotedHeaders, {"InvoiceId"}, Invoices, {"InvoiceId"}, "Invoices", JoinKind.LeftOuter),
-				    #"Expanded Invoices" = Table.ExpandTableColumn(#"Merged Queries", "Invoices", {"Date", "CustomerId"}, {"Date", "CustomerId"}),
-				    #"Removed Columns" = Table.RemoveColumns(#"Expanded Invoices",{"InvoiceId"}),
-				    #"Changed Type" = Table.TransformColumnTypes(#"Removed Columns",{{"ProductId", Int64.Type}}),
-				    #"Renamed Columns" = Table.RenameColumns(#"Changed Type",{{"SalesAmount", "Sales"}}),
-				    #"Changed Type1" = Table.TransformColumnTypes(#"Renamed Columns",{{"Id", Int64.Type}, {"Quantity", Int64.Type}, {"Sales", Currency.Type}, {"Date", type date}})
+				    Source = GetCsvFilesFromAzure,
+				    CsvBinary = Source{[#"Folder Path"=AZURE_STORAGE_ROOT, Name="InvoiceDetails.csv"]}[Content],
+				    ImportedCsv = Csv.Document(CsvBinary, [Delimiter=",", Columns=5, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				    PromotedHeaders = Table.PromoteHeaders(ImportedCsv, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(PromotedHeaders,{{"Id", Int64.Type}, {"SalesAmount", type number}, {"InvoiceId", Int64.Type}, {"ProductId", Int64.Type}}),
+				    MergedQueries = Table.NestedJoin(#"Changed Type", {"InvoiceId"}, Invoices, {"InvoiceId"}, "Invoices", JoinKind.LeftOuter),
+				    ExpandedInvoices = Table.ExpandTableColumn(MergedQueries, "Invoices", {"Date", "CustomerId"}, {"Date", "CustomerId"}),
+				    RemovedColumns = Table.RemoveColumns(ExpandedInvoices,{"InvoiceId"}),
+				    RenamedColumns = Table.RenameColumns(RemovedColumns,{{"SalesAmount", "Sales"}}),
+				    ChangedType = Table.TransformColumnTypes(RenamedColumns,{{"Id", Int64.Type}, {"ProductId", Int64.Type}, {"Quantity", Int64.Type}, {"Sales", Currency.Type}, {"Date", type date}}),
+				    #"Sorted Rows" = Table.Sort(ChangedType,{{"Date", Order.Descending}})
 				in 
-				     #"Changed Type1"
+				    #"Sorted Rows"
 				```
 
 	annotation PBI_NavigationStepName = Navigation

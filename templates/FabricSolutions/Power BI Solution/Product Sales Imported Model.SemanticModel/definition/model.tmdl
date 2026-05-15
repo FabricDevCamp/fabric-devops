@@ -6,18 +6,24 @@ model Model
 		fastCombine
 		legacyRedirects
 
+queryGroup staging
+
+	annotation PBI_QueryGroupOrder = 0
+
+queryGroup model
+
+	annotation PBI_QueryGroupOrder = 1
+
 annotation __PBI_TimeIntelligenceEnabled = 0
 
-annotation PBIDesktopVersion = 2.139.2054.0 (24.12)+334ca1c95b576cc53924655643b0d36f21caac55
+annotation PBI_QueryOrder = ["Invoices","AZURE_STORAGE_ROOT","GetCsvFilesFromAzure","Sales","Customers","Products"]
 
-annotation PBI_QueryOrder = ["CSV_FILE_ROOT","Products","Customers","Sales","Invoices"]
+annotation PBI_ProTooling = ["DevMode","TMDLView_Desktop"]
 
-annotation PBI_ProTooling = ["DevMode"]
-
-ref table Products
-ref table Customers
-ref table Sales
 ref table Calendar
+ref table Customers
+ref table Products
+ref table Sales
 
 ref cultureInfo en-US
 

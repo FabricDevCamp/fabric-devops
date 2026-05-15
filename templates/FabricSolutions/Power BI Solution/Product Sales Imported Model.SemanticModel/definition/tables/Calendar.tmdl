@@ -2,7 +2,7 @@ table Calendar
 	lineageTag: d6febbe9-b14f-46b9-b0ec-00cd13e954e5
 
 	column Date
-		formatString: General Date
+		formatString: mmm d, yyyy
 		lineageTag: fe811ca5-2a1a-42a3-b4b1-81c685a124a3
 		summarizeBy: none
 		isNameInferred

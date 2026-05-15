@@ -1,30 +1,27 @@
 table Customers
-	lineageTag: cc5aacb1-b6b4-4766-9850-699a4fca339d
+	lineageTag: 319a96e0-c8e0-417a-9a37-12f3d965d302
 
 	column CustomerId
-		dataType: string
+		dataType: int64
 		isHidden
-		lineageTag: 8ef36727-cc0f-49d0-a603-b93728ffb4ef
+		formatString: 0
+		lineageTag: 0db49fc5-b781-4435-965b-842633dff42e
 		summarizeBy: none
 		sourceColumn: CustomerId
-
-		changedProperty = IsHidden
 
 		annotation SummarizationSetBy = Automatic
 
 	column Customer
 		dataType: string
-		lineageTag: caef8177-cc5c-4616-b4b1-90b4dfe286c8
+		lineageTag: 5978d064-9fe5-4305-b0fc-c41caf5a08f1
 		summarizeBy: none
 		sourceColumn: Customer
-
-		changedProperty = IsHidden
 
 		annotation SummarizationSetBy = Automatic
 
 	column Country
 		dataType: string
-		lineageTag: 9971672c-9036-49f6-bff2-3b1c7013d2d8
+		lineageTag: 52e2ab1b-4314-43f1-bda5-bb7e31aac5f9
 		dataCategory: Country
 		summarizeBy: none
 		sourceColumn: Country
@@ -33,17 +30,29 @@ table Customers
 
 	column 'City Name'
 		dataType: string
-		lineageTag: f5a7b58e-90bb-4863-bf2d-bc20c498bfe6
+		lineageTag: 09d813ec-0e13-4a2d-bea4-ed88af692009
 		summarizeBy: none
 		sourceColumn: City Name
 
 		annotation SummarizationSetBy = Automatic
 
 	column DOB
-		dataType: string
-		lineageTag: 1c190208-2d25-42aa-b79f-4366383697c7
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 0b454eaf-b644-4e05-9483-ea2e9aa2efb2
 		summarizeBy: none
 		sourceColumn: DOB
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column City
+		dataType: string
+		lineageTag: 344f3c09-297a-4efe-a079-a71e1c241e84
+		dataCategory: Place
+		summarizeBy: none
+		sourceColumn: City
 
 		annotation SummarizationSetBy = Automatic
 
@@ -54,28 +63,23 @@ table Customers
 
 		annotation SummarizationSetBy = Automatic
 
-	column City
-		dataType: string
-		lineageTag: 2c6ec7c7-d0a2-486f-b1b5-e464da3a5a9c
-		dataCategory: Place
-		summarizeBy: none
-		sourceColumn: City
-
-		annotation SummarizationSetBy = Automatic
-
 	partition Customers = m
 		mode: import
+		queryGroup: model
 		source = ```
 				let
-				    Source = Csv.Document(Web.Contents(CSV_FILE_ROOT, [RelativePath="Customers.csv"]),[Delimiter=",", Columns=6, Encoding=65001, QuoteStyle=QuoteStyle.None]),
-				    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
-				    #"Merged Columns" = Table.CombineColumns(PromotedHeaders,{"FirstName", "LastName"},Combiner.CombineTextByDelimiter(" ", QuoteStyle.None),"Customer"),
-				    #"Renamed Columns" = Table.RenameColumns(#"Merged Columns",{{"City", "City Name"}}),
-				    #"Duplicated Column" = Table.DuplicateColumn(#"Renamed Columns", "City Name", "City Name - Copy"),
-				    #"Duplicated Column1" = Table.DuplicateColumn(#"Duplicated Column", "Country", "Country - Copy"),
-				    #"Merged Columns1" = Table.CombineColumns(#"Duplicated Column1",{"City Name - Copy", "Country - Copy"},Combiner.CombineTextByDelimiter(", ", QuoteStyle.None),"City")
+				    Source = GetCsvFilesFromAzure,
+				    CsvBinary = Source{[#"Folder Path"=AZURE_STORAGE_ROOT, Name="Customers.csv"]}[Content],
+				    ImportedCsv = Csv.Document(CsvBinary, [Delimiter=",", Columns=6, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				    PromotedHeaders = Table.PromoteHeaders(ImportedCsv, [PromoteAllScalars=true]),
+				    MergedColumns = Table.CombineColumns(PromotedHeaders,{"FirstName", "LastName"},Combiner.CombineTextByDelimiter(" ", QuoteStyle.None),"Customer"),
+				    RenamedColumns = Table.RenameColumns(MergedColumns,{{"City", "City Name"}}),
+				    DuplicatedCityColumn = Table.DuplicateColumn(RenamedColumns, "City Name", "City Name Temp"),
+				    DuplicatedCountryColumn = Table.DuplicateColumn(DuplicatedCityColumn, "Country", "Country Temp"),
+				    CreateCityLocationColumn = Table.CombineColumns(DuplicatedCountryColumn,{"City Name Temp", "Country Temp"},Combiner.CombineTextByDelimiter(", ", QuoteStyle.None),"City"),
+				    ChangedType = Table.TransformColumnTypes(CreateCityLocationColumn, {{"CustomerId", Int64.Type}, {"DOB", type date}})
 				in 
-				     #"Merged Columns1"
+				    ChangedType
 				```
 
 	annotation PBI_NavigationStepName = Navigation
