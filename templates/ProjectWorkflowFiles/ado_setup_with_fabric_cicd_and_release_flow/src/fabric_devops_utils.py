@@ -1,6 +1,6 @@
 """Fabric DevOps Utility Classes"""
 # this version of fabric_devops specific for Azure Dev Ops projects
-# updated: 03/14/2026
+# updated: 05/15/2026-3PM
 
 import base64
 import re
@@ -1932,7 +1932,11 @@ class FabricRestApi:
                 AppLogger.log_substep('Creating AzureDataLakeStorage connection for semantic model')
                 server    = datasource['connectionDetails']['server']
                 path      = datasource['connectionDetails']['path']
-                connection = cls.create_azure_storage_connection_with_service_principal(server, path, workspace, lakehouse)
+                if 'onelake.dfs.fabric.microsoft.com' in server:
+                    connection = cls.create_azure_storage_connection_with_service_principal(server, path, workspace, lakehouse)
+                else:
+                    connection = cls.create_azure_storage_connection_with_sas_token(server, path)
+                    
                 AppLogger.log_substep('Binding semantic model to OneLake connection')
                 cls.bind_semantic_model_to_connection(workspace.id, semantic_model_id, connection.id)
                 cls.refresh_semantic_model(workspace.id, semantic_model_id)
@@ -2536,6 +2540,16 @@ class PowerBiRestApi:
         return cls._execute_get_request_to_powerbi(rest_url)['value']
 
     @classmethod
+    def get_adls_dataource_from_semantic_model(cls, workspace_id, semantic_model_id):
+        """Get ADLS datasource from semantic model"""
+        data_sources = cls.list_datasources_for_semantic_model(workspace_id, semantic_model_id)
+        for datasource in data_sources:                        
+            if datasource['datasourceType'] == 'AzureDataLakeStorage':
+                server    = datasource['connectionDetails']['server']
+                path      = datasource['connectionDetails']['path']
+                return f'{server}{path}'
+
+    @classmethod
     def get_web_url_from_semantic_model(cls, workspace_id, semantic_model_id):
         """Get Web datasource URL from semantic model"""
         data_sources = cls.list_datasources_for_semantic_model(workspace_id, semantic_model_id)
@@ -3016,22 +3030,22 @@ class DeploymentManager:
         }
 
         FabricRestApi.update_item_definition(workspace.id, notebook, notebook_definition)
-
+       
     @classmethod
     def update_imported_semantic_model_source(cls, workspace,
                                                 semantic_model_name, 
-                                                web_datasource_path):
+                                                datasource_path):
         """Update Imported Sementic Model Source"""
         model = FabricRestApi.get_item_by_name(workspace.id, semantic_model_name, 'SemanticModel')
-        old_web_datasource_path = PowerBiRestApi.get_web_url_from_semantic_model(workspace.id, model.id) + '/'
+        old_datasource_path = PowerBiRestApi.get_adls_dataource_from_semantic_model(workspace.id, model.id) + '/'
 
-        if web_datasource_path == old_web_datasource_path:
-            AppLogger.log_substep(f"Verified web datasource path: [{web_datasource_path}]")
+        if datasource_path == old_datasource_path:
+            AppLogger.log_substep(f"Verified web datasource path: [{datasource_path}]")
         else:
             old_model_definition = FabricRestApi.get_item_definition(workspace.id, model).as_dict()
     
             search_replace_terms = {
-                old_web_datasource_path: web_datasource_path
+                old_datasource_path: datasource_path
             }
 
             model_definition = {
@@ -3042,6 +3056,7 @@ class DeploymentManager:
             }
 
             FabricRestApi.update_item_definition(workspace.id, model, model_definition)
+
 
     @classmethod
     def update_directlake_semantic_model_source(cls,
@@ -3125,21 +3140,25 @@ class DeploymentManager:
         models = list(filter(lambda item: item.type=='SemanticModel', workspace_items))
         for model in models:
              
-            if model.display_name == 'Product Sales Imported Model':
-                web_datasource_path = deploy_job['parameters']['web_datasource_path']
+            if model.display_name == 'Product Sales Imported Model':                
+                adls_server =  deploy_job['parameters']['adls_server']
+                adls_container_name =  deploy_job['parameters']['adls_container_name']
+                adls_container_path =  deploy_job['parameters']['adls_container_path']
+                datasource_path = f'{adls_server}{adls_container_name}{adls_container_path}'
                 DeploymentManager.update_imported_semantic_model_source(
                     workspace,
                     model.display_name,
-                    web_datasource_path)
+                    datasource_path)
 
             if model.display_name == 'Product Sales DirectLake Model':
                 AppLogger.log_substep(f"Updating semantic model [{model.display_name}]")
-                # patch connection string to lakehouse SQL endpoint
+                # fix connection to lakehouse SQL endpoint
                 target_lakehouse_name = 'sales'
                 DeploymentManager.update_directlake_semantic_model_source(
-                    workspace_name,
+                    workspace_name, 
                     model.display_name,
                     target_lakehouse_name)
+
 
     @classmethod
     def apply_post_deploy_fixes(cls, workspace_id):
