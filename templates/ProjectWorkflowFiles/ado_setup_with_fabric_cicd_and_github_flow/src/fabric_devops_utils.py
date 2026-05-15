@@ -1,6 +1,6 @@
 """Fabric DevOps Utility Classes"""
 # this version of fabric_devops specific for Azure Dev Ops projects
-# updated: 03/14/2026
+# updated: 05/15/2026
 
 import base64
 import re
@@ -1932,7 +1932,11 @@ class FabricRestApi:
                 AppLogger.log_substep('Creating AzureDataLakeStorage connection for semantic model')
                 server    = datasource['connectionDetails']['server']
                 path      = datasource['connectionDetails']['path']
-                connection = cls.create_azure_storage_connection_with_service_principal(server, path, workspace, lakehouse)
+                if 'onelake.dfs.fabric.microsoft.com' in server:
+                    connection = cls.create_azure_storage_connection_with_service_principal(server, path, workspace, lakehouse)
+                else:
+                    connection = cls.create_azure_storage_connection_with_sas_token(server, path)
+                    
                 AppLogger.log_substep('Binding semantic model to OneLake connection')
                 cls.bind_semantic_model_to_connection(workspace.id, semantic_model_id, connection.id)
                 cls.refresh_semantic_model(workspace.id, semantic_model_id)
