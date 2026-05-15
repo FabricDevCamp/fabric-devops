@@ -52,7 +52,7 @@ class StagingEnvironments:
         # setup Web datasource path
         deployment.set_deployment_parameter(DeploymentJob.web_datasource_path_parameter,
                                             EnvironmentSettings.WEB_DATASOURCE_ROOT_URL +
-                                            'Prod/')
+                                            'prod/')
 
         # setup ADLS datasource path
         deployment.set_deployment_parameter(DeploymentJob.adls_container_path_parameter,

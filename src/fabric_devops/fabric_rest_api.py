@@ -1576,6 +1576,14 @@ class PowerBiRestApi:
         return cls._execute_get_request_to_powerbi(rest_url)['value']
 
     @classmethod
+    def get_adls_dataource_from_semantic_model(cls, workspace_id, semantic_model_id):
+        """Get ADLS datasource URL from semantic model"""
+        data_sources = cls.list_datasources_for_semantic_model(workspace_id, semantic_model_id)
+        for data_source in data_sources:
+            if data_source['datasourceType'] == 'Web':
+                return data_source['connectionDetails']['url']
+
+    @classmethod
     def get_web_url_from_semantic_model(cls, workspace_id, semantic_model_id):
         """Get Web datasource URL from semantic model"""
         data_sources = cls.list_datasources_for_semantic_model(workspace_id, semantic_model_id)

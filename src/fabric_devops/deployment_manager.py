@@ -368,18 +368,18 @@ class DeploymentManager:
     @classmethod
     def update_imported_semantic_model_source(cls, workspace,
                                                 semantic_model_name, 
-                                                web_datasource_path):
+                                                datasource_path):
         """Update Imported Sementic Model Source"""
         model = FabricRestApi.get_item_by_name(workspace.id, semantic_model_name, 'SemanticModel')
-        old_web_datasource_path = PowerBiRestApi.get_web_url_from_semantic_model(workspace.id, model.id) + '/'
+        old_datasource_path = PowerBiRestApi.get_adls_dataource_from_semantic_model(workspace.id, model.id) + '/'
 
-        if web_datasource_path == old_web_datasource_path:
-            AppLogger.log_substep(f"Verified web datasource path: [{web_datasource_path}]")
+        if datasource_path == old_datasource_path:
+            AppLogger.log_substep(f"Verified web datasource path: [{datasource_path}]")
         else:
             old_model_definition = FabricRestApi.get_item_definition(workspace.id, model).as_dict()
     
             search_replace_terms = {
-                old_web_datasource_path: web_datasource_path
+                old_datasource_path: datasource_path
             }
 
             model_definition = {
@@ -1301,7 +1301,10 @@ class DeploymentManager:
         models = list(filter(lambda item: item.type=='SemanticModel', workspace_items))
         for model in models:
             if model.display_name == 'Product Sales Imported Model':                
-                datasource_path =  deployment_job.parameters[deployment_job.web_datasource_path_parameter]
+                adls_server =  deployment_job.parameters[deployment_job.adls_server_parameter]
+                adls_container_name =  deployment_job.parameters[deployment_job.adls_container_name_parameter]
+                adls_container_path =  deployment_job.parameters[deployment_job.adls_container_path_parameter]
+                datasource_path = f'{adls_server}{adls_container_name}{adls_container_path}'
                 DeploymentManager.update_imported_semantic_model_source(
                     workspace,
                     model.display_name,
@@ -1375,12 +1378,15 @@ class DeploymentManager:
         models = list(filter(lambda item: item.type=='SemanticModel', workspace_items))
         for model in models:
              
-            if model.display_name == 'Product Sales Imported Model':
-                web_datasource_path = deploy_job.parameters[DeploymentJob.web_datasource_path_parameter]
+            if model.display_name == 'Product Sales Imported Model':                
+                adls_server =  deploy_job.parameters[deploy_job.adls_server_parameter]
+                adls_container_name =  deploy_job.parameters[deploy_job.adls_container_name_parameter]
+                adls_container_path =  deploy_job.parameters[deploy_job.adls_container_path_parameter]
+                datasource_path = f'{adls_server}{adls_container_name}{adls_container_path}'
                 DeploymentManager.update_imported_semantic_model_source(
                     workspace,
                     model.display_name,
-                    web_datasource_path)
+                    datasource_path)
 
             if model.display_name == 'Product Sales DirectLake Model':
                 AppLogger.log_substep(f"Updating semantic model [{model.display_name}]")
