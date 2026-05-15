@@ -367,7 +367,7 @@ class DeploymentManager:
         
     @classmethod
     def update_imported_semantic_model_source(cls, workspace,
-                                                semantic_model_name, 
+                                                semantic_model_name,
                                                 datasource_path):
         """Update Imported Sementic Model Source"""
         model = FabricRestApi.get_item_by_name(workspace.id, semantic_model_name, 'SemanticModel')
@@ -376,6 +376,7 @@ class DeploymentManager:
         if datasource_path == old_datasource_path:
             AppLogger.log_substep(f"Verified web datasource path: [{datasource_path}]")
         else:
+            AppLogger.log_substep(f"Updating web datasource path from [{old_datasource_path}] to [{datasource_path}]")  
             old_model_definition = FabricRestApi.get_item_definition(workspace.id, model).as_dict()
     
             search_replace_terms = {
