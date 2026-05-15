@@ -863,7 +863,7 @@ class FabricRestApi:
                 AppLogger.log_substep('Creating AzureDataLakeStorage connection for semantic model')
                 server    = datasource['connectionDetails']['server']
                 path      = datasource['connectionDetails']['path']
-                connection = cls.create_azure_storage_connection_with_sas_token(server, path, workspace, lakehouse)
+                connection = cls.create_azure_storage_connection_with_sas_token(server, path)
                 AppLogger.log_substep('Binding semantic model to Azure Gen2 storage')
                 cls.bind_semantic_model_to_connection(workspace.id, semantic_model_id, connection.id)
                 cls.refresh_semantic_model(workspace.id, semantic_model_id)
