@@ -88,7 +88,7 @@ jobs:
                 ADMIN_USER_ID: ${{ secrets.ADMIN_USER_ID }}
                 DEVELOPERS_GROUP_ID: ${{ secrets.DEVELOPERS_GROUP_ID }}
                 ADO_ORGANIZATION: ${{ secrets.ADO_ORGANIZATION }}
-                ORGANIZATION_GITHUB: ${{ secrets.ORGANIZATION_GITHUB }}
+                ORGANIZATION_GITHUB: ${{ vars.ORGANIZATION_GITHUB }}
                 PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
                 WORKSPACE_NAME: ${{inputs.workspace_name}}
                 SOLUTION_NAME: ${{inputs.solution_name}}        
