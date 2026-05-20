@@ -1,38 +1,16 @@
-"""Deploy solution to new workspace"""
-import json
+"""Setup project with fabric-cicd and release flow """
+import os
 
-from fabric_devops import DeploymentManager,  AppLogger, StagingEnvironments,\
-                          FabricRestApi, AdoProjectManager, ItemDefinitionFactory 
+from fabric_devops import DeploymentManager, AppLogger
 
+PROJECT_NAME = 'Customer-Sales'
+SOLUTION_NAME = 'Power BI Solution'
+CREATE_FEATURE_WORKSPACE = False
+    
+DeploymentManager.setup_github_repo_with_fabric_cicd_and_github_flow(
+    PROJECT_NAME,
+    SOLUTION_NAME,
+    CREATE_FEATURE_WORKSPACE
+        )
 
-target_workspace = 'Max'
-
-AppLogger.log_job(f"Deploying Notebook Solution to [{target_workspace}] using Fabric REST APIs")
-
-workspace = FabricRestApi.create_workspace(target_workspace)
-
-DeploymentManager.create_web_datasource_url_variable_library(
-    workspace, 
-    StagingEnvironments.get_dev_environment())
-
-lakehouse_name = "sales"
-lakehouse = FabricRestApi.create_lakehouse(workspace.id, lakehouse_name)
-
-create_notebook_request = ItemDefinitionFactory.get_create_notebook_request_from_folder(
-    'Notebook Solution',
-    'Create Lakehouse Tables.Notebook',
-    workspace.id,
-    lakehouse
-)
-
-notebook_settings_part = create_notebook_request
-
-print( json.dumps(create_notebook_request, indent=4) )
-
-notebook = FabricRestApi.create_item_no_sdk(workspace.id, create_notebook_request)
-
-# create ADO project and connect workspace
-AdoProjectManager.create_project(target_workspace, workspace)
-FabricRestApi.connect_workspace_to_ado_repo(workspace, target_workspace)
-
-AppLogger.log_job_complete(workspace.id)
+AppLogger.log_job_complete()

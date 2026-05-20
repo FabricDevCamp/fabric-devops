@@ -41,7 +41,8 @@ on:
                 default: None
 
 permissions:
-    contents: read
+    contents: write
+    repository-projects: write
 
 jobs:
     deployment-job:
