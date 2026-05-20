@@ -222,8 +222,12 @@ class GitHubRestApi:
             'private': private,
             'auto_init': True
         }
-        
-        AppLogger.log_substep('Create repo')
+
+        print('Creating repo')
+        print(endpoint)
+        print( json.dumps(body, indent=4) )
+        print('')
+
         cls._execute_post_request(endpoint, body)
              
         AppLogger.log_substep(f"Repo [{repo_name}] created successfully")
