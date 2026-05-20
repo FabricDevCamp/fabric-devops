@@ -2,6 +2,6 @@
 
 from fabric_devops import GitHubRestApi,  AppLogger
 
-PROJECT_NAME = 'max'
+PROJECT_NAME = 'bixby'
 project = GitHubRestApi.create_repository(PROJECT_NAME)
 

@@ -221,9 +221,10 @@ class GitHubRestApi:
         body = {
             'name': repo_name,
             'private': private,
-            'auto_init': False
+            'auto_init': True
         }
         
+        AppLogger.log_substep('Create repo')
         cls._execute_post_request(endpoint, body)
              
         AppLogger.log_substep(f"Repo [{repo_name}] created successfully")
@@ -243,9 +244,10 @@ class GitHubRestApi:
                 '{WORKSPACE_NAME}', 
                 workspace.display_name)
 
-        cls.create_root_folder_readme(repo_name, root_folder_readme_content)
+        AppLogger.log_substep('overwrite readme')
+        cls.overwrite_repo_readme_file(repo_name, root_folder_readme_content)
 
-        # create readme file in /workspace folder as placeholder
+        AppLogger.log_substep('Create readme in /workspace folder')
         cls.create_workspace_folder_readme(repo_name, 'main')
 
         return repo
