@@ -221,7 +221,7 @@ class GitHubRestApi:
         body = {
             'name': repo_name,
             'private': private,
-            'auto_init': True
+            'auto_init': False
         }
         
         cls._execute_post_request(endpoint, body)
@@ -243,7 +243,7 @@ class GitHubRestApi:
                 '{WORKSPACE_NAME}', 
                 workspace.display_name)
 
-        cls.overwrite_repo_readme_file(repo_name, root_folder_readme_content)
+        cls.create_root_folder_readme(repo_name, root_folder_readme_content)
 
         # create readme file in /workspace folder as placeholder
         cls.create_workspace_folder_readme(repo_name, 'main')
@@ -281,7 +281,7 @@ class GitHubRestApi:
         """Get a specific file from a GitHub repository branch"""
         
         # get readme file sha
-        endpoint = f"/repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/readme"
+        endpoint = f"/repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/contents/README.md"
         
         readme_file = cls._execute_get_request(endpoint)
         
@@ -411,6 +411,22 @@ class GitHubRestApi:
         
         pull_request_number = pull_request['number']
         cls.merge_pull_request(repo_name, pull_request_number, commit_title, commit_comment)
+
+    @classmethod
+    def create_root_folder_readme(cls, repo_name, content, branch_name = 'main'):
+        """Create readme in root folder of the repo"""        
+        
+        base64_content = base64.b64encode(content.encode('utf-8')).decode('utf-8')
+
+        endpoint = f"repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/contents/README.md"
+
+        body = {
+            "message":"Adding ReadMe.md file to repository root folder",
+            "content": base64_content,
+            'branch': branch_name
+        }
+        
+        cls._execute_put_request(endpoint, body)
 
     @classmethod
     def create_workspace_folder_readme(cls, repo_name, branch_name):
