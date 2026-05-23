@@ -1,48 +1,17 @@
 
-name: Deploy solution to new workspace
-run-name: Deploy [${{inputs.solution_name}}] to [${{inputs.workspace_name}}] with [${{inputs.target_environment}}] env settings
+name: Test1
 
 on:
     workflow_dispatch:
-        inputs:
-            workspace_name:
-                description: Workspace Name
-                required: true
-                default: "Product Sales"
-            solution_name:
-                type: choice
-                description: Solution to deploy
-                options: 
-                - Power BI Solution
-                - Notebook Solution
-                - Shortcut Solution
-                - Pipeline Solution
-                - Medallion Solution
-                default: Medallion Solution
-            target_environment:
-                type: choice
-                description: Target Environment
-                options: 
-                - dev
-                - test
-                - prod
-                default: dev
-            deploy_using_fabric_cicd:
-                type: boolean
-                description: Deploy using fabric-cicd
-                default: true
-            git_integration_provider:
-                type: choice
-                description: Git Integration Provider
-                options: 
-                - None
-                - Azure DevOps
-                - GitHub
-                default: None
+      inputs:      
+        repo_name:
+          description: Repo Name
+          required: true
+          default: "Fubar"
 
 jobs:
     deployment-job:
-        name: Deploy ${{inputs.solution_name}}
+        name: Creating repo [${{inputs.repo_name}}]
         runs-on: ubuntu-latest
         permissions:
           contents: write
@@ -89,10 +58,6 @@ jobs:
                 ADO_ORGANIZATION: ${{ secrets.ADO_ORGANIZATION }}
                 ORGANIZATION_GITHUB: ${{ vars.ORGANIZATION_GITHUB }}
                 PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
-                WORKSPACE_NAME: ${{inputs.workspace_name}}
-                SOLUTION_NAME: ${{inputs.solution_name}}        
-                TARGET_ENVIRONMENT: ${{inputs.target_environment}}
-                DEPLOY_USING_FABRIC_CICD: ${{inputs.deploy_using_fabric_cicd}}
-                GIT_INTEGRATION_PROVIDER: ${{inputs.git_integration_provider}}
+                REPO_NAME: ${{ inputs.repo_name }}
               run:
-                python src/deploy_solution_to_new_workspace.py
+                python src/test01.py
