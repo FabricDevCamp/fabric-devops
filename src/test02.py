@@ -4,7 +4,7 @@ import os
 from fabric_devops import DeploymentManager,FabricRestApi, AppLogger
 
 
-SOURCE_WORKSPACE_NAME = os.getenv("SOURCE_WORKSPACE")
+SOURCE_WORKSPACE_NAME = os.getenv("SOURCE_WORKSPACE_NAME")
 TARGET_WORKSPACE_NAME = os.getenv("TARGET_WORKSPACE")
 
 
