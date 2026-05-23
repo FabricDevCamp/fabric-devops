@@ -5,11 +5,11 @@ on:
     workflow_dispatch:
       inputs:      
         source_workspace_name:
-          description: Source workspacenName
+          description: Source workspace name
           required: true
           default: "Customer-Sales"
         target_workspace_name:
-          description: Target workspacenName
+          description: Target workspace name
           required: true
           default: "Lenny "
 
