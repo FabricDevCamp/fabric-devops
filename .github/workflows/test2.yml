@@ -1,17 +1,21 @@
 
-name: Test1
+name: Test2 - Clone workspace
 
 on:
     workflow_dispatch:
       inputs:      
-        repo_name:
-          description: Repo Name
+        source_workspace_name:
+          description: Source workspacenName
           required: true
-          default: "Fubar"
+          default: "Customer-Sales"
+        target_workspace_name:
+          description: Target workspacenName
+          required: true
+          default: "Lenny "
 
 jobs:
     deployment-job:
-        name: Creating repo [${{inputs.repo_name}}]
+        name: Cloning [${{inputs.source_workspace_name}}] to [${{inputs.target_workspace_name}}]
         runs-on: ubuntu-latest
         permissions:
           contents: write
@@ -58,6 +62,7 @@ jobs:
                 ADO_ORGANIZATION: ${{ secrets.ADO_ORGANIZATION }}
                 ORGANIZATION_GITHUB: ${{ vars.ORGANIZATION_GITHUB }}
                 PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.GITHUB_TOKEN }}
-                REPO_NAME: ${{ inputs.repo_name }}
+                SOURCE_WORKSPACE_NAME: ${{ inputs.source_workspace_name }}
+                TARGET_WORKSPACE_NAME: ${{ inputs.target_workspace_name }}
               run:
-                python src/test01.py
+                python src/test02.py
