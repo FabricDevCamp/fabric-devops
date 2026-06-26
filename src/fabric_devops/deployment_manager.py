@@ -180,6 +180,7 @@ class DeploymentManager:
             variable_library.add_variable("adls_container_name", adls_container_name)
             variable_library.add_variable("adls_container_path", adls_container_path)
             variable_library.add_variable("adls_shortcut_subpath", adls_container_name + adls_container_path)
+            variable_library.add_variable("adls_connection_id", connection.id)
             variable_library.add_connection_variable("adls_connection", connection.id)
             
             create_library_request = ItemDefinitionFactory.get_variable_library_create_request(
@@ -214,7 +215,8 @@ class DeploymentManager:
             variable_library.add_variable("adls_container_name", dev_adls_container_name)
             variable_library.add_variable("adls_container_path", dev_adls_container_path)
             variable_library.add_variable("adls_shortcut_subpath", dev_adls_container_name + dev_adls_container_path)
-            variable_library.add_connection_variable("adls_connection", dev_connection_id)
+            variable_library.add_variable("adls_connection_id", dev_connection_id)
+            variable_library.add_connection_variable("adls_connection", dev_connection_id)        
         
             # add value set for test environment
             test_deploy_job = StagingEnvironments.get_test_environment()        
@@ -235,6 +237,7 @@ class DeploymentManager:
             test_value_set.add_variable_override('adls_container_name', test_adls_container_name)
             test_value_set.add_variable_override('adls_container_path', test_adls_container_path)
             test_value_set.add_variable_override("adls_shortcut_subpath", test_adls_container_name + test_adls_container_path)
+            test_value_set.add_variable_override('adls_connection_id', test_connection.id)
             test_value_set.add_connection_variable_override('adls_connection', test_connection.id)
 
             variable_library.add_valueset(test_value_set)
@@ -258,6 +261,7 @@ class DeploymentManager:
             prod_value_set.add_variable_override('adls_container_name', prod_adls_container_name)
             prod_value_set.add_variable_override('adls_container_path', prod_adls_container_path)
             prod_value_set.add_variable_override("adls_shortcut_subpath", prod_adls_container_name + prod_adls_container_path)
+            prod_value_set.add_variable_override('adls_connection_id', prod_connection.id)
             prod_value_set.add_connection_variable_override('adls_connection', prod_connection.id)
         
             variable_library.add_valueset(prod_value_set)
@@ -796,8 +800,8 @@ class DeploymentManager:
         lakehouse = FabricRestApi.create_lakehouse(workspace.id, lakehouse_name)
 
         notebook_folders = [
-            'staging/Build 11 Silver Layer.Notebook',
-            'staging/Build 12 Gold Layer.Notebook'
+            'staging/Build 1 Silver Layer.Notebook',
+            'staging/Build 2 Gold Layer.Notebook'
         ]
 
         notebook_ids = []
@@ -1411,11 +1415,11 @@ class DeploymentManager:
             # bind notebooks to sales lakehouse
             if notebook.display_name in [
                 'Create Lakehouse Tables', 
-                'Build 11 Silver Layer',
-                'Build 12 Gold Layer',
-                'Create 11 Silver Layer',
-                'Create 12 Gold Layer',
-                'Build 12 Gold Tables']:
+                'Build 1 Silver Layer',
+                'Build 2 Gold Layer',
+                'Create 1 Silver Layer',
+                'Create 2 Gold Layer',
+                'Build 2 Gold Tables']:
                 AppLogger.log_substep(f"Updating notebook [{notebook.display_name}]")
                 cls.update_source_lakehouse_in_notebook(
                     workspace_name,

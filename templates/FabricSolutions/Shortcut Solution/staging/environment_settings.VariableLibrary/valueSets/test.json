@@ -1,26 +1,32 @@
 {
-    "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/variableLibrary/definition/valueSet/1.0.0/schema.json",
-    "name": "test",
-    "variableOverrides": [
-        {
-            "name": "adls_server",
-            "value": "https://fabricdevcampdemos.dfs.core.windows.net/"
-        },
-        {
-            "name": "adls_container_name",
-            "value": "sampledata"
-        },
-        {
-            "name": "adls_container_path",
-            "value": "/productsales/test/"
-        },
-        {
-            "name": "adls_shortcut_subpath",
-            "value": "sampledata/productsales/test/"
-        },
-        {
-            "name": "adls_connection_id",
-            "value": "22222222-2222-2222-2222-222222222222"
-        }
-    ]
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/variableLibrary/definition/valueSet/1.0.0/schema.json",
+  "name": "test",
+  "variableOverrides": [
+    {
+      "name": "adls_server",
+      "value": "https://fabricdevcampdemos.dfs.core.windows.net/"
+    },
+    {
+      "name": "adls_container_name",
+      "value": "sampledata"
+    },
+    {
+      "name": "adls_container_path",
+      "value": "/productsales/test/"
+    },
+    {
+      "name": "adls_shortcut_subpath",
+      "value": "sampledata/productsales/test/"
+    },
+    {
+      "name": "adls_connection_id",
+      "value": "05a8dc41-b553-4b67-95a9-a8b1f09a218e"
+    },
+    {
+      "name": "adls_connection",
+      "value": {
+        "connectionId": "05a8dc41-b553-4b67-95a9-a8b1f09a218e"
+      }
+    }
+  ]
 }
