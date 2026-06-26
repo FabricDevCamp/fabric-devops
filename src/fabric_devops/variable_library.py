@@ -48,6 +48,11 @@ class Valueset:
         """"add variable"""
         self.variableOverrides.append( VariableOverride(name, value) )
 
+    def add_connection_variable_override(self, name: str, connection_id: str):
+        """"add connection variable"""
+        value = { 'connectionId': connection_id }
+        self.variableOverrides.append( VariableOverride(name, value) )
+
 class VariableLibrary:
     """Variable Library"""
     variables: List[Variable]
@@ -65,6 +70,12 @@ class VariableLibrary:
     def add_variable(self, name: str, value: str, variable_type: str = 'String', note: str = 'some note'):
         """"add variable"""
         self.variables.append( Variable(name, value, variable_type, note) )
+
+    def add_connection_variable(self, name: str, connection_id: str, note: str = 'some note'):
+        """"add variable"""
+        value = { 'connectionId': connection_id }
+        self.variables.append( Variable(name, value, 'ConnectionReference', note) )
+
 
     def add_valueset(self, valueset: Valueset):
         """"add valueset"""

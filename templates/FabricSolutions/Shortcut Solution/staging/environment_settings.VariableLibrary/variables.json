@@ -5,7 +5,7 @@
             "name": "adls_server",
             "note": "some note",
             "type": "String",
-            "value": "https://fabricdevcamp.dfs.core.windows.net/"
+            "value": "https://fabricdevcampdemos.dfs.core.windows.net/"
         },
         {
             "name": "adls_container_name",

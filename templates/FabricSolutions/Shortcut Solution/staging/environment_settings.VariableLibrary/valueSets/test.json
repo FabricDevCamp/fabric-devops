@@ -4,7 +4,7 @@
     "variableOverrides": [
         {
             "name": "adls_server",
-            "value": "https://fabricdevcamp.dfs.core.windows.net/"
+            "value": "https://fabricdevcampdemos.dfs.core.windows.net/"
         },
         {
             "name": "adls_container_name",

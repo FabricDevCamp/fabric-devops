@@ -1,5 +1,6 @@
 """Fabric REST API Wrapper Class"""
 
+import base64
 import json
 from json.decoder import JSONDecodeError
 import os
@@ -873,13 +874,75 @@ class FabricRestApi:
     #region Batch import/export support
     
     @classmethod
-    def export_item_definitions(cls, workspace_id):
-        """Get Item Definition"""
-        endpoint = f"workspaces/{workspace_id}/exportItemDefinitions?beta=true"
+    def export_item_definitions(cls, workspace_name, save_to_file = True):
+        """Export Item Definitions"""
+        workspace_id = cls.get_workspace_by_name(workspace_name).id
+        endpoint = f"workspaces/{workspace_id}/items/bulkExportDefinitions?beta=true"
         post_body    = {
             'mode': 'All'
         }
-        return cls._execute_post_request(endpoint, post_body)
+        export = cls._execute_post_request(endpoint, post_body)
+        
+        if save_to_file:
+            cls._save_export_as_file(export, workspace_id)
+                    
+        return export
+    
+    @classmethod
+    def _save_export_as_file(cls, export, workspace_id):
+        """Save export as file"""
+        
+        workspace = cls.get_workspace_info(workspace_id)
+ 
+        #file_path = file_path.replace('/', '\\')
+        folder_path = f".//exports//BulkExportApi//{workspace.display_name}"
+        if not os.path.exists(folder_path):
+            os.makedirs(folder_path)
+
+        path_export_file = f'{folder_path}/export.json'
+        os.makedirs(os.path.dirname(path_export_file), exist_ok=True)
+        with open(path_export_file, 'w', encoding='utf-8') as file:
+            file.write(json.dumps(export, indent=4))
+
+        item_definition_folder_path = f'{folder_path}/item_definitions/'
+        path_index_file = f'{item_definition_folder_path}/item_index.json'
+        os.makedirs(os.path.dirname(path_index_file), exist_ok=True)
+        with open(path_index_file, 'w', encoding='utf-8') as file:
+            index_file_content = {
+                "itemDefinitionsIndex": export['itemDefinitionsIndex']
+            }
+            file.write(json.dumps(index_file_content, indent=4))
+        
+        AppLogger.log_step("Saving item definition files from export")
+        definition_part_list = export['definitionParts']
+        for definition_part in definition_part_list:
+            part_file_path = f'{item_definition_folder_path}{definition_part["path"]}'
+            part_file_content = definition_part['payload']
+            cls._write_file_to_exports_folder(
+                part_file_path,
+                part_file_content,
+                convert_from_base64 = True
+            )
+        
+    @classmethod
+    def _write_file_to_exports_folder(cls, file_path , file_content, convert_from_base64 = True):
+        """Write file to exports folder"""    
+        if convert_from_base64:
+            file_content_bytes = base64.b64decode(file_content)
+            file_content = file_content_bytes.decode('utf-8')
+        
+        if not os.path.exists(file_path):
+            os.makedirs(os.path.dirname(file_path), exist_ok=True)
+
+        with open(file_path, 'w', encoding='utf-8') as file:
+            file.write(file_content)    
+    
+    @classmethod
+    def import_item_definitions(cls, workspace_name, import_request):
+        """Import Item Definitions"""
+        workspace_id = cls.get_workspace_by_name(workspace_name).id
+        endpoint = f"workspaces/{workspace_id}/items/bulkImportDefinitions?beta=true"
+        return cls._execute_post_request(endpoint, import_request)
     
     #endregion
     

@@ -1,7 +1,8 @@
 """Deployment Manager"""
 
 import time
-from datetime import datetime
+import json
+import os
 from zoneinfo import ZoneInfo
 
 import yaml
@@ -179,7 +180,7 @@ class DeploymentManager:
             variable_library.add_variable("adls_container_name", adls_container_name)
             variable_library.add_variable("adls_container_path", adls_container_path)
             variable_library.add_variable("adls_shortcut_subpath", adls_container_name + adls_container_path)
-            variable_library.add_variable("adls_connection_id", connection.id)
+            variable_library.add_connection_variable("adls_connection", connection.id)
             
             create_library_request = ItemDefinitionFactory.get_variable_library_create_request(
                 "environment_settings",
@@ -213,7 +214,7 @@ class DeploymentManager:
             variable_library.add_variable("adls_container_name", dev_adls_container_name)
             variable_library.add_variable("adls_container_path", dev_adls_container_path)
             variable_library.add_variable("adls_shortcut_subpath", dev_adls_container_name + dev_adls_container_path)
-            variable_library.add_variable("adls_connection_id", dev_connection_id)
+            variable_library.add_connection_variable("adls_connection", dev_connection_id)
         
             # add value set for test environment
             test_deploy_job = StagingEnvironments.get_test_environment()        
@@ -234,8 +235,8 @@ class DeploymentManager:
             test_value_set.add_variable_override('adls_container_name', test_adls_container_name)
             test_value_set.add_variable_override('adls_container_path', test_adls_container_path)
             test_value_set.add_variable_override("adls_shortcut_subpath", test_adls_container_name + test_adls_container_path)
-            test_value_set.add_variable_override('adls_connection_id', test_connection.id)
-        
+            test_value_set.add_connection_variable_override('adls_connection', test_connection.id)
+
             variable_library.add_valueset(test_value_set)
     
             # prod
@@ -257,7 +258,7 @@ class DeploymentManager:
             prod_value_set.add_variable_override('adls_container_name', prod_adls_container_name)
             prod_value_set.add_variable_override('adls_container_path', prod_adls_container_path)
             prod_value_set.add_variable_override("adls_shortcut_subpath", prod_adls_container_name + prod_adls_container_path)
-            prod_value_set.add_variable_override('adls_connection_id', prod_connection.id)
+            prod_value_set.add_connection_variable_override('adls_connection', prod_connection.id)
         
             variable_library.add_valueset(prod_value_set)
 
@@ -496,10 +497,10 @@ class DeploymentManager:
              
         AppLogger.log_step("Applying post-deploy updates to shortcut solution")
  
-        notebook1 = FabricRestApi.get_item_by_name(workspace.id, 'Create 01 Silver Layer', 'Notebook')
+        notebook1 = FabricRestApi.get_item_by_name(workspace.id, 'Create 11 Silver Layer', 'Notebook')
         FabricRestApi.run_notebook(workspace.id, notebook1)
                 
-        notebook2 = FabricRestApi.get_item_by_name(workspace.id, 'Create 02 Gold Layer', 'Notebook')
+        notebook2 = FabricRestApi.get_item_by_name(workspace.id, 'Create 12 Gold Layer', 'Notebook')
         FabricRestApi.run_notebook(workspace.id, notebook2)
         
         lakehouse = FabricRestApi.get_item_by_name(workspace.id, 'sales', 'Lakehouse')
@@ -719,8 +720,8 @@ class DeploymentManager:
 
 
         notebook_folders = [
-            'staging/Create 01 Silver Layer.Notebook',
-            'staging/Create 02 Gold Layer.Notebook'
+            'staging/Create 11 Silver Layer.Notebook',
+            'staging/Create 12 Gold Layer.Notebook'
         ]
         for notebook_folder in notebook_folders:
             create_notebook_request = ItemDefinitionFactory.get_create_notebook_request_from_folder(
@@ -795,8 +796,8 @@ class DeploymentManager:
         lakehouse = FabricRestApi.create_lakehouse(workspace.id, lakehouse_name)
 
         notebook_folders = [
-            'staging/Build 01 Silver Layer.Notebook',
-            'staging/Build 02 Gold Layer.Notebook'
+            'staging/Build 11 Silver Layer.Notebook',
+            'staging/Build 12 Gold Layer.Notebook'
         ]
 
         notebook_ids = []
@@ -822,9 +823,9 @@ class DeploymentManager:
         )
 
         pipeline_redirects = {
-            '00000000-0000-0000-0000-000000000000': workspace.id,
+            '11111111-1111-1111-1111-111111111111': workspace.id,
             '22222222-2222-2222-2222-222222222222': lakehouse.id,
-            '33333333-3333-3333-3333-333333333333': notebook_ids[0],
+            '33333333-3333-3333-3333-333333333333': notebook_ids[1],
             '44444444-4444-4444-4444-444444444444': notebook_ids[1]
         }
         
@@ -928,7 +929,7 @@ class DeploymentManager:
         create_notebook_request = \
             ItemDefinitionFactory.get_create_item_request_from_folder(
                 'Medallion Solution', 
-                'staging/Build 01 Silver Tables.Notebook'
+                'staging/Build 11 Silver Tables.Notebook'
             )
         
         notebook_redirects = {
@@ -959,7 +960,7 @@ class DeploymentManager:
         
         create_notebook_request = ItemDefinitionFactory.get_create_item_request_from_folder(
             'Medallion Solution',
-            'staging/Build 02 Gold Tables.Notebook'            
+            'staging/Build 12 Gold Tables.Notebook'            
         )
         
         notebook_redirects = {
@@ -1006,7 +1007,7 @@ class DeploymentManager:
         report_folders = [
             'Product Sales Summary.Report',
             'Product Sales Time Intelligence.Report',
-            'Product Sales Top 10 Cities.Report'
+            'Product Sales Top 11 Cities.Report'
         ]
         for report_folder in report_folders:
             
@@ -1070,7 +1071,7 @@ class DeploymentManager:
         create_notebook_request = \
             ItemDefinitionFactory.get_create_item_request_from_folder(
                 'Medallion Solution', 
-                'staging/Build 01 Silver Tables.Notebook'
+                'staging/Build 11 Silver Tables.Notebook'
             )
         
         notebook_redirects = {
@@ -1100,7 +1101,7 @@ class DeploymentManager:
         
         create_notebook_request = ItemDefinitionFactory.get_create_item_request_from_folder(
             'Medallion Solution',
-            'staging/Build 02 Gold Tables.Notebook'            
+            'staging/Build 12 Gold Tables.Notebook'            
         )
         
         notebook_redirects = {
@@ -1146,7 +1147,7 @@ class DeploymentManager:
         report_folders = [
             'Product Sales Summary.Report',
             'Product Sales Time Intelligence.Report',
-            'Product Sales Top 10 Cities.Report'
+            'Product Sales Top 11 Cities.Report'
         ]
         for report_folder in report_folders:
             
@@ -1187,6 +1188,59 @@ class DeploymentManager:
         }
 
 
+    #endregion
+
+    #region Deploy solution using buls item imports API
+    
+    @classmethod
+    def _write_json_to_exports_folder(cls, file_path , file_content):
+        """Write file to exports folder"""
+ 
+        #file_path = file_path.replace('/', '\\')
+        folder_path = f".//exports//Test//"
+        if not os.path.exists(folder_path):
+            os.makedirs(folder_path)
+
+        full_path = folder_path + file_path
+        os.makedirs(os.path.dirname(full_path), exist_ok=True)
+        with open(full_path, 'w', encoding='utf-8') as file:
+            file.write(json.dumps(file_content, indent=4))
+    
+    @classmethod
+    def import_from_solution_folder_to_new_workspace(cls, workspace_name, solution_folder):
+        """Import item definitions from solution folder to new workspace"""
+        
+        AppLogger.log_step(f"Importing item definitions from solution folder [{solution_folder}] to new workspace...")
+
+        workspace = FabricRestApi.create_workspace(workspace_name)
+        
+        connection_ids = cls.get_adls_connections()
+        
+        import_request = ItemDefinitionFactory.get_bulk_item_import_request_from_folder(solution_folder, True)
+
+        import_request['definitionParts'] = ItemDefinitionFactory.update_import_definition_part(
+            import_request['definitionParts'],
+            '/staging/environment_settings.VariableLibrary/variables.json',
+            { '11111111-1111-1111-1111-111111111111': connection_ids['dev'] }
+        )
+
+        import_request['definitionParts'] = ItemDefinitionFactory.update_import_definition_part(
+            import_request['definitionParts'],
+            '/staging/environment_settings.VariableLibrary/valueSets/test.json',
+            { '22222222-2222-2222-2222-222222222222': connection_ids['test'] }
+        )
+
+        import_request['definitionParts'] = ItemDefinitionFactory.update_import_definition_part(
+            import_request['definitionParts'],
+            '/staging/environment_settings.VariableLibrary/valueSets/prod.json',
+            { '33333333-3333-3333-3333-333333333333': connection_ids['prod'] }
+        )
+        # cls._write_json_to_exports_folder(f'{solution_folder}_import_request.json', import_request)
+        AppLogger.log_step(f"Calling Bulk Import Item API")
+
+        FabricRestApi.import_item_definitions(workspace.id, import_request)
+        AppLogger.log_substep(f"Import operation complete")
+          
     #endregion
 
     #region Deployment pipeline support
@@ -1232,12 +1286,12 @@ class DeploymentManager:
         pipeline = FabricRestApi.get_deployment_pipeline_by_name(pipeline_name)
         stages = FabricRestApi.list_deployment_pipeline_stages(pipeline.id)
         stages_list = list(stages)
-        source_stage_id = stages_list[0].id
+        source_stage_id = stages_list[1].id
         target_stage_id = stages_list[1].id
 
         AppLogger.log_step("Deploy from [dev] to [test]")
         
-        AppLogger.log_step(f'source_stage_id: {stages_list[0].id}')
+        AppLogger.log_step(f'source_stage_id: {stages_list[1].id}')
         AppLogger.log_step(f'target_stage_id: {stages_list[1].id}')
 
         FabricRestApi.deploy_to_pipeline_stage(pipeline.id, source_stage_id, target_stage_id)
@@ -1357,11 +1411,11 @@ class DeploymentManager:
             # bind notebooks to sales lakehouse
             if notebook.display_name in [
                 'Create Lakehouse Tables', 
-                'Build 01 Silver Layer',
-                'Build 02 Gold Layer',
-                'Create 01 Silver Layer',
-                'Create 02 Gold Layer',
-                'Build 02 Gold Tables']:
+                'Build 11 Silver Layer',
+                'Build 12 Gold Layer',
+                'Create 11 Silver Layer',
+                'Create 12 Gold Layer',
+                'Build 12 Gold Tables']:
                 AppLogger.log_substep(f"Updating notebook [{notebook.display_name}]")
                 cls.update_source_lakehouse_in_notebook(
                     workspace_name,
@@ -1369,7 +1423,7 @@ class DeploymentManager:
                     "sales")
 
             # bind notebooks to sales_silver lakehouse
-            if notebook.display_name in ['Build 01 Silver Tables']:
+            if notebook.display_name in ['Build 11 Silver Tables']:
                 AppLogger.log_substep(f"Updating notebook [{notebook.display_name}]")
                 cls.update_source_lakehouse_in_notebook(
                     workspace_name,
@@ -1722,7 +1776,7 @@ class DeploymentManager:
         stages = FabricRestApi.list_deployment_pipeline_stages(pipeline.id)
 
         for stage in stages:
-            if stage.order == 0:
+            if stage.order == 1:
                 FabricRestApi.assign_workpace_to_pipeline_stage(dev_workspace.id,
                                                                 pipeline.id,
                                                                 stage.id)
@@ -2019,7 +2073,7 @@ class DeploymentManager:
         AdoProjectManager.set_pipeline_permission_on_environment(
             project_name, 'prod', 'deploy-to-prod-workspace')
         
-        time.sleep(10)
+        time.sleep(11)
         
         AdoProjectManager.run_pipeline(project_name, 'deploy-to-test-workspace', 'main')
         AdoProjectManager.run_pipeline(project_name, 'apply-post-deploy-updates-to-test', 'main')
@@ -2222,7 +2276,7 @@ class DeploymentManager:
         stages = FabricRestApi.list_deployment_pipeline_stages(pipeline.id)
 
         for stage in stages:
-            if stage.order == 0:
+            if stage.order == 1:
                 FabricRestApi.assign_workpace_to_pipeline_stage(dev_workspace.id,
                                                                 pipeline.id,
                                                                 stage.id)

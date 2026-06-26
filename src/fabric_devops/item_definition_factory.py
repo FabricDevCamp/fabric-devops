@@ -28,6 +28,13 @@ class ItemDefinitionFactory:
         return file_path[offset:].replace('\\', '/')
 
     @classmethod
+    def _get_part_path_for_import(cls, solution_folder_path, file_path):
+        """get path for item definition part"""
+        offset = file_path.find(solution_folder_path) + len(solution_folder_path) + 1
+        part_path = file_path[offset:].replace('\\', '/')
+        return f'/{part_path}'
+
+    @classmethod
     def _search_and_replace_in_payload(cls, payload, search_replace_text):
         payload_bytes = base64.b64decode(payload)
         payload_content = payload_bytes.decode('utf-8')
@@ -87,6 +94,27 @@ class ItemDefinitionFactory:
         }
 
     @classmethod
+    def get_bulk_item_import_request_from_folder(cls, solution_folder, allow_pairing = False):
+        """generate bulk item import request from folder"""        
+                
+        solution_folder_path = f".//templates//FabricSolutions//{solution_folder}"
+
+        definition_parts = []
+
+        for root, dirs, files in os.walk(solution_folder_path):
+            for file in files:                
+                file_path = os.path.join(root, file)
+                part_path = cls._get_part_path_for_import(solution_folder_path, file_path)
+                if '/' in part_path[1:]:
+                    file = open(file_path,'r', encoding="utf-8")
+                    part_content = file.read()
+                    definition_parts.append(cls._create_inline_base64_part(part_path, part_content))
+        return {
+            'definitionParts': definition_parts,
+            'allowPairingByName': allow_pairing
+        }
+
+    @classmethod
     def update_part_in_create_request(cls, create_item_request, part_path, search_replace_text):
         """Update Item Definition Part"""
         item_definition = create_item_request['definition']
@@ -127,6 +155,18 @@ class ItemDefinitionFactory:
             item_part['payload'] = cls._search_and_replace_in_payload_with_regex(item_part['payload'], search_replace_terms)
             item_definition['parts'].append(item_part)
         return item_definition
+
+    @classmethod
+    def update_import_definition_part(cls, definition_parts, part_path, search_replace_text):
+        """Update Item Definition Part"""
+        definition_part = next((part for part in definition_parts if part['path'] == part_path), None)
+        if definition_part is not None:
+            definition_parts.remove(definition_part)
+            definition_part['payload'] = cls._search_and_replace_in_payload(definition_part['payload'], search_replace_text)
+            definition_parts.append(definition_part)
+            
+        return definition_parts
+
 
     @classmethod
     def get_create_notebook_request_from_folder(cls, solution_folder, item_folder, workspace_id, lakehouse):
@@ -229,16 +269,12 @@ class ItemDefinitionFactory:
         }
 
     @classmethod
-    def export_item_definitions_from_workspace(cls, workspace_name):
+    def save_exported_item_definitions(cls, export, workspace_name):
         """Export Item Definiitons from Workspace"""
 
-        AppLogger.log_step(f"Exporting Workspace Item Definitions from {workspace_name}")
+        AppLogger.log_step(f"Saving exported item definitions from {workspace_name}")
 
-        workspace = FabricRestApi.get_workspace_by_name(workspace_name)
-
-        export_response = FabricRestApi.export_item_definitions(workspace.id)
-
-        cls._write_exported_workspace_to_exports_folder(workspace_name, 'exports.json', export_response)
+        cls._write_exported_workspace_to_exports_folder(workspace_name, 'exports.json', export)            
 
     @classmethod
     def export_item_definitions_from_workspace_one_by_one(cls, workspace_name, item_type = None):
@@ -302,7 +338,7 @@ class ItemDefinitionFactory:
         """Write file to exports folder"""
  
         #file_path = file_path.replace('/', '\\')
-        folder_path = f".//exports//BatchExportFromApi//{workspace_name}/"
+        folder_path = f".//exports//BulkExportApi//{workspace_name}/"
         if not os.path.exists(folder_path):
             os.makedirs(folder_path)
 

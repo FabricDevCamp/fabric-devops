@@ -26,10 +26,12 @@
             "value": "sampledata/productsales/dev/"
         },
         {
-            "name": "adls_connection_id",
-            "note": "some note",
-            "type": "String",
-            "value": "6e0e94e7-daa6-4f8b-9d9a-6d2169748248"
+            "name": "adls_connection",
+            "note": "",
+            "type": "ConnectionReference",
+            "value": {
+                "connectionId": "55c25eff-7567-49f4-a38f-78841c26fa37"
+            }
         }
     ]
 }
