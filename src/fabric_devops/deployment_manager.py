@@ -156,12 +156,12 @@ class DeploymentManager:
             return variable_library
 
     @classmethod
-    def create_adls_connection_and_variable_library(
-        cls, 
-        workspace, 
-        staging_folder_id = None, 
-        deploy_job: DeploymentJob = StagingEnvironments.get_dev_environment()):
-        """Create Vairable Library with ADLS settings"""
+    def create_variable_library_with_adls_connection(
+        cls,
+        workspace,
+        staging_folder_id = None,
+        deploy_job: DeploymentJob = StagingEnvironments.get_dev_environment()) -> VariableLibrary:
+        """Create Variable Library with ADLS settings"""
         
         if deploy_job.deployment_type == DeploymentJobType.CUSTOMER_TENANT:
             # use customer-specific values for tenant workspace parameterization
@@ -216,8 +216,9 @@ class DeploymentManager:
             variable_library.add_variable("adls_container_path", dev_adls_container_path)
             variable_library.add_variable("adls_shortcut_subpath", dev_adls_container_name + dev_adls_container_path)
             variable_library.add_variable("adls_connection_id", dev_connection_id)
-            variable_library.add_connection_variable("adls_connection", dev_connection_id)        
-        
+            variable_library.add_connection_variable("adls_connection", dev_connection_id)
+
+            
             # add value set for test environment
             test_deploy_job = StagingEnvironments.get_test_environment()        
             test_adls_server = test_deploy_job.parameters[DeploymentJob.adls_server_parameter]
@@ -229,7 +230,7 @@ class DeploymentManager:
                 test_adls_server,
                 test_adls_path)
             
-            test_connection_id = test_connection.id            
+            test_connection_id = test_connection.id   
             AppLogger.log_substep(f'Test connection ID: {test_connection_id}')
 
             test_value_set = Valueset('test')
@@ -272,19 +273,124 @@ class DeploymentManager:
                     variable_library
             )
 
-            variable_library = FabricRestApi.create_item(
+            variable_library_definition = FabricRestApi.create_item(
                 workspace.id,
                 create_library_request,
                 staging_folder_id)
             
             FabricRestApi.set_active_valueset_for_variable_library(
                 workspace.id,
-                variable_library,
+                variable_library_definition,
                 deploy_job.name
             )
             
             return variable_library
 
+    @classmethod
+    def create_variable_library_for_staging_workspace(
+        cls,
+        workspace,
+        dev_gold_lakehouse,
+        test_gold_lakehouse,
+        prod_gold_lakehouse,
+        staging_folder_id = None,
+        deploy_job: DeploymentJob = StagingEnvironments.get_dev_environment()):
+        """Create Variable Library for Staging Workspace"""
+        
+        AppLogger.log_step('Creating variable library for staging workspace')
+
+        # use default values for dev environment
+        dev_deploy_job = StagingEnvironments.get_dev_environment()
+        dev_adls_server = dev_deploy_job.parameters[DeploymentJob.adls_server_parameter]
+        dev_adls_container_name = dev_deploy_job.parameters[DeploymentJob.adls_container_name_parameter]
+        dev_adls_container_path = dev_deploy_job.parameters[DeploymentJob.adls_container_path_parameter]
+        dev_adls_path = dev_adls_container_name + dev_adls_container_path
+        
+        dev_connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
+            dev_adls_server,
+            dev_adls_path)
+        
+        dev_connection_id = dev_connection.id
+        AppLogger.log_substep(f'Dev connection ID: {dev_connection_id}')
+
+        variable_library = VariableLibrary()
+        variable_library.add_variable("adls_server", dev_adls_server)
+        variable_library.add_variable("adls_container_name", dev_adls_container_name)
+        variable_library.add_variable("adls_container_path", dev_adls_container_path)
+        variable_library.add_variable("adls_shortcut_subpath", dev_adls_container_name + dev_adls_container_path)
+        variable_library.add_variable("adls_connection_id", dev_connection_id)
+        variable_library.add_connection_variable("adls_connection", dev_connection_id)
+        variable_library.add_item_variable("gold_lakehouse", dev_gold_lakehouse)        
+        
+        # add value set for test environment
+        test_deploy_job = StagingEnvironments.get_test_environment()        
+        test_adls_server = test_deploy_job.parameters[DeploymentJob.adls_server_parameter]
+        test_adls_container_name = test_deploy_job.parameters[DeploymentJob.adls_container_name_parameter]
+        test_adls_container_path = test_deploy_job.parameters[DeploymentJob.adls_container_path_parameter]
+        test_adls_path = test_adls_container_name + test_adls_container_path
+        
+        test_connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
+            test_adls_server,
+            test_adls_path)
+        
+        test_connection_id = test_connection.id   
+        AppLogger.log_substep(f'Test connection ID: {test_connection_id}')
+
+        test_value_set = Valueset('test')
+        test_value_set.add_variable_override('adls_server', test_adls_server)
+        test_value_set.add_variable_override('adls_container_name', test_adls_container_name)
+        test_value_set.add_variable_override('adls_container_path', test_adls_container_path)
+        test_value_set.add_variable_override("adls_shortcut_subpath", test_adls_container_name + test_adls_container_path)
+        test_value_set.add_variable_override('adls_connection_id', test_connection.id)
+        test_value_set.add_connection_variable_override('adls_connection', test_connection.id)
+        test_value_set.add_item_variable_override("gold_lakehouse", test_gold_lakehouse)
+
+        variable_library.add_valueset(test_value_set)
+
+        # prod
+        prod_deploy_job = StagingEnvironments.get_prod_environment()
+        prod_adls_server = prod_deploy_job.parameters[DeploymentJob.adls_server_parameter]
+        prod_adls_container_name = prod_deploy_job.parameters[DeploymentJob.adls_container_name_parameter]
+        prod_adls_container_path = prod_deploy_job.parameters[DeploymentJob.adls_container_path_parameter]
+        prod_adls_path = prod_adls_container_name + prod_adls_container_path
+        
+        prod_connection = FabricRestApi.create_azure_storage_connection_with_sas_token(
+            prod_adls_server,
+            prod_adls_path)
+        
+        prod_connection_id = prod_connection.id
+        AppLogger.log_substep(f'Prod connection ID: {prod_connection_id}')
+
+        prod_value_set = Valueset('prod')
+        prod_value_set.add_variable_override('adls_server', prod_adls_server)
+        prod_value_set.add_variable_override('adls_container_name', prod_adls_container_name)
+        prod_value_set.add_variable_override('adls_container_path', prod_adls_container_path)
+        prod_value_set.add_variable_override("adls_shortcut_subpath", prod_adls_container_name + prod_adls_container_path)
+        prod_value_set.add_variable_override('adls_connection_id', prod_connection.id)
+        prod_value_set.add_connection_variable_override('adls_connection', prod_connection.id)
+        prod_value_set.add_item_variable_override("gold_lakehouse", prod_gold_lakehouse)
+   
+        variable_library.add_valueset(prod_value_set)
+
+        create_library_request = \
+            ItemDefinitionFactory.get_variable_library_create_request(
+                "environment_settings",
+                variable_library
+        )
+
+        variable_library_definition = FabricRestApi.create_item(
+            workspace.id,
+            create_library_request,
+            staging_folder_id)
+        
+        FabricRestApi.set_active_valueset_for_variable_library(
+            workspace.id,
+            variable_library_definition,
+            deploy_job.name
+        )
+        
+        return variable_library
+    
     @classmethod
     def get_adls_connections(cls):
         """Get ADLS connections"""
@@ -494,7 +600,7 @@ class DeploymentManager:
         
         staging_folder = FabricRestApi.create_folder(workspace.id ,'staging')
         staging_folder_id = staging_folder.id        
-        cls.create_adls_connection_and_variable_library(workspace, staging_folder_id, deploy_job)
+        cls.create_variable_library_with_adls_connection(workspace, staging_folder_id, deploy_job)
 
         fabric_solution_folder = 'Shortcut Solution'
         FabricCicdManager.deploy(fabric_solution_folder, deploy_job.name, workspace.id)
@@ -527,7 +633,7 @@ class DeploymentManager:
         staging_folder = FabricRestApi.create_folder(workspace.id ,'staging')
         staging_folder_id = staging_folder.id
         
-        cls.create_adls_connection_and_variable_library(workspace, staging_folder_id, deploy_job)
+        cls.create_variable_library_with_adls_connection(workspace, staging_folder_id, deploy_job)
         
         fabric_solution_folder = 'Pipeline Solution'
         FabricCicdManager.deploy(fabric_solution_folder, deploy_job.name, workspace.id)
@@ -558,7 +664,7 @@ class DeploymentManager:
         staging_folder = FabricRestApi.create_folder(workspace.id, 'staging')
         staging_folder_id = staging_folder.id
 
-        cls.create_adls_connection_and_variable_library(workspace, staging_folder_id, deploy_job)
+        cls.create_variable_library_with_adls_connection(workspace, staging_folder_id, deploy_job)
 
         fabric_solution_folder = 'Medallion Solution'
         FabricCicdManager.deploy(fabric_solution_folder, deploy_job.name, workspace.id)
@@ -575,6 +681,48 @@ class DeploymentManager:
         FabricRestApi.create_and_bind_semantic_model_connecton(workspace, model.id, gold_lakehouse)
         
         return workspace
+
+    @classmethod
+    def deploy_two_workspace_solution(cls, project_name,
+                                      deploy_job = StagingEnvironments.get_dev_environment()):
+        """Deploy Two Workspace Solution using fabric-cicd"""
+
+        AppLogger.log_job(f"Deploying Two Workspace Solution to [{project_name}] using fabric-cicd")
+        
+        presentation_workspace_name = project_name
+        staging_workspace_name = project_name + "-staging"
+        
+        presentation_workspace = FabricRestApi.create_workspace(presentation_workspace_name)
+        FabricRestApi.update_workspace_description(presentation_workspace.id, 'Staging Workspace')        
+        sales_lakehouse = FabricRestApi.create_lakehouse(presentation_workspace.id, 'sales')
+
+        staging_workspace = FabricRestApi.create_workspace(staging_workspace_name)
+        FabricRestApi.update_workspace_description(staging_workspace.id, 'Staging Workspace')
+
+        cls.create_variable_library_with_adls_connection(
+            staging_workspace, 
+            deploy_job=deploy_job,
+            target_lakehouse=sales_lakehouse
+        )
+
+        staging_solution_folder = 'Two Workspace Solution/staging'
+        FabricCicdManager.deploy(staging_solution_folder, deploy_job.name, staging_workspace.id)
+        
+        pipeline = FabricRestApi.get_item_by_name(staging_workspace.id, 'Create Lakehouse Tables', 'DataPipeline')
+        FabricRestApi.run_data_pipeline(staging_workspace.id, pipeline)
+        
+        sales_sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(presentation_workspace.id, sales_lakehouse)
+        FabricRestApi.refresh_sql_endpoint_metadata(presentation_workspace.id, sales_sql_endpoint['database'])
+        
+        presentation_solution_folder = 'Two Workspace Solution/presentation'
+        FabricCicdManager.deploy(presentation_solution_folder, deploy_job.name, presentation_workspace.id)
+        
+        model = FabricRestApi.get_item_by_name(presentation_workspace.id, 'Product Sales DirectLake Model', 'SemanticModel')
+        
+        FabricRestApi.create_and_bind_semantic_model_connecton(presentation_workspace, model.id, sales_lakehouse)
+        
+        return staging_workspace
+
 
     #endregion
 
@@ -702,7 +850,7 @@ class DeploymentManager:
         staging_folder = FabricRestApi.create_folder(workspace.id ,'staging')
         staging_folder_id = staging_folder.id
         
-        cls.create_adls_connection_and_variable_library(workspace, staging_folder_id, deploy_job)
+        cls.create_variable_library_with_adls_connection(workspace, staging_folder_id, deploy_job)
 
         lakehouse_name = "sales"
         lakehouse = FabricRestApi.create_lakehouse(workspace.id, lakehouse_name)
@@ -794,7 +942,7 @@ class DeploymentManager:
         staging_folder = FabricRestApi.create_folder(workspace.id ,'staging')
         staging_folder_id = staging_folder.id
         
-        cls.create_adls_connection_and_variable_library(workspace, staging_folder_id, deploy_job)
+        cls.create_variable_library_with_adls_connection(workspace, staging_folder_id, deploy_job)
 
         lakehouse_name = "sales"
         lakehouse = FabricRestApi.create_lakehouse(workspace.id, lakehouse_name)
@@ -897,7 +1045,7 @@ class DeploymentManager:
         staging_folder = FabricRestApi.create_folder(workspace.id, 'staging')
         staging_folder_id = staging_folder.id
         
-        cls.create_adls_connection_and_variable_library(workspace, staging_folder_id, deploy_job)
+        cls.create_variable_library_with_adls_connection(workspace, staging_folder_id, deploy_job)
 
         bronze_lakehouse_name = "sales_bronze"
         silver_lakehouse_name = "sales_silver"
@@ -1041,7 +1189,7 @@ class DeploymentManager:
         presentation_workspace = FabricRestApi.create_workspace(presentation_workspace_name)
         FabricRestApi.update_workspace_description(presentation_workspace.id, 'Medallion Solution - Presentation Workspace')
 
-        cls.create_adls_connection_and_variable_library(staging_workspace, deploy_job= deploy_job)
+        cls.create_variable_library_with_adls_connection(staging_workspace, deploy_job= deploy_job)
 
         bronze_lakehouse_name = "sales_bronze"
         silver_lakehouse_name = "sales_silver"
@@ -1075,7 +1223,7 @@ class DeploymentManager:
         create_notebook_request = \
             ItemDefinitionFactory.get_create_item_request_from_folder(
                 'Medallion Solution', 
-                'staging/Build 11 Silver Tables.Notebook'
+                'staging/Build 01 Silver Tables.Notebook'
             )
         
         notebook_redirects = {
@@ -1105,7 +1253,7 @@ class DeploymentManager:
         
         create_notebook_request = ItemDefinitionFactory.get_create_item_request_from_folder(
             'Medallion Solution',
-            'staging/Build 12 Gold Tables.Notebook'            
+            'staging/Build 02 Gold Tables.Notebook'            
         )
         
         notebook_redirects = {
@@ -1151,7 +1299,7 @@ class DeploymentManager:
         report_folders = [
             'Product Sales Summary.Report',
             'Product Sales Time Intelligence.Report',
-            'Product Sales Top 11 Cities.Report'
+            'Product Sales Top 10 Cities.Report'
         ]
         for report_folder in report_folders:
             
@@ -2185,6 +2333,195 @@ class DeploymentManager:
         prod_branch_name = test_branch_name.replace('test', 'prod')
         AdoProjectManager.create_branch(project_name, prod_branch_name, test_branch_name)
         FabricRestApi.update_workspace_description(prod_workspace.id, f'BUILD: {prod_branch_name}')
+
+
+    @classmethod
+    def setup_ado_repo_with_two_workspace_solution(
+        cls, 
+        project_name,
+        deploy_job = StagingEnvironments.get_dev_environment()):
+        """Setup ADO repo with Two Workspace Solution using fabric-cicd"""
+
+        AppLogger.log_job(f"Deploying Two Workspace Solution for project [{project_name}]")
+        
+        dev_presentation_workspace_name = f'{project_name}-dev-presentation'
+        dev_staging_workspace_name = f'{project_name}-dev-staging'
+
+        test_presentation_workspace_name = f'{project_name}-test-presentation'
+        test_staging_workspace_name = f'{project_name}-test-staging'
+
+        prod_presentation_workspace_name = f'{project_name}-prod-presentation'
+        prod_staging_workspace_name = f'{project_name}-prod-staging'
+        
+        dev_presentation_workspace = FabricRestApi.create_workspace(dev_presentation_workspace_name)
+        FabricRestApi.update_workspace_description(dev_presentation_workspace.id, f'Dev Presentation Workspace for project [{project_name}]')        
+        dev_sales_lakehouse = FabricRestApi.create_lakehouse(dev_presentation_workspace.id, 'sales')
+
+        dev_staging_workspace = FabricRestApi.create_workspace(dev_staging_workspace_name)
+        FabricRestApi.update_workspace_description(dev_staging_workspace.id, f'Dev Staging Workspace for project [{project_name}]')
+
+        test_presentation_workspace = FabricRestApi.create_workspace(test_presentation_workspace_name)
+        FabricRestApi.update_workspace_description(test_presentation_workspace.id, f'Test Presentation Workspace for project [{project_name}]')        
+        test_sales_lakehouse = FabricRestApi.create_lakehouse(test_presentation_workspace.id, 'sales')
+
+        test_staging_workspace = FabricRestApi.create_workspace(test_staging_workspace_name)
+        FabricRestApi.update_workspace_description(test_staging_workspace.id, f'Test Staging Workspace for project [{project_name}]')
+
+        prod_presentation_workspace = FabricRestApi.create_workspace(prod_presentation_workspace_name)
+        FabricRestApi.update_workspace_description(prod_presentation_workspace.id, f'Prod Presentation Workspace for project [{project_name}]')        
+        prod_sales_lakehouse = FabricRestApi.create_lakehouse(prod_presentation_workspace.id, 'sales')
+
+        prod_staging_workspace = FabricRestApi.create_workspace(prod_staging_workspace_name)
+        FabricRestApi.update_workspace_description(prod_staging_workspace.id, f'Prod Staging Workspace for project [{project_name}]')
+
+        cls.create_variable_library_for_staging_workspace(
+            dev_staging_workspace,
+            dev_sales_lakehouse,
+            test_sales_lakehouse,
+            prod_sales_lakehouse
+        )
+
+        staging_solution_folder = 'Two Workspace Solution/staging'
+        FabricCicdManager.deploy(staging_solution_folder, deploy_job.name, dev_staging_workspace.id)
+        
+        pipeline = FabricRestApi.get_item_by_name(dev_staging_workspace.id, 'Create Lakehouse Tables', 'DataPipeline')
+        FabricRestApi.run_data_pipeline(dev_staging_workspace.id, pipeline)
+        
+        sales_sql_endpoint = FabricRestApi.get_sql_endpoint_for_lakehouse(dev_presentation_workspace.id, dev_sales_lakehouse)
+        FabricRestApi.refresh_sql_endpoint_metadata(dev_presentation_workspace.id, sales_sql_endpoint['database'])
+        
+        presentation_solution_folder = 'Two Workspace Solution/presentation'
+        FabricCicdManager.deploy(presentation_solution_folder, deploy_job.name, dev_presentation_workspace.id)
+        
+        model = FabricRestApi.get_item_by_name(dev_presentation_workspace.id, 'Product Sales DirectLake Model', 'SemanticModel')
+        
+        FabricRestApi.create_and_bind_semantic_model_connecton(dev_presentation_workspace, model.id, dev_sales_lakehouse)
+                
+        AppLogger.log_job("Setting up the development process for contiguous intergation")
+        
+        AdoProjectManager.create_project(project_name)
+     
+        AdoProjectManager.write_file_to_repo(
+            project_name, 
+            "main", 
+            "workspace/staging/ReadMe.md",
+            "Item definitions for staging workspace")
+        
+        FabricRestApi.connect_workspace_to_ado_repo(
+            dev_staging_workspace, 
+            project_name,
+            'main',
+            '/workspace/staging')
+
+        AdoProjectManager.write_file_to_repo(
+            project_name, 
+            "main", 
+            "workspace/presentation/ReadMe.md",
+            "Item definitions for presentation workspace")
+        
+        FabricRestApi.connect_workspace_to_ado_repo(
+            dev_presentation_workspace, 
+            project_name,
+            'main',
+            '/workspace/presentation')
+
+        AppLogger.log_step("Adding YAML files to deploy staging workspace using fabric-cicd deployment")
+        AppLogger.log_substep("Adding deploy.yml file")
+        deploy_config_file_path = f".//templates//FabricSolutions//Two Workspace Solution//staging//deploy.yml"        
+        with open(deploy_config_file_path, 'r', encoding='utf-8') as deploy_config_file:
+            deploy_config = yaml.safe_load(deploy_config_file)
+            deploy_config_yaml = DeploymentManager.update_deploy_config_with_workspace_ids(
+                deploy_config,
+                dev_staging_workspace.id,
+                test_staging_workspace.id,
+                prod_staging_workspace.id
+            )
+            AdoProjectManager.write_file_to_repo(
+                project_name,
+                "main",
+                "workspace/staging/deploy.yml",
+                deploy_config_yaml,
+                "Adding deploy.yml used by fabric-cicd"
+        )
+
+        AppLogger.log_substep("Adding parameter.yml file")
+        parameter_file_path = f".//templates//FabricSolutions////Two Workspace Solution//staging//parameter.yml"
+        with open(parameter_file_path, 'r', encoding='utf-8') as parameter_file:
+            parameter_file_content = parameter_file.read()
+            AdoProjectManager.write_file_to_repo(
+                project_name,
+                "main",
+                "workspace/staging/parameter.yml",
+                parameter_file_content,
+                "Adding parameter.yml used by fabric-cicd"
+        )
+
+        AppLogger.log_step("Adding YAML files to deploy presentation workspace using fabric-cicd deployment")
+        AppLogger.log_substep("Adding deploy.yml file")
+        deploy_config_file_path = f".//templates//FabricSolutions//Two Workspace Solution//presentation//deploy.yml"        
+        with open(deploy_config_file_path, 'r', encoding='utf-8') as deploy_config_file:
+            deploy_config = yaml.safe_load(deploy_config_file)
+            deploy_config_yaml = DeploymentManager.update_deploy_config_with_workspace_ids(
+                deploy_config,
+                dev_presentation_workspace.id,
+                test_presentation_workspace.id,
+                prod_presentation_workspace.id
+            )
+            AdoProjectManager.write_file_to_repo(
+                project_name,
+                "main",
+                "workspace/presentation/deploy.yml",
+                deploy_config_yaml,
+                "Adding deploy.yml used by fabric-cicd"
+        )
+
+        AppLogger.log_substep("Adding parameter.yml file")
+        parameter_file_path = f".//templates//FabricSolutions////Two Workspace Solution//presentation//parameter.yml"
+        with open(parameter_file_path, 'r', encoding='utf-8') as parameter_file:
+            parameter_file_content = parameter_file.read()
+            AdoProjectManager.write_file_to_repo(
+                project_name,
+                "main",
+                "workspace/presentation/parameter.yml",
+                parameter_file_content,
+                "Adding parameter.yml used by fabric-cicd"
+        )
+                                  
+        variable_group = AdoProjectManager.create_variable_group_for_two_workspace_project(
+            'environmental_variables',
+            project_name,
+            dev_staging_workspace.id,
+            dev_presentation_workspace.id,
+            test_staging_workspace.id,
+            test_presentation_workspace.id,
+            prod_staging_workspace.id,
+            prod_presentation_workspace.id)
+        
+        AppLogger.log_step("Creating environments for deployment")
+        AdoProjectManager.create_environment(project_name, 'test')
+        AdoProjectManager.create_environment(project_name, 'prod')
+   
+        AdoProjectManager.copy_files_from_folder_to_repo(
+            project_name,
+            'main',
+            'ado_setup_for_two_workspace_solution',
+            variable_group_id=variable_group['id'])
+        
+        time.sleep(10)
+        
+        AdoProjectManager.run_pipeline(project_name, 'deploy-to-test-staging-workspace', 'main')
+        AdoProjectManager.run_pipeline(project_name, 'apply-post-deploy-updates-to-test-staging', 'main')
+
+        AdoProjectManager.run_pipeline(project_name, 'deploy-to-test-presentation-workspace', 'main')
+        AdoProjectManager.run_pipeline(project_name, 'apply-post-deploy-updates-to-test-presentation', 'main')
+        
+        AdoProjectManager.run_pipeline(project_name, 'deploy-to-prod-staging-workspace', 'main')
+        AdoProjectManager.run_pipeline(project_name, 'apply-post-deploy-updates-to-prod-staging', 'main')
+
+        AdoProjectManager.run_pipeline(project_name, 'deploy-to-prod-presentation-workspace', 'main')
+        AdoProjectManager.run_pipeline(project_name, 'apply-post-deploy-updates-to-prod-presentation', 'main')
+
+        AdoProjectManager.add_approval_to_environment(project_name, 'prod', 'ted@fabricdevcamp.net')       
 
     #endregion
 

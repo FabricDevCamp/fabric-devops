@@ -1,7 +1,10 @@
 """Deploy solution to new workspace"""
 
-from fabric_devops import GitHubRestApi,  AppLogger
+import os
+from fabric_devops import DeploymentManager
 
-PROJECT_NAME = 'jimmy'
-project = GitHubRestApi.create_repository(PROJECT_NAME)
+os.system('cls')
+
+PROJECT_NAME = 'Apollo'
+DeploymentManager.setup_ado_repo_with_two_workspace_solution(PROJECT_NAME)
 

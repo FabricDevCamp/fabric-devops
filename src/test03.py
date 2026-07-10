@@ -1,25 +1,13 @@
 """Setup project with fabric-cicd and release flow """
 import json
 import os
+import yaml
 
-from fabric_devops import DeploymentManager
+from fabric_devops import AppLogger, FabricRestApi, AdoProjectManager, DeploymentManager
 
 os.system("cls")
 
-# workspace1 = DeploymentManager.import_from_solution_folder_to_new_workspace(
-#     "Demo1", 
-#     "Notebook Solution")
 
-workspace1 = DeploymentManager.import_from_solution_folder_to_new_workspace(
-    "Demo2",
-    "Pipeline Solution")
+env_id = AdoProjectManager.create_environment('Apollo', 'foo5')
 
-
-# workspace1 = DeploymentManager.import_from_solution_folder_to_new_workspace(
-#     "Howdy", 
-#     "Shortcut Solution")
-
-
-workspace6 = DeploymentManager.import_from_solution_folder_to_new_workspace(
-    "Demo4", 
-    "Medallion Solution")
+print(env_id)

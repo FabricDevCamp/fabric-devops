@@ -806,6 +806,104 @@ class AdoProjectManager:
         return cls._execute_post_request(endpoint, body)
 
     @classmethod
+    def create_variable_group_for_two_workspace_project(
+        cls, 
+        name, 
+        project_name, 
+        dev_staging_workspace_id, 
+        dev_presentation_workspace_id, 
+        test_staging_workspace_id,
+        test_presentation_workspace_id,
+        prod_staging_workspace_id,
+        prod_presentation_workspace_id):
+        """Add Variable Group"""
+        AppLogger.log_step(f"Creating variable group [{name}]")
+        project = cls.get_project(project_name)
+        endpoint = 'distributedtask/variablegroups'
+        body = {
+            "name": name,
+            "description": "Variable group added through code",
+            "type": "Vsts",
+            "variables": {
+                "AZURE_CLIENT_ID": {
+                    "value": EnvironmentSettings.AZURE_CLIENT_ID,
+                    "isSecret": False,
+                    "isReadOnly": True
+                },
+                "AZURE_CLIENT_SECRET": {
+                    "value": EnvironmentSettings.AZURE_CLIENT_SECRET,
+                    "isSecret": True,
+                    "isReadOnly": True
+                },
+                "AZURE_TENANT_ID": {
+                    "value": EnvironmentSettings.AZURE_TENANT_ID,
+                    "isSecret": False,
+                    "isReadOnly": True
+                },
+                "FABRIC_CAPACITY_ID": {
+                    "value": EnvironmentSettings.FABRIC_CAPACITY_ID,
+                    "isSecret": False,
+                    "isReadOnly": True
+                },
+                "ADMIN_USER_ID": {
+                    "value": EnvironmentSettings.ADMIN_USER_ID,
+                    "isSecret": False,
+                    "isReadOnly": True
+                },
+                "DEVELOPERS_GROUP_ID": {
+                    "value": EnvironmentSettings.DEVELOPERS_GROUP_ID,
+                    "isSecret": False,
+                    "isReadOnly": True
+                },
+                "AZURE_STORAGE_SAS_TOKEN" : {
+                    "value": EnvironmentSettings.AZURE_STORAGE_SAS_TOKEN,
+                    "isSecret": True,
+                    "isReadOnly": True  
+                },
+                "WORKSPACE_ID_DEV_STAGING": {
+                    "value": dev_staging_workspace_id,
+                    "isSecret": False,
+                    "isReadOnly": True
+                },
+                "WORKSPACE_ID_DEV_PRESENTATION": {
+                    "value": dev_presentation_workspace_id,
+                    "isSecret": False,
+                    "isReadOnly": True
+                },
+                "WORKSPACE_ID_TEST_STAGING": {
+                    "value": test_staging_workspace_id,
+                    "isSecret": False,
+                    "isReadOnly": True
+                },                  
+                "WORKSPACE_ID_TEST_PRESENTATION": {
+                    "value": test_presentation_workspace_id,
+                    "isSecret": False,
+                    "isReadOnly": True
+                },                
+                "WORKSPACE_ID_PROD_STAGING": {
+                    "value": prod_staging_workspace_id,
+                    "isSecret": False,
+                    "isReadOnly": True
+                },
+                "WORKSPACE_ID_PROD_PRESENTATION": {
+                    "value": prod_presentation_workspace_id,
+                    "isSecret": False,
+                    "isReadOnly": True
+                }                    
+            },
+            "variableGroupProjectReferences": [{
+                "name": name,
+                "description": "Variable group added through code",
+                "projectReference": {
+                    "id": project['id'],
+                    "name": project_name
+                }
+            }]
+        }
+
+        return cls._execute_post_request(endpoint, body)
+
+    @classmethod
     def create_variable_group_for_ado_project(
         cls, 
         name, 
@@ -884,6 +982,7 @@ class AdoProjectManager:
         }
 
         return cls._execute_post_request(endpoint, body)
+
 
     @classmethod
     def create_variable_group(cls, name, project_name):
@@ -1201,7 +1300,7 @@ class AdoProjectManager:
     @classmethod
     def create_environment(cls, project_name, environment_name):
         """Create environment in ADO project"""
-        AppLogger.log_substep(f"Creating environment [{environment_name}]")
+        AppLogger.log_step(f"Creating environment [{environment_name}]")
         endpoint = 'distributedtask/environments'
         body = {
             "name": environment_name,
@@ -1209,7 +1308,23 @@ class AdoProjectManager:
         
         }
 
-        return cls._execute_post_request_on_project(project_name, endpoint, body)
+        create_response = cls._execute_post_request_on_project(project_name, endpoint, body)
+        cls.approve_environment_for_all_pipelines(project_name, create_response['id'] )
+        
+        return create_response['id']
+
+    @classmethod
+    def approve_environment_for_all_pipelines(cls, project_name, environment_id):
+        """Approve environment for all pipelines in the project"""
+        AppLogger.log_substep(f"Approving environment for all pipelines")
+        endpoint = f'pipelines/pipelinePermissions/environment/{environment_id}'
+        body = {
+            "allPipelines": {
+                 "authorized": True
+            }
+        }
+        cls._execute_patch_request_on_project(project_name, endpoint, body)
+
 
     @classmethod
     def add_approval_to_environment(cls, project_name, environment_name, approver_email):

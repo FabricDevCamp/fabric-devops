@@ -2973,7 +2973,7 @@ class ItemDefinitionFactory:
         }
 
     @classmethod
-    def get_update_variable_library_request(cls, variable_library: VariableLibrary):
+    def get_variable_library_update_request(cls, variable_library: VariableLibrary):
         """Get Create Request for Variable Library file"""
 
         variables_json = variable_library.get_variable_json()

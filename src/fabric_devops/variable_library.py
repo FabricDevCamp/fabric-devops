@@ -53,6 +53,15 @@ class Valueset:
         value = { 'connectionId': connection_id }
         self.variableOverrides.append( VariableOverride(name, value) )
 
+    def add_item_variable_override(self, name: str, item):
+        """"add item` variable"""
+        value = { 
+                 'itemId': item.id,
+                 'workspaceId': item.workspace_id
+        }
+        self.variableOverrides.append( VariableOverride(name, value) )
+
+
 class VariableLibrary:
     """Variable Library"""
     variables: List[Variable]
@@ -76,12 +85,24 @@ class VariableLibrary:
         value = { 'connectionId': connection_id }
         self.variables.append( Variable(name, value, 'ConnectionReference', note) )
 
+    def add_item_variable(self, name: str, item, note: str = 'some note'):
+        """"add variable"""
+        value = { 
+                 'itemId': item.id,
+                 'workspaceId': item.workspace_id
+        }
+        self.variables.append( Variable(name, value, 'ItemReference', note) )
+
 
     def add_valueset(self, valueset: Valueset):
         """"add valueset"""
         self.valuesets.append( valueset )
         self.valueSetsOrder.append(valueset.name)
 
+    def get_valueset(self, valueset_name):
+        """"get valueset"""
+        return next((valueset for valueset in self.valuesets if valueset.name == valueset_name), None)
+        
     def get_variable_json(self):
         "Get JSON for variables.json"
         variable_lib = {
