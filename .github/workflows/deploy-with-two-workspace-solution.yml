@@ -7,7 +7,7 @@ on:
         project_name:
           description: Project Name
           required: true
-          default: "Fubar"
+          default: "Trinity"
 
 jobs:
     deployment-job:
