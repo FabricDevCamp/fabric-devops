@@ -2336,14 +2336,11 @@ class DeploymentManager:
 
 
     @classmethod
-    def setup_ado_repo_with_two_workspace_solution(
-        cls, 
-        project_name,
-        deploy_job = StagingEnvironments.get_dev_environment()):
+    def setup_ado_repo_with_two_workspace_solution(cls, project_name):
         """Setup ADO repo with Two Workspace Solution using fabric-cicd"""
 
         AppLogger.log_job(f"Deploying Two Workspace Solution for project [{project_name}]")
-        
+                  
         dev_presentation_workspace_name = f'{project_name}-dev-presentation'
         dev_staging_workspace_name = f'{project_name}-dev-staging'
 
@@ -2380,9 +2377,9 @@ class DeploymentManager:
             test_sales_lakehouse,
             prod_sales_lakehouse
         )
-
+  
         staging_solution_folder = 'Two Workspace Solution/staging'
-        FabricCicdManager.deploy(staging_solution_folder, deploy_job.name, dev_staging_workspace.id)
+        FabricCicdManager.deploy(staging_solution_folder, 'dev', dev_staging_workspace.id)
         
         pipeline = FabricRestApi.get_item_by_name(dev_staging_workspace.id, 'Create Lakehouse Tables', 'DataPipeline')
         FabricRestApi.run_data_pipeline(dev_staging_workspace.id, pipeline)
@@ -2391,11 +2388,11 @@ class DeploymentManager:
         FabricRestApi.refresh_sql_endpoint_metadata(dev_presentation_workspace.id, sales_sql_endpoint['database'])
         
         presentation_solution_folder = 'Two Workspace Solution/presentation'
-        FabricCicdManager.deploy(presentation_solution_folder, deploy_job.name, dev_presentation_workspace.id)
+        FabricCicdManager.deploy(presentation_solution_folder, 'dev', dev_presentation_workspace.id)
         
-        model = FabricRestApi.get_item_by_name(dev_presentation_workspace.id, 'Product Sales DirectLake Model', 'SemanticModel')
+        dev_model = FabricRestApi.get_item_by_name(dev_presentation_workspace.id, 'Product Sales DirectLake Model', 'SemanticModel')
         
-        FabricRestApi.create_and_bind_semantic_model_connecton(dev_presentation_workspace, model.id, dev_sales_lakehouse)
+        FabricRestApi.create_and_bind_semantic_model_connecton(dev_presentation_workspace.id, dev_model.id, dev_sales_lakehouse)
                 
         AppLogger.log_job("Setting up the development process for contiguous intergation")
         
@@ -2521,7 +2518,7 @@ class DeploymentManager:
         AdoProjectManager.run_pipeline(project_name, 'deploy-to-prod-presentation-workspace', 'main')
         AdoProjectManager.run_pipeline(project_name, 'apply-post-deploy-updates-to-prod-presentation', 'main')
 
-        AdoProjectManager.add_approval_to_environment(project_name, 'prod', 'ted@fabricdevcamp.net')       
+        AdoProjectManager.add_approval_to_environment(project_name, 'prod', '')
 
     #endregion
 

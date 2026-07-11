@@ -70,6 +70,7 @@ jobs:
                 AZURE_STORAGE_SAS_TOKEN: ${{ secrets.AZURE_STORAGE_SAS_TOKEN }}                
                 FABRIC_CAPACITY_ID: ${{ secrets.FABRIC_CAPACITY_ID }}             
                 ADMIN_USER_ID: ${{ secrets.ADMIN_USER_ID }}
+                ADMIN_USER_UPN: ${{ secrets.ADMIN_USER_UPN }}
                 DEVELOPERS_GROUP_ID: ${{ secrets.DEVELOPERS_GROUP_ID }}
                 CUSTOMER_NAME: ${{inputs.customer_name}}
                 SOLUTION_NAME: ${{inputs.solution_name}}        

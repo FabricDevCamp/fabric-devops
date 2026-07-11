@@ -14,6 +14,7 @@ class EnvironmentSettings:
 
     FABRIC_CAPACITY_ID = os.getenv("FABRIC_CAPACITY_ID")
     ADMIN_USER_ID = os.getenv("ADMIN_USER_ID")
+    ADMIN_USER_UPN = os.getenv("ADMIN_USER_UPN")
     DEVELOPERS_GROUP_ID = os.getenv("DEVELOPERS_GROUP_ID")
 
     ORGANIZATION_GITHUB = os.getenv('ORGANIZATION_GITHUB')
