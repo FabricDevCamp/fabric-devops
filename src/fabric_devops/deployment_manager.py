@@ -3104,17 +3104,17 @@ class DeploymentManager:
         """Delete All Workspaces"""
         AppLogger.log_step("Deleting workspaces and their associated connections")
         for workspace in FabricRestApi.list_workspaces():
-            AppLogger.log_substep(f"Deleting workspace {workspace['displayName']} [{workspace['id']}]")
-            FabricRestApi.delete_workspace(workspace['id'])
+            AppLogger.log_substep(f"Deleting workspace {workspace.display_name} [{workspace.id}]")
+            FabricRestApi.delete_workspace(workspace.id)
 
     @classmethod
     def delete_all_connections(cls):
         """Delete All Connections"""
         AppLogger.log_step("Deleting connections")
         for connection in FabricRestApi.list_connections():
-            display_name = connection['displayName'] if connection['displayName'] else connection['id']
+            display_name = connection.display_name if connection.display_name else connection.id
             AppLogger.log_substep(f"Deleting {display_name}")
-            FabricRestApi.delete_connection(connection['id'])
+            FabricRestApi.delete_connection(connection.id)
 
     @classmethod
     def delete_all_github_repos(cls):
