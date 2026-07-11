@@ -4,14 +4,14 @@ name: Deploy with two workspace solution
 on:
     workflow_dispatch:
       inputs:      
-        repo_name:
-          description: Repo Name
+        project_name:
+          description: Project Name
           required: true
           default: "Fubar"
 
 jobs:
     deployment-job:
-        name: Creating repo [${{inputs.repo_name}}]
+        name: Creating project [${{inputs.project_name}}]
         runs-on: ubuntu-latest
         permissions:
           contents: write
@@ -59,6 +59,6 @@ jobs:
                 ADO_ORGANIZATION: ${{ secrets.ADO_ORGANIZATION }}
                 ORGANIZATION_GITHUB: ${{ vars.ORGANIZATION_GITHUB }}
                 PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.GITHUB_TOKEN }}
-                REPO_NAME: ${{ inputs.repo_name }}
+                PROJECT_NAME: ${{ inputs.project_name }}
               run:
                 python src/deploy_with_two_workspace_solution.py
