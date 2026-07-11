@@ -2047,7 +2047,7 @@ class DeploymentManager:
             dev_workspace_name
         )
         
-        AppLogger.log_job("Setting up the development process for contiguous intergation")
+        AppLogger.log_job("Setting up the development process for contiguous integration")
         
         AdoProjectManager.create_project(project_name)
         AdoProjectManager.create_branch(project_name, 'test', 'main')
@@ -2152,7 +2152,7 @@ class DeploymentManager:
             dev_workspace_name
         )
         
-        AppLogger.log_job("Setting up the development process for contiguous intergation")
+        AppLogger.log_job("Setting up the development process for contiguous integration")
         
         AdoProjectManager.create_project(project_name)
      
@@ -2247,7 +2247,7 @@ class DeploymentManager:
             dev_workspace_name
         )
         
-        AppLogger.log_job("Setting up the development process for contiguous intergation")
+        AppLogger.log_job("Setting up the development process for contiguous integration")
         
         AdoProjectManager.create_project(project_name)
      
@@ -2394,7 +2394,7 @@ class DeploymentManager:
         
         FabricRestApi.create_and_bind_semantic_model_connecton(dev_presentation_workspace, dev_model.id, dev_sales_lakehouse)
                 
-        AppLogger.log_job("Setting up the development process for contiguous intergation")
+        AppLogger.log_job("Setting up the development process for contiguous integration")
         
         AdoProjectManager.create_project(project_name)
      
@@ -2760,7 +2760,7 @@ class DeploymentManager:
             dev_workspace_name
         )
         
-        AppLogger.log_job("Setting up the development process for contiguous intergation")
+        AppLogger.log_job("Setting up the development process for contiguous integration")
         
         repo_name = project_name.replace(" ", "-")
         GitHubRestApi.create_repository(repo_name, dev_workspace)
@@ -2879,7 +2879,7 @@ class DeploymentManager:
             dev_workspace_name
         )
         
-        AppLogger.log_job("Setting up the development process for contiguous intergation")
+        AppLogger.log_job("Setting up the development process for contiguous integration")
         
         repo_name = project_name.replace(' ','-')
         GitHubRestApi.create_repository(repo_name, dev_workspace)
@@ -2978,7 +2978,7 @@ class DeploymentManager:
             dev_workspace_name
         )
         
-        AppLogger.log_job("Setting up the development process for contiguous intergation")
+        AppLogger.log_job("Setting up the development process for contiguous integration")
         
         repo_name = project_name.replace(' ','-')
         GitHubRestApi.create_repository(repo_name, dev_workspace)

@@ -1,21 +1,18 @@
 
-name: Test2 - Clone workspace
+name: Run setup command
 
 on:
     workflow_dispatch:
       inputs:      
-        source_workspace_name:
-          description: Source workspace name
+        run_cleanup_environment:
+          description: Run cleanup environment
           required: true
-          default: "Customer-Sales"
-        target_workspace_name:
-          description: Target workspace name
-          required: true
-          default: "Lenny "
+          type: boolean
+          default: false
 
 jobs:
     deployment-job:
-        name: Cloning [${{inputs.source_workspace_name}}] to [${{inputs.target_workspace_name}}]
+        name: Run setup command
         runs-on: ubuntu-latest
         permissions:
           contents: write
@@ -62,7 +59,6 @@ jobs:
                 ADO_ORGANIZATION: ${{ secrets.ADO_ORGANIZATION }}
                 ORGANIZATION_GITHUB: ${{ vars.ORGANIZATION_GITHUB }}
                 PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.GITHUB_TOKEN }}
-                SOURCE_WORKSPACE_NAME: ${{ inputs.source_workspace_name }}
-                TARGET_WORKSPACE_NAME: ${{ inputs.target_workspace_name }}
+                RUN_CLEANUP_ENVIRONMENT: ${{ inputs.run_cleanup_environment }}
               run:
-                python src/test02.py
+                python src/run_setup_command.py
