@@ -723,7 +723,6 @@ class DeploymentManager:
         
         return staging_workspace
 
-
     #endregion
 
     #region Deploy solution using Fabric REST APIs
@@ -2334,7 +2333,6 @@ class DeploymentManager:
         AdoProjectManager.create_branch(project_name, prod_branch_name, test_branch_name)
         FabricRestApi.update_workspace_description(prod_workspace.id, f'BUILD: {prod_branch_name}')
 
-
     @classmethod
     def setup_ado_repo_with_two_workspace_solution(cls, project_name):
         """Setup ADO repo with Two Workspace Solution using fabric-cicd"""
@@ -3070,6 +3068,8 @@ class DeploymentManager:
 
     #endregion
     
+    #region ADO project for terraform
+    
     @classmethod
     def setup_ado_repo_for_terraform(cls, project_name):
         """Set up ADO project with variables/secrets"""
@@ -3095,3 +3095,56 @@ class DeploymentManager:
             'ado_setup_with_terraform',
             variable_group_id=variable_group['id'])
         
+    #endregion
+    
+    #region ADO project for terraform
+    
+    @classmethod
+    def delete_all_workspaces(cls):
+        """Delete All Workspaces"""
+        AppLogger.log_step("Deleting workspaces and their associated connections")
+        for workspace in FabricRestApi.list_workspaces():
+            AppLogger.log_substep(f"Deleting workspace {workspace['displayName']} [{workspace['id']}]")
+            FabricRestApi.delete_workspace(workspace['id'])
+
+    @classmethod
+    def delete_all_connections(cls):
+        """Delete All Connections"""
+        AppLogger.log_step("Deleting connections")
+        for connection in FabricRestApi.list_connections():
+            display_name = connection['displayName'] if connection['displayName'] else connection['id']
+            AppLogger.log_substep(f"Deleting {display_name}")
+            FabricRestApi.delete_connection(connection['id'])
+
+    @classmethod
+    def delete_all_github_repos(cls):
+        """"Delete All GitHub Repos"""
+        AppLogger.log_step("Deleting Demo GitHub Repos")
+ 
+        repos = GitHubRestApi.get_github_repositories()
+        for repo in repos:
+            AppLogger.log_substep(f"Deleting {repo['name']}")
+            GitHubRestApi.delete_github_repository(repo['name'])
+
+    @classmethod 
+    def delete_all_ado_projects(cls):
+        """Delete All Azure DevOps Projects"""
+        AppLogger.log_step("Deleting Demo Azure DevOps projects")
+ 
+        projects = AdoProjectManager.get_projects()
+        for project in projects:
+            AdoProjectManager.delete_project(project['id'])
+
+    @classmethod
+    def cleanup_dev_environment(cls):
+        """Clean Up Dev Environment"""
+        AppLogger.log_job("Cleanup dev environment")
+        cls.delete_all_deployment_pipelines()
+        cls.delete_all_workspaces()
+        cls.delete_all_connections()
+        cls.delete_all_github_repos()
+        cls.delete_all_ado_projects()
+        AppLogger.log_job_ended("Cleanup of dev environment complete")
+
+    #endregion
+    
