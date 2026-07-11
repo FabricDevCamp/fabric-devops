@@ -1,5 +1,5 @@
 
-name: Test1
+name: Deploy with two workspace solution
 
 on:
     workflow_dispatch:
@@ -54,10 +54,11 @@ jobs:
                 AZURE_STORAGE_SAS_TOKEN: ${{ secrets.AZURE_STORAGE_SAS_TOKEN }}                
                 FABRIC_CAPACITY_ID: ${{ secrets.FABRIC_CAPACITY_ID }}             
                 ADMIN_USER_ID: ${{ secrets.ADMIN_USER_ID }}
+                ADMIN_USER_UPN: ${{ secrets.ADMIN_USER_UPN }}
                 DEVELOPERS_GROUP_ID: ${{ secrets.DEVELOPERS_GROUP_ID }}
                 ADO_ORGANIZATION: ${{ secrets.ADO_ORGANIZATION }}
                 ORGANIZATION_GITHUB: ${{ vars.ORGANIZATION_GITHUB }}
                 PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.GITHUB_TOKEN }}
                 REPO_NAME: ${{ inputs.repo_name }}
               run:
-                python src/test01.py
+                python src/deploy_with_two_workspace_solution.py
