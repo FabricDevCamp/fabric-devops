@@ -2231,7 +2231,7 @@ class DeploymentManager:
         AdoProjectManager.run_pipeline(project_name, 'deploy-to-prod-workspace', 'main')
         AdoProjectManager.run_pipeline(project_name, 'apply-post-deploy-updates-to-prod', 'main')
         
-        AdoProjectManager.add_approval_to_environment(project_name, 'prod', 'ted@fabricdevcamp.net')   
+        AdoProjectManager.add_approval_to_environment(project_name, 'prod', EnvironmentSettings.ADMIN_USER_UPN)   
 
     @classmethod
     def setup_ado_repo_with_fabric_cicd_and_release_flow(cls, project_name, solution_name, create_feature_workspace = False):
@@ -2516,7 +2516,7 @@ class DeploymentManager:
         AdoProjectManager.run_pipeline(project_name, 'deploy-to-prod-presentation-workspace', 'main')
         AdoProjectManager.run_pipeline(project_name, 'apply-post-deploy-updates-to-prod-presentation', 'main')
 
-        AdoProjectManager.add_approval_to_environment(project_name, 'prod', '')
+        AdoProjectManager.add_approval_to_environment(project_name, 'prod', EnvironmentSettings.ADMIN_USER_UPN)
 
     #endregion
 
