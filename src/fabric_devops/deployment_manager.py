@@ -2392,7 +2392,7 @@ class DeploymentManager:
         
         dev_model = FabricRestApi.get_item_by_name(dev_presentation_workspace.id, 'Product Sales DirectLake Model', 'SemanticModel')
         
-        FabricRestApi.create_and_bind_semantic_model_connecton(dev_presentation_workspace.id, dev_model.id, dev_sales_lakehouse)
+        FabricRestApi.create_and_bind_semantic_model_connecton(dev_presentation_workspace, dev_model.id, dev_sales_lakehouse)
                 
         AppLogger.log_job("Setting up the development process for contiguous intergation")
         
