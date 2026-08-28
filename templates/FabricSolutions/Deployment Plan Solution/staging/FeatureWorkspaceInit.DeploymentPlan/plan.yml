@@ -1,0 +1,36 @@
+$schema: https://developer.microsoft.com/json-schemas/fabric/item/deploymentPlan/definition/plan/1.0.0/schema.json
+version: 1.0.0
+groups:
+  - name: environment_settings_Variables
+    logicalId: 4444cdfd-4224-b484-4059-627ca8fb7bc9
+  - name: sales_bronze_Lakehouse
+    logicalId: e27b84f0-b138-a2b6-45a7-863256ec1520
+    dependsOn:
+      - groupName: environment_settings_Variables
+  - name: sales_silver_Lakehouse
+    logicalId: bb37d9c8-4238-b9a3-4cb5-ce2ab8fdd937
+    postActions:
+      - name: Build 01 Silver Tables_SynapseNotebook
+        job:
+          type: Execute
+          logicalId: 5feda8b3-edea-a33b-446d-973d8ab5fd13
+    dependsOn:
+      - groupName: sales_bronze_Lakehouse
+  - name: sales_Lakehouse
+    logicalId: 747a2cea-b818-8a73-4af7-6d4e87a6651c
+    postActions:
+      - name: Build 02 Gold Tables_SynapseNotebook
+        job:
+          type: Execute
+          logicalId: d6e183ba-3876-b091-4f58-bb233027abdd
+    dependsOn:
+      - groupName: sales_silver_Lakehouse
+  - name: Product Sales DirectLake Model_dataset
+    logicalId: 67c432ea-476d-9753-46e7-a7525e5fdeac
+    postActions:
+      - name: Connect Model to Lakehouse_SynapseNotebook
+        job:
+          type: Execute
+          logicalId: 1faffe4b-7fd3-bafd-4ddf-e0a7d6b7b9f8
+    dependsOn:
+      - groupName: sales_Lakehouse

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/variableLibrary/definition/valueSet/1.0.0/schema.json",
+  "name": "test",
+  "variableOverrides": [
+    {
+      "name": "adls_server",
+      "value": "https://fabricdevcampdemos.dfs.core.windows.net/"
+    },
+    {
+      "name": "adls_container_name",
+      "value": "sampledata"
+    },
+    {
+      "name": "adls_container_path",
+      "value": "/productsales/test/"
+    },
+    {
+      "name": "adls_shortcut_subpath",
+      "value": "sampledata/productsales/test/"
+    },
+    {
+      "name": "adls_connection_id",
+      "value": "9fc0a3d2-7c0d-4d15-9d06-40018bc0a89b"
+    },
+    {
+      "name": "adls_connection",
+      "value": {
+        "connectionId": "9fc0a3d2-7c0d-4d15-9d06-40018bc0a89b"
+      }
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "Product Sales Top 10 Cities",
+    "description": ""
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "ba2ac5b2-4926-9fb4-4282-8602e4b21223"
+  }
+}

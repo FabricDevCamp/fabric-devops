@@ -11,7 +11,7 @@ from .variable_library import VariableLibrary
 
 class ItemDefinitionFactory:
     """Logic to to create and update item definitions"""
-
+    
     @classmethod
     def _create_inline_base64_part(cls, path, payload):
         """create item definition part with base64 encoding"""

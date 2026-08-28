@@ -24,7 +24,7 @@ find_replace:
         prod: "$items.Lakehouse.sales.$id" 
       is_regex: "true"
       item_type: ["Notebook"]
-      item_name: "Build 02 Gold Tables"
+      item_name: ["Build 02 Gold Tables", "Connect Model to Lakehouse"]
 
     - find_value: 'Sql\.Database\(\s*"([^"]*datawarehouse\.fabric\.microsoft\.com[^"]*)"\s*,'
       replace_value:

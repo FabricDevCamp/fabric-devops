@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "DeploymentPlan",
+    "displayName": "FeatureWorkspaceInit"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "ce141f51-2547-4bbc-8e85-a41200cf05e2"
+  }
+}

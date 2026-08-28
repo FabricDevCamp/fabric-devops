@@ -944,6 +944,8 @@ class FabricRestApi:
         endpoint = f"workspaces/{workspace_id}/items/bulkImportDefinitions?beta=true"
         return cls._execute_post_request(endpoint, import_request)
     
+
+    
     #endregion
     
     #region deployment pipelines
