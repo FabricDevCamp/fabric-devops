@@ -7,7 +7,7 @@ on:
 jobs:
     deployment-job:
       name: Apply post deploy workspace updates
-      runs-on: ubuntu-latest
+      runs-on: ubuntu-22.04
 
       steps:
         - name: Check out the code

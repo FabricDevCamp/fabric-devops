@@ -9,7 +9,7 @@ stages:
   - deployment: DeployToTestWorkspace
     displayName: 'Deploy to Test Staging Workspace'
     pool:
-      vmImage: ubuntu-latest
+      vmImage: ubuntu-22.04
     environment: 'test'
     strategy:
       runOnce:

@@ -34,7 +34,7 @@ permissions:
 jobs:
     deployment-job:
         name: Deploy ${{inputs.solution_name}}
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-22.04
 
         steps:
             - name: Check out the code

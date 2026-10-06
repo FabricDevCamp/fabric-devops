@@ -9,7 +9,7 @@ variables:
 jobs:
 - job: deploy_from_git_to_workspace
   pool:
-    vmImage: ubuntu-latest
+    vmImage: ubuntu-22.04
   
   steps:
   - task: UsePythonVersion@0

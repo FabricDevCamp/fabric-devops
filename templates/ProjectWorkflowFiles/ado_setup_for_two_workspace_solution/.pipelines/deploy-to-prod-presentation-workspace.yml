@@ -9,7 +9,7 @@ stages:
   - deployment: DeployToProdPresentationWorkspace
     displayName: 'Deploy to Prod Presentation Workspace'
     pool:
-      vmImage: ubuntu-latest
+      vmImage: ubuntu-22.04
     environment: 'prod'
     strategy:
       runOnce:

@@ -15,7 +15,7 @@ variables:
 jobs:
 - job: Sync_Dev_Workspace
   pool:
-    vmImage: ubuntu-latest
+    vmImage: ubuntu-22.04
   
   steps:
   - task: UsePythonVersion@0

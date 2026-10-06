@@ -6,7 +6,7 @@ variables:
 jobs:
 - job: apply_post_deploy_updates_to_test
   pool:
-    vmImage: ubuntu-latest
+    vmImage: ubuntu-22.04
   
   steps:
   - task: UsePythonVersion@0
