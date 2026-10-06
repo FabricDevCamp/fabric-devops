@@ -1,11 +1,10 @@
 """Setup project with fabric-cicd and release flow """
 import json
-import os
+import subprocess
 
-from fabric_devops import AdoProjectManager, DeploymentManager
-
-os.system('cls')
+from fabric_devops import FabricRestApi
+subprocess.run('cls', shell=True)
 
 
 project_name = 'Apollo'
-AdoProjectManager.run_pipeline(project_name, 'deploy-to-test-staging-workspace', 'main')
+FabricRestApi.create_workspace(project_name)
