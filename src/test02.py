@@ -2,9 +2,9 @@
 import json
 import subprocess
 
-from fabric_devops import FabricRestApi
+from fabric_devops import GitHubRestApi
 subprocess.run('cls', shell=True)
 
 
-project_name = 'Apollo'
-FabricRestApi.create_workspace(project_name)
+repos = GitHubRestApi.get_github_repositories()
+print( repos )

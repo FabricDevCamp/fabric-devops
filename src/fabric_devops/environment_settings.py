@@ -17,9 +17,6 @@ class EnvironmentSettings:
     ADMIN_USER_UPN = os.getenv("ADMIN_USER_UPN")
     DEVELOPERS_GROUP_ID = os.getenv("DEVELOPERS_GROUP_ID")
 
-    ORGANIZATION_GITHUB = os.getenv('ORGANIZATION_GITHUB')
-    PERSONAL_ACCESS_TOKEN_GITHUB = os.getenv('PERSONAL_ACCESS_TOKEN_GITHUB')
-
     #  WEB_DATASOURCE_ROOT_URL = 'https://github.com/FabricDevCamp/SampleData/raw/refs/heads/main/productsales/'
     WEB_DATASOURCE_ROOT_URL = 'https://github.com/FabricDevCamp/SampleData/raw/refs/heads/main/productsales/'
 
@@ -31,8 +28,11 @@ class EnvironmentSettings:
     AZURE_STORAGE_SAS_TOKEN = os.getenv('AZURE_STORAGE_SAS_TOKEN')
 
     ADO_ORGANIZATION = os.getenv('ADO_ORGANIZATION')
-    
-    ORGANIZATION_GITHUB = os.getenv('ORGANIZATION_GITHUB')
+
+    ORGANIZATION_GITHUB = os.getenv('ORGANIZATION_GITHUB')        
+    APP_ID_GITHUB = os.getenv('APP_ID_GITHUB')
+    INSTALLATION_ID_GITHUB = os.getenv('INSTALLATION_ID_GITHUB')
+    PRIVATE_KEY_GITHUB = os.getenv('PRIVATE_KEY_GITHUB')  
     PERSONAL_ACCESS_TOKEN_GITHUB = os.getenv('PERSONAL_ACCESS_TOKEN_GITHUB')
 
     FABRIC_NONTRIAL_CAPACITY_ID = os.getenv('FABRIC_NONTRIAL_CAPACITY_ID')

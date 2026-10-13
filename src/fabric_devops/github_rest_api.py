@@ -9,6 +9,8 @@ from json.decoder import JSONDecodeError
 from nacl import encoding, public
 import requests
 
+from github import Auth, GithubIntegration
+
 from .app_logger import AppLogger
 from .environment_settings import EnvironmentSettings
 from .item_definition_factory import ItemDefinitionFactory
@@ -16,9 +18,17 @@ from .item_definition_factory import ItemDefinitionFactory
 class GitHubRestApi:
     """Wrapper class for calling GitHub REST APIs"""
 
-    ACCESS_TOKEN = EnvironmentSettings.PERSONAL_ACCESS_TOKEN_GITHUB
-
     ORGANIZATION_GITHUB = EnvironmentSettings.ORGANIZATION_GITHUB
+    PEM_CERTIFICATE = EnvironmentSettings.PRIVATE_KEY_GITHUB
+    APP_ID = EnvironmentSettings.APP_ID_GITHUB
+    PRIVATE_KEY = EnvironmentSettings.PRIVATE_KEY_GITHUB
+    INSTALLATION_ID = EnvironmentSettings.INSTALLATION_ID_GITHUB
+
+    auth = Auth.AppAuth(APP_ID, PRIVATE_KEY)
+    gi = GithubIntegration(auth=auth)
+    client = gi.get_github_for_installation(int(INSTALLATION_ID))
+
+    ACCESS_TOKEN = gi.get_access_token(INSTALLATION_ID).token
     BASE_URL = 'https://api.github.com/'
 
 #region Low-level details about authentication and HTTP requests and responses
@@ -219,7 +229,7 @@ class GitHubRestApi:
         endpoint = f"/orgs/{cls.ORGANIZATION_GITHUB}/repos"
         body = {
             'name': repo_name,
-            'private': private,
+            'private': False,
             'auto_init': True
         }
 
