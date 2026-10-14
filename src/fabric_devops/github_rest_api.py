@@ -290,14 +290,14 @@ class GitHubRestApi:
     @classmethod
     def list_branches(cls, repo_name):
         """Create GitHub Repository Branch"""
-        endpoint = f"/repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/branches"
+        endpoint = f"repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/branches"
         repos = cls._execute_get_request(endpoint)
         return repos
 
     @classmethod
     def get_branch_by_name(cls, repo_name, branch_name):
         """Create GitHub Repository Branch"""
-        endpoint = f"/repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/branches/{branch_name}"
+        endpoint = f"repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/branches/{branch_name}"
         repos = cls._execute_get_request(endpoint)
         return repos
 
@@ -312,7 +312,7 @@ class GitHubRestApi:
         """Get a specific file from a GitHub repository branch"""
         
         # get readme file sha
-        endpoint = f"/repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/contents/README.md"
+        endpoint = f"repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/contents/README.md"
         
         readme_file = cls._execute_get_request(endpoint)
         
@@ -324,7 +324,7 @@ class GitHubRestApi:
         readme_file_sha = readme_file['sha']
         
         # overwrite readme file with new content
-        endpoint = f"/repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/contents/README.md"
+        endpoint = f"repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/contents/README.md"
         base64_content = base64.b64encode(contents.encode('utf-8')).decode('utf-8')
         body = {
             'message': 'Overwrite README.md',
@@ -543,7 +543,7 @@ class GitHubRestApi:
         encrypted = sealed_box.encrypt(secret_value.encode("utf-8"))
         base64_encrypted = base64.b64encode(encrypted).decode("utf-8")
 
-        endpoint = f"/orgs/{cls.ORGANIZATION_GITHUB}/actions/secrets/{secret_name}"
+        endpoint = f"orgs/{cls.ORGANIZATION_GITHUB}/actions/secrets/{secret_name}"
         body = {
             'owner': cls.ORGANIZATION_GITHUB,
             'repo': repo_name,
@@ -558,7 +558,7 @@ class GitHubRestApi:
     @classmethod
     def _get_repo_public_key(cls, repo_name):
         """Create GitHub Repository Branch"""
-        endpoint = f"/repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/actions/secrets/public-key"
+        endpoint = f"repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/actions/secrets/public-key"
         return cls._execute_get_request(endpoint)
 
     @classmethod
@@ -573,7 +573,7 @@ class GitHubRestApi:
         encrypted = sealed_box.encrypt(secret_value.encode("utf-8"))
         base64_encrypted = base64.b64encode(encrypted).decode("utf-8")
 
-        endpoint = f"/repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/actions/secrets/{secret_name}"
+        endpoint = f"repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/actions/secrets/{secret_name}"
         body = {
             'owner': cls.ORGANIZATION_GITHUB,
             'repo': repo_name,
@@ -588,7 +588,7 @@ class GitHubRestApi:
     def create_repository_variable(cls, repo_name, variable_name, variable_value):
         """Create repository variable"""
 
-        endpoint = f"/repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/actions/variables"
+        endpoint = f"repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/actions/variables"
         body = {
             'owner': cls.ORGANIZATION_GITHUB,
             'repo': repo_name,
@@ -626,7 +626,7 @@ class GitHubRestApi:
         
         AppLogger.log_step(f"Running Workflow [{workflow_file_name}] on branch [{branch}]") 
         
-        endpoint = f"/repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/actions/workflows/{workflow_file_name}/dispatches"
+        endpoint = f"repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/actions/workflows/{workflow_file_name}/dispatches"
         body = { 
             "ref":branch,
             'return_run_details': True
@@ -648,7 +648,7 @@ class GitHubRestApi:
     @classmethod
     def get_workflow_run(cls, repo_name, run_id):
         """Get GitHub Workflow Run Status"""
-        endpoint = f"/repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/actions/runs/{run_id}"
+        endpoint = f"repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/actions/runs/{run_id}"
         response = cls._execute_get_request(endpoint)
         return response
 
@@ -656,7 +656,7 @@ class GitHubRestApi:
     def create_environment(cls, repo_name, environment_name, add_reviewers=False):
         """Create or update environment with protection rules"""
 
-        endpoint = f"/repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/environments/{environment_name}"
+        endpoint = f"repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/environments/{environment_name}"
         
         body = {
             'wait_timer': 0
@@ -678,7 +678,7 @@ class GitHubRestApi:
     def add_protection_ruleset_for_branch(cls, repo_name, branch_name):
         """Add branch protection ruleset for branch"""
 
-        endpoint = f"/repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/rulesets"
+        endpoint = f"repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/rulesets"
 
         body = {
             'name': f'Branch protection ruleset for {branch_name} branch',
