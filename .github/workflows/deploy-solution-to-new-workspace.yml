@@ -96,6 +96,7 @@ jobs:
                 APP_ID_GITHUB: ${{ secrets.APP_ID_GITHUB }}
                 INSTALLATION_ID_GITHUB: ${{ secrets.INSTALLATION_ID_GITHUB }}
                 PRIVATE_KEY_GITHUB: ${{ secrets.PRIVATE_KEY_GITHUB }}
+                PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
                 WORKSPACE_NAME: ${{inputs.workspace_name}}
                 SOLUTION_NAME: ${{inputs.solution_name}}        
                 TARGET_ENVIRONMENT: ${{inputs.target_environment}}
