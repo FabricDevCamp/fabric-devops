@@ -297,6 +297,7 @@ class GitHubRestApi:
         cls.create_repository_secret(repo_name, 'AZURE_CLIENT_SECRET', EnvironmentSettings.AZURE_CLIENT_SECRET)
         cls.create_repository_secret(repo_name, 'AZURE_TENANT_ID', EnvironmentSettings.AZURE_TENANT_ID)
         cls.create_repository_secret(repo_name, 'PERSONAL_ACCESS_TOKEN_GITHUB', EnvironmentSettings.PERSONAL_ACCESS_TOKEN_GITHUB)
+        cls.create_repository_variable(repo_name, 'AZURE_STORAGE_SAS_TOKEN', EnvironmentSettings.AZURE_STORAGE_SAS_TOKEN)
         cls.create_repository_variable(repo_name, 'ORGANIZATION_GITHUB', EnvironmentSettings.ORGANIZATION_GITHUB)
         cls.create_repository_variable(repo_name, 'ADMIN_USER_ID', EnvironmentSettings.ADMIN_USER_ID)
         cls.create_repository_variable(repo_name, 'FABRIC_CAPACITY_ID', EnvironmentSettings.FABRIC_CAPACITY_ID)
