@@ -326,7 +326,7 @@ class GitHubRestApi:
         while workflow_run['status'] != 'completed':
             time.sleep(20)         
             workflow_run = cls.get_workflow_run(repo_name, workflow_run_id)
-            AppLogger.log_step(f"Workflow run status: {workflow_run['status']}")
+            AppLogger.log_substep(f"Workflow run status: {workflow_run['status']}")
 
         AppLogger.log_substep(f"Workflow run conclusion: {workflow_run['conclusion']}")
         
