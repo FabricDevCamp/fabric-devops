@@ -24,10 +24,15 @@ class GitHubRestApi:
     PRIVATE_KEY = EnvironmentSettings.PRIVATE_KEY_GITHUB
     INSTALLATION_ID = EnvironmentSettings.INSTALLATION_ID_GITHUB
 
+    AppLogger.log_step("Initializing GitHub REST API")
+    AppLogger.log_substep("Authenticating with GitHub")
     auth = Auth.AppAuth(APP_ID, PRIVATE_KEY)
+
+    AppLogger.log_substep("Getting GitHub integration instance")
     gi = GithubIntegration(auth=auth)
     client = gi.get_github_for_installation(int(INSTALLATION_ID))
 
+    
     ACCESS_TOKEN = gi.get_access_token(INSTALLATION_ID).token
     BASE_URL = 'https://api.github.com/'
 
