@@ -63,6 +63,11 @@ jobs:
             - name: fabric-cicd library
               run: |
                     pip install fabric-cicd -q
+
+            - name: Install octopy
+              run: |
+                    pip install octopy -q
+                    
             - name: Install PyNaCl
               run: |
                     pip install PyNaCl -q
