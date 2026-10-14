@@ -463,10 +463,10 @@ class GitHubRestApi:
                 '{WORKSPACE_NAME}', 
                 workspace.display_name)
 
-        AppLogger.log_substep('overwrite readme')
+        AppLogger.log_substep('Overwrite README in repository root folder')
         cls.overwrite_repo_readme_file(repo_name, root_folder_readme_content)
 
-        AppLogger.log_substep('Create readme in /workspace folder')
+        AppLogger.log_substep('Create README as placeholder in /workspace folder')
         cls.create_workspace_folder_readme(repo_name, 'main')
 
         return repo
