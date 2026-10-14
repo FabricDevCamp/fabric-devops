@@ -59,7 +59,6 @@ class GitHubRestApi:
 
         """Execute POST request with support for Long-running Operations (LRO)"""
         rest_url = cls.BASE_URL + endpoint
-        print(f'POST: {rest_url}')
         request_headers = {'Content-Type': content_type,
                            'Authorization': f'token {cls.ACCESS_TOKEN}'}           
         response = requests.post(url=rest_url, json=post_body, headers=request_headers, timeout=60)
@@ -199,6 +198,180 @@ class GitHubRestApi:
         """Get GitHub User"""
         endpoint = "user"
         return cls._execute_get_request(endpoint)
+        """Copy files to repo"""
+        folder_path = f".//templates//ProjectWorkflowFiles//{folder_path}//"
+        for root, dirs, files in os.walk(folder_path):
+            for file in files:
+                file_path = os.path.join(root, file)
+                file = open(file_path,'r', encoding="utf-8")
+                file_content = file.read()
+                relative_file_path = file_path.replace(folder_path, '')\
+                                              .replace('\\', '/')
+                cls.write_file_to_repo(repo_name, branch, relative_file_path, file_content)
+
+    @classmethod
+    def _get_org_public_key(cls):
+        """Create GitHub Repository Branch"""
+        endpoint = f"/orgs/{cls.ORGANIZATION_GITHUB}/actions/secrets/public-key"
+        return cls._execute_get_request(endpoint)
+
+    @classmethod
+    def create_organization_secret(cls, repo_name, secret_name, secret_value):
+        """Create repository secret"""
+
+        public_key_result = cls._get_org_public_key()
+        public_key_id = public_key_result['key_id']
+        public_key_value = public_key_result['key']        
+        public_key = public.PublicKey(public_key_value.encode("utf-8"), encoding.Base64Encoder())
+        sealed_box = public.SealedBox(public_key)
+        encrypted = sealed_box.encrypt(secret_value.encode("utf-8"))
+        base64_encrypted = base64.b64encode(encrypted).decode("utf-8")
+
+        endpoint = f"orgs/{cls.ORGANIZATION_GITHUB}/actions/secrets/{secret_name}"
+        body = {
+            'owner': cls.ORGANIZATION_GITHUB,
+            'repo': repo_name,
+            'secret_name': secret_name,
+            'encrypted_value': base64_encrypted,
+            'key_id': public_key_id,
+            'visibility': 'all'
+        }
+
+        cls._execute_put_request(endpoint, body, 'application/vnd.github+json')
+
+    @classmethod
+    def _get_repo_public_key(cls, repo_name):
+        """Create GitHub Repository Branch"""
+        endpoint = f"repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/actions/secrets/public-key"
+        return cls._execute_get_request(endpoint)
+
+    @classmethod
+    def create_repository_secret(cls, repo_name, secret_name, secret_value):
+        """Create repository secret"""
+
+        public_key_result = cls._get_repo_public_key(repo_name)
+        public_key_id = public_key_result['key_id']
+        public_key_value = public_key_result['key']        
+        public_key = public.PublicKey(public_key_value.encode("utf-8"), encoding.Base64Encoder())
+        sealed_box = public.SealedBox(public_key)
+        encrypted = sealed_box.encrypt(secret_value.encode("utf-8"))
+        base64_encrypted = base64.b64encode(encrypted).decode("utf-8")
+
+        endpoint = f"repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/actions/secrets/{secret_name}"
+        body = {
+            'owner': cls.ORGANIZATION_GITHUB,
+            'repo': repo_name,
+            'secret_name': secret_name,
+            'encrypted_value': base64_encrypted,
+            'key_id': public_key_id
+        }
+
+        cls._execute_put_request(endpoint, body, 'application/vnd.github+json')
+
+    @classmethod
+    def create_repository_variable(cls, repo_name, variable_name, variable_value):
+        """Create repository variable"""
+
+        endpoint = f"repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/actions/variables"
+        body = {
+            'owner': cls.ORGANIZATION_GITHUB,
+            'repo': repo_name,
+            'name': variable_name,
+            'value': variable_value,
+        }
+
+        cls._execute_post_request(endpoint, body, 'application/vnd.github+json')
+
+    @classmethod
+    def create_variables_for_github_project(
+        cls, 
+        repo_name, 
+        dev_workspace_id, 
+        test_workspace_id,
+        prod_workspace_id):
+        """Add Variables to GitHub repo"""
+
+        AppLogger.log_step(f"Creating variables in repo [{repo_name}]")        
+        
+        cls.create_repository_secret(repo_name, 'AZURE_CLIENT_ID', EnvironmentSettings.AZURE_CLIENT_ID)
+        cls.create_repository_secret(repo_name, 'AZURE_CLIENT_SECRET', EnvironmentSettings.AZURE_CLIENT_SECRET)
+        cls.create_repository_secret(repo_name, 'AZURE_TENANT_ID', EnvironmentSettings.AZURE_TENANT_ID)
+        cls.create_repository_secret(repo_name, 'PERSONAL_ACCESS_TOKEN_GITHUB', EnvironmentSettings.PERSONAL_ACCESS_TOKEN_GITHUB)
+        cls.create_repository_variable(repo_name, 'ORGANIZATION_GITHUB', EnvironmentSettings.ORGANIZATION_GITHUB)
+        cls.create_repository_variable(repo_name, 'ADMIN_USER_ID', EnvironmentSettings.ADMIN_USER_ID)
+        cls.create_repository_variable(repo_name, 'FABRIC_CAPACITY_ID', EnvironmentSettings.FABRIC_CAPACITY_ID)
+        cls.create_repository_variable(repo_name, 'WORKSPACE_ID_DEV', dev_workspace_id)
+        cls.create_repository_variable(repo_name, 'WORKSPACE_ID_TEST', test_workspace_id)
+        cls.create_repository_variable(repo_name, 'WORKSPACE_ID_PROD', prod_workspace_id)
+
+    @classmethod
+    def run_workflow(cls, repo_name, workflow_file_name, branch):
+        """Run GitHub Workflow"""
+        
+        AppLogger.log_step(f"Running Workflow [{workflow_file_name}] on branch [{branch}]") 
+        
+        endpoint = f"repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/actions/workflows/{workflow_file_name}/dispatches"
+        body = { 
+            "ref":branch,
+            'return_run_details': True
+        }
+        
+        reponse = cls._execute_post_request(endpoint, body)
+        workflow_run_id = reponse['workflow_run_id']
+        workflow_run = cls.get_workflow_run(repo_name, workflow_run_id)
+        
+        AppLogger.log_substep(f"Workflow run status: {workflow_run['status']}")
+        
+        while workflow_run['status'] != 'completed':
+            time.sleep(20)         
+            workflow_run = cls.get_workflow_run(repo_name, workflow_run_id)
+            AppLogger.log_step(f"Workflow run status: {workflow_run['status']}")
+
+        AppLogger.log_substep(f"Workflow run conclusion: {workflow_run['conclusion']}")
+        
+    @classmethod
+    def get_workflow_run(cls, repo_name, run_id):
+        """Get GitHub Workflow Run Status"""
+        endpoint = f"repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/actions/runs/{run_id}"
+        response = cls._execute_get_request(endpoint)
+        return response
+
+    @classmethod
+    def create_environment(cls, repo_name, environment_name, add_reviewers=False):
+        """Create or update environment with protection rules"""
+
+        endpoint = f"repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/environments/{environment_name}"
+        
+        body = {
+            'wait_timer': 0
+        }
+        
+        # Only set prevent_self_review if required_reviewers are provided
+        if add_reviewers:
+            body['prevent_self_review'] = False
+            body['reviewers'] = [
+                {
+                    'type': 'User',
+                    'id': GitHubRestApi.get_user_id_by_name('TedAtDevCamp')
+                }
+            ]
+
+        cls._execute_put_request(endpoint, body, 'application/vnd.github+json')
+
+    @classmethod
+    def add_protection_ruleset_for_branch(cls, repo_name, branch_name):
+
+    @classmethod
+    def get_github_users(cls):
+        """Get GitHub User"""
+        endpoint = "users"
+        return cls._execute_get_request(endpoint)
+
+    @classmethod
+    def get_user_id_by_name(cls, username):
+        """Get GitHub User by Username"""
+        endpoint = f"users/{username}"
+        return cls._execute_get_request(endpoint)['id']
 
     @classmethod
     def get_github_repositories(cls):
@@ -247,12 +420,7 @@ class GitHubRestApi:
             'private': private,
             'auto_init': True
         }
-
-        print('Creating repo')
-        print(endpoint)
-        print( json.dumps(body, indent=4) )
-        print('')
-
+   
         cls._execute_post_request(endpoint, body)
              
         AppLogger.log_substep(f"Repo [{repo_name}] created successfully")
@@ -514,168 +682,6 @@ class GitHubRestApi:
 
     @classmethod
     def copy_files_from_folder_to_repo(cls, repo_name, branch, folder_path):
-        """Copy files to repo"""
-        folder_path = f".//templates//ProjectWorkflowFiles//{folder_path}//"
-        for root, dirs, files in os.walk(folder_path):
-            for file in files:
-                file_path = os.path.join(root, file)
-                file = open(file_path,'r', encoding="utf-8")
-                file_content = file.read()
-                relative_file_path = file_path.replace(folder_path, '')\
-                                              .replace('\\', '/')
-                cls.write_file_to_repo(repo_name, branch, relative_file_path, file_content)
-
-    @classmethod
-    def _get_org_public_key(cls):
-        """Create GitHub Repository Branch"""
-        endpoint = f"/orgs/{cls.ORGANIZATION_GITHUB}/actions/secrets/public-key"
-        return cls._execute_get_request(endpoint)
-
-    @classmethod
-    def create_organization_secret(cls, repo_name, secret_name, secret_value):
-        """Create repository secret"""
-
-        public_key_result = cls._get_org_public_key()
-        public_key_id = public_key_result['key_id']
-        public_key_value = public_key_result['key']        
-        public_key = public.PublicKey(public_key_value.encode("utf-8"), encoding.Base64Encoder())
-        sealed_box = public.SealedBox(public_key)
-        encrypted = sealed_box.encrypt(secret_value.encode("utf-8"))
-        base64_encrypted = base64.b64encode(encrypted).decode("utf-8")
-
-        endpoint = f"orgs/{cls.ORGANIZATION_GITHUB}/actions/secrets/{secret_name}"
-        body = {
-            'owner': cls.ORGANIZATION_GITHUB,
-            'repo': repo_name,
-            'secret_name': secret_name,
-            'encrypted_value': base64_encrypted,
-            'key_id': public_key_id,
-            'visibility': 'all'
-        }
-
-        cls._execute_put_request(endpoint, body, 'application/vnd.github+json')
-
-    @classmethod
-    def _get_repo_public_key(cls, repo_name):
-        """Create GitHub Repository Branch"""
-        endpoint = f"repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/actions/secrets/public-key"
-        return cls._execute_get_request(endpoint)
-
-    @classmethod
-    def create_repository_secret(cls, repo_name, secret_name, secret_value):
-        """Create repository secret"""
-
-        public_key_result = cls._get_repo_public_key(repo_name)
-        public_key_id = public_key_result['key_id']
-        public_key_value = public_key_result['key']        
-        public_key = public.PublicKey(public_key_value.encode("utf-8"), encoding.Base64Encoder())
-        sealed_box = public.SealedBox(public_key)
-        encrypted = sealed_box.encrypt(secret_value.encode("utf-8"))
-        base64_encrypted = base64.b64encode(encrypted).decode("utf-8")
-
-        endpoint = f"repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/actions/secrets/{secret_name}"
-        body = {
-            'owner': cls.ORGANIZATION_GITHUB,
-            'repo': repo_name,
-            'secret_name': secret_name,
-            'encrypted_value': base64_encrypted,
-            'key_id': public_key_id
-        }
-
-        cls._execute_put_request(endpoint, body, 'application/vnd.github+json')
-
-    @classmethod
-    def create_repository_variable(cls, repo_name, variable_name, variable_value):
-        """Create repository variable"""
-
-        endpoint = f"repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/actions/variables"
-        body = {
-            'owner': cls.ORGANIZATION_GITHUB,
-            'repo': repo_name,
-            'name': variable_name,
-            'value': variable_value,
-        }
-
-        cls._execute_post_request(endpoint, body, 'application/vnd.github+json')
-
-    @classmethod
-    def create_variables_for_github_project(
-        cls, 
-        repo_name, 
-        dev_workspace_id, 
-        test_workspace_id,
-        prod_workspace_id):
-        """Add Variables to GitHub repo"""
-
-        AppLogger.log_step(f"Creating variables in repo [{repo_name}]")        
-        
-        cls.create_repository_secret(repo_name, 'AZURE_CLIENT_ID', EnvironmentSettings.AZURE_CLIENT_ID)
-        cls.create_repository_secret(repo_name, 'AZURE_CLIENT_SECRET', EnvironmentSettings.AZURE_CLIENT_SECRET)
-        cls.create_repository_secret(repo_name, 'AZURE_TENANT_ID', EnvironmentSettings.AZURE_TENANT_ID)
-        cls.create_repository_secret(repo_name, 'PERSONAL_ACCESS_TOKEN_GITHUB', EnvironmentSettings.PERSONAL_ACCESS_TOKEN_GITHUB)
-        cls.create_repository_variable(repo_name, 'ORGANIZATION_GITHUB', EnvironmentSettings.ORGANIZATION_GITHUB)
-        cls.create_repository_variable(repo_name, 'ADMIN_USER_ID', EnvironmentSettings.ADMIN_USER_ID)
-        cls.create_repository_variable(repo_name, 'FABRIC_CAPACITY_ID', EnvironmentSettings.FABRIC_CAPACITY_ID)
-        cls.create_repository_variable(repo_name, 'WORKSPACE_ID_DEV', dev_workspace_id)
-        cls.create_repository_variable(repo_name, 'WORKSPACE_ID_TEST', test_workspace_id)
-        cls.create_repository_variable(repo_name, 'WORKSPACE_ID_PROD', prod_workspace_id)
-
-    @classmethod
-    def run_workflow(cls, repo_name, workflow_file_name, branch):
-        """Run GitHub Workflow"""
-        
-        AppLogger.log_step(f"Running Workflow [{workflow_file_name}] on branch [{branch}]") 
-        
-        endpoint = f"repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/actions/workflows/{workflow_file_name}/dispatches"
-        body = { 
-            "ref":branch,
-            'return_run_details': True
-        }
-        
-        reponse = cls._execute_post_request(endpoint, body)
-        workflow_run_id = reponse['workflow_run_id']
-        workflow_run = cls.get_workflow_run(repo_name, workflow_run_id)
-        
-        AppLogger.log_substep(f"Workflow run status: {workflow_run['status']}")
-        
-        while workflow_run['status'] != 'completed':
-            time.sleep(20)         
-            workflow_run = cls.get_workflow_run(repo_name, workflow_run_id)
-            AppLogger.log_substep(f"Workflow run status: {workflow_run['status']}")
-
-        AppLogger.log_substep(f"Workflow run conclusion: {workflow_run['conclusion']}")
-        
-    @classmethod
-    def get_workflow_run(cls, repo_name, run_id):
-        """Get GitHub Workflow Run Status"""
-        endpoint = f"repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/actions/runs/{run_id}"
-        response = cls._execute_get_request(endpoint)
-        return response
-
-    @classmethod
-    def create_environment(cls, repo_name, environment_name, add_reviewers=False):
-        """Create or update environment with protection rules"""
-
-        endpoint = f"repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/environments/{environment_name}"
-        
-        body = {
-            'wait_timer': 0
-        }
-        
-        # Only set prevent_self_review if required_reviewers are provided
-        if add_reviewers:
-            body['prevent_self_review'] = False
-            body['reviewers'] = [
-                {
-                    'type': 'User',
-                    'id': GitHubRestApi.get_github_user()['id']
-                }
-            ]
-
-        cls._execute_put_request(endpoint, body, 'application/vnd.github+json')
-
-    @classmethod
-    def add_protection_ruleset_for_branch(cls, repo_name, branch_name):
         """Add branch protection ruleset for branch"""
 
         endpoint = f"repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/rulesets"

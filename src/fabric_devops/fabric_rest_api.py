@@ -1486,7 +1486,7 @@ class FabricRestApi:
      
         elif response.status_code == 404: # handle NOT FOUND error
             AppLogger.log_substep("Handling 404 by waiting and trying again")
-            print( response.content )
+            AppLogger.log_substep( response.content )
             time.sleep(10)
             response = requests.post(url=rest_url, json=post_body, headers=request_headers, timeout=60)
             
@@ -1497,8 +1497,6 @@ class FabricRestApi:
                 except JSONDecodeError:
                     return None
             else:
-                print('Error - 404 NOT FOUND')
-                print( response )
                 AppLogger.log_error(f"Error -  {response}")
                 raise RuntimeError("Error - ")
         

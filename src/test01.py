@@ -3,7 +3,7 @@ import os
 
 from fabric_devops import DeploymentManager, AppLogger
 
-PROJECT_NAME = 'Bixby'
+PROJECT_NAME = 'Vivian'
 SOLUTION_NAME = 'Power BI Solution'
 GIT_INTEGRATION_PROVIDER = 'GitHub'
 CREATE_FEATURE_WORKSPACE = False
