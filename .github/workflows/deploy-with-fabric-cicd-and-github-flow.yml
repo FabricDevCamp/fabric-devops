@@ -1,4 +1,4 @@
-name: Deploy w/ fabric-cicd + TBD flow
+name: Deploy w. fabric-cicd + TBD flow
 run-name: Deploy [${{inputs.solution_name}}] to [${{inputs.project_name}}] using fabric-cicd & trunk flow
 
 on:

@@ -1,5 +1,4 @@
-
-name: Deploy with two workspace solution
+name: Deploy w. two workspace solution
 
 on:
     workflow_dispatch:
