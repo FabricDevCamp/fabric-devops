@@ -1,4 +1,4 @@
-name: Deploy using GIT-sync for release process
+name: Deploy using GIT-sync and GitFlow
 run-name: Deploy [${{inputs.solution_name}}] to [${{inputs.project_name}}] using GIT-sync release process
 
 on:
