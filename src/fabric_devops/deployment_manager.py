@@ -1414,11 +1414,8 @@ class DeploymentManager:
             stages = FabricRestApi.list_deployment_pipeline_stages(pipeline.id)
             for stage in stages:
                 if stage.workspace_id is not None:
-                    try:
-                        FabricRestApi.unassign_workpace_from_pipeline_stage(pipeline.id, stage.id)
-                    except Exception as e:
-                        AppLogger.log_error(f"Error unassigning workspace id: {stage.workspace_id}")
-
+                    FabricRestApi.unassign_workpace_from_pipeline_stage(pipeline.id, stage.id)
+                    
             FabricRestApi.delete_deployment_pipeline(pipeline.id)
             AppLogger.log_substep('Deployment pipeline deleted')
 
@@ -1430,7 +1427,8 @@ class DeploymentManager:
             AppLogger.log_substep(f"Deleting {pipeline.display_name}")
             stages = FabricRestApi.list_deployment_pipeline_stages(pipeline.id)
             for stage in stages:
-                FabricRestApi.unassign_workpace_from_pipeline_stage(pipeline.id, stage.id)
+                if stage.workspace_id is not None:
+                    FabricRestApi.unassign_workpace_from_pipeline_stage(pipeline.id, stage.id)
 
             FabricRestApi.delete_deployment_pipeline(pipeline.id)
 
