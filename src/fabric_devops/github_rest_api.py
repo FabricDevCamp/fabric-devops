@@ -223,7 +223,16 @@ class GitHubRestApi:
         return None
 
     @classmethod
-    def create_repository(cls, repo_name, workspace = None, private = False):
+    def create_repository(cls, repo_name, private = False):
+        """Create GitHub Repository"""
+        AppLogger.log_step(f"Creating new GitHub repository [{repo_name}]")
+        org = cls.client.get_organization(cls.ORGANIZATION_GITHUB)
+        repo = org.create_repo(repo_name, private=private)
+
+        return repo
+
+    @classmethod
+    def create_repository_old(cls, repo_name, workspace = None, private = False):
         """Create GitHub Repository"""
         AppLogger.log_step(f"Creating new GitHub repository [{repo_name}]")
         repo = cls.get_github_repository_by_name(repo_name)
@@ -269,6 +278,7 @@ class GitHubRestApi:
         cls.create_workspace_folder_readme(repo_name, 'main')
 
         return repo
+
 
     @classmethod
     def delete_github_repository(cls, repo_name):

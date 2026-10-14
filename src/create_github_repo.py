@@ -8,5 +8,5 @@ for repo in repos:
     print(repo)
 
 
-REPO_NAME = os.getenv("REPO_NAME")
+REPO_NAME = 'chuck-norris' # os.getenv("REPO_NAME")
 GitHubRestApi.create_repository(REPO_NAME)
