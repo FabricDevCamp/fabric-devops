@@ -360,6 +360,28 @@ class GitHubRestApi:
 
     @classmethod
     def add_protection_ruleset_for_branch(cls, repo_name, branch_name):
+        """Add branch protection ruleset for branch"""
+
+        endpoint = f"repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/rulesets"
+
+        body = {
+            'name': f'Branch protection ruleset for {branch_name} branch',
+             "target": "branch",
+             "enforcement": "active",
+             "conditions": {
+                "ref_name": {
+                    "include": [f'refs/heads/{branch_name}'],
+                    "exclude": []
+                }
+            },
+            "rules": [
+                 {"type": "deletion" },
+                 {"type": "non_fast_forward" },
+                 {"type": "pull_request" }
+            ]
+        }
+
+        cls._execute_post_request(endpoint, body, 'application/vnd.github+json')
 
     @classmethod
     def get_github_users(cls):
