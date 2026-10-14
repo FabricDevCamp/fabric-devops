@@ -5,7 +5,7 @@ from fabric_devops import AppLogger, GitHubRestApi
 
 repos = GitHubRestApi.get_github_repositories()
 for repo in repos:
-    AppLogger.log_step(repo)
+    print(repo)
 
 
 REPO_NAME = os.getenv("REPO_NAME")
