@@ -1,4 +1,4 @@
-name: Deploy with fabric-cicd/Git flow
+name: Deploy w/ fabric-cicd + Git flow
 run-name: Deploy [${{inputs.solution_name}}] to [${{inputs.project_name}}] using fabric-cicd & Git flow
 
 on:
