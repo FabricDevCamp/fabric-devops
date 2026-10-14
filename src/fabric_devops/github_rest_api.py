@@ -361,7 +361,7 @@ class GitHubRestApi:
     @classmethod
     def add_protection_ruleset_for_branch(cls, repo_name, branch_name):
         """Add branch protection ruleset for branch"""
-
+        
         endpoint = f"repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/rulesets"
 
         body = {
