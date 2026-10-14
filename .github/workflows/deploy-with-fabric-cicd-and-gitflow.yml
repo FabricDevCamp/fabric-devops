@@ -7,7 +7,7 @@ on:
             project_name:
                 description: Project Name
                 required: true
-                default: "Customer Sales"
+                default: "Atlas"
             solution_name:
                 type: choice
                 description: Solution to deploy
@@ -24,7 +24,7 @@ on:
                 options: 
                 - Azure DevOps
                 - GitHub
-                default: Azure DevOps
+                default: GitHub
             create_feature_workspace:
                 type: boolean
                 description: Create feature workspace
@@ -47,29 +47,9 @@ jobs:
               with:
                     python-version: "3.12"
 
-            - name: Install azure-identity package
+            - name: Install python library packages
               run: |
-                    pip install azure-identity -q
-
-            - name: Install MSAL
-              run: |
-                    pip install msal -q
-
-            - name: Install Python SDK for Fabric REST APIs
-              run: |
-                    pip install microsoft-fabric-api -q
-
-            - name: fabric-cicd library
-              run: |
-                    pip install fabric-cicd -q
-
-            - name: Install PyGitHub
-              run: |
-                    pip install PyGitHub -q
-
-            - name: Install PyNaCl
-              run: |
-                    pip install PyNaCl -q
+                    pip install azure-identity msal microsoft-fabric-api fabric-cicd PyGitHub PyNaCl -q
 
             - name: Deploy Solution                
               env:

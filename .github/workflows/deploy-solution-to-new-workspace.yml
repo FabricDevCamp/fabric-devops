@@ -8,7 +8,7 @@ on:
             workspace_name:
                 description: Workspace Name
                 required: true
-                default: "Product Sales"
+                default: "Demo 1"
             solution_name:
                 type: choice
                 description: Solution to deploy
