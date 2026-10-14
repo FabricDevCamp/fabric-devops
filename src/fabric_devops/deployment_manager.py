@@ -2766,9 +2766,6 @@ class DeploymentManager:
         GitHubRestApi.create_branch(repo_name, 'dev', 'test')
         GitHubRestApi.set_default_branch(repo_name, 'dev')
         
-        # add readme.md file in workspace folder
-        GitHubRestApi.create_workspace_folder_readme(repo_name, 'dev')
-        
         FabricRestApi.connect_workspace_to_github_repo(dev_workspace, repo_name, 'dev')
 
         if create_feature_workspace:

@@ -211,7 +211,7 @@ class GitHubRestApi:
     @classmethod
     def _get_org_public_key(cls):
         """Create GitHub Repository Branch"""
-        endpoint = f"/orgs/{cls.ORGANIZATION_GITHUB}/actions/secrets/public-key"
+        endpoint = f"orgs/{cls.ORGANIZATION_GITHUB}/actions/secrets/public-key"
         return cls._execute_get_request(endpoint)
 
     @classmethod
