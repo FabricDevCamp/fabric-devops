@@ -73,9 +73,9 @@ jobs:
               run: |
                     pip install fabric-cicd -q
 
-            - name: Install octopy
+            - name: Install PyGitHub
               run: |
-                    pip install octopy -q
+                    pip install PyGitHub -q
 
             - name: Install PyNaCl
               run: |
