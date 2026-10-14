@@ -1,5 +1,5 @@
 
-name: Deploy solution to customer tenant
+name: Deploy solution to tenant for customer 
 run-name: Deploy [${{inputs.solution_name}}] to tenant workspace for [${{inputs.customer_name}}]
 
 on:
