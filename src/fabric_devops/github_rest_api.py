@@ -59,6 +59,7 @@ class GitHubRestApi:
 
         """Execute POST request with support for Long-running Operations (LRO)"""
         rest_url = cls.BASE_URL + endpoint
+        print(f'POST: {rest_url}')
         request_headers = {'Content-Type': content_type,
                            'Authorization': f'token {cls.ACCESS_TOKEN}'}           
         response = requests.post(url=rest_url, json=post_body, headers=request_headers, timeout=60)
@@ -240,10 +241,10 @@ class GitHubRestApi:
             AppLogger.log_substep("Deleting existing repo with same name")
             cls.delete_github_repository(repo_name)
 
-        endpoint = f"/orgs/{cls.ORGANIZATION_GITHUB}/repos"
+        endpoint = f"orgs/{cls.ORGANIZATION_GITHUB}/repos"
         body = {
             'name': repo_name,
-            'private': False,
+            'private': private,
             'auto_init': True
         }
 
