@@ -2577,9 +2577,6 @@ class DeploymentManager:
         repo_name = project_name.replace(' ', '-')
         GitHubRestApi.create_repository(repo_name, dev_workspace)
         
-        # add readme.md file in workspace folder
-        GitHubRestApi.create_workspace_folder_readme(repo_name, 'main')
-  
         FabricRestApi.connect_workspace_to_github_repo(dev_workspace, repo_name, 'main')
 
         test_workspace = FabricRestApi.create_workspace(test_workspace_name)
@@ -2664,9 +2661,6 @@ class DeploymentManager:
         GitHubRestApi.create_branch(repo_name, 'test', 'main')
         GitHubRestApi.create_branch(repo_name, 'dev', 'test')
         GitHubRestApi.set_default_branch(repo_name, 'dev')
-        
-        # add readme.md file in workspace folder
-        GitHubRestApi.create_workspace_folder_readme(repo_name, 'dev')
           
         FabricRestApi.connect_workspace_to_github_repo(dev_workspace, repo_name, 'dev')
 
@@ -2978,9 +2972,7 @@ class DeploymentManager:
         
         repo_name = project_name.replace(' ','-')
         GitHubRestApi.create_repository(repo_name, dev_workspace)
-        
-        GitHubRestApi.create_workspace_folder_readme(repo_name, 'main')
-             
+                    
         FabricRestApi.connect_workspace_to_github_repo(
             dev_workspace,
             repo_name,
