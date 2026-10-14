@@ -1,7 +1,7 @@
 """Deployment Manager"""
 
 import time
-import datetime
+from datetime import datetime
 import json
 import os
 from zoneinfo import ZoneInfo
