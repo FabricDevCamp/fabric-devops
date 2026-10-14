@@ -1,5 +1,5 @@
 name: Deploy using Update-from-Git API
-run-name: Deploy [${{inputs.solution_name}}] to [${{inputs.project_name}}] using Fabric GIT synchronization
+run-name: Deploy [${{inputs.solution_name}}] to [${{inputs.project_name}}] using Update-from-Git API
 
 on:
     workflow_dispatch:
