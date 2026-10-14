@@ -58,12 +58,7 @@ jobs:
 
             - name: Install python library packages
               run: |
-                    pip install azure-identity -q
-                    pip install msal -q
-                    pip install microsoft-fabric-api -q
-                    pip install fabric-cicd -q
-                    pip install PyGitHub -q
-                    pip install PyNaCl -q
+                    pip install azure-identity msal microsoft-fabric-api fabric-cicd PyGitHub PyNaCl -q
 
             - name: Deploy solution to new workspace      
               env:
