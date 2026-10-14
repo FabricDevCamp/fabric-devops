@@ -1,4 +1,4 @@
-name: Deploy using Fabric GIT synchronization
+name: Deploy using Fabric GIT synch
 run-name: Deploy [${{inputs.solution_name}}] to [${{inputs.project_name}}] using Fabric GIT synchronization
 
 on:
