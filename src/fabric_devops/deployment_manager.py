@@ -1,10 +1,10 @@
 """Deployment Manager"""
 
 import time
+import datetime
 import json
 import os
 from zoneinfo import ZoneInfo
-
 import yaml
 
 from .app_logger import AppLogger
@@ -1438,12 +1438,12 @@ class DeploymentManager:
         pipeline = FabricRestApi.get_deployment_pipeline_by_name(pipeline_name)
         stages = FabricRestApi.list_deployment_pipeline_stages(pipeline.id)
         stages_list = list(stages)
-        source_stage_id = stages_list[1].id
+        source_stage_id = stages_list[0].id
         target_stage_id = stages_list[1].id
 
         AppLogger.log_step("Deploy from [dev] to [test]")
         
-        AppLogger.log_step(f'source_stage_id: {stages_list[1].id}')
+        AppLogger.log_step(f'source_stage_id: {stages_list[0].id}')
         AppLogger.log_step(f'target_stage_id: {stages_list[1].id}')
 
         FabricRestApi.deploy_to_pipeline_stage(pipeline.id, source_stage_id, target_stage_id)
