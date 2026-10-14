@@ -86,7 +86,9 @@ jobs:
                 DEVELOPERS_GROUP_ID: ${{ secrets.DEVELOPERS_GROUP_ID }}
                 ADO_ORGANIZATION: ${{ secrets.ADO_ORGANIZATION }}
                 ORGANIZATION_GITHUB: ${{ secrets.ORGANIZATION_GITHUB }}
-                PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
+                APP_ID_GITHUB: ${{ secrets.APP_ID_GITHUB }}
+                INSTALLATION_ID_GITHUB: ${{ secrets.INSTALLATION_ID_GITHUB }}
+                PRIVATE_KEY_GITHUB: ${{ secrets.PRIVATE_KEY_GITHUB }}
                 PROJECT_NAME: ${{inputs.project_name}}
                 SOLUTION_NAME: ${{inputs.solution_name}}        
                 GIT_INTEGRATION_PROVIDER: ${{inputs.git_integration_provider}}

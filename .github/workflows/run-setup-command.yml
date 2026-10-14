@@ -62,7 +62,9 @@ jobs:
                 DEVELOPERS_GROUP_ID: ${{ secrets.DEVELOPERS_GROUP_ID }}
                 ADO_ORGANIZATION: ${{ secrets.ADO_ORGANIZATION }}
                 ORGANIZATION_GITHUB: ${{ vars.ORGANIZATION_GITHUB }}
-                PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.GITHUB_TOKEN }}
+                APP_ID_GITHUB: ${{ secrets.APP_ID_GITHUB }}
+                INSTALLATION_ID_GITHUB: ${{ secrets.INSTALLATION_ID_GITHUB }}
+                PRIVATE_KEY_GITHUB: ${{ secrets.PRIVATE_KEY_GITHUB }}
                 RUN_CLEANUP_ENVIRONMENT: ${{ inputs.run_cleanup_environment }}
               run:
                 python src/run_setup_command.py
