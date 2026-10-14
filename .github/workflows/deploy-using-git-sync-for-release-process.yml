@@ -1,5 +1,5 @@
-name: Deploy using GIT-sync and GitFlow
-run-name: Deploy [${{inputs.solution_name}}] to [${{inputs.project_name}}] using GIT-sync release process
+name: Deploy using Fabric GIT synchronization
+run-name: Deploy [${{inputs.solution_name}}] to [${{inputs.project_name}}] using Fabric GIT synchronization
 
 on:
     workflow_dispatch:
