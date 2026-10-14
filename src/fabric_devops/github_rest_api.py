@@ -704,25 +704,13 @@ class GitHubRestApi:
 
     @classmethod
     def copy_files_from_folder_to_repo(cls, repo_name, branch, folder_path):
-        """Add branch protection ruleset for branch"""
-
-        endpoint = f"repos/{cls.ORGANIZATION_GITHUB}/{repo_name}/rulesets"
-
-        body = {
-            'name': f'Branch protection ruleset for {branch_name} branch',
-             "target": "branch",
-             "enforcement": "active",
-             "conditions": {
-                "ref_name": {
-                    "include": [f'refs/heads/{branch_name}'],
-                    "exclude": []
-                }
-            },
-            "rules": [
-                 {"type": "deletion" },
-                 {"type": "non_fast_forward" },
-                 {"type": "pull_request" }
-            ]
-        }
-
-        cls._execute_post_request(endpoint, body, 'application/vnd.github+json')
+        """Copy files to repo"""
+        folder_path = f".//templates//ProjectWorkflowFiles//{folder_path}//"
+        for root, dirs, files in os.walk(folder_path):
+            for file in files:
+                file_path = os.path.join(root, file)
+                file = open(file_path,'r', encoding="utf-8")
+                file_content = file.read()
+                relative_file_path = file_path.replace(folder_path, '')\
+                                              .replace('\\', '/')
+                cls.write_file_to_repo(repo_name, branch, relative_file_path, file_content)
