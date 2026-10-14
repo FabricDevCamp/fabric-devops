@@ -1,4 +1,4 @@
-name: Deploy with fabric-cicd|release flow
+name: Deploy with fabric-cicd/release flow
 run-name: Deploy [${{inputs.solution_name}}] to [${{inputs.project_name}}] using fabric-cicd & release flow
 
 on:

@@ -1,5 +1,5 @@
-name: Deploy with fabric-cicd | trunk flow
-run-name: Deploy [${{inputs.solution_name}}] to [${{inputs.project_name}}] using fabric-cicd & GitHub flow
+name: Deploy with fabric-cicd/trunk flow
+run-name: Deploy [${{inputs.solution_name}}] to [${{inputs.project_name}}] using fabric-cicd & trunk flow
 
 on:
     workflow_dispatch:
