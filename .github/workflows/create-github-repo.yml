@@ -68,4 +68,4 @@ jobs:
                 PRIVATE_KEY_GITHUB: ${{ secrets.PRIVATE_KEY_GITHUB }}
                 REPO_NAME: ${{inputs.repo_name}}
               run:
-                python src/deploy_solution_to_new_workspace.py
+                python src/create_github_repo.py
