@@ -45,22 +45,9 @@ jobs:
               with:
                     python-version: "3.12"
 
-
-            - name: Install azure-identity package
+            - name: Install python library packages
               run: |
-                    pip install azure-identity -q
-
-            - name: Install MSAL
-              run: |
-                    pip install msal -q
-
-            - name: Install Python SDK for Fabric REST APIs
-              run: |
-                    pip install microsoft-fabric-api -q
-
-            - name: fabric-cicd library
-              run: |
-                    pip install fabric-cicd -q
+                    pip install azure-identity msal microsoft-fabric-api fabric-cicd PyGitHub PyNaCl -q
 
             - name: Deploy solution to tenant workspace                
               env:
@@ -75,4 +62,4 @@ jobs:
                 CUSTOMER_NAME: ${{inputs.customer_name}}
                 SOLUTION_NAME: ${{inputs.solution_name}}        
               run:
-                python src/deploy_solution_to_tenant_workspace.py
+                python src/deploy_to_new_customer_tenant.py
