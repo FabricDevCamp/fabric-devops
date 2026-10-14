@@ -2610,7 +2610,7 @@ class DeploymentManager:
         stages = FabricRestApi.list_deployment_pipeline_stages(pipeline.id)
 
         for stage in stages:
-            if stage.order == 1:
+            if stage.order == 0:
                 FabricRestApi.assign_workpace_to_pipeline_stage(dev_workspace.id,
                                                                 pipeline.id,
                                                                 stage.id)

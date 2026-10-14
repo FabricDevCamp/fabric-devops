@@ -1,28 +1,15 @@
-"""Setup project with fabric-cicd and release flow """
+"""Setup project with deployment pipeline"""
 import os
 
 from fabric_devops import DeploymentManager, AppLogger
 
-PROJECT_NAME = 'Vivian'
-SOLUTION_NAME = 'Power BI Solution'
-GIT_INTEGRATION_PROVIDER = 'GitHub'
-CREATE_FEATURE_WORKSPACE = False
+PROJECT_NAME = 'Dionysus' # os.getenv("PROJECT_NAME")
+SOLUTION_NAME = 'Power BI Solution' # os.getenv("SOLUTION_NAME")
 
-match GIT_INTEGRATION_PROVIDER:
-
-    case 'Azure DevOps':
-        DeploymentManager.setup_ado_repo_with_fabric_cicd_and_github_flow(
-            PROJECT_NAME,
-            SOLUTION_NAME,
-            CREATE_FEATURE_WORKSPACE
-        )
-        
-    case 'GitHub':
-    
-        DeploymentManager.setup_github_repo_with_fabric_cicd_and_github_flow(
-            PROJECT_NAME,
-            SOLUTION_NAME,
-            CREATE_FEATURE_WORKSPACE
-        )
+DeploymentManager.setup_github_repo_with_deployment_pipeline(
+    PROJECT_NAME,
+    SOLUTION_NAME,
+    False
+)
 
 AppLogger.log_job_complete()
