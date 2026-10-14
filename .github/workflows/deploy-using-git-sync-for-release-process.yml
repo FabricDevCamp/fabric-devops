@@ -1,4 +1,4 @@
-name: Deploy with Fabric Update-from-Git API
+name: Deploy using Update-from-Git API
 run-name: Deploy [${{inputs.solution_name}}] to [${{inputs.project_name}}] using Fabric GIT synchronization
 
 on:
