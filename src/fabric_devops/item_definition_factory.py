@@ -172,6 +172,8 @@ class ItemDefinitionFactory:
     def get_create_notebook_request_from_folder(cls, solution_folder, item_folder, workspace_id, lakehouse):
         """generate create item request from folder"""
         create_request = cls.get_create_item_request_from_folder(solution_folder, item_folder)
+
+        # create_request['definition']['format'] = 'fabricGitSource'
         
         notebook_redirects = {
             '00000000-0000-0000-0000-000000000000': workspace_id,

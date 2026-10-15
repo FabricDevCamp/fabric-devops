@@ -640,12 +640,19 @@ class FabricRestApi:
         """Create Lakehouse"""
         create_item_request = {
             'displayName': display_name, 
-            'type': 'Lakehouse' 
+            'type': 'Lakehouse',
+            'parts': [{
+                'path': 'lakehouse.metadata.json',
+                'payload': base64.b64encode(('{}').encode('utf-8')).decode('utf-8'),
+                'payloadType': 'InlineBase64'
+            }]
         }
 
         if enable_schemas:
             create_item_request['creationPayload'] = { 'enableSchemas': True }
-            
+
+        print(create_item_request)
+        
         return cls.create_item(workspace_id, create_item_request, folder_id)
 
     @classmethod
