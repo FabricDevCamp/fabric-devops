@@ -54,3 +54,4 @@ jobs:
                 SETUP_DEMO1: ${{ inputs.setup_demo1 }}
               run:
                 python src/run_setup_commands.py
+      
