@@ -1561,7 +1561,7 @@ class DeploymentManager:
         for notebook in notebooks:
             
             # bind notebooks to sales_silver lakehouse
-            if notebook.display_name in ['Build 01 Silver Tables.Notebook']:
+            if notebook.display_name in ['Build 01 Silver Tables']:
                 AppLogger.log_substep(f"Updating notebook [{notebook.display_name}] to lakehouse[sales_silver]")
                 cls.update_source_lakehouse_in_notebook(
                     workspace_name,
@@ -1569,7 +1569,7 @@ class DeploymentManager:
                     "sales_silver")
 
             # bind notebooks to sales lakehouse
-            if notebook.display_name in ['Build 02 Gold Tables.Notebook']:
+            if notebook.display_name in ['Build 02 Gold Tables']:
                 AppLogger.log_substep(f"Updating notebook [{notebook.display_name}] to lakehouse[sales]")
                 cls.update_source_lakehouse_in_notebook(
                     workspace_name,
