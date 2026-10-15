@@ -1,4 +1,4 @@
-name: Run setup commands
+name: Deploy w. fabric-cicd + Release zzz
 
 on:
     workflow_dispatch:
