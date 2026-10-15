@@ -684,16 +684,13 @@ class FabricRestApi:
 
     @classmethod
     def refresh_sql_endpoint_metadata(cls, workspace_id, sql_endpoint_id):
-        """Refresh SL Endpoint"""
-        AppLogger.log_substep("Updating SQL Endpoint metadata...")
+        """Refresh SQL Endpoint"""
         cls.fabric_client.sqlendpoint.items.refresh_sql_endpoint_metadata(
                         workspace_id=workspace_id,
                         sql_endpoint_id=sql_endpoint_id,
                         sql_endpoint_refresh_metadata_request={}
                     ).value
             
-        AppLogger.log_substep(f"SQL Endpoint metadata refresh job completed successfully")
-
     @classmethod
     def list_shortcuts(cls, workspace_id, lakehouse_id):
         """List Shortcuts"""
@@ -845,7 +842,7 @@ class FabricRestApi:
         for datasource in datasources:
 
             if datasource['datasourceType'].lower() == 'sql':
-                AppLogger.log_substep('Creating SQL connection for semantic model')
+                AppLogger.log_step('Creating SQL connection for semantic model')
                 server = datasource['connectionDetails']['server']
                 database = datasource['connectionDetails']['database']
                 connection = cls.create_sql_connection_with_service_principal(server,
@@ -858,7 +855,7 @@ class FabricRestApi:
                                                         connection.id)
 
             elif datasource['datasourceType'].lower() == 'web':
-                AppLogger.log_substep('Creating Web connection for semantic model')
+                AppLogger.log_step('Creating Web connection for semantic model')
                 web_url    = datasource['connectionDetails']['url']
                 connection = cls.create_anonymous_web_connection(web_url)
                 AppLogger.log_substep('Binding semantic model to Web connection')
@@ -868,7 +865,7 @@ class FabricRestApi:
                 cls.refresh_semantic_model(workspace.id, semantic_model_id)
 
             elif datasource['datasourceType'] == 'AzureDataLakeStorage':
-                AppLogger.log_substep('Creating AzureDataLakeStorage connection for semantic model')
+                AppLogger.log_step('Creating AzureDataLakeStorage connection for semantic model')
                 server    = datasource['connectionDetails']['server']
                 path      = datasource['connectionDetails']['path']
                 connection = cls.create_azure_storage_connection_with_sas_token(server, path)
@@ -1361,7 +1358,7 @@ class FabricRestApi:
     def connect_workspace_to_github_repo(cls, workspace, repo_name, branch = 'main'):
         """Connect Workspace to GitHub Repository"""
 
-        AppLogger.log_substep(f"Connecting workspace [{workspace.display_name}] " + \
+        AppLogger.log_step(f"Connecting workspace [{workspace.display_name}] to GitHub repo[{repo_name}]" + \
                               f"to branch [{branch}] in GitHub repository [{repo_name}]")
                
         connection = cls._get_github_source_control_connection(repo_name)

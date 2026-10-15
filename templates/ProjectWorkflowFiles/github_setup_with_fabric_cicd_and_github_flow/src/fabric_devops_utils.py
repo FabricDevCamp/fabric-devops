@@ -2650,7 +2650,7 @@ class DeploymentManager:
                 'Create 01 Silver Layer',
                 'Create 02 Gold Layer',
                 'Build 02 Gold Tables']:
-                AppLogger.log_substep(f"Updating notebook [{notebook.display_name}]")
+                AppLogger.log_substep(f"Updating notebook[{notebook.display_name}]")
                 cls.update_source_lakehouse_in_notebook(
                     workspace_name,
                     notebook.display_name,
@@ -2658,7 +2658,7 @@ class DeploymentManager:
 
             # bind notebooks to sales_silver lakehouse
             if notebook.display_name in ['Build 01 Silver Tables']:
-                AppLogger.log_substep(f"Updating notebook [{notebook.display_name}]")
+                AppLogger.log_substep(f"Updating notebook[{notebook.display_name}]")
                 cls.update_source_lakehouse_in_notebook(
                     workspace_name,
                     notebook.display_name,
@@ -2675,7 +2675,7 @@ class DeploymentManager:
                     web_datasource_path)
 
             if model.display_name == 'Product Sales DirectLake Model':
-                AppLogger.log_substep(f"Updating semantic model [{model.display_name}]")
+                AppLogger.log_substep(f"Updating semantic model[{model.display_name}]")
                 # patch connection string to lakehouse SQL endpoint
                 target_lakehouse_name = 'sales'
                 DeploymentManager.update_directlake_semantic_model_source(
