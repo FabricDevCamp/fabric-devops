@@ -1,4 +1,4 @@
-name: Deploy w. fabric-cicd + Release zzz
+name: Run setup commands
 
 on:
     workflow_dispatch:
@@ -9,7 +9,7 @@ on:
           type: boolean
           default: false
 
-      setup_demo1
+        setup_demo1:
           description: Setup Demo 1
           required: true
           type: boolean
