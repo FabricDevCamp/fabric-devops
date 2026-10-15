@@ -1,11 +1,17 @@
 
-name: Run setup command
+name: Run setup commands
 
 on:
     workflow_dispatch:
       inputs:      
         run_cleanup_environment:
           description: Run cleanup environment
+          required: true
+          type: boolean
+          default: false
+
+      setup_demo1
+          description: Setup Demo 1
           required: true
           type: boolean
           default: false
@@ -46,5 +52,6 @@ jobs:
                 INSTALLATION_ID_GITHUB: ${{ secrets.INSTALLATION_ID_GITHUB }}
                 PRIVATE_KEY_GITHUB: ${{ secrets.PRIVATE_KEY_GITHUB }}
                 RUN_CLEANUP_ENVIRONMENT: ${{ inputs.run_cleanup_environment }}
+                SETUP_DEMO1: ${{ inputs.setup_demo1 }}
               run:
-                python src/run_setup_command.py
+                python src/run_setup_commands.py
