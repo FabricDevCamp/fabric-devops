@@ -18,9 +18,9 @@ if SETUP_ADO_DEMOS:
     solutions = ['Power BI Solution', 'Medallion Solution']
     for solution in solutions:
         workspace_name_root = solution.replace("Solution", "").replace(" ", "")
-        DeploymentManager.setup_ado_repo_with_fabric_cicd_and_gitflow(solution, f'{workspace_name_root}_GitFlow')
-        DeploymentManager.setup_ado_repo_with_fabric_cicd_and_github_flow(solution, f'{workspace_name_root}_TBD')                                                                             
-        DeploymentManager.setup_ado_repo_with_fabric_cicd_and_release_flow(solution, f'{workspace_name_root}_ReleaseFlow')
+        DeploymentManager.setup_ado_repo_with_fabric_cicd_and_gitflow(f'{workspace_name_root}_GitFlow', solution)
+        DeploymentManager.setup_ado_repo_with_fabric_cicd_and_github_flow(f'{workspace_name_root}_TBD', solution)                                                                             
+        DeploymentManager.setup_ado_repo_with_fabric_cicd_and_release_flow(f'{workspace_name_root}_ReleaseFlow', solution)
 
         api_deployed_workspace = f'{workspace_name_root}'
         DeploymentManager.deploy_solution_by_name(
@@ -38,9 +38,9 @@ if SETUP_GITHUB_DEMOS:
     solutions = ['Power BI Solution', 'Medallion Solution']
     for solution in solutions:
         workspace_name_root = solution.replace("Solution", "").replace(" ", "")
-        DeploymentManager.setup_github_repo_with_fabric_cicd_and_gitflow(solution, f'{workspace_name_root}_GitFlow')
-        DeploymentManager.setup_github_repo_with_fabric_cicd_and_github_flow(solution, f'{workspace_name_root}_TBD')                                                                             
-        DeploymentManager.setup_github_repo_with_fabric_cicd_and_github_flow(solution, f'{workspace_name_root}_ReleaseFlow')
+        DeploymentManager.setup_github_repo_with_fabric_cicd_and_gitflow(f'{workspace_name_root}_GitFlow', solution)
+        DeploymentManager.setup_github_repo_with_fabric_cicd_and_github_flow(f'{workspace_name_root}_TBD', solution)                                                                             
+        DeploymentManager.setup_github_repo_with_fabric_cicd_and_github_flow(f'{workspace_name_root}_ReleaseFlow', solution)
             
         api_deployed_workspace = f'{workspace_name_root}_Api'
         DeploymentManager.deploy_solution_by_name(
