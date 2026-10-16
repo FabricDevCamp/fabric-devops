@@ -9,11 +9,18 @@ on:
           type: boolean
           default: false
 
-        setup_demo1:
-          description: Setup Demo 1
+        setup_ado_demos:
+          description: Setup Azure DevOpsdemos
           required: true
           type: boolean
           default: false
+
+        setup_github_demos:
+          description: Setup GitHub demos
+          required: true
+          type: boolean
+          default: false
+
 
 jobs:
     deployment-job:
@@ -51,7 +58,8 @@ jobs:
                 INSTALLATION_ID_GITHUB: ${{ secrets.INSTALLATION_ID_GITHUB }}
                 PRIVATE_KEY_GITHUB: ${{ secrets.PRIVATE_KEY_GITHUB }}
                 RUN_CLEANUP_ENVIRONMENT: ${{ inputs.run_cleanup_environment }}
-                SETUP_DEMO1: ${{ inputs.setup_demo1 }}
+                SETUP_ADO_DEMOS: ${{ inputs.setup_ado_demos }}
+                SETUP_GITHUB_DEMOS: ${{ inputs.setup_github_demos }}
               run:
                 python src/run_setup_commands.py
       
